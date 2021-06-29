@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://localhost:3000/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//check-for-undefined-in-javascript</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//the-power-of-mvp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//solid-principles-of-object-oriented-design</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc
+      >http://localhost:3000//adaptative-media-serving-using-service-workers</loc
+    >
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//bloc-pattern-with-react-hooks</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//todomvc-redux-starter-kit</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//watch-with-angular2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//events-in-angular2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//midterm</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//angularbeers-with-misko-hevery</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//moving-big-parts-to-angular-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//component-migration-started</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//first-coding-week</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//ending-community-bonding-period</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//starting-gsoc</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/javascript</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/beginners</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/mvp</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/object-oriented</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/computer-science</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/solid</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/typescript</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/javascript</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/service-workers</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/performance</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/react</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/bloc</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/hooks</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/redux</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/gsoc</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/jangouts</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>http://localhost:3000//tags/angular</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
