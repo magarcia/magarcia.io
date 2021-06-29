@@ -29,7 +29,7 @@ export default function Post({ frontMatter, content, prev, next }) {
             <h1 className="text-5xl md:text-5xl font-bold mt-10 mb-3 text-gray-800 dark:text-gray-50">
               {title}
             </h1>
-            <div className="opacity-50 dark:opacity-75 text-sm md:text-base">
+            <div className="opacity-75 text-sm md:text-base">
               <time dateTime={date}>
                 {format(parseISO(date), "MMMM d, yyyy")}
               </time>{" "}

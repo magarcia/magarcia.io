@@ -11,7 +11,7 @@ function ArticleListItem({ slug, title, date, readingTime, spoiler }) {
         <a>
           <header>
             <h2 className="font-semibold text-2xl mt-8 mb-2">{title}</h2>
-            <div className="opacity-50 dark:opacity-75 text-sm md:text-base">
+            <div className="opacity-75 text-sm md:text-base">
               <time dateTime={date}>
                 {format(parseISO(date), "MMMM d, yyyy")}
               </time>{" "}
