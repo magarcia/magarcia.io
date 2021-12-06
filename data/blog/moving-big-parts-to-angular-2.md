@@ -2,6 +2,7 @@
 title: Moving big parts to Angular 2
 date: '2016-06-12'
 spoiler: Migrating the most important components and directives to Angualar2
+indexed: false
 tags:
   - GSoC
   - Jangouts

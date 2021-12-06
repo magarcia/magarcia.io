@@ -3,6 +3,7 @@ layout: post
 title: Events in Angular2
 date: '2016-07-03'
 spoiler: About how to migrate events from AngularJS to Angular2.
+indexed: false
 tags:
   - GSoC
   - Jangouts

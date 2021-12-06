@@ -2,6 +2,7 @@
 title: First coding week
 date: '2016-05-29'
 spoiler: The first week working on the migration of Jangouts to Angular2.
+indexed: false
 tags:
   - GSoC
   - Jangouts

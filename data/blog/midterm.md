@@ -2,6 +2,7 @@
 title: Midterm
 date: '2016-06-29'
 spoiler: A retrospective about the work done during the Google Summer of code.
+indexed: false
 tags:
   - GSoC
   - Jangouts

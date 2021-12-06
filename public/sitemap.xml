@@ -1,201 +1,231 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://localhost:3000/</loc>
+    <loc>https://magarcia.io</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//check-for-undefined-in-javascript</loc>
+    <loc>https://magarcia.io/check-for-undefined-in-javascript</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//the-power-of-mvp</loc>
+    <loc>https://magarcia.io/the-power-of-mvp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//solid-principles-of-object-oriented-design</loc>
+    <loc>https://magarcia.io/yumml-recipe-format</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/solid-principles-of-object-oriented-design</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc
-      >http://localhost:3000//adaptative-media-serving-using-service-workers</loc
+      >https://magarcia.io/adaptative-media-serving-using-service-workers</loc
     >
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//bloc-pattern-with-react-hooks</loc>
+    <loc>https://magarcia.io/bloc-pattern-with-react-hooks</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//todomvc-redux-starter-kit</loc>
+    <loc>https://magarcia.io/todomvc-redux-starter-kit</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//watch-with-angular2</loc>
+    <loc>https://magarcia.io/watch-with-angular2</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//events-in-angular2</loc>
+    <loc>https://magarcia.io/events-in-angular2</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//midterm</loc>
+    <loc>https://magarcia.io/midterm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//angularbeers-with-misko-hevery</loc>
+    <loc>https://magarcia.io/angularbeers-with-misko-hevery</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//moving-big-parts-to-angular-2</loc>
+    <loc>https://magarcia.io/moving-big-parts-to-angular-2</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//component-migration-started</loc>
+    <loc>https://magarcia.io/component-migration-started</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//first-coding-week</loc>
+    <loc>https://magarcia.io/first-coding-week</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//ending-community-bonding-period</loc>
+    <loc>https://magarcia.io/ending-community-bonding-period</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//starting-gsoc</loc>
+    <loc>https://magarcia.io/starting-gsoc</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/javascript</loc>
+    <loc>https://magarcia.io/tags/javascript</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/beginners</loc>
+    <loc>https://magarcia.io/tags/beginners</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/mvp</loc>
+    <loc>https://magarcia.io/tags/mvp</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/object-oriented</loc>
+    <loc>https://magarcia.io/tags/spec</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/computer-science</loc>
+    <loc>https://magarcia.io/tags/recipe</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/solid</loc>
+    <loc>https://magarcia.io/tags/cooking</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/typescript</loc>
+    <loc>https://magarcia.io/tags/yumml</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/javascript</loc>
+    <loc>https://magarcia.io/tags/object-oriented</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/service-workers</loc>
+    <loc>https://magarcia.io/tags/computer-science</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/performance</loc>
+    <loc>https://magarcia.io/tags/solid</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/react</loc>
+    <loc>https://magarcia.io/tags/typescript</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/bloc</loc>
+    <loc>https://magarcia.io/tags/javascript</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/hooks</loc>
+    <loc>https://magarcia.io/tags/service-workers</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/redux</loc>
+    <loc>https://magarcia.io/tags/performance</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/gsoc</loc>
+    <loc>https://magarcia.io/tags/react</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/jangouts</loc>
+    <loc>https://magarcia.io/tags/bloc</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>http://localhost:3000//tags/angular</loc>
+    <loc>https://magarcia.io/tags/hooks</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/redux</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/gsoc</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/jangouts</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/angular</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>

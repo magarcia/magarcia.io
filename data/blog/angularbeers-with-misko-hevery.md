@@ -2,6 +2,7 @@
 title: AngularBeers with Miško Hevery
 date: '2016-06-26'
 spoiler: Upcoming features that will make Angular 2 a powerful option in a near future.
+indexed: false
 tags:
   - Angular
 ---
