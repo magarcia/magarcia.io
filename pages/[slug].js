@@ -4,9 +4,11 @@ import rehypeRaw from "rehype-raw";
 import { getAllFiles, getFileBySlug } from "../lib/blog";
 import markdownComponents from "../components/markdownComponents";
 import Header from "../components/Header";
+import ViewCounter from "../components/ViewCounter";
 import SeoHead from "../components/SeoHead";
 import { buildDiscussUrl, buildEditUrl } from "../lib/urls";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Post({ frontMatter, content, prev, next }) {
   const { title, date, readingTime, spoiler, tags, slug } = frontMatter;
@@ -24,21 +26,22 @@ export default function Post({ frontMatter, content, prev, next }) {
       <SeoHead {...meta} />
       <Header />
       <main className="min-w-full">
-        <article className="mx-auto max-w-prose px-8 md:px-0">
+        <article className="px-8 mx-auto max-w-prose md:px-0">
           <header className="mb-10 md:mb-16 md:text-center">
-            <h1 className="text-5xl md:text-5xl font-bold mt-10 mb-3 text-gray-800 dark:text-gray-50">
+            <h1 className="mt-10 mb-3 text-5xl font-bold text-gray-800 md:text-5xl dark:text-gray-50">
               {title}
             </h1>
-            <div className="opacity-75 text-sm md:text-base">
+
+            <div className="text-sm opacity-75 md:text-base">
               <time dateTime={date}>
                 {format(parseISO(date), "MMMM d, yyyy")}
               </time>{" "}
-              &#8208; {readingTime.text}
+              &#8208; {readingTime.text} &#8208; <ViewCounter slug={slug} />
             </div>
           </header>
-          <div className="max-w-prose mx-auto">
+          <div className="mx-auto max-w-prose">
             <ReactMarkdown
-              className="text-2xl font-light my-16 leading-relaxed"
+              className="my-16 text-2xl font-light leading-relaxed"
               components={markdownComponents}
             >
               {spoiler}
@@ -52,12 +55,12 @@ export default function Post({ frontMatter, content, prev, next }) {
             </ReactMarkdown>
           </div>
         </article>
-        <footer className="mx-auto max-w-prose px-8 md:px-0 mt-16 text-sm md:text-base">
+        <footer className="px-8 mx-auto mt-16 text-sm max-w-prose md:px-0 md:text-base">
           <div className="flex flex-wrap">
             {tags.map((tag) => (
               <a
                 key={tag}
-                className="bg-gray-100 dark:bg-gray-700 mr-3 mb-3 last:mr-0 py-1 px-2 rounded border-gray-200 dark:border-gray-800 border whitespace-nowrap"
+                className="px-2 py-1 mb-3 mr-3 bg-gray-100 border border-gray-200 rounded dark:bg-gray-700 last:mr-0 dark:border-gray-800 whitespace-nowrap"
                 href={`/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 #{tag}
@@ -84,8 +87,8 @@ export default function Post({ frontMatter, content, prev, next }) {
             </a>
           </p>
         </footer>
-        <nav className="mx-auto max-w-prose px-8 md:px-0 mb-8 text-sm md:text-base">
-          <ul className="flex flex-wrap place-content-between items-center gap-4">
+        <nav className="px-8 mx-auto mb-8 text-sm max-w-prose md:px-0 md:text-base">
+          <ul className="flex flex-wrap items-center gap-4 place-content-between">
             {[
               [prev, "prev"],
               [next, "next"],
