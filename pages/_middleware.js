@@ -1,17 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import fingerprint from '../lib/fingerprint';
-import { capitalize } from '../lib/string-utils';
-import { geoip, useragent, acceptHeaders } from '../lib/request-utils';
-import { report } from '../lib/newrelic';
-import { flatten } from '../lib/object-utils';
+import fingerprint from "../lib/fingerprint";
+import { capitalize } from "../lib/string-utils";
+import { geoip, useragent, acceptHeaders } from "../lib/request-utils";
+import { report } from "../lib/newrelic";
+import { flatten } from "../lib/object-utils";
 
 function url(request) {
   return {
     href: request.nextUrl.href,
     pathname: request.nextUrl.pathname,
-    referrer: request.headers.get('referer'),
-    destination: request.headers.get('sec-fetch-dest'),
+    referrer: request.headers.get("referer"),
+    destination: request.headers.get("sec-fetch-dest"),
   };
 }
 
@@ -25,7 +25,7 @@ function getTrackingData(request) {
       environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
       fingerprint: fingerprint(request),
     },
-    (k1, k2) => k1 + capitalize(k2),
+    (k1, k2) => k1 + capitalize(k2)
   );
 }
 
@@ -34,8 +34,8 @@ export async function middleware(request, event) {
 
   event.waitUntil(
     (async () => {
-      await report({ ...data, eventType: 'ResourceFetch' });
-    })(),
+      await report({ ...data, eventType: "ResourceFetch" });
+    })()
   );
 
   return NextResponse.next();

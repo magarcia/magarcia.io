@@ -27,7 +27,13 @@ export default function CodeBlock({ language, children, highlight, ...props }) {
                     if (highlight && !highlight?.includes(i + 1)) {
                       className = "text-gray-50";
                     }
-                    return <span {...props} className={`token ${className}`} key={key}/>;
+                    return (
+                      <span
+                        {...props}
+                        className={`token ${className}`}
+                        key={key}
+                      />
+                    );
                   })}
                 </div>
               );
