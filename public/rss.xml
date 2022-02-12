@@ -4,7 +4,7 @@
         <description><![CDATA[A personal blog by Martin Garcia. Thoughts, words, and experiments about code.]]></description>
         <link>https://magarcia.io</link>
         <generator>Next.js using RSS for Node.js</generator>
-        <lastBuildDate>Sat, 12 Feb 2022 11:33:46 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 12 Feb 2022 12:38:03 GMT</lastBuildDate>
         <atom:link href="https://magarcia.io/rss.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[Martin Garcia]]></author>
         <copyright><![CDATA[All rights reserved 2022, Martin Garcia]]></copyright>

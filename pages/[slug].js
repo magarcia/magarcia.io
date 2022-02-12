@@ -8,7 +8,6 @@ import ViewCounter from "../components/ViewCounter";
 import SeoHead from "../components/SeoHead";
 import { buildDiscussUrl, buildEditUrl } from "../lib/urls";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export default function Post({ frontMatter, content, prev, next }) {
   const { title, date, readingTime, spoiler, tags, slug } = frontMatter;
