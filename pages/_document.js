@@ -10,10 +10,10 @@ class MyDocument extends Document {
             href="https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19"
             as="font"
             type="font/woff2"
-            crossOrigin
+            crossOrigin={true}
           />
         </Head>
-        <body className="bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300 ease-in-out motion-reduce:transition-none">
+        <body className="text-gray-700 transition-colors duration-300 ease-in-out bg-white dark:bg-gray-800 dark:text-gray-200 motion-reduce:transition-none">
           <Main />
           <NextScript />
         </body>
