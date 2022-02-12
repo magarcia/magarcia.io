@@ -10,7 +10,7 @@ import Link from "./Link";
 import List from "./List";
 import Table from "./Table";
 
-export default {
+const components = {
   h1: ({ node, ...props }) => <Heading {...props} />,
   h2: ({ node, ...props }) => <Heading {...props} />,
   h3: ({ node, ...props }) => <Heading {...props} />,
@@ -71,3 +71,5 @@ export default {
   td: ({ node, ...props }) => <Table.Cell {...props} />,
   th: ({ node, ...props }) => <Table.Cell {...props} />,
 };
+
+export default components;

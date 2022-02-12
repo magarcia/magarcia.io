@@ -18,7 +18,7 @@ export default function CodeBlock({ language, children, highlight, ...props }) {
                 className = "px-4 text-gray-50 opacity-30";
               }
               return (
-                <div {...props} className={className}>
+                <div {...props} className={className} key={line}>
                   {line.map((token, key) => {
                     const type = token.types[0];
                     if (type === "plain") return token.content;
@@ -27,7 +27,7 @@ export default function CodeBlock({ language, children, highlight, ...props }) {
                     if (highlight && !highlight?.includes(i + 1)) {
                       className = "text-gray-50";
                     }
-                    return <span {...props} className={`token ${className}`} />;
+                    return <span {...props} className={`token ${className}`} key={key}/>;
                   })}
                 </div>
               );

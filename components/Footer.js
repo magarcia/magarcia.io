@@ -1,8 +1,9 @@
+/* eslint-disable react/jsx-no-target-blank */
 import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="p-8 md:p-0 my-16 flex place-content-between items-center max-w-prose mx-auto">
+    <footer className="flex items-center p-8 mx-auto my-16 md:p-0 place-content-between max-w-prose">
       <div>
         <a
           className="underline"
