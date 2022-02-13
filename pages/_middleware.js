@@ -30,10 +30,10 @@ function getTrackingData(request) {
 }
 
 export async function middleware(request, event) {
-  const data = getTrackingData(request);
-
+  
   event.waitUntil(
     (async () => {
+      const data = getTrackingData(request);
       await report({ ...data, eventType: "ResourceFetch" });
     })()
   );
