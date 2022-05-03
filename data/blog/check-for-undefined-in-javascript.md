@@ -13,7 +13,7 @@ But, what is the best way to do it?
 
 ## The intuitive way
 
-Any programer with experience in other language will use the intuition to figure out:
+Any programmer with experience in other language will use the intuition to figure out:
 
 ```js
 if (x === undefined) { ... }
@@ -62,6 +62,6 @@ In this example, the zero doesn’t have any special meaning. As stated on MDN:
 
 ## Which way is better
 
-In my time as a consultant I learned what’s the best answer for this kind of question: it depends. I would depend on the concrete use case you have but I can give you some tips.
+In my time as a consultant, I learned what’s the best answer for this kind of question: it depends. I would depend on the concrete use case you have, but I can give you some tips.
 
-In general, I tend to use the convention that is already present on the codebase. But if you’re writing a new code that will run only on modern browsers I’ll suggest to go for the direct comparison (it’s clear and easy to understand also for people that don’t know JavaScript). For old browsers support, I strongly recommend to create a function `isUndefined` and use the option of your choice inside. Then the code will express their purpose clearly to everyone.
+In general, I tend to use the convention that is already present on the codebase. But if you’re writing a new code that will run only on modern browsers, I’ll suggest going for the direct comparison (it’s clear and easy to understand also for people that don’t know JavaScript). For old browsers support, I strongly recommend to create a function `isUndefined` and use the option of your choice inside. Then the code will express their purpose clearly to everyone.
