@@ -12,6 +12,11 @@ class MyDocument extends Document {
             type="font/woff2"
             crossOrigin="true"
           />
+          <script
+            defer
+            data-domain="magarcia.io"
+            src="https://plausible.io/js/plausible.js"
+          ></script>
         </Head>
         <body className="text-gray-700 transition-colors duration-300 ease-in-out bg-white dark:bg-gray-800 dark:text-gray-200 motion-reduce:transition-none">
           <Main />
