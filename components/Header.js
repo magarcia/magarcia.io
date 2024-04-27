@@ -16,15 +16,13 @@ export default function Header({ main }) {
       } flex place-content-between items-center max-w-5xl mx-auto`}
     >
       <Link href="/">
-
         <Tag
           className={`${size} ${colors} text-gray-900 dark:text-gray-50 font-semibold py-2 px-4 transition-bg duration-300 ease-in-out motion-reduce:transition-none`}
         >
           magarcia
         </Tag>
-
       </Link>
-      {process.browser && <ThemeToggle />}
+      {typeof window !== "undefined" && <ThemeToggle />}
     </header>
   );
 }

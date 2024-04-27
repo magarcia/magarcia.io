@@ -65,7 +65,7 @@ function buildEntry(url, { changefreq = "daily", priority = 0.5 } = {}) {
         </urlset>
     `;
 
-  const formatted = prettier.format(sitemap, {
+  const formatted = await prettier.format(sitemap, {
     ...prettierConfig,
     parser: "html",
   });

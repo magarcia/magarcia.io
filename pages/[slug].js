@@ -1,13 +1,13 @@
 import { parseISO, format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import Link from "next/link";
 import { getAllFiles, getFileBySlug } from "../lib/blog";
 import markdownComponents from "../components/markdownComponents";
 import Header from "../components/Header";
 import ViewCounter from "../components/ViewCounter";
 import SeoHead from "../components/SeoHead";
 import { buildDiscussUrl, buildEditUrl } from "../lib/urls";
-import Link from "next/link";
 
 export default function Post({ frontMatter, content, prev, next }) {
   const { title, date, readingTime, spoiler, tags, slug } = frontMatter;
