@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next-image-export-optimizer",
-    "postbuild": "nexered --provider=cloudflare-pages",
+    "build": "next build && next-image-export-optimizer && nexered --provider=cloudflare-pages",
     "start": "next start",
     "lint": "next lint"
   },
