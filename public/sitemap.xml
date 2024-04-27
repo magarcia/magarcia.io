@@ -27,12 +27,6 @@
   </url>
 
   <url>
-    <loc>https://magarcia.io/yumml-recipe-format</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
     <loc>https://magarcia.io/solid-principles-of-object-oriented-design</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -138,30 +132,6 @@
 
   <url>
     <loc>https://magarcia.io/tags/mvp</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/spec</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/recipe</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/cooking</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/yumml</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
