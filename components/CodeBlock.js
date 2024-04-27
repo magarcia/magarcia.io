@@ -3,6 +3,8 @@ import Highlight, { defaultProps } from "prism-react-renderer";
 
 export default function CodeBlock({ language, children, highlight, ...props }) {
   if (language === "yumml") language = "yaml";
+  // if (!children) return null;
+
   return (
     <div
       {...props}
@@ -10,7 +12,7 @@ export default function CodeBlock({ language, children, highlight, ...props }) {
     >
       <Highlight {...defaultProps} code={children[0]} language={language}>
         {({ tokens, getLineProps, getTokenProps }) => (
-          <pre className={`language-${language}`}>
+          <pre className={`language-${language ?? txt}`}>
             {tokens.slice(0, -1).map((line, i) => {
               const { style, ...props } = getLineProps({ line, key: i });
               let className = "px-4";

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next-image-export-optimizer";
 import Heading from "./Heading";
 import Strong from "./Strong";
 import Paragraph from "./Paragraph";
@@ -25,9 +25,9 @@ const components = {
     let className;
 
     if (node.tagName === "pre") {
-      className = children[0].props.className;
+      className = children[0]?.props.className;
       language = className?.replace("language-", "") ?? "";
-      children = children[0].props.children;
+      children = children[0]?.props.children;
     }
 
     const [lang, lines] = language.split(":");
@@ -55,9 +55,39 @@ const components = {
     );
   },
   p: ({ node, ...props }) => {
-    if (node.children[0].type === "image") {
+    // if (node.children[0].type === "image") {
+    //   const image = node.children[0];
+    //   return <Image src={image.url} alt={image.alt} fill sizes="100vw" />;
+    // }
+    if (node.children[0].tagName === "img") {
       const image = node.children[0];
-      return <Image src={image.url} alt={image.alt} layout="fill" />;
+      const metaString = image.properties.alt;
+      const alt = metaString?.replace(/ *\{[^)]*\} */g, "");
+      const metaWidth = metaString.match(/{([^}]+)x/);
+      const metaHeight = metaString.match(/x([^}]+)}/);
+      const width = metaWidth ? metaWidth[1] : "768";
+      const height = metaHeight ? metaHeight[1] : "432";
+      const isPriority = metaString?.toLowerCase().match("{priority}");
+      const hasCaption = metaString?.toLowerCase().includes("{caption:");
+      const caption = metaString?.match(/{caption: (.*?)}/)?.pop();
+
+      return (
+        <div className="postImgWrapper">
+          <Image
+            src={image.properties.src}
+            width={width}
+            height={height}
+            className="postImg"
+            alt={alt}
+            priority={isPriority}
+          />
+          {hasCaption ? (
+            <div className="caption" aria-label={caption}>
+              {caption}
+            </div>
+          ) : null}
+        </div>
+      );
     }
 
     return <Paragraph {...props} />;

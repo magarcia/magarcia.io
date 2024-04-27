@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import { Moon, Sun } from "react-feather";
 
 export default function ThemeToggle() {
