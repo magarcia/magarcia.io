@@ -4,10 +4,10 @@
         <description><![CDATA[A personal blog by Martin Garcia. Thoughts, words, and experiments about code.]]></description>
         <link>https://magarcia.io</link>
         <generator>Next.js using RSS for Node.js</generator>
-        <lastBuildDate>Mon, 11 Sep 2023 11:12:22 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 27 Apr 2024 15:34:34 GMT</lastBuildDate>
         <atom:link href="https://magarcia.io/rss.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[Martin Garcia]]></author>
-        <copyright><![CDATA[All rights reserved 2023, Martin Garcia]]></copyright>
+        <copyright><![CDATA[All rights reserved 2024, Martin Garcia]]></copyright>
         <language><![CDATA[en]]></language>
         <managingEditor><![CDATA[Martin Garcia]]></managingEditor>
         <item>
@@ -149,6 +149,185 @@ The value of &lt;code&gt;undefined&lt;/code&gt; is &lt;strong&gt;undefined&lt;/s
 &lt;li&gt;The whole vision of the project should be shared with engineers, not only the part they have to work on since it helps to decide the architecture.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;In conclusion, I&apos;m going to keep doing one of the things I consider most important in a developer: being lazy. Because this attitude will help me to find the most easier and fastest way to solve a problem.&lt;/p&gt;
+</content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[YumML - Yet Another Recipe Metadata]]></title>
+            <description><![CDATA[There are some recipe formats over the internet but they are old, not properly specified or license restrictions. YumML is an effort to make cooking recipes human and machine readable.]]></description>
+            <guid isPermaLink="false">YumML - Yet Another Recipe Metadata</guid>
+            <category><![CDATA[Spec]]></category>
+            <category><![CDATA[Recipe]]></category>
+            <category><![CDATA[Cooking]]></category>
+            <category><![CDATA[YumML]]></category>
+            <dc:creator><![CDATA[Martin Garcia]]></dc:creator>
+            <pubDate>Mon, 06 Jan 2020 00:00:00 GMT</pubDate>
+            <content:encoded>&lt;p&gt;Some time ago, talking with a friend we realized that there is not a &amp;quot;standard&amp;quot;
+format to save cooking recipes. At that time I was learning React and one of the
+first projects I tried to do was a recipe management app. I didn&apos;t success on
+that project (as many others I started and never finished) but on the way I
+found a draft spec of a recipe format: &lt;strong&gt;YumML&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;This format was publish at that time on &lt;a href=&quot;http://vikingco.de/&quot;&gt;vikingco.de&lt;/a&gt; but
+the site is not available anymore. The only references available are from the
+&lt;a href=&quot;https://web.archive.org/web/20160730232450/http://vikingco.de/&quot;&gt;Internet Archive&lt;/a&gt;
+and the &lt;a href=&quot;https://github.com/vikingcode/vikingcode.github.io&quot;&gt;repository of the page&lt;/a&gt;
+that stills available.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
+“SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be
+interpreted as described in &lt;a href=&quot;https://tools.ietf.org/html/rfc2119&quot;&gt;RFC 2119&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;History&lt;/h2&gt;
+&lt;p&gt;The first draft of the YumML format is from September 21 of 2011 made by Paul
+Jenkins, you can check the &lt;a href=&quot;./original-yumml.md&quot;&gt;original specification here&lt;/a&gt;
+that I rescued from the old archives I found.&lt;/p&gt;
+&lt;p&gt;From my point of view, this draft it&apos;s really promising as a format for cooking
+recipes, so I want to recover it from the forgiven archives of Internet and bring
+it to live again, adding some extra functionalities/specifications.&lt;/p&gt;
+&lt;h2&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;As the original author of YumML mentioned on his original blog post, I&apos;ve been
+investigating a bit about recipe formats for cooking and been clear, most of
+them sucks. The landscape of recipe interchange formats is quite fragmented, but
+most of the have one think in common: they are not really human-friendly.&lt;/p&gt;
+&lt;p&gt;A lot of cooking-related software come with a format that usually only that
+software is able to work with an understand. Although some of them can be
+imported by other programs.
+&lt;a href=&quot;http://web.archive.org/web/20151029032924/http://episoft.home.comcast.net:80/~episoft/&quot;&gt;Meal-Master&lt;/a&gt;
+is one of these widely supported formats and due to that there is a
+&lt;a href=&quot;http://www.ffts.com/recipes.htm&quot;&gt;huge collection of recipes&lt;/a&gt; available online.&lt;/p&gt;
+&lt;p&gt;But looking to an example, it doesn&apos;t seems something well specified:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-txt&quot;&gt;MMMMM----- Now You&apos;re Cooking! v5.65 [Meal-Master Export Format]
+
+      Title: Agua De Valencia
+ Categories: beverages, spanish
+      Yield: 4 servings
+
+      1    bottle of spanish cava
+           -(sparkling wine or; champag
+           plenty fresh orange juice
+           cointreau
+           ice cubes
+
+Put some ice cubes into a large jug and pour over lots of orange juice. Now
+add the bottle of cava. Once the fizz subsides, stir in a good dash of the
+cointreau and it?s ready to serve.
+
+  Contributor:  Esther P�rez Solsona
+
+  NYC Nutrilink: N0^00000,N0^00000,N0^00000,N0^00000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There are some other &amp;quot;famous&amp;quot; formats like:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.formatdata.com/recipeml/index.html&quot;&gt;RecipeML&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://reml.sourceforge.net/&quot;&gt;Recipe Exchange Markup Language&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.kalorio.de/index.php?Mod=Ac&amp;amp;Cap=CE&amp;amp;SCa=../cml/CookML_EN&quot;&gt;CookML&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But they are mainly XML based formats and it&apos;s impossible for a real human be
+able to read and understand a recipe written on that format. If you&apos;re
+interested on find other recipe formats there is a
+&lt;a href=&quot;http://microformats.org/wiki/recipe-formats&quot;&gt;list of software related cooking formats&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It&apos;s worth to mention some formats that came with the age of Internet. The HTML
+microdata like &lt;a href=&quot;https://developers.google.com/search/docs/data-types/recipe&quot;&gt;Google rich snippets&lt;/a&gt;
+and the &lt;a href=&quot;http://schema.org/Recipe&quot;&gt;schema.org microdata&lt;/a&gt;, are widely used by
+commercial recipe sites. Although the main objective of microdata is to make
+content machine-readable (specially for SEO purposes), but recipes nowadays are
+thought to be read and executed by a human.&lt;/p&gt;
+&lt;p&gt;Finally I found &lt;a href=&quot;https://6xq.net/pesto/&quot;&gt;pesto&lt;/a&gt; that aims to make a more
+simpler human-readable format, but personally I find difficult to understand
+for someone that is not used to the syntax.&lt;/p&gt;
+&lt;h2&gt;Original design considerations&lt;/h2&gt;
+&lt;p&gt;The original author of YumML had some considerations in mind during the design
+of the format:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Does not need a long reference guide.&lt;/li&gt;
+&lt;li&gt;Can be easily read by non-technical people in the &amp;quot;raw&amp;quot; format.&lt;/li&gt;
+&lt;li&gt;Can be translatable between imperial and metric.&lt;/li&gt;
+&lt;li&gt;Want something like the &lt;em&gt;markdown&lt;/em&gt; of recipes (but still easy to parse with software).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;YumML is based on YAML to create a human &lt;em&gt;and&lt;/em&gt; system readable format.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;From &lt;a href=&quot;https://yaml.org/&quot;&gt;yaml.org&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;What It Is: YAML is a human friendly data serialization standard for all
+programming languages.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Goals&lt;/h2&gt;
+&lt;p&gt;From my side I want to define a more formal goals for the spec.&lt;/p&gt;
+&lt;p&gt;YumML format:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;MUST&lt;/strong&gt; be human &lt;strong&gt;and&lt;/strong&gt; system readable.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MUST&lt;/strong&gt; be self contained, so it &lt;strong&gt;MUST NOT&lt;/strong&gt; require additional resources to be interpreted.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MUST&lt;/strong&gt; have support for different metric systems &lt;em&gt;(metric, imperial)&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SHOULD&lt;/strong&gt; be easy to translate into different languages &lt;em&gt;(recipes have a strong cultural influence and language should not be a barrier to someone that wants to understand)&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SHOULD&lt;/strong&gt; be easy to parse using already existing tools.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SHOULD&lt;/strong&gt; be easy to extend in the future.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Basic Example&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&quot;language-yumml&quot;&gt;name: Mrs Fields Choc-Chip Cookies
+date: 2011-09-21
+time: 25 minutes
+ingredients:
+  - quantity: 2.5
+    unit: cups
+    item: plain flour
+
+  - quantity: 0.5
+    unit: tsp
+    item: bi-carb of soda
+
+instructions:
+  - step: Mix flour, bi-carb soda, and salt in a large bowl
+  - step: Blend sugars with electric mixer, add margarine to form a grainy paste
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Spec&lt;/h2&gt;
+&lt;p&gt;There are three main sections that very recipe must include: the header, the ingredients list, and the instructions.&lt;/p&gt;
+&lt;h3&gt;Header&lt;/h3&gt;
+&lt;p&gt;The header is an implicit section where all the attributes are placed at the
+root level of the file. All the attributes should be placed at the top of the
+file.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;name&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;description: &lt;code&gt;Name of the recipe.&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;type: &lt;code&gt;string&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;required: &lt;code&gt;true&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;date&lt;/code&gt;:
+&lt;ul&gt;
+&lt;li&gt;description: Date of the recipe.&lt;/li&gt;
+&lt;li&gt;type: &lt;code&gt;string&lt;/code&gt; (full-date notation as defined by &lt;a href=&quot;https://tools.ietf.org/html/rfc3339#section-5.6&quot;&gt;RFC 3339, section 5.6&lt;/a&gt;, for example, &lt;em&gt;2017-07-21&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;required: false&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;time&lt;/code&gt;: (&lt;em&gt;optional&lt;/em&gt;) How long the recipe would take.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;author&lt;/code&gt;: (&lt;em&gt;optional&lt;/em&gt;) Author of the recipe.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;servings&lt;/code&gt;: (&lt;em&gt;optional&lt;/em&gt;) How many servings the recipe is sized for (eg: a
+tomato soup with 4 servings means is for 4 people, but chocolate cookies with
+20 servings means is going to make 20 cookies).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;description&lt;/code&gt;: (&lt;em&gt;optional&lt;/em&gt;) A more detailed description about the recipe.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rating&lt;/code&gt;: (&lt;em&gt;optional&lt;/em&gt;) Rating of the recipe.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;Example&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&quot;language-yumml:1-8&quot;&gt;name: Mrs Fields Choc-Chip Cookies
+date: 2011-09-21
+time: 25 minutes
+serves: 1
+makes: 25
+tags:
+  - cookies
+  - chocolate
+ingredients:
+  - quantity: 2.5
+    unit: cups
+    item: plain flour
+
+  - quantity: 0.5
+    unit: tsp
+    item: bi-carb of soda
+
+instructions:
+  - step: Mix flour, bi-carb soda, and salt in a large bowl
+  - step: Blend sugars with electric mixer, add margarine to form a grainy paste
+&lt;/code&gt;&lt;/pre&gt;
 </content:encoded>
         </item>
         <item>

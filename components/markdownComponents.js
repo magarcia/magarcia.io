@@ -57,7 +57,7 @@ const components = {
   p: ({ node, ...props }) => {
     if (node.children[0].type === "image") {
       const image = node.children[0];
-      return <Image src={image.url} alt={image.alt} layout="fill" />;
+      return <Image src={image.url} alt={image.alt} fill sizes="100vw" />;
     }
 
     return <Paragraph {...props} />;
