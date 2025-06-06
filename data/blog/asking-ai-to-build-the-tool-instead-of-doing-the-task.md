@@ -103,6 +103,21 @@ The key insight is that AI excels at pattern recognition and code generation but
 3. **Testable output**: You can test the codemod on a few files before running it everywhere
 4. **Reusable**: The codemod can be shared with your team or used for similar migrations
 
+## The Beauty of Throwaway Code
+
+Here's something that might surprise you: we don't review the codemod code that the AI generates. Why? Because we don't care about its quality — it's a one-time script that will be thrown away after the migration.
+
+This is actually the perfect scenario for what some call "vibe coding" — letting AI generate code without much review. The only thing that matters is the outcome: Did the migration work correctly? Are the transformed files correct?
+
+Think about it:
+
+- The codemod runs once and gets deleted
+- You're going to review the actual changes in your pull request anyway
+- The worst case is it doesn't work and you iterate
+- No one will maintain this code or build upon it
+
+This mindset shift is liberating. Instead of spending time perfecting a migration script, you can focus on what actually matters: the migrated code itself.
+
 ## An Interesting Observation
 
 While testing Claude Code on a similar migration task, I noticed something fascinating. The AI started by making changes file-by-file, but after processing a few files, it stopped and began writing migration scripts instead.
