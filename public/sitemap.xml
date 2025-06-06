@@ -8,6 +8,14 @@
 
   <url>
     <loc
+      >https://magarcia.io/how-i-cut-migration-time-from-days-to-hours-with-this-one-ai-technique</loc
+    >
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc
       >https://magarcia.io/the-comprehensive-guide-to-dmarc-ensuring-email-integrity-and-trust</loc
     >
     <changefreq>monthly</changefreq>
@@ -22,6 +30,12 @@
 
   <url>
     <loc>https://magarcia.io/the-power-of-mvp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/yumml-recipe-format</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -107,6 +121,36 @@
   </url>
 
   <url>
+    <loc>https://magarcia.io/tags/ai</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/javascript</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/typescript</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/developer-tools</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/code-migration</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
     <loc>https://magarcia.io/tags/buildinpublic</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
@@ -137,6 +181,30 @@
   </url>
 
   <url>
+    <loc>https://magarcia.io/tags/spec</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/recipe</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/cooking</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/yumml</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
     <loc>https://magarcia.io/tags/object-oriented</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
@@ -150,18 +218,6 @@
 
   <url>
     <loc>https://magarcia.io/tags/solid</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/typescript</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/javascript</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
