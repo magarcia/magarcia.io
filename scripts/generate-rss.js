@@ -35,7 +35,7 @@ const siteMetadata = require("../blog.config").siteMetadata;
     const url = `${baseUrl}/${post.slug}`;
     feed.item({
       title: post.title,
-      id: url,
+      guid: url,
       link: url,
       description: post.spoiler,
       custom_elements: [{ "content:encoded": markdown.render(post.content) }],
