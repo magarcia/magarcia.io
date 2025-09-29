@@ -4,12 +4,62 @@
         <description><![CDATA[A personal blog by Martin Garcia. Thoughts, words, and experiments about code.]]></description>
         <link>https://magarcia.io</link>
         <generator>Next.js using RSS for Node.js</generator>
-        <lastBuildDate>Fri, 06 Jun 2025 16:40:53 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 29 Sep 2025 09:40:29 GMT</lastBuildDate>
         <atom:link href="https://magarcia.io/rss.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[Martin Garcia]]></author>
         <copyright><![CDATA[All rights reserved 2025, Martin Garcia]]></copyright>
         <language><![CDATA[en]]></language>
         <managingEditor><![CDATA[Martin Garcia]]></managingEditor>
+        <item>
+            <title><![CDATA[Stop sprinkling `process.env` everywhere: `${VAR:default}` for your configs with `env-interpolation`]]></title>
+            <description><![CDATA[I shipped [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), a tiny TS helper that interpolates `${VAR}` and `${VAR:default}` inside config values. It walks strings in objects/arrays and never touches keys, so shapes stay stable and predictable—very config-oriented.]]></description>
+            <guid isPermaLink="false">https://magarcia.io/stop-sprinkling-process-env-everywhere</guid>
+            <category><![CDATA[TypeScript]]></category>
+            <category><![CDATA[Node.js]]></category>
+            <category><![CDATA[Configuration]]></category>
+            <category><![CDATA[Developer Tools]]></category>
+            <category><![CDATA[Open Source]]></category>
+            <dc:creator><![CDATA[Martin Garcia]]></dc:creator>
+            <pubDate>Mon, 29 Sep 2025 00:00:00 GMT</pubDate>
+            <content:encoded>&lt;p&gt;I shipped &lt;strong&gt;env-interpolation&lt;/strong&gt;, a tiny TS helper that interpolates &lt;code&gt;${VAR}&lt;/code&gt; and &lt;code&gt;${VAR:default}&lt;/code&gt; inside &lt;strong&gt;config values&lt;/strong&gt;. It walks strings in objects/arrays and &lt;strong&gt;never touches keys&lt;/strong&gt;, so shapes stay stable and predictable—very config-oriented.&lt;/p&gt;
+&lt;p&gt;Born out of &lt;strong&gt;mcp-tool-selector&lt;/strong&gt;, where I needed layered config without leaking secrets or littering &lt;code&gt;process.env&lt;/code&gt; calls. It turned into a sharp little utility, so I published it.&lt;/p&gt;
+&lt;h2&gt;At a glance&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Resolves placeholders in &lt;strong&gt;values only&lt;/strong&gt; (objects/arrays), keys untouched&lt;/li&gt;
+&lt;li&gt;Supports defaults and multi-pass resolution&lt;/li&gt;
+&lt;li&gt;Zero deps, TS-first, Node 18+, ESM/CJS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Docs &amp;amp; API:&lt;/strong&gt; read the &lt;a href=&quot;https://github.com/magarcia/env-interpolation&quot;&gt;GitHub repo&lt;/a&gt; and the &lt;a href=&quot;https://www.npmjs.com/package/env-interpolation&quot;&gt;npm package page&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;Quick taste: load JSON → interpolate&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;config.json&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &amp;quot;api&amp;quot;: &amp;quot;${API_URL:https://api.example.com}&amp;quot;,
+  &amp;quot;timeoutMs&amp;quot;: &amp;quot;${TIMEOUT:5000}&amp;quot;,
+  &amp;quot;flags&amp;quot;: [&amp;quot;${PRIMARY:alpha}&amp;quot;, &amp;quot;${SECONDARY:beta}&amp;quot;],
+  &amp;quot;service&amp;quot;: {
+    &amp;quot;url&amp;quot;: &amp;quot;${SERVICE_URL:${API_URL}/v1}&amp;quot;,
+    &amp;quot;headers&amp;quot;: { &amp;quot;x-tenant&amp;quot;: &amp;quot;${TENANT:public}&amp;quot; }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;load-config.ts&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-ts&quot;&gt;import { readFileSync } from &amp;quot;node:fs&amp;quot;;
+import { interpolate } from &amp;quot;env-interpolation&amp;quot;;
+
+const raw = readFileSync(&amp;quot;config.json&amp;quot;, &amp;quot;utf8&amp;quot;);
+const input = JSON.parse(raw);
+
+const resolved = interpolate(input, {
+  API_URL: &amp;quot;https://api.example.com&amp;quot;,
+  TIMEOUT: &amp;quot;8000&amp;quot;,
+  TENANT: &amp;quot;public&amp;quot;,
+});
+
+console.log(resolved);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is my second AI engineered project (the first one was &lt;a href=&quot;https://github.com/magarcia/mcp-server-giphy&quot;&gt;mcp-server-giphy&lt;/a&gt;), built with multiple AI agents (Claude, Copilot, Gemini &amp;amp; Codex). If your configs span files, environments, and tools, this should remove a few papercuts.&lt;/p&gt;
+</content:encoded>
+        </item>
         <item>
             <title><![CDATA[Asking AI to Build the Tool Instead of Doing the Task]]></title>
             <description><![CDATA[Working with AI for large-scale code changes can be frustrating. This article shares a technique that has helped our team reduce migration errors by 95% while making the process surprisingly enjoyable.]]></description>
@@ -93,6 +143,17 @@ import { Tooltip } from &apos;@new-design-system&apos;;
 &lt;li&gt;&lt;strong&gt;Testable output&lt;/strong&gt;: You can test the codemod on a few files before running it everywhere&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Reusable&lt;/strong&gt;: The codemod can be shared with your team or used for similar migrations&lt;/li&gt;
 &lt;/ol&gt;
+&lt;h2&gt;The Beauty of Throwaway Code&lt;/h2&gt;
+&lt;p&gt;Here&apos;s something that might surprise you: we don&apos;t review the codemod code that the AI generates. Why? Because we don&apos;t care about its quality — it&apos;s a one-time script that will be thrown away after the migration.&lt;/p&gt;
+&lt;p&gt;This is actually the perfect scenario for what some call &amp;quot;vibe coding&amp;quot; — letting AI generate code without much review. The only thing that matters is the outcome: Did the migration work correctly? Are the transformed files correct?&lt;/p&gt;
+&lt;p&gt;Think about it:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The codemod runs once and gets deleted&lt;/li&gt;
+&lt;li&gt;You&apos;re going to review the actual changes in your pull request anyway&lt;/li&gt;
+&lt;li&gt;The worst case is it doesn&apos;t work and you iterate&lt;/li&gt;
+&lt;li&gt;No one will maintain this code or build upon it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This mindset shift is liberating. Instead of spending time perfecting a migration script, you can focus on what actually matters: the migrated code itself.&lt;/p&gt;
 &lt;h2&gt;An Interesting Observation&lt;/h2&gt;
 &lt;p&gt;While testing Claude Code on a similar migration task, I noticed something fascinating. The AI started by making changes file-by-file, but after processing a few files, it stopped and began writing migration scripts instead.&lt;/p&gt;
 &lt;p&gt;It wasn&apos;t perfect — it created multiple bash scripts for different edge cases instead of a unified codemod — but it shows that AI tools are beginning to recognize these patterns themselves. The AI autonomously realized that building a tool was more efficient than doing the task manually.&lt;/p&gt;

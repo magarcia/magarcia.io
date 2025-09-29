@@ -27,7 +27,9 @@ export default function Post({ frontMatter, content, prev, next }) {
       <article className="px-8 mx-auto max-w-prose md:px-0">
         <header className="mb-10 md:mb-16 md:text-center">
           <h1 className="mt-10 mb-3 text-5xl font-bold text-gray-800 md:text-5xl dark:text-gray-50">
-            {title}
+            <ReactMarkdown components={markdownComponents} className="inline">
+              {title}
+            </ReactMarkdown>
           </h1>
 
           <div className="text-sm opacity-75 md:text-base">
@@ -96,7 +98,9 @@ export default function Post({ frontMatter, content, prev, next }) {
                 (<Link href={`/${post.slug}`} rel={rel} title={post.title} className="underline">
 
                   {rel === "prev" && `← `}
-                  {post.title}
+                  <ReactMarkdown components={markdownComponents} className="inline">
+                    {post.title}
+                  </ReactMarkdown>
                   {rel === "next" && ` →`}
 
                 </Link>)

@@ -1,9 +1,11 @@
 import { parseISO, format } from "date-fns";
 import { Link as LinkIcon } from "react-feather";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { getAllFilesFrontMatter } from "../../lib/blog";
 import Header from "../../components/Header";
 import SeoHead from "../../components/SeoHead";
+import markdownComponents from "../../components/markdownComponents";
 
 export default function Blog({ posts, tag }) {
   const totalCount = posts.length;
@@ -38,7 +40,9 @@ export default function Blog({ posts, tag }) {
                     marginRight: anchorSize / 2,
                   }}
                 />
-                {title}
+                <ReactMarkdown components={markdownComponents} className="inline">
+                  {title}
+                </ReactMarkdown>
 
               </Link>
             </h3>

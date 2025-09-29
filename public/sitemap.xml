@@ -7,6 +7,12 @@
   </url>
 
   <url>
+    <loc>https://magarcia.io/stop-sprinkling-process-env-everywhere</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc
       >https://magarcia.io/asking-ai-to-build-the-tool-instead-of-doing-the-task</loc
     >
@@ -30,6 +36,12 @@
 
   <url>
     <loc>https://magarcia.io/the-power-of-mvp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/yumml-recipe-format</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -115,6 +127,36 @@
   </url>
 
   <url>
+    <loc>https://magarcia.io/tags/typescript</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/node.js</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/configuration</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/developer-tools</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/open-source</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
     <loc>https://magarcia.io/tags/ai</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
@@ -122,18 +164,6 @@
 
   <url>
     <loc>https://magarcia.io/tags/javascript</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/typescript</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://magarcia.io/tags/developer-tools</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
@@ -170,6 +200,30 @@
 
   <url>
     <loc>https://magarcia.io/tags/mvp</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/spec</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/recipe</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/cooking</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://magarcia.io/tags/yumml</loc>
     <changefreq>daily</changefreq>
     <priority>0.3</priority>
   </url>
