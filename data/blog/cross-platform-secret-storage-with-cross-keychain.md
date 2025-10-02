@@ -60,4 +60,4 @@ Storing secrets in plaintext `.env` files or config files is a common pattern, b
 
 `cross-keychain` gives you a consistent API across platforms, so you can write once and trust the OS to handle the heavy lifting.
 
-This is my third AI-engineered project (after [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy) and [env-interpolation](/blog/stop-sprinkling-process-env-everywhere)), built with multiple AI agents. If you're tired of managing secrets in plaintext, this should make your life easier.
+This is my third AI-engineered project (after [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy) and [env-interpolation](/stop-sprinkling-process-env-everywhere)), built with multiple AI agents. If you're tired of managing secrets in plaintext, this should make your life easier.
