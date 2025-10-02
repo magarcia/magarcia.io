@@ -57,3 +57,5 @@ console.log(resolved);
 ```
 
 This is my second AI engineered project (the first one was [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), built with multiple AI agents (Claude, Copilot, Gemini & Codex). If your configs span files, environments, and tools, this should remove a few papercuts.
+
+**Related:** For secure secret storage without plaintext files, check out [cross-keychain](/blog/cross-platform-secret-storage-with-cross-keychain), which stores credentials in your OS's native credential manager.
