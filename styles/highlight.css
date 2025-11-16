@@ -8,12 +8,17 @@
 
   code[class*="language-"],
   pre[class*="language-"] {
-    @apply text-sm leading-6 font-mono text-left whitespace-pre text-blue-300;
+    @apply text-sm leading-6 font-mono text-left whitespace-pre text-gray-300 bg-gray-900 rounded-lg;
     word-spacing: normal;
     word-break: normal;
     word-wrap: normal;
     tab-size: 4;
     hyphens: none;
+    padding: 1.5rem;
+  }
+
+  pre[class*="language-"] {
+    @apply relative my-6;
   }
 
   pre[class*="language-"] *::selection {
