@@ -2,6 +2,7 @@
   "name": "magarcia.io",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build",
