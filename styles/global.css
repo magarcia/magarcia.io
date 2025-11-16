@@ -35,6 +35,38 @@ html {
   @apply opacity-100;
 }
 
+/* Dark mode prose styles */
+.dark .prose-dark {
+  @apply text-gray-300;
+}
+
+.dark .prose-dark a {
+  @apply text-purple-400;
+}
+
+.dark .prose-dark strong {
+  @apply text-gray-100;
+}
+
+.dark .prose-dark code {
+  @apply text-gray-100;
+}
+
+.dark .prose-dark h1,
+.dark .prose-dark h2,
+.dark .prose-dark h3,
+.dark .prose-dark h4 {
+  @apply text-gray-100;
+}
+
+.dark .prose-dark pre {
+  @apply bg-gray-900;
+}
+
+.dark .prose-dark blockquote {
+  @apply border-gray-700 text-gray-400;
+}
+
 /* Responsive tables */
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {

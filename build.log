@@ -1,0 +1,30 @@
+vite v5.4.21 building for production...
+transforming...
+✓ 11 modules transformed.
+x Build failed in 78ms
+[vite]: Rollup failed to resolve import "~/hooks/useTheme" from "/Users/magarcia/dev/magarcia.io/app/root.tsx".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+    at viteWarn (file:///Users/magarcia/dev/magarcia.io/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65855:17)
+    at onwarn (/Users/magarcia/dev/magarcia.io/node_modules/@react-router/dev/dist/cli/index.js:1647:11)
+    at onRollupWarning (file:///Users/magarcia/dev/magarcia.io/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65885:5)
+    at onwarn (file:///Users/magarcia/dev/magarcia.io/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65550:7)
+    at file:///Users/magarcia/dev/magarcia.io/node_modules/rollup/dist/es/shared/node-entry.js:20961:13
+    at Object.logger [as onLog] (file:///Users/magarcia/dev/magarcia.io/node_modules/rollup/dist/es/shared/node-entry.js:22834:9)
+    at ModuleLoader.handleInvalidResolvedId (file:///Users/magarcia/dev/magarcia.io/node_modules/rollup/dist/es/shared/node-entry.js:21578:26)
+    at file:///Users/magarcia/dev/magarcia.io/node_modules/rollup/dist/es/shared/node-entry.js:21536:26 {
+  watchFiles: [
+    '/Users/magarcia/dev/magarcia.io/app/root.tsx',
+    '/Users/magarcia/dev/magarcia.io/app/entry.client.tsx',
+    '/Users/magarcia/dev/magarcia.io/app/routes/$slug.tsx',
+    '/Users/magarcia/dev/magarcia.io/app/routes/_index.tsx',
+    '/Users/magarcia/dev/magarcia.io/app/routes/tags.$tag.tsx',
+    '/Users/magarcia/dev/magarcia.io/package.json',
+    '/Users/magarcia/dev/magarcia.io/node_modules/react/index.js',
+    '/Users/magarcia/dev/magarcia.io/node_modules/react-router/dist/development/dom-export.mjs',
+    '/Users/magarcia/dev/magarcia.io/node_modules/react-dom/client.js',
+    '/Users/magarcia/dev/magarcia.io/node_modules/react/jsx-runtime.js',
+    '/Users/magarcia/dev/magarcia.io/node_modules/react/cjs/react.production.min.js'
+  ]
+}
