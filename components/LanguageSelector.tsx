@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import { Globe } from "react-feather";
 import {
     DropdownMenu,
@@ -39,13 +38,13 @@ export default function LanguageSelector({ lang, slug }: LanguageSelectorProps) 
             <DropdownMenuContent align="end">
                 {languages.map((l) => (
                     <DropdownMenuItem key={l.code} asChild>
-                        <Link
-                            to={getLanguageLink(l.code)}
+                        <div
+                            onClick={() => window.location.href = getLanguageLink(l.code)}
                             className={`cursor-pointer ${lang === l.code ? "font-bold" : ""
                                 }`}
                         >
                             {l.label}
-                        </Link>
+                        </div>
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>
