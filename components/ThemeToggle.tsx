@@ -8,10 +8,14 @@ export default function ThemeToggle() {
     theme === "dark" ? "hover:text-yellow-300" : "hover:text-purple-500";
 
   return (
-    <Icon
-      className={`${color} cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300 ease-out`}
-      size={24}
-      onClick={toggleTheme}
-    />
+    <button
+      aria-label="Toggle theme"
+      className={`p-2 ${color} cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300 ease-out`}
+    >
+      <Icon
+        size={24}
+        onClick={toggleTheme}
+      />
+    </button>
   );
 }

@@ -1,0 +1,61 @@
+---
+title: "Habilita variables d'entorn a les teves configuracions amb env-interpolation"
+date: "2025-09-29"
+spoiler: Vaig llançar [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), un petit ajudant de TS que interpola `${VAR}` i `${VAR:default}` dins de valors de configuració. Recorre cadenes en objectes/arrays i mai toca les claus, per la qual cosa les formes es mantenen estables i predictibles—molt orientat a configuració.
+tags:
+  - TypeScript
+  - Node.js
+  - Configuration
+  - Developer Tools
+  - Open Source
+---
+
+Vaig llançar **env-interpolation**, un petit ajudant de TS que interpola `${VAR}` i `${VAR:default}` dins de **valors de configuració**. Recorre cadenes en objectes/arrays i **mai toca les claus**, per la qual cosa les formes es mantenen estables i predictibles—molt orientat a configuració.
+
+Nascut de **mcp-tool-selector**, on necessitava configuració en capes sense filtrar secrets o omplir de crides a `process.env`. Es va convertir en una petita utilitat afilada, així que la vaig publicar.
+
+## D'un cop d'ull
+
+- Resol marcadors de posició en **valors només** (objectes/arrays), claus intactes
+- Suporta valors predeterminats i resolució de múltiples passades
+- Zero dependències, TS-first, Node 18+, ESM/CJS
+
+**Docs & API:** llegeix el [repositori de GitHub](https://github.com/magarcia/env-interpolation) i la [pàgina del paquet npm](https://www.npmjs.com/package/env-interpolation).
+
+## Prova ràpida: carregar JSON → interpolar
+
+**`config.json`**
+
+```json
+{
+  "api": "${API_URL:https://api.example.com}",
+  "timeoutMs": "${TIMEOUT:5000}",
+  "flags": ["${PRIMARY:alpha}", "${SECONDARY:beta}"],
+  "service": {
+    "url": "${SERVICE_URL:${API_URL}/v1}",
+    "headers": { "x-tenant": "${TENANT:public}" }
+  }
+}
+```
+
+**`load-config.ts`**
+
+```ts
+import { readFileSync } from "node:fs";
+import { interpolate } from "env-interpolation";
+
+const raw = readFileSync("config.json", "utf8");
+const input = JSON.parse(raw);
+
+const resolved = interpolate(input, {
+  API_URL: "https://api.example.com",
+  TIMEOUT: "8000",
+  TENANT: "public",
+});
+
+console.log(resolved);
+```
+
+Aquest és el meu segon projecte dissenyat amb IA (el primer va ser [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), construït amb múltiples agents d'IA (Claude, Copilot, Gemini & Codex). Si les teves configuracions abasten fitxers, entorns i eines, això hauria d'eliminar algunes molèsties.
+
+**Relacionat:** Per a emmagatzematge segur de secrets sense fitxers de text pla, fes un cop d'ull a [cross-keychain](/cross-platform-secret-storage-with-cross-keychain), que emmagatzema credencials en el gestor de credencials natiu del teu SO.

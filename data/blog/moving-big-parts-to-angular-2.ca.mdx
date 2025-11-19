@@ -1,0 +1,170 @@
+---
+title: Movent grans parts a Angular 2
+date: '2016-06-12'
+spoiler: Migrant els components i directives més importants a Angular2
+indexed: false
+tags:
+  - GSoC
+  - Jangouts
+---
+
+En un post anterior vaig explicar com converteixo Jangouts en una aplicació híbrida Angular 1+2.
+Aquest enfocament, en lloc d'una migració completa, té dos objectius. En
+primer lloc provar que les funcionalitats estan funcionant correctament és més fàcil,
+perquè és possible executar Jangouts i utilitzar-lo. I d'altra banda, si no puc
+acabar la migració, l'aplicació seguirà sent utilitzable permetent a altres
+continuar la feina. Però espero que aquest últim escenari no sigui real.
+
+Amb l'enfocament híbrid aplicat, aquesta setmana he estat treballant en migrar alguns
+components a Angular 2. Vaig començar migrant el component Chat, més complex
+que el Footer prèviament migrat, però no prou per ser frustrant en aquestes
+etapes primerenques.
+
+## Migrant subcomponents
+
+El component Chat de Jangouts té tres subcomponents, una part del component
+principal:
+
+- **`chat-message`**: Que gestiona el renderitzat del missatge enviat per l'usuari.
+- **`log-entry`**: Que gestiona les notificacions enviades pel sistema (com "_L'usuari
+  X s'ha unit_).
+- **`chat-form`**: Que gestiona l'entrada de missatges.
+
+Aquests subcomponents són realment simples, cadascun té una classe de component sense
+molt codi i una plantilla. Però la clau d'aquesta migració ha estat que els estils
+es van moure de l'arxiu `scss` principal a arxius independents per a cada subcomponent.
+Això treu profit d'[Angular 2 View Encapsulation](https://angular.io/docs/ts/latest/guide/component-styles.html#!#view-encapsulation),
+assegurant que els estils s'aplicaran només al component.
+
+Durant la migració de `chat-message`, vaig trobar problemes. Un problema que ve
+de l'ús de la llibreria [ngEmbed](https://github.com/ritz078/ng-embed) que
+proporciona una directiva per renderitzar els missatges de l'usuari. Aquesta directiva permet als usuaris
+utilitzar emojis i incrustar enllaços, imatges, vídeos, etc. Però com s'esperava la
+llibreria no té suport per a Angular 2, així que vaig intentar actualitzar la directiva amb
+l'[Angular 2 Upgrade Adapter](https://angular.io/docs/ts/latest/guide/upgrade.html#!#how-the-upgrade-adapter-works)
+però vaig trobar un error estrany.
+
+Després d'alguna investigació, vaig trobar que ngEmbed utilitza una funció com a atribut `templateUrl`
+(la qual cosa està permesa en Angular 1), però en la versió d'Angular 2 que
+estic utilitzant actualment amb el projecte, l'adaptador d'actualització no suporta aquest
+tipus de `templateUrl`. Vaig veure a la branca master d'Angular 2 que el codi
+ha estat actualitzat per suportar aquesta funcionalitat, però ara cap versió
+incorpora el canvi. Així que després de discutir amb els meus mentors, vam decidir deshabilitar
+aquesta funcionalitat a Jangouts i seguir endavant amb la migració.
+
+Desitjo tenir temps per rehabilitar-lo en el futur.
+
+## Diferenciar entre component i directiva
+
+Migrar el component principal va ser més complex. El component principal té la llista de
+tots els missatges (missatges d'usuari i sistema) en una vista que fa auto scroll quan arriba un nou
+missatge. A l'antic Jangouts, això era una directiva que renderitzava la
+llista de missatges i controlava l'auto scroll. Però Angular 2 és un paradigma
+diferent. En Angular 2, l'enfocament correcte, un component sempre té una plantilla
+i mai interactua amb el DOM i una directiva mai té una plantilla i pot
+interactuar amb el DOM.
+
+Així que això evidencia que el component principal de xat seria migrat en dues
+coses diferents:
+
+- Un **component** per renderitzar la llista de missatges.
+- Una **directiva** que fa auto scroll quan és necessari.
+
+Després de la migració, tenim el component que renderitza la llista de missatges i
+dins d'ell la directiva que gestiona l'auto scroll.
+
+## Posant tot junt
+
+Durant la migració de subcomponents, cadascun va ser degradat per ser compatible amb Angular 1
+utilitzant l'adaptador proporcionat per Angular 2 i provat manualment amb la
+versió antiga del component principal. Quan el component principal va ser migrat, això
+va fer que el codi del component fos Angular 2 pur (sense degradar els
+subcomponents) i l'única cosa a fer per mantenir la compatibilitat amb la resta
+de l'aplicació Angular 1 va ser degradar el component principal de xat.
+
+## Aplicant l'estructura d'aplicació correcta
+
+Els canvis aplicats aquesta setmana no van ser només en el codi, també vaig actualitzar l'
+estructura de l'aplicació seguint les recomanacions de la [guia d'estil](https://angular.io/styleguide#!#application-structure_).
+Previ a la migració l'aplicació tenia la següent estructura:
+
+```
+src
+└── app
+    ├── adapter.ts
+    ├── variables.scss
+    ├── index.scss
+    ├── vendor.scss
+    ├── index.ts
+    ├── components
+    │   ├── chat
+    │   │   ├── chat-form.directive.html
+    │   │   ├── chat-form.directive.js
+    │   │   ├── chat.directive.html
+    │   │   ├── chat.directive.js
+    │   │   ├── chat-message.directive.html
+    │   │   ├── chat-message.directive.js
+    │   │   ├── log-entry.directive.html
+    │   │   └── log-entry.directive.html
+    │   ├── footer
+    │   │   ├── footer.directive.html
+    │   │   └── footer.directive.js
+    │   └── [...]
+    └── [...]
+```
+
+Però després dels canvis aquest és el resultat:
+
+```
+src
+└── app
+    ├── adapter.ts
+    ├── variables.scss
+    ├── index.scss
+    ├── vendor.scss
+    ├── index.ts
+    ├── chat
+    │   ├── index.ts
+    │   ├── chat.component.html
+    │   ├── chat.component.scss
+    │   ├── chat.component.spec.ts
+    │   ├── chat.component.ts
+    │   ├── chat-form
+    │   │   ├── chat-form.component.html
+    │   │   ├── chat-form.component.spec.ts
+    │   │   ├── chat-form.component.ts
+    │   │   └── index.ts
+    │   ├── chat-message
+    │   │   ├── chat-message.component.html
+    │   │   ├── chat-message.component.scss
+    │   │   ├── chat-message.component.spec.ts
+    │   │   ├── chat-message.component.ts
+    │   │   └── index.ts
+    │   ├── log-entry
+    │   │   ├── index.ts
+    │   │   ├── log-entry.component.html
+    │   │   ├── log-entry.component.spec.ts
+    │   │   └── log-entry.component.ts
+    │   └── message-autoscroll.directive.ts
+    ├── footer
+    │   ├── footer.component.html
+    │   ├── footer.component.scss
+    │   ├── footer.component.spec.ts
+    │   ├── footer.component.ts
+    │   └── index.ts
+    ├── components
+    │   └──  [...] // Això conté el codi no migrat
+    └── [...]
+```
+
+## Treballant actualment
+
+Actualment estic treballant en la migració del component Feed. Aquest és un dels
+components més complexos a l'aplicació perquè té molts serveis que
+gestionen els streams de vídeo/àudio.
+
+De fet, he mogut tots els serveis i factories a serveis d'Angular 2, però
+encara no he habilitat el suport per treballar amb el codi d'Angular 1. La raó?
+Vull fer una suite de tests completa que provi aquests serveis profundament abans de continuar
+amb la migració de la resta del component i fer la integració amb
+la resta de l'aplicació.

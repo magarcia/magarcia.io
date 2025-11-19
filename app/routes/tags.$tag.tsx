@@ -11,9 +11,8 @@ export function meta({ data }: Route.MetaArgs) {
   }
 
   const { tag, totalCount } = data;
-  const title = `${totalCount} post${
-    totalCount === 1 ? "" : "s"
-  } tagged with "${tag}"`;
+  const title = `${totalCount} post${totalCount === 1 ? "" : "s"
+    } tagged with "${tag}"`;
 
   return [
     { title: `${title} — magarcia` },
@@ -25,7 +24,8 @@ export function meta({ data }: Route.MetaArgs) {
 
 export async function loader({ params }: Route.LoaderArgs) {
   const tag = params.tag;
-  let posts = getPostsByTag("blog", tag);
+  const lang = params.lang || "en";
+  let posts = getPostsByTag("blog", tag, lang);
 
   if (posts.length === 0) {
     throw new Response("Tag Not Found", { status: 404 });
@@ -35,14 +35,14 @@ export async function loader({ params }: Route.LoaderArgs) {
     posts,
     tag,
     totalCount: posts.length,
+    lang,
   };
 }
 
 export default function TagPage({ loaderData }: Route.ComponentProps) {
-  const { posts, tag, totalCount } = loaderData;
-  const title = `${totalCount} post${
-    totalCount === 1 ? "" : "s"
-  } tagged with "${tag}"`;
+  const { posts, tag, totalCount, lang } = loaderData;
+  const title = `${totalCount} post${totalCount === 1 ? "" : "s"
+    } tagged with "${tag}"`;
   const anchorSize = 18;
 
   return (

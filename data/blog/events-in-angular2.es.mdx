@@ -1,0 +1,128 @@
+---
+layout: post
+title: Eventos en Angular2
+date: '2016-07-03'
+spoiler: Sobre cómo migrar eventos de AngularJS a Angular2.
+indexed: false
+tags:
+  - GSoC
+  - Jangouts
+---
+
+Durante la migración del componente feed, encontré algunas líneas que no sabía
+cómo codificar en Angular 2. El siguiente código es un extracto del código
+del que estoy hablando:
+
+```typescript
+if (!feed.isLocalScreen) {
+  // Hasta que se alcance este tiempo de espera, la notificación "estás silenciado"
+  // no se mostrará de nuevo
+  var mutedWarningTimeout = now();
+
+  scope.$on('muted.byRequest', function() {
+    mutedWarningTimeout = secondsFromNow(3);
+    MuteNotifier.muted();
+  });
+
+  scope.$on('muted.byUser', function() {
+    // Restablecer el tiempo de espera de advertencia
+    mutedWarningTimeout = now();
+  });
+
+  scope.$on('muted.Join', function() {
+    mutedWarningTimeout = now();
+    MuteNotifier.joinedMuted();
+  });
+
+  scope.$watch('vm.feed.isVoiceDetected()', function(newVal) {
+    // Mostrar advertencia solo si está silenciado (comprobar false, undefined significa
+    // todavía conectando) y se ha alcanzado el tiempo de espera
+    if (newVal && feed.getAudioEnabled() === false && now() > mutedWarningTimeout) {
+      MuteNotifier.speaking();
+      mutedWarningTimeout = secondsFromNow(60);
+    }
+  });
+}
+```
+
+Como puedes ver en el fragmento, si la condición es verdadera entonces la directiva
+escucha eventos de tipo `muted.byRequest`, `muted.byUser` y `muted.Join`.
+El código que involucra estos eventos es fácil, sin ningún tipo de complejidad (por
+ahora ignoramos el `$watch`).
+
+Pero, espera un minuto, he leído la documentación de Angular 2 como cien
+veces y no recuerdo nada sobre "eventos" con estilo Angular 1.X. Eso es
+porque no existe. Angular 2 no tiene una forma de hacer eventos como en Angular 1,
+así que tengo que encontrar una solución. Después de buscar una solución, encontré [esta entrada](http://blog.lacolaco.net/post/event-broadcasting-in-angular-2/)
+en el blog de laco.
+
+## Broadcaster
+
+Básicamente, la idea es hacer un servicio que implemente el `$broadcast` y
+`$on` un método como teníamos en `$rootScope`. Para hacer esto usamos Observables, muy
+importantes en Angular 2, y para este caso, usamos un [Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/subjects.md).
+
+```typescript
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/map';
+
+interface BroadcastEvent {
+  key: any;
+  data?: any;
+}
+
+export class Broadcaster {
+  private _eventBus: Subject<BroadcastEvent>;
+
+  constructor() {
+    this._eventBus = new Subject<BroadcastEvent>();
+  }
+
+  broadcast(key: any, data?: any) {
+    this._eventBus.next({ key, data });
+  }
+
+  on<T>(key: any): Observable<T> {
+    return this._eventBus
+      .asObservable()
+      .filter(event => event.key === key)
+      .map(event => <T>event.data);
+  }
+}
+```
+
+Así que, ahora podemos empezar a usar eventos como en el ejemplo:
+
+```typescript
+// child.ts
+@Component({
+    selector: 'child'
+})
+export class ChildComponent {
+  constructor(private broadcaster: Broadcaster) {
+  }
+
+  registerStringBroadcast() {
+    this.broadcaster.on<string>('MyEvent')
+      .subscribe(message => {
+        ...
+      });
+  }
+
+  emitStringBroadcast() {
+    this.broadcaster.broadcast('MyEvent', 'some message');
+  }
+}
+```
+
+## ¿Cómo resolví el problema?
+
+No lo hice. Estos eventos son solo para mostrar al usuario ventanas emergentes de información sobre cuándo
+está silenciado, así que no es una característica crítica. Por ahora estos eventos se disparan y
+escuchan en diferentes componentes, y algunos de ellos todavía implementados en Angular 1.4.
+
+Esta es una solución que quiero compartir contigo, pero no estoy seguro de si esta será
+la forma que usaré para resolver el problema. Porque estos eventos probablemente no serán
+necesarios cuando reimplemente el `MuteNotifier`.

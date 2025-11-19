@@ -1,0 +1,150 @@
+---
+title: Pedir a la IA que construya la herramienta en lugar de hacer la tarea
+date: "2025-06-06"
+spoiler: Trabajar con IA para cambios de código a gran escala puede ser frustrante. Este artículo comparte una técnica que ha ayudado a nuestro equipo a reducir los errores de migración en un 95% mientras hace que el proceso sea sorprendentemente agradable.
+tags:
+  - IA
+  - JavaScript
+  - TypeScript
+  - Herramientas de Desarrollador
+  - Migración de Código
+---
+
+Trabajar con IA para cambios de código a gran escala puede ser frustrante. Este artículo comparte una técnica que ha ayudado a nuestro equipo a reducir los errores de migración en un 95% mientras hace que el proceso sea sorprendentemente agradable.
+
+## El Problema
+
+Cuando trabajamos en cualquier base de código de tamaño razonable, a menudo nos enfrentamos a la necesidad de realizar cambios a gran escala: migrar de una librería a otra, actualizar APIs obsoletas o refactorizar componentes para seguir nuevos patrones. El enfoque tradicional con IA se parece a esto:
+
+```
+Oye IA, por favor actualiza todos los componentes tooltip de @old-design-system a @new-design-system
+```
+
+Y entonces comienzan los problemas:
+
+- La IA lucha por mantener el contexto a través de cientos de archivos
+- El consumo de tokens explota a medida que procesa cada archivo
+- Las tasas de error aumentan con la escala
+- Pasas más tiempo arreglando los errores de la IA que haciendo la migración tú mismo
+
+## El Mejor Enfoque
+
+En lugar de pedir a la IA que realice la migración directamente, le pedimos que construya una herramienta que realice la migración. Así es como funciona:
+
+### Paso 1: Migración Manual
+
+Primero, elige un ejemplo representativo y migra manualmente. Esto sirve para dos propósitos:
+
+1. Entiendes la transformación exacta necesaria
+2. Tienes un ejemplo concreto para mostrar a la IA
+
+```typescript
+// Antes: Usando tooltip antiguo
+import { Tooltip } from '@old-design-system';
+
+<Tooltip content="Hola" position="top">
+  <Button>Pásame el ratón</Button>
+</Tooltip>
+
+// Después: Usando tooltip nuevo
+import { Tooltip } from '@new-design-system';
+
+<Tooltip title="Hola" placement="top">
+  <Button>Pásame el ratón</Button>
+</Tooltip>
+```
+
+### Paso 2: Extraer el Patrón
+
+Obtén el diff de tus cambios y documenta tanto las firmas del componente antiguo como del nuevo:
+
+```diff
+- import { Tooltip } from '@old-design-system';
++ import { Tooltip } from '@new-design-system';
+
+- <Tooltip content={text} position={position}>
++ <Tooltip title={text} placement={position}>
+```
+
+### Paso 3: Construir la Automatización
+
+Ahora, en lugar de pedir a la IA que realice cientos de cambios similares, le pedimos que construya un codemod:
+
+```
+Basado en este ejemplo de migración, construye un codemod que:
+1. Actualice la declaración de importación
+2. Renombre la prop 'content' a 'title'
+3. Renombre la prop 'position' a 'placement'
+```
+
+La IA generará un codemod adecuado utilizando herramientas como jscodeshift que se puede ejecutar en toda tu base de código.
+
+## Resultados del Mundo Real
+
+Recientemente usamos este enfoque en Buffer para migrar componentes tooltip de nuestro sistema de diseño heredado a uno nuevo. Los resultados fueron impresionantes:
+
+- **95% tasa de éxito**: La mayoría de los componentes migraron perfectamente sin intervención manual
+- **2 horas en lugar de 2 días**: Toda la migración se completó en una fracción del tiempo esperado
+- **5% casos extremos**: Los fallos fueron casos extraños y variantes de tooltip heredadas que ni siquiera sabíamos que existían
+
+Compara esto con nuestros intentos anteriores donde pedimos a la IA que hiciera la migración directamente:
+
+- 60% tasa de éxito
+- Necesidad constante de arreglos manuales
+- Límites de tokens alcanzados frecuentemente
+- Transformaciones inconsistentes a través de los archivos
+
+## Por Qué Funciona Esto
+
+La idea clave es que la IA sobresale en el reconocimiento de patrones y la generación de código, pero lucha con el mantenimiento del contexto a través de operaciones a gran escala. Al pedirle que construya una herramienta, estamos jugando a sus fortalezas:
+
+1. **Tarea única enfocada**: Construir un codemod es una tarea coherente, no cientos de micro-tareas
+2. **Abstracción de patrones**: La IA puede centrarse en entender el patrón de transformación en lugar de aplicarlo
+3. **Salida comprobable**: Puedes probar el codemod en unos pocos archivos antes de ejecutarlo en todas partes
+4. **Reutilizable**: El codemod se puede compartir con tu equipo o usar para migraciones similares
+
+## La Belleza del Código Desechable
+
+Aquí hay algo que podría sorprenderte: no revisamos el código del codemod que genera la IA. ¿Por qué? Porque no nos importa su calidad — es un script de un solo uso que se desechará después de la migración.
+
+Este es realmente el escenario perfecto para lo que algunos llaman "vibe coding" — dejar que la IA genere código sin mucha revisión. Lo único que importa es el resultado: ¿Funcionó la migración correctamente? ¿Son correctos los archivos transformados?
+
+Piénsalo:
+
+- El codemod se ejecuta una vez y se elimina
+- Vas a revisar los cambios reales en tu pull request de todos modos
+- El peor caso es que no funcione e iteres
+- Nadie mantendrá este código o construirá sobre él
+
+Este cambio de mentalidad es liberador. En lugar de gastar tiempo perfeccionando un script de migración, puedes concentrarte en lo que realmente importa: el código migrado en sí.
+
+## Una Observación Interesante
+
+Mientras probaba Claude Code en una tarea de migración similar, noté algo fascinante. La IA comenzó haciendo cambios archivo por archivo, pero después de procesar unos pocos archivos, se detuvo y comenzó a escribir scripts de migración en su lugar.
+
+No fue perfecto — creó múltiples scripts bash para diferentes casos extremos en lugar de un codemod unificado — pero muestra que las herramientas de IA están comenzando a reconocer estos patrones por sí mismas. La IA se dio cuenta de forma autónoma de que construir una herramienta era más eficiente que hacer la tarea manualmente.
+
+## Cuándo Usar Este Enfoque
+
+Esta técnica funciona mejor para:
+
+- Migraciones de librerías
+- Actualizaciones de API
+- Refactorización de componentes
+- Cualquier transformación repetitiva con un patrón claro
+
+Es menos adecuada para:
+
+- Cambios únicos
+- Refactorización compleja que requiere juicio humano
+- Cambios sin un patrón claro
+
+## Conclusión
+
+La meta-lección aquí es simple: a veces es mejor que la IA construya la caña de pescar en lugar de atrapar cada pez individualmente. La próxima vez que te enfrentes a un cambio de código a gran escala, resiste el impulso de volcar toda la tarea en la IA. En su lugar:
+
+1. Haz un ejemplo manualmente
+2. Haz que la IA construya la automatización
+3. Revisa y ejecuta la herramienta
+
+Este enfoque ha transformado cómo nuestro equipo maneja las migraciones, y lo he estado compartiendo con compañeros de equipo que están constantemente sorprendidos por lo bien que funciona. No se trata de usar menos la IA — se trata de usarla de manera más inteligente.

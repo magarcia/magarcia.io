@@ -1,0 +1,174 @@
+---
+title: Primera setmana de codificació
+date: '2016-05-29'
+spoiler: La primera setmana treballant en la migració de Jangouts a Angular2.
+indexed: false
+tags:
+  - GSoC
+  - Jangouts
+---
+
+La primera setmana del període de codificació a GSoC 2016, així que vaig començar el procés d'actualització
+de Jangouts d'Angular 1.x a Angular 2. Aquesta setmana, les tasques s'han
+complert dins del termini, espero seguir així per a la propera setmana.
+
+Estic seguint la [guia d'actualització](https://angular.io/docs/ts/latest/guide/upgrade.html)
+de la documentació oficial d'Angular, que té dos blocs principals:
+
+- Preparació
+- Actualització amb l'Adaptador d'Actualització
+
+Acabo d'acabar el bloc de preparació. Vaig tenir sort perquè el codi de Jangouts
+és realment clar i segueix dos punts importants del bloc de preparació:
+Seguir la guia d'estil d'Angular i utilitzar directives de components. Així que això em va deixar
+només dues coses per fer. Primer de tot, canviar de carregar arxius amb etiquetes `<script>`
+a un carregador de mòduls i després migrar el codi de JavaScript a TypeScript.
+Però ho he fet en ordre invers, primer migrar a TypeScript i després canviar a
+un carregador de mòduls. Per què? Crec que aquesta forma és més "natural", almenys per a aquest projecte.
+
+## Migrant a TypeScript
+
+Jangouts té un sistema de construcció gulp funcionant, així que no vaig haver de preocupar-me sobre com
+es carreguen els scripts. Primer em vaig preocupar per migrar els arxius a TypeScript
+i quan tot va estar llest, llavors vaig intentar treure profit de la sintaxi `import` de
+TypeScript/ES6.
+
+Migrar codi de JavaScript a TypeScript és realment fàcil, només necessites canviar
+l'extensió de `.js` a `.ts`. Òbviament, el sistema gulp existent no funciona
+amb aquests canvis, així que en paral·lel a executar gulp hauries d'executar
+`tsc --watch src/**/*.ts`. Aquesta comanda mostra molts errors però no et preocupis
+per això si el codi JavaScript és correcte, tots aquests errors estan relacionats amb el
+procés de comprovació de tipus del compilador TypeScript.
+
+Durant aquest procés de migració, també vaig realitzar alguns canvis en el codi per fer-lo
+més modular. Jangouts té tots els components registrats en el mateix mòdul Angular
+`janusHangouts` i en altres projectes en els quals vaig treballar abans vaig aprendre que això
+pot causar alguns problemes quan has de fer proves unitàries, així que defineixo un
+mòdul diferent per a cada component (`janusHangouts.componentName`)
+i després el faig una dependència del mòdul principal. Això té dos avantatges: fer
+tests és més fàcil i en el futur podem carregar components sota demanda amb un
+carregador de mòduls (però no estic segur sobre l'últim).
+
+Tornant al que vaig dir abans, en compilar el codi JavaScript amb `tsc` això
+mostra molts errors. Un que podria aparèixer molt és alguna cosa com això:
+
+> `error TS7006: Parameter '$state' implicitly has an 'any' type.`
+
+Això és perquè el compilador TypeScript vol un tipus definit per a totes les variables, però
+podem fer que `tsc` estableixi el tipus implícit any per a variables sense tipus.
+L'única cosa que cal fer és deshabilitar l'opció `noImplicitAny` a l'arxiu `tsconfig.json`.
+
+Un altre error que podem trobar en treballar amb elements HTML és:
+
+> `error TS2339: Property 'muted' does not exist on type 'HTMLElement'.`
+
+Aquest error es produeix per un codi com aquest:
+
+```javascript
+var video = $('video', element)[0];
+video.muted = true;
+```
+
+L'error es produeix perquè TypeScript és segur en tipus. Així que el
+`$('video', element)[0]` retorna el tipus `HTMLElement` que no conté
+una propietat `muted`. El subtipus `HTMLVideoElement` tanmateix conté la
+propietat `muted`. Així que la solució és castejar el resultat a `HTMLVideoElement`
+així:
+
+```javascript
+var video = <HTMLVideoElement>$('video', element)[0];
+video.muted = true;
+```
+
+Finalment, un altre error comú és:
+
+> `error TS2339: Property 'id' does not exist on type '{}'.`
+
+Aquest és un altre "problema" produït per les validacions de tipus de TypeScript. Podem
+trobar errors com aquest en fragments de codi similars a:
+
+```javascript
+var room = {};
+
+// Algun codi aquí...
+
+function isRoom(room) {
+  return room.id == roomId;
+}
+```
+
+Per resoldre això i fer el codi menys propens a errors, hauríem de definir una interfície
+per a l'objecte room.
+
+```javascript
+interface Room {
+  id?: number; // ? fa l'atribut opcional
+}
+
+// Algun codi aquí ...
+
+var room: Room = {};
+
+// Algun codi aquí...
+
+function isRoom(room: Room) {
+  return room.id == roomId;
+}
+```
+
+## Utilitzant un Carregador de Mòduls
+
+Per què hauríem d'utilitzar un carregador de mòduls? Podem trobar la resposta al lloc d'Angular:
+
+> Utilitzar un carregador de mòduls com [SystemJS](https://github.com/systemjs/systemjs),
+> [Webpack](http://webpack.github.io/), o [Browserify](http://browserify.org/)
+> ens permet utilitzar els sistemes de mòduls integrats dels llenguatges TypeScript o ES2015
+> en les nostres aplicacions. Podem utilitzar les característiques d'import i export que explícitament
+> especifiquen quin codi pot i serà compartit entre diferents parts de la
+> aplicació. [...]
+>
+> Quan després portem les nostres aplicacions a producció, els carregadors de mòduls també fan
+> més fàcil empaquetar-les totes en paquets de producció amb bateries
+> incloses.
+
+Descarto Browserify perquè vaig tenir males experiències en el passat. Així que només he
+provat amb SystemJS i Webpack.
+
+### SystemJS
+
+SystemJS sembla realment net, realment simple. L'única cosa que vaig haver de fer és definir
+un punt d'entrada (normalment l'arxiu principal de l'aplicació) i la sintaxi `import`
+fa la resta. Així que, si tenim les declaracions `import` correctament col·locades, tot
+funciona sense problema.
+
+Però amb aquesta solució, necessitem conservar gulp, perquè SystemJS només es preocupa
+per les importacions. Així que això implica afegir el compilador TypeScript a gulp i
+deshabilitar l'auto injecció de script en html.
+
+Sincerament no vaig provar això abans d'intentar reescriure la configuració de gulp
+volia fer un cop d'ull a Webpack primer.
+
+### Webpack
+
+La configuració de Webpack és més complexa que SystemJS, però dóna una
+substitució de gulp. Com fa SystemJS, necessitem definir un punt d'entrada per a la
+aplicació i també dir-li on és l'`index.html` per incloure els
+arxius JavaScript.
+
+Inicialment, vaig tenir alguns problemes, però després de mirar alguns exemples, vaig tenir una
+versió funcional. Explorant més a fons en Webpack vaig trobar alguna cosa que em fa
+triar-lo abans que altres: podem fer `import` o `require` d'arxius no JavaScript.
+Així que podem fer coses com requerir la plantilla d'una directiva Angular, i en
+el procés de construcció aquesta plantilla s'inclourà com una variable string dins
+del component, i amb estils tenim la mateixa característica. Aquesta funcionalitat
+millora la construcció final de l'aplicació perquè tots els arxius necessitats per un
+component es col·locaran dins de l'arxiu JavaScript del component, millorant
+el rendiment però sense dificultar programar-lo.
+
+## Una cosa més
+
+Aquest estiu sembla emocionant amb totes les coses que he d'aprendre amb GSoC. Si
+vols seguir el progrés del que estic fent mantén-te actualitzat d'aquest blog o
+segueix les meves contribucions a GitHub. També, vaig publicar un
+[tauler de Trello](https://trello.com/b/vtQJBxbf/jangouts) amb la planificació i
+coses per fer amb aquest projecte (no completament actualitzat encara però en progrés).

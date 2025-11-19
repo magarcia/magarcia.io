@@ -3,13 +3,18 @@ import { parseISO, format } from "date-fns";
 import { useState, useEffect } from "react";
 import type { FrontMatter } from "~/lib/blog";
 
+interface ArticleListItemProps extends FrontMatter {
+  lang?: string;
+}
+
 export default function ArticleListItem({
   slug,
   title,
   date,
   readingTime,
   spoiler,
-}: FrontMatter) {
+  lang = "en",
+}: ArticleListItemProps) {
   const [components, setComponents] = useState<{
     ReactMarkdown: any;
     mdxComponents: any;
@@ -28,9 +33,11 @@ export default function ArticleListItem({
     });
   }, []);
 
+  const postPath = lang === "en" ? `/${slug}` : `/${lang}/${slug}`;
+
   return (
     <article className="mx-auto max-w-prose px-8 md:px-0 mb-16">
-      <Link to={`/${slug}`}>
+      <Link to={postPath}>
         <header>
           <h2 className="font-semibold text-2xl mt-8 mb-2">{title}</h2>
           <div className="opacity-75 text-sm md:text-base">

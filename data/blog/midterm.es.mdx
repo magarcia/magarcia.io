@@ -1,0 +1,63 @@
+---
+title: Mitad de periodo
+date: '2016-06-29'
+spoiler: Una retrospectiva sobre el trabajo realizado durante el Google Summer of Code.
+indexed: false
+tags:
+  - GSoC
+  - Jangouts
+---
+
+La mitad del periodo de GSoC acaba de pasar. Creo que es hora de hacer una revisión sobre el trabajo realizado
+desde que empecé el proyecto. Después de estas semanas trabajando en Jangouts y usándolo
+regularmente para reuniones de seguimiento puedo decir que me encanta como si fuera mío.
+Es realmente gratificante trabajar en un proyecto como ese, no demasiado grande pero con una
+comunidad creciente detrás. Hoy en día Jangouts está en una etapa temprana, al menos esto
+es lo que creo, pero con mucho potencial.
+
+## Trabajo realizado
+
+No he cumplido con los tiempos definidos inicialmente por mí mismo, pero estoy realmente
+cerca y la peor parte pasó. Hasta ahora Jangouts fue migrado a Typescript
+con un nuevo proceso de construcción/desarrollo y es una aplicación híbrida con
+Angular 1.x y Angular 2.
+
+Jangouts está compuesto de diferentes componentes:
+
+- `browser-info`
+- `chat` - **Migrado**
+- `feed` - **Casi migrado**
+- `footer` - **Migrado**
+- `notifier`
+- `room`
+- `router`
+- `screen-share`
+- `user`
+- `videochat`
+- `signin`
+
+El proceso de migración para cada componente implica una conversión de Angular 1 a
+2 y una colección de tests con una cobertura lo más cercana posible al 100%. El
+componente más complejo de migrar desde mi punto de vista son `feed` y `room`
+porque son el componente a cargo del renderizado de video y la comunicación
+con el backend de Janus. Probablemente el router será problemático, pero porque con el nuevo
+router de Angular 2 debería ser una reescritura completa.
+
+## Mentores
+
+Todo lo que puedo decir sobre **@ancorgs** y **@imobach** es bueno. Hacemos reuniones diarias
+(cuando es posible) dándome feedback sobre lo que estoy haciendo, pero con suficiente
+libertad para tomar mis propias decisiones (siempre que dé razones).
+
+## Próximos pasos
+
+Para las próximas semanas, continuaré migrando componentes hasta que pueda quitar Angular
+1 del proyecto. Cuando la migración termine, Jangouts será un proyecto Angular 2
+con una suite de tests bastante completa, así que se puede considerar que mi trabajo de GSoC estará
+terminado, pero esto no es suficiente para mí. Creo que muchas cosas se pueden hacer
+mejor:
+
+1. Reestructurar el proyecto moviendo alguna lógica que ahora está dentro de componentes a servicios.
+2. Sacar más provecho de los Observables (probablemente usando [@ngrx/store](https://github.com/ngrx/store))
+3. Mejorar la UI y la UX móvil (conceptos de [progressive web apps](https://developers.google.com/web/progressive-web-apps/) serán útiles aquí).
+4. Mejorar la comunicación y la comunidad (una página web del proyecto, mejores documentos de contribución, etc)

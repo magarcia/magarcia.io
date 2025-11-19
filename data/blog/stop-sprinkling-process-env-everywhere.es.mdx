@@ -1,0 +1,61 @@
+---
+title: "Habilita variables de entorno en tus configuraciones con env-interpolation"
+date: "2025-09-29"
+spoiler: Lancé [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), un pequeño ayudante de TS que interpola `${VAR}` y `${VAR:default}` dentro de valores de configuración. Recorre cadenas en objetos/arrays y nunca toca las claves, por lo que las formas se mantienen estables y predecibles—muy orientado a configuración.
+tags:
+  - TypeScript
+  - Node.js
+  - Configuration
+  - Developer Tools
+  - Open Source
+---
+
+Lancé **env-interpolation**, un pequeño ayudante de TS que interpola `${VAR}` y `${VAR:default}` dentro de **valores de configuración**. Recorre cadenas en objetos/arrays y **nunca toca las claves**, por lo que las formas se mantienen estables y predecibles—muy orientado a configuración.
+
+Nacido de **mcp-tool-selector**, donde necesitaba configuración en capas sin filtrar secretos o llenar de llamadas a `process.env`. Se convirtió en una pequeña utilidad afilada, así que la publiqué.
+
+## De un vistazo
+
+- Resuelve marcadores de posición en **valores solamente** (objetos/arrays), claves intactas
+- Soporta valores predeterminados y resolución de múltiples pasadas
+- Cero dependencias, TS-first, Node 18+, ESM/CJS
+
+**Docs & API:** lee el [repositorio de GitHub](https://github.com/magarcia/env-interpolation) y la [página del paquete npm](https://www.npmjs.com/package/env-interpolation).
+
+## Prueba rápida: cargar JSON → interpolar
+
+**`config.json`**
+
+```json
+{
+  "api": "${API_URL:https://api.example.com}",
+  "timeoutMs": "${TIMEOUT:5000}",
+  "flags": ["${PRIMARY:alpha}", "${SECONDARY:beta}"],
+  "service": {
+    "url": "${SERVICE_URL:${API_URL}/v1}",
+    "headers": { "x-tenant": "${TENANT:public}" }
+  }
+}
+```
+
+**`load-config.ts`**
+
+```ts
+import { readFileSync } from "node:fs";
+import { interpolate } from "env-interpolation";
+
+const raw = readFileSync("config.json", "utf8");
+const input = JSON.parse(raw);
+
+const resolved = interpolate(input, {
+  API_URL: "https://api.example.com",
+  TIMEOUT: "8000",
+  TENANT: "public",
+});
+
+console.log(resolved);
+```
+
+Este es mi segundo proyecto diseñado con IA (el primero fue [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), construido con múltiples agentes de IA (Claude, Copilot, Gemini & Codex). Si tus configuraciones abarcan archivos, entornos y herramientas, esto debería eliminar algunas molestias.
+
+**Relacionado:** Para almacenamiento seguro de secretos sin archivos de texto plano, echa un vistazo a [cross-keychain](/cross-platform-secret-storage-with-cross-keychain), que almacena credenciales en el gestor de credenciales nativo de tu SO.

@@ -1,0 +1,50 @@
+---
+title: AngularBeers con Miško Hevery
+date: '2016-06-26'
+spoiler: Próximas características que harán de Angular 2 una opción poderosa en un futuro cercano.
+indexed: false
+tags:
+  - Angular
+---
+
+El pasado martes disfruté de una charla de [Miško Hevery](http://misko.hevery.com/about/)
+sobre Angular2 gracias a los chicos de [AngularBeers](http://www.meetup.com/AngularJS-Beers/).
+Fue una charla sobre lo que viene con Angular 2 y el punto clave con el que
+nos tenemos que quedar es que Angluar deja el concepto de framework frontend para
+convertirse en una plataforma completa.
+
+![miskohevery](/images/angularbeers-with-misko-hevery.jpg)
+_Sara (una buena compañera y mejor amiga), Miško y yo_
+
+Pero, aparte de esto, me gustaría remarcar un par de cosas que harán de
+Angular 2 una opción poderosa en un futuro cercano.
+
+## Compilación offline
+
+¿Qué significa esto? Las plantillas han sido uno de los lugares donde se cometen errores
+desde Angular 1. Incluso si introducimos TypeScript o herramientas de lint, no podríamos
+ser capaces de detectar errores en las plantillas hasta que se evalúan en tiempo de ejecución.
+Hasta ahora Angular 1.X compila las plantillas cada vez que deben renderizarse.
+
+Con Angular 2 (sin compilación offline) las plantillas se compilan solo una vez.
+Pero con la compilación offline las plantillas se compilan en tiempo de construcción a
+JavaScript por lo que nunca se compilarán en el navegador. Los beneficios que obtenemos
+aquí es que nos permite verificar estáticamente los tipos de nuestras plantillas con
+TypeScript, lo cual es increíble, además de saltarse la compilación en tiempo de ejecución
+y un tamaño de librería más pequeño.
+
+## Angular Universal
+
+> Soporte JavaScript Universal (isomórfico) para Angular 2.
+
+Con Angular Universal, podemos ejecutar Angular 2 en el lado del servidor y esto nos da
+algunas ventajas:
+
+1. **Mejor Rendimiento Percibido:** Los usuarios verán instantáneamente una vista renderizada
+   en el servidor lo que mejora enormemente el rendimiento percibido y la experiencia general
+   del usuario.
+1. **Optimizado para Motores de Búsqueda:** El pre-renderizado en el lado del servidor es una forma confiable de
+   asegurar que todos los motores de búsqueda puedan acceder a tu contenido.
+1. **Vista Previa del Sitio:** Asegura que Facebook, Twitter y todas las otras aplicaciones de redes sociales
+   muestren correctamente una imagen de vista previa de tu aplicación. (Lidié con este problema antes
+   y es un dolor de cabeza)

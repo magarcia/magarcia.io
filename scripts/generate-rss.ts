@@ -17,16 +17,11 @@ const markdown = new MarkdownIt();
   const feed = new RSS({
     title: siteMetadata.title,
     description: siteMetadata.description,
-    id: baseUrl,
     site_url: baseUrl,
     language: "en",
-    image: `${baseUrl}/logo.svg`,
-    favicon: `${baseUrl}/favicon.ico`,
     copyright: `All rights reserved ${date.getFullYear()}, ${author.name}`,
-    updated: date,
     generator: "React Router using RSS for Node.js",
     feed_url: `${baseUrl}/rss.xml`,
-    author: author.name,
     managingEditor: author.name,
   });
 

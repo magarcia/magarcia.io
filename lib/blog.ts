@@ -44,21 +44,28 @@ function getFrontMatter(source: string, slug: string): BlogPost {
 
 export function getFileBySlug(
   type: string,
-  slug: string
+  slug: string,
+  lang: string = "en"
 ): BlogPostWithNavigation {
   let source: string;
-  const mdxPath = path.join(root, "data", type, `${slug}.mdx`);
-  const mdPath = path.join(root, "data", type, `${slug}.md`);
+  const mdxPath = path.join(root, "data", type, `${slug}.${lang}.mdx`);
+  const mdPath = path.join(root, "data", type, `${slug}.${lang}.md`);
+  const defaultMdxPath = path.join(root, "data", type, `${slug}.mdx`);
+  const defaultMdPath = path.join(root, "data", type, `${slug}.md`);
 
   if (fs.existsSync(mdxPath)) {
     source = fs.readFileSync(mdxPath, "utf8");
   } else if (fs.existsSync(mdPath)) {
     source = fs.readFileSync(mdPath, "utf8");
+  } else if (fs.existsSync(defaultMdxPath)) {
+    source = fs.readFileSync(defaultMdxPath, "utf8");
+  } else if (fs.existsSync(defaultMdPath)) {
+    source = fs.readFileSync(defaultMdPath, "utf8");
   } else {
     throw new Error(`No file found for slug: ${slug}`);
   }
 
-  const allFiles = getAllFilesFrontMatter(type);
+  const allFiles = getAllFilesFrontMatter(type, lang);
   const index = allFiles.findIndex((post) => post.slug === slug);
 
   const { frontMatter, content } = getFrontMatter(source, slug);
@@ -71,23 +78,36 @@ export function getFileBySlug(
   };
 }
 
-export function getAllFilesFrontMatter(type: string): FrontMatter[] {
+export function getAllFilesFrontMatter(type: string, lang: string = "en"): FrontMatter[] {
   const dirPath = path.join(root, "data", type);
   const files = fs
     .readdirSync(dirPath)
     .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.(md|mdx)$/, ""));
+    .map((f) => {
+      // Remove extension and language suffix if present
+      return f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, "");
+    });
 
-  return files
+  const uniqueSlugs = Array.from(new Set(files));
+
+  return uniqueSlugs
     .reduce((allFiles: FrontMatter[], slug: string) => {
-      const mdxPath = path.join(dirPath, `${slug}.mdx`);
-      const mdPath = path.join(dirPath, `${slug}.md`);
+      const mdxPath = path.join(dirPath, `${slug}.${lang}.mdx`);
+      const mdPath = path.join(dirPath, `${slug}.${lang}.md`);
+      const defaultMdxPath = path.join(dirPath, `${slug}.mdx`);
+      const defaultMdPath = path.join(dirPath, `${slug}.md`);
 
       let source: string;
       if (fs.existsSync(mdxPath)) {
         source = fs.readFileSync(mdxPath, "utf8");
-      } else {
+      } else if (fs.existsSync(mdPath)) {
         source = fs.readFileSync(mdPath, "utf8");
+      } else if (fs.existsSync(defaultMdxPath)) {
+        source = fs.readFileSync(defaultMdxPath, "utf8");
+      } else if (fs.existsSync(defaultMdPath)) {
+        source = fs.readFileSync(defaultMdPath, "utf8");
+      } else {
+        return allFiles;
       }
 
       const { frontMatter } = getFrontMatter(source, slug);
@@ -107,16 +127,18 @@ export function getAllFilesFrontMatter(type: string): FrontMatter[] {
     .sort((a, b) => -a.date.localeCompare(b.date));
 }
 
-export function getAllFiles(type: string): BlogPost[] {
+export function getAllFiles(type: string, lang: string = "en"): BlogPost[] {
   const dirPath = path.join(root, "data", type);
   const files = fs
     .readdirSync(dirPath)
     .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.(md|mdx)$/, ""));
+    .map((f) => f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""));
 
-  return files
+  const uniqueSlugs = Array.from(new Set(files));
+
+  return uniqueSlugs
     .reduce((allFiles: BlogPost[], slug: string) => {
-      const { frontMatter, content } = getFileBySlug(type, slug);
+      const { frontMatter, content } = getFileBySlug(type, slug, lang);
 
       if (frontMatter.draft && process.env.NODE_ENV === "production") {
         return allFiles;
@@ -136,8 +158,8 @@ export function getAllFiles(type: string): BlogPost[] {
     .sort((a, b) => -a.frontMatter.date.localeCompare(b.frontMatter.date));
 }
 
-export function getAllTags(type: string): string[] {
-  const posts = getAllFilesFrontMatter(type);
+export function getAllTags(type: string, lang: string = "en"): string[] {
+  const posts = getAllFilesFrontMatter(type, lang);
   const tagsSet = new Set<string>();
 
   posts.forEach((post) => {
@@ -149,8 +171,8 @@ export function getAllTags(type: string): string[] {
   return Array.from(tagsSet).sort();
 }
 
-export function getPostsByTag(type: string, tag: string): FrontMatter[] {
-  const posts = getAllFilesFrontMatter(type);
+export function getPostsByTag(type: string, tag: string, lang: string = "en"): FrontMatter[] {
+  const posts = getAllFilesFrontMatter(type, lang);
   return posts.filter(
     (post) => post.tags && post.tags.includes(tag)
   );
