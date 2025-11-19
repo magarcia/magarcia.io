@@ -1,0 +1,79 @@
+---
+title: Migración de componentes iniciada
+date: '2016-06-05'
+spoiler: Comienza la migración de componentes de AngularJS a Angular2 en Jangouts.
+indexed: false
+tags:
+  - GSoC
+  - Jangouts
+---
+
+Otra semana terminada. Esta semana pasada no pude hacer tanto como me hubiera
+gustado. Todavía estoy en época de exámenes, así que tuve que pasar gran parte del tiempo estudiando. Pero
+aún así, ha habido un progreso significativo con respecto al proyecto. Tenemos
+cuatro puntos importantes:
+
+1. Arreglado el proceso de construcción para producción.
+2. Añadido test runner.
+3. Migrado el primer componente a Angular 2.
+4. Añadido el primer test para un componente migrado.
+
+## Arreglando el proceso de construcción
+
+La semana pasada teníamos el entorno de desarrollo listo y también, presumiblemente, el
+entorno para distribuir builds. Pero a lo largo de la semana, noté que con
+la build distribuida, Jangouts tenía problemas con los elementos de la cuadrícula dentro de la sala
+de video chat. Después de un tiempo probando diferentes configuraciones para Webpack, encontré que
+los problemas estaban relacionados principalmente con el proceso de uglify.
+
+El problema estaba relacionado con el sistema de diseño de cuadrícula de la sala de video, que está
+implementado usando [angular-gridster](http://manifestwebdesign.github.io/angular-gridster/).
+Así que, el problema puede venir del estilo de angular-gridster o del módulo JavaScript.
+Primero de todo intenté importar directamente el CSS de la librería sin cargarlo
+con Webpack. Esto no solucionó nada. Finalmente, encontré que en lugar de incluir
+la versión minificada de la librería en el archivo `vendors.ts`, debería usar la versión
+fuente.
+
+Esto es un poco raro, la versión fuente y la minificada deberían funcionar de la misma manera.
+Independientemente de esto, usar la versión fuente arregla el problema y esto no será
+un problema porque Webpack minifica todo el código, incluyendo `vendor.ts`.
+
+## Añadiendo test runner
+
+Esto fue más fácil de lo que esperaba. Uso el increíble proyecto
+[angular2-webpack-starter](https://github.com/AngularClass/angular2-webpack-starter)
+de [@AngularClass](https://angularclass.com/) como fuente de inspiración para
+implementar el test runner en Jangouts. Obtuve los archivos `webpack.test.js` y
+`karma.conf.js` y, después de algunos pequeños cambios, todo funcionó perfectamente. Esta es una
+de las mejores cosas de la comunidad de código abierto: Don't Repeat Yourself (No te repitas).
+
+## Migrando el primer componente
+
+Estaba esperando este momento desde que envié mi propuesta al GSoC. Empecé con
+la migración de un componente simple, probablemente el componente más simple de todo
+Jangouts, el pie de página. El pie de página en Jangouts solo muestra un enlace a
+[SUSE](https://www.suse.com/) y la versión de Jangouts.
+
+En el antiguo Jangouts (empezaré a diferenciar entre pre y post-migración)
+el componente de pie de página estaba compuesto por una simple directiva de Angular 1 con
+una plantilla y una plantilla [`jade`](http://jade-lang.com/), que era renderizada por
+gulp añadiendo la versión actual.
+
+El nuevo componente de pie de página es igualmente simple. Es un [archivo TypeScript](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.directive.ts)
+(una definición de componente con una clase vacía) y una [plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
+Pero tiene una diferencia con la versión anterior, ni gulp ni ninguna otra cosa
+modifica la plantilla para añadir la versión. En su lugar, la solución anterior, ahora
+Webpack con el [DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
+añade la versión como una constante global durante el proceso de construcción, leyendo el
+`package.json`.
+
+Esto tiene un par de beneficios. Primero, el pie de página es ahora un componente Angular puro
+y, por otro lado, es más fácil de probar.
+
+## Añadiendo tests
+
+Una de las cosas importantes a hacer durante la migración a Angular 2, es añadir
+tests a toda la plataforma. Y el nuevo componente de pie de página tiene sus propios tests. No es
+nada complejo o realmente "útil", los tests solo comprueban si la variable `version`
+está correctamente definida. Pero este test tiene un propósito extra, me ayuda
+a comprobar que el test runner y el reporter de cobertura están funcionando correctamente.

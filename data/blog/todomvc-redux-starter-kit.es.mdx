@@ -1,0 +1,395 @@
+---
+layout: post
+title: Refactoriza TodoMVC con Redux Starter Kit
+date: '2019-01-26'
+spoiler: Redux Starter Kit es un conjunto de herramientas para hacer código limpio y legible cuando
+  se trabaja con React y Redux. Mira un ejemplo de cómo puedes refactorizar una
+  aplicación existente obteniendo todo el beneficio de Redux Starter Kit.
+draft: false
+tags:
+  - React
+  - Redux
+  - JavaScript
+---
+
+He estado trabajando con [React](https://reactjs.org/) más de dos años ahora.
+Empecé en un proyecto bastante grande con mucho trabajo ya hecho que estaba usando
+[Redux](https://redux.js.org/). Fue un poco abrumador empezar directamente con tantas
+cosas hechas, especialmente con un framework del que no sabía mucho. Pero después de
+algún tiempo me sentí más cómodo y experimentado.
+
+Recientemente descubrí el proyecto [Redux Starter Kit](https://redux-starter-kit.js.org/)
+del mismo equipo que trabaja en Redux. Es un conjunto de herramientas simple que proporciona
+utilidades que pueden hacer el trabajo con Redux realmente simple y fácil. De hecho, una de
+las herramientas que proporciona, `createReducer`, es un patrón que he estado usando por un tiempo
+y me ayuda mucho a reducir el código repetitivo y acelerar mi desarrollo
+(especialmente en nuevos proyectos).
+
+Así que para aprender más sobre y sentirme cómodo usándolo, decidí
+migrar una base de código ya existente con Redux, usando este conjunto de herramientas. Obviamente,
+como un proyecto de ejemplo para un framework frontend, elegí el omnipresente
+[TodoMVC](http://todomvc.com/), en concreto la versión que Redux proporciona como
+ejemplo en [su repositorio](https://github.com/reduxjs/redux/tree/master/examples/todomvc).
+
+## Punto de partida
+
+Para quien no sepa cómo se ve esta app en Redux, tiene dos reducers
+principales `visibilityFilter` y `todos`; ambos con sus respectivas acciones,
+creadores de acciones y selectores.
+
+## Filtro de Visibilidad
+
+Empecé con el reducer más "simple", para empezar pequeño y luego moverme a un
+estado más complejo.
+
+### Reducer
+
+El reducer, como venía del ejemplo de Redux, ya es bastante simple y
+fácil de entender.
+
+```jsx
+// reducers/visibilityFilter.js
+import { SET_VISIBILITY_FILTER } from '../constants/ActionTypes';
+import { SHOW_ALL } from '../constants/TodoFilters';
+
+export default (state = SHOW_ALL, action) => {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return action.filter;
+    default:
+      return state;
+  }
+};
+```
+
+Para crear reducers Redux Starter Kit proporciona una función `createReducer`,
+como mencioné antes es un patrón que ya usaba y estoy bastante feliz con él.
+
+La idea es simple, en lugar de tener que crear una función reducer con una
+sentencia `switch case` dentro, esta función espera el estado inicial como un
+primer parámetro y un objeto donde las claves son los tipos de acción y el valor
+son los reducers (`(state, action) => { /* código del reducer */`) para esta acción.
+
+Reduce algo de código repetitivo y establecerá siempre la sentencia `default` como
+`return state`. Pero para mí, el mayor beneficio es la legibilidad que proporciona.
+
+Así es como se ve el reducer del filtro de visibilidad usando `createReducer`:
+
+```jsx
+// reducers/visibilityFilter.js
+import { createReducer } from 'redux-starter-kit';
+import { SET_VISIBILITY_FILTER } from '../constants/ActionTypes';
+import { SHOW_ALL } from '../constants/TodoFilters';
+
+export default createReducer(SHOW_ALL, {
+  [SET_VISIBILITY_FILTER]: (state, action) => action.filter
+});
+```
+
+### Creadores de acciones
+
+Ahora es el momento de las acciones. El filtro de visibilidad solo tiene una acción
+`SET_VISIBILITY_FILTER` y el creador es muy simple:
+
+```jsx
+// actions/index.js
+import * as types from '../constants/ActionTypes';
+
+/* ... Otras acciones ...*/
+export const setVisibilityFilter = filter => ({
+  type: types.SET_VISIBILITY_FILTER,
+  filter
+});
+```
+
+Para las acciones, este conjunto de herramientas puede ser bastante obstinado. Proporciona la función
+`createAction` que solo espera el tipo de acción como parámetro. Como resultado,
+obtenemos un creador de acciones.
+
+```jsx
+// actions/index.js
+import * as types from '../constants/ActionTypes';
+
+/* ... Otras acciones ...*/
+export const setVisibilityFilter = createAction(types.SET_VISIBILITY_FILTER);
+```
+
+Este creador de acciones se puede ejecutar con o sin parámetros. En el caso de que
+enviemos un parámetro, este se establecerá como el payload de la acción. Estos son algunos
+ejemplos de cómo funcionará:
+
+```jsx
+const setVisibilityFilter = createAction('SET_VISIBILITY_FILTER');
+
+let action = setVisibilityFilter();
+// { type: 'SET_VISIBILITY_FILTER' }
+
+action = setVisibilityFilter('SHOW_COMPLETED');
+// devuelve { type: 'SET_VISIBILITY_FILTER', payload: 'SHOW_COMPLETED' }
+
+setVisibilityFilter.toString();
+// 'SET_VISIBILITY_FILTER'
+```
+
+Así que ahora el filtro se establece en la clave `payload` de la acción, esto implica una
+refactorización en el reducer ya que estábamos usando la clave filter, pero afortunadamente es
+muy simple de cambiar.
+
+```jsx
+// reducers/visibilityFilter.js
+import { createReducer } from 'redux-starter-kit';
+import { SET_VISIBILITY_FILTER } from '../constants/ActionTypes';
+import { SHOW_ALL } from '../constants/TodoFilters';
+
+export default createReducer(SHOW_ALL, {
+  [SET_VISIBILITY_FILTER]: (state, action) => action.payload
+});
+```
+
+### Selectores
+
+Para mí usar selectores es una de las mejores elecciones que cualquiera puede tomar cuando
+trabaja con React, porque hace realmente simple refactorizar cómo se ve el estado
+sin tener que cambiar todos los componentes que están consumiendo esta parte
+del estado.
+
+El selector del filtro de visibilidad es uno de los más fáciles:
+
+```jsx
+// selectors/index.js
+const getVisibilityFilter = state => state.visibilityFilter;
+
+/* ... Otros selectores ...*/
+```
+
+Y no cambia demasiado usando la función `createSelector`. Realmente,
+tenemos más código ahora que con la versión anterior, pero confía en mí va
+a ser más simple. Solo sigue leyendo.
+
+```jsx
+// selectors/index.js
+import { createSelector } from 'redux-starter-kit';
+
+const getVisibilityFilter = createSelector(['visibilityFilter']);
+
+/* ... Otros selectores ...*/
+```
+
+### Slices
+
+Hasta ahora lo único que hicimos es cambiar algunas funciones simples a funciones más
+simples usando diferentes _creadores_. Pero ahora es donde descubrí el
+poder real del conjunto de herramientas: `createSlice`.
+
+`createSlice` es una función que acepta un estado inicial, un objeto lleno de
+funciones reducer, y opcionalmente un "nombre de slice", y automáticamente genera
+creadores de acciones, tipos de acciones y selectores listos para ser usados.
+
+Ahora podemos tirar todo el código que hicimos.
+
+Crear un slice para el filtro de visibilidad es muy limpio y fácil de entender,
+y dado que podemos tirar todo el código anterior que refactorizamos el resultado final
+es eliminar mucho código repetitivo.
+
+```jsx
+// ducks/visibilityFilter.js
+import { createSlice } from 'redux-starter-kit';
+
+export default createSlice({
+  slice: 'visibilityFilter',
+  initialState: SHOW_ALL,
+  reducers: {
+    setVisibilityFilter: (state, action) => action.payload
+  }
+});
+```
+
+Ahora tenemos un solo objeto como resultado conteniendo todo lo que necesitamos para trabajar
+correctamente con Redux. Así es como se puede usar:
+
+```jsx
+const reducer = combineReducers({
+  visibilityFilter: visibilityFilter.reducer
+});
+
+const store = createStore(reducer);
+
+store.dispatch(visibilityFilter.actions.setVisibilityFilter(SHOW_COMPLETED));
+// -> { visibilityFilter: 'SHOW_COMPLETED' }
+
+const state = store.getState();
+console.log(visibilityFilter.selectors.getVisibilityFilter(state));
+// -> SHOW_COMPLETED
+```
+
+Todos los cambios hechos hasta ahora están en [este commit](https://github.com/magarcia/todomvc-redux-starter-kit/commit/ae78e0aacd4827786a63f29db4d6f4e0a2079422).
+
+## Todos
+
+El reducer de todos es más complejo así que no voy a mostrar la refactorización paso a
+paso. En su lugar, voy a explicar cómo se ve el resultado final, pero si
+estás interesado [ve directamente al resultado final](https://github.com/magarcia/todomvc-redux-starter-kit/blob/ba531a2ea7c2c5ee8148e2a1ab491e7e0a31e819/src/ducks/todos.js).
+
+La primera parte es definir el estado inicial:
+
+```jsx
+// ducks/todos.js
+const initialState = [
+  {
+    text: 'Use Redux',
+    completed: false,
+    id: 0
+  }
+];
+```
+
+Para hacer la creación del slice más legible, extraje las diferentes
+acciones del reducer en diferentes funciones:
+
+```jsx
+// ducks/todos.js
+const addTodo = (state, action) => [
+  ...state,
+  {
+    id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
+    completed: false,
+    text: action.payload.text
+  }
+];
+
+const deleteTodo = (state, action) => state.filter(todo => todo.id !== action.payload.id);
+
+const editTodo = (state, action) =>
+  state.map(todo =>
+    todo.id === action.payload.id ? { ...todo, text: action.payload.text } : todo
+  );
+
+const completeTodo = (state, action) =>
+  state.map(todo =>
+    todo.id === action.payload.id ? { ...todo, completed: !todo.completed } : todo
+  );
+const completeAllTodos = state => {
+  const areAllMarked = state.every(todo => todo.completed);
+  return state.map(todo => ({
+    ...todo,
+    completed: !areAllMarked
+  }));
+};
+
+const clearCompleted = state => state.filter(todo => todo.completed === false);
+```
+
+Y ahora podemos poner todo junto en un nuevo slice:
+
+```jsx
+// ducks/todos.js
+const todos = createSlice({
+  slice: 'todos',
+  initialState,
+  reducers: {
+    add: addTodo,
+    delete: deleteTodo,
+    edit: editTodo,
+    complete: completeTodo,
+    completeAll: completeAllTodos,
+    clearCompleted: clearCompleted
+  }
+});
+```
+
+Por defecto los selectores devueltos por `createSlice` son muy simples, solo
+devuelven el valor del estado (ej: `todos.selectors.getTodos`). Pero en esta
+aplicación, necesitamos definir selectores más complejos.
+
+Por ejemplo, `getVisibleTodos` necesita saber sobre el filtro de visibilidad actual
+y también los todos. `createSelector` obtiene como primer parámetro un array con
+cadenas (la ruta para seleccionar del estado) u otros selectores y como segundo
+parámetro la función que va a implementar la lógica que queremos para
+seleccionar los todos basados en el filtro seleccionado.
+
+```jsx
+// ducks/todos.js
+const { getVisibilityFilter } = visibilityFilter.selectors;
+
+todos.selectors.getVisibleTodos = createSelector(
+  [getVisibilityFilter, todos.selectors.getTodos],
+  (visibilityFilter, todos) => {
+    switch (visibilityFilter) {
+      case SHOW_ALL:
+        return todos;
+      case SHOW_COMPLETED:
+        return todos.filter(t => t.completed);
+      case SHOW_ACTIVE:
+        return todos.filter(t => !t.completed);
+      default:
+        throw new Error('Filtro desconocido: ' + visibilityFilter);
+    }
+  }
+);
+
+todos.selectors.getCompletedTodoCount = createSelector([todos.selectors.getTodos], todos =>
+  todos.reduce((count, todo) => (todo.completed ? count + 1 : count), 0)
+);
+```
+
+Como puedes notar en el código anterior, creé los nuevos selectores en el
+objeto `selectors` en el slice `todos` así que ahora tenemos todos los selectores
+accesibles en el mismo lugar.
+
+## Crear Store
+
+Las últimas dos funciones proporcionadas por la librería son `configureStore` y
+`getDefaultMiddleware`.
+
+`configureStore` es una abstracción sobre la función estándar de Redux `createStore`.
+No proporciona más funcionalidades que `createStore` pero hace
+las cosas más fáciles de leer, como habilitar herramientas de desarrollador que es solo un booleano.
+
+`getDefaultMiddleware` devuelve una lista de middlewares
+`[immutableStateInvariant, thunk, serializableStateInvariant]` en desarrollo
+y `[thunk]` en producción.
+
+- `redux-immutable-state-invariant`: Puede detectar mutaciones en reducers durante
+  un dispatch, y también mutaciones que ocurren entre dispatches (ej: en selectores
+  o componentes).
+- `serializable-state-invariant-middleware`: Comprueba profundamente tu árbol de estado
+  y tus acciones para valores no serializables como funciones, Promesas, etc.
+
+```jsx
+// store.js
+import { configureStore, getDefaultMiddleware } from 'redux-starter-kit';
+import { combineReducers } from 'redux';
+import { visibilityFilter, todos } from './ducks';
+
+const preloadedState = {
+  todos: [
+    {
+      text: 'Use Redux',
+      completed: false,
+      id: 0
+    }
+  ]
+};
+
+const reducer = combineReducers({
+  todos: todos.reducer,
+  visibilityFilter: visibilityFilter.reducer
+});
+
+const middleware = [...getDefaultMiddleware()];
+
+export const store = configureStore({
+  reducer,
+  middleware,
+  devTools: process.env.NODE_ENV !== 'production',
+  preloadedState
+});
+```
+
+## Pensamientos finales
+
+Redux Starter Kit parece interesante, reduce el código repetitivo haciendo el código
+más limpio y fácil de entender. Pero también hace realmente rápido desarrollar nuevo
+código.
+
+Código Fuente: https://github.com/magarcia/todomvc-redux-starter-kit

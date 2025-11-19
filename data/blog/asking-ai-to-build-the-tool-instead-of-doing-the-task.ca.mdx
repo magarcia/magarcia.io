@@ -1,0 +1,150 @@
+---
+title: Demanar a la IA que construeixi l'eina en lloc de fer la tasca
+date: "2025-06-06"
+spoiler: Treballar amb IA per a canvis de codi a gran escala pot ser frustrant. Aquest article comparteix una tècnica que ha ajudat al nostre equip a reduir els errors de migració en un 95% mentre fa que el procés sigui sorprenentment agradable.
+tags:
+  - IA
+  - JavaScript
+  - TypeScript
+  - Eines de Desenvolupador
+  - Migració de Codi
+---
+
+Treballar amb IA per a canvis de codi a gran escala pot ser frustrant. Aquest article comparteix una tècnica que ha ajudat al nostre equip a reduir els errors de migració en un 95% mentre fa que el procés sigui sorprenentment agradable.
+
+## El Problema
+
+Quan treballem en qualsevol base de codi de mida raonable, sovint ens enfrontem a la necessitat de realitzar canvis a gran escala: migrar d'una llibreria a una altra, actualitzar APIs obsoletes o refactoritzar components per seguir nous patrons. L'enfocament tradicional amb IA s'assembla a això:
+
+```
+Ei IA, si us plau actualitza tots els components tooltip de @old-design-system a @new-design-system
+```
+
+I llavors comencen els problemes:
+
+- La IA lluita per mantenir el context a través de centenars d'arxius
+- El consum de tokens explota a mesura que processa cada arxiu
+- Les taxes d'error augmenten amb l'escala
+- Passes més temps arreglant els errors de la IA que fent la migració tu mateix
+
+## El Millor Enfocament
+
+En lloc de demanar a la IA que realitzi la migració directament, li demanem que construeixi una eina que realitzi la migració. Així és com funciona:
+
+### Pas 1: Migració Manual
+
+Primer, tria un exemple representatiu i migra manualment. Això serveix per a dos propòsits:
+
+1. Entens la transformació exacta necessària
+2. Tens un exemple concret per mostrar a la IA
+
+```typescript
+// Abans: Utilitzant tooltip antic
+import { Tooltip } from '@old-design-system';
+
+<Tooltip content="Hola" position="top">
+  <Button>Passa'm el ratolí</Button>
+</Tooltip>
+
+// Després: Utilitzant tooltip nou
+import { Tooltip } from '@new-design-system';
+
+<Tooltip title="Hola" placement="top">
+  <Button>Passa'm el ratolí</Button>
+</Tooltip>
+```
+
+### Pas 2: Extreure el Patró
+
+Obté el diff dels teus canvis i documenta tant les signatures del component antic com del nou:
+
+```diff
+- import { Tooltip } from '@old-design-system';
++ import { Tooltip } from '@new-design-system';
+
+- <Tooltip content={text} position={position}>
++ <Tooltip title={text} placement={position}>
+```
+
+### Pas 3: Construir l'Automatització
+
+Ara, en lloc de demanar a la IA que realitzi centenars de canvis similars, li demanem que construeixi un codemod:
+
+```
+Basat en aquest exemple de migració, construeix un codemod que:
+1. Actualitzi la declaració d'importació
+2. Renombri la prop 'content' a 'title'
+3. Renombri la prop 'position' a 'placement'
+```
+
+La IA generarà un codemod adequat utilitzant eines com jscodeshift que es pot executar en tota la teva base de codi.
+
+## Resultats del Món Real
+
+Recentment vam utilitzar aquest enfocament a Buffer per migrar components tooltip del nostre sistema de disseny heretat a un de nou. Els resultats van ser impressionants:
+
+- **95% taxa d'èxit**: La majoria dels components van migrar perfectament sense intervenció manual
+- **2 hores en lloc de 2 dies**: Tota la migració es va completar en una fracció del temps esperat
+- **5% casos extrems**: Les fallades van ser casos estranys i variants de tooltip heretades que ni tan sols sabíem que existien
+
+Compara això amb els nostres intents anteriors on vam demanar a la IA que fes la migració directament:
+
+- 60% taxa d'èxit
+- Necessitat constant d'arranjaments manuals
+- Límits de tokens assolits freqüentment
+- Transformacions inconsistents a través dels arxius
+
+## Per Què Funciona Això
+
+La idea clau és que la IA sobresurt en el reconeixement de patrons i la generació de codi, però lluita amb el manteniment del context a través d'operacions a gran escala. En demanar-li que construeixi una eina, estem jugant a les seves fortaleses:
+
+1. **Tasca única enfocada**: Construir un codemod és una tasca coherent, no centenars de micro-tasques
+2. **Abstracció de patrons**: La IA es pot centrar a entendre el patró de transformació en lloc d'aplicar-lo
+3. **Sortida comprovable**: Pots provar el codemod en uns pocs arxius abans d'executar-lo a tot arreu
+4. **Reutilitzable**: El codemod es pot compartir amb el teu equip o utilitzar per a migracions similars
+
+## La Bellesa del Codi Rebutjable
+
+Aquí hi ha alguna cosa que podria sorprendre't: no revisem el codi del codemod que genera la IA. Per què? Perquè no ens importa la seva qualitat — és un script d'un sol ús que es rebutjarà després de la migració.
+
+Aquest és realment l'escenari perfecte per al que alguns anomenen "vibe coding" — deixar que la IA generi codi sense molta revisió. L'única cosa que importa és el resultat: Va funcionar la migració correctament? Són correctes els arxius transformats?
+
+Pensa-hi:
+
+- El codemod s'executa una vegada i s'elimina
+- Revisaràs els canvis reals en el teu pull request de totes maneres
+- El pitjor cas és que no funcioni i iteris
+- Ningú mantindrà aquest codi o construirà sobre ell
+
+Aquest canvi de mentalitat és alliberador. En lloc de gastar temps perfeccionant un script de migració, pots concentrar-te en el que realment importa: el codi migrat en si.
+
+## Una Observació Interessant
+
+Mentre provava Claude Code en una tasca de migració similar, vaig notar alguna cosa fascinant. La IA va començar fent canvis arxiu per arxiu, però després de processar uns pocs arxius, es va aturar i va començar a escriure scripts de migració en el seu lloc.
+
+No va ser perfecte — va crear múltiples scripts bash per a diferents casos extrems en lloc d'un codemod unificat — però mostra que les eines de IA estan començant a reconèixer aquests patrons per si mateixes. La IA es va adonar de forma autònoma que construir una eina era més eficient que fer la tasca manualment.
+
+## Quan Utilitzar Aquest Enfocament
+
+Aquesta tècnica funciona millor per a:
+
+- Migracions de llibreries
+- Actualitzacions d'API
+- Refactorització de components
+- Qualsevol transformació repetitiva amb un patró clar
+
+És menys adequada per a:
+
+- Canvis únics
+- Refactorització complexa que requereix judici humà
+- Canvis sense un patró clar
+
+## Conclusió
+
+La meta-lliçó aquí és simple: de vegades és millor que la IA construeixi la canya de pescar en lloc d'atrapar cada peix individualment. La propera vegada que t'enfrontis a un canvi de codi a gran escala, resisteix l'impuls de bolcar tota la tasca en la IA. En el seu lloc:
+
+1. Fes un exemple manualment
+2. Fes que la IA construeixi l'automatització
+3. Revisa i executa l'eina
+
+Aquest enfocament ha transformat com el nostre equip gestiona les migracions, i l'he estat compartint amb companys d'equip que estan constantment sorpresos pel bé que funciona. No es tracta d'utilitzar menys la IA — es tracta d'utilitzar-la de manera més intel·ligent.

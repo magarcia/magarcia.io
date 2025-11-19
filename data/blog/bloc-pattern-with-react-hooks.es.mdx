@@ -1,0 +1,184 @@
+---
+title: Patrón BLoC con React Hooks
+date: '2019-02-18'
+spoiler: Sobre cómo extraer la lógica de negocio de los componentes de una aplicación React usando el patrón BLoC de Flutter, la nueva API de hooks y observables RxJS.
+featuredImage: bloc-schema.png
+tags:
+  - React
+  - BLoC
+  - hooks
+---
+
+El **Patrón BLoC** ha sido diseñado por _Paolo Soares_ y _Cong Hui_, de
+Google y presentado por primera vez durante la _DartConf 2018_ (23-24 de enero de 2018).
+[Ver el video en YouTube](https://www.youtube.com/watch?v=PLHln7wHgPE 'BLoC Pattern Flutter').
+
+BLoC significa **B**usiness **Lo**gic **C**omponent (Componente de Lógica de Negocio). Inicialmente fue concebido para
+permitir reutilizar el mismo código entre Flutter y Angular Dart, pero de hecho es
+independiente de la plataforma: aplicación web, aplicación móvil, back-end.
+
+Puede considerarse una alternativa al
+[puerto de Redux para flutter](https://pub.dartlang.org/packages/flutter_redux 'Redux port for flutter') haciendo
+uso de streams de Dart. En nuestro caso, vamos a usar Observables de la librería
+[RxJS](https://rxjs.dev/ 'RxJS') , pero cualquier otra opción como
+[xstream](http://staltz.github.io/xstream/ 'xstream') será válida también.
+
+En resumen, el BLoC:
+
+- contendrá lógica de negocio (idealmente en aplicaciones más grandes tendremos múltiples BLoCs)
+- dependerá _exclusivamente_ del uso de _Observables_ tanto para entrada (_Observer_) como para salida (_Observable_)
+- permanecerá _independiente de la plataforma_
+- permanecerá _independiente del entorno_
+
+## ¿Cómo funciona BLoC?
+
+No voy a explicar extensamente cómo funciona BLoC (hay otras personas que
+hicieron un mejor trabajo del que haré aquí), sino solo algunas pistas básicas.
+
+![Esquema BLoC](/images/bloc-schema.png)
+
+El BLoC mantendrá la lógica de negocio y los componentes no tendrán conocimiento
+sobre lo que está sucediendo dentro. Los componentes enviarán _eventos_ al BLoC vía
+\_Observers_ y serán notificados por el BLoC vía _Observables_.
+
+## Implementando el BLoC
+
+Este es un ejemplo básico en typescript de un BLoC de búsqueda usando RxJS:
+
+```typescript
+export class SearchBloc {
+  private _results$: Observable<string[]>;
+  private _preamble$: Observable<string>;
+  private _query$ = new BehaviorSubject<string>('');
+
+  constructor(private api: API) {
+    this._results$ = this._query$.pipe(
+      switchMap((query) => {
+        return observableFrom(this.api.search(query));
+      })
+    );
+    this._preamble$ = this.results$.pipe(
+      withLatestFrom(this._query$, (_, q) => {
+        return q ? `Resultados para ${q}` : 'Todos los resultados';
+      })
+    );
+  }
+
+  get results$(): Observable<string[]> {
+    return this._results$;
+  }
+
+  get preamble$(): Observable<string> {
+    return this._preamble$;
+  }
+
+  get query(): Observer<string> {
+    return this._query$;
+  }
+
+  dispose() {
+    this._query$.complete();
+  }
+}
+```
+
+`results$` y `preamble$` están expuestos para ser suscritos desde un componente y
+expresan valores asíncronos que cambian en respuesta a cambios en `query`.
+
+`query` se expone como `Observer<string>` al exterior, para permitir la adición
+de nuevo valor desde los componentes. Dentro de `SearchBloc`, tenemos
+`_query$: BehaviorSubject<string>` como la fuente del stream, y el constructor
+declara `_results$` y `_preamble$` para responder a `_query$`.
+
+## Usándolo en React
+
+Para usarlo en React necesitamos crear una nueva instancia del BLoC y
+compartirla a los componentes hijos usando un contexto de React.
+
+```jsx
+const searchBloc = new SearchBloc(new API());
+const SearchContext = React.createContext(searchBloc);
+```
+
+Tenemos que exponerlo usando el proveedor de contexto:
+
+```jsx
+const App = () => {
+  const searchBloc = useContext(SearchContext);
+
+  useEffect(() => {
+    return searchBloc.dispose;
+  }, [searchBloc]);
+
+  return (
+    <SearchContext.Provider>
+      <SearchInput />
+      <ResultList />
+    </SearchContext.Provider>
+  );
+};
+```
+
+Es importante tener el `useEffect` devolviendo el método dispose del BLoC
+para que complete el observer cuando el componente se desmonte.
+
+Luego podemos publicar cambios al BLoC desde el componente `SearchInput`:
+
+```jsx
+const SearchInput = () => {
+  const searchBloc = useContext(SearchContext);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    searchBloc.query.next(query);
+  }, [searchBloc, query]);
+
+  return (
+    <input
+      type="text"
+      name="Search"
+      value={query}
+      onChange={({ target }) => setQuery(target.value)}
+    />
+  );
+};
+```
+
+Obtuvimos el BLoC usando el hook `useContext` y luego con `useEffect` cada vez
+que la consulta cambia publicamos el nuevo valor al BLoC.
+
+Ahora es el turno de `ResultList`:
+
+```jsx
+const ResultList = () => {
+  const searchBloc = useContext(SearchContext);
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    return searchBloc.results$.subscribe(setResults);
+  }, [searchBloc]);
+
+  return (
+    <div>
+      {results.map(({ id, name }) => (
+        <div key={id}>{name}</div>
+      ))}
+    </div>
+  );
+};
+```
+
+Como antes, usamos el `useContext` para obtener el BLoC, pero ahora en el `useEffect`
+nos suscribimos a los cambios en la interfaz `results$` para actualizar el estado local
+del componente. Es importante devolver el valor de retorno de la suscripción,
+ya que se desuscribirá cuando el componente se desmonte.
+
+## Pensamientos finales
+
+El código final no es complejo, al menos si tienes un conocimiento mínimo sobre
+_Observables_ y _hooks_. Tengo la sensación de que el código es bastante legible
+y ayuda a mantener la lógica de negocio fuera de los componentes. Es cierto que
+deberíamos tener cuidado de desuscribirnos de los observables y desechar el BLoC
+cuando los componentes se desmontan, pero estos problemas podrían ser fácilmente solucionables
+creando algunos nuevos hooks como `useBlocObservable` y `useBlocObserver`. Pero esto
+lo intentaré en el futuro, pronto espero, en un proyecto paralelo donde estoy usando este patrón.
