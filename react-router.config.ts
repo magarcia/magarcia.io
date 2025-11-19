@@ -2,7 +2,7 @@ import type { Config } from "@react-router/dev/config";
 import { getAllTags, getAllFilesFrontMatter } from "./lib/blog";
 
 export default {
-  ssr: true,
+  ssr: false,
 
   async prerender() {
     const postsEn = getAllFilesFrontMatter("blog", "en");
