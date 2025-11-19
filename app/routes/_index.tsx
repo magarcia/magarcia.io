@@ -4,7 +4,7 @@ import Header from "~/components/Header";
 import Footer from "~/components/Footer";
 import ArticleListItem from "~/components/ArticleListItem";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "magarcia — A personal blog" },
     {
@@ -27,23 +27,30 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader() {
-  const posts = getAllFilesFrontMatter("blog").filter(
+export async function loader({ params, request }: Route.LoaderArgs) {
+  let lang = params.lang;
+  if (!lang) {
+    const pathname = new URL(request.url).pathname;
+    if (pathname === "/es" || pathname === "/es/") lang = "es";
+    else if (pathname === "/ca" || pathname === "/ca/") lang = "ca";
+    else lang = "en";
+  }
+  const posts = getAllFilesFrontMatter("blog", lang).filter(
     ({ indexed }) => indexed !== false
   );
 
-  return { posts };
+  return { posts, lang };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { posts } = loaderData;
+  const { posts, lang } = loaderData;
 
   return (
     <>
-      <Header main={true} />
+      <Header main={true} lang={lang} />
       <main className="min-w-full">
         {posts.map((post: FrontMatter) => (
-          <ArticleListItem {...post} key={post.slug} />
+          <ArticleListItem {...post} key={post.slug} lang={lang} />
         ))}
       </main>
       <Footer />

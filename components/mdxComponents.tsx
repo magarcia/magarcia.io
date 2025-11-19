@@ -27,9 +27,9 @@ const Pre = ({ children, ...props }: any) => {
   const [lang, lines] = language.split(":");
   let highlight: number[] | undefined;
   if (lines) {
-    highlight = lines.split(",").flatMap((x) => {
+    highlight = lines.split(",").flatMap((x: string) => {
       if (x.includes("-")) {
-        const [start, end] = x.split("-").map((n) => parseInt(n, 10));
+        const [start, end] = x.split("-").map((n: string) => parseInt(n, 10));
         return Array.from({ length: end - start + 1 }, (_, k) => k + start);
       }
       return [parseInt(x, 10)];

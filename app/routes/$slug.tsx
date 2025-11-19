@@ -29,16 +29,17 @@ export function meta({ data }: Route.MetaArgs) {
 
 export async function loader({ params }: Route.LoaderArgs) {
   try {
-    const post = getFileBySlug("blog", params.slug);
-    return post;
+    const lang = params.lang || "en";
+    const post = getFileBySlug("blog", params.slug, lang);
+    return { ...post, lang };
   } catch (error) {
     throw new Response("Not Found", { status: 404 });
   }
 }
 
 export default function BlogPost({ loaderData }: Route.ComponentProps) {
-  const { frontMatter, content, prev, next } =
-    loaderData as BlogPostWithNavigation;
+  const { frontMatter, content, prev, next, lang } =
+    loaderData as BlogPostWithNavigation & { lang: string };
   const { title, date, readingTime, spoiler, tags, slug } = frontMatter;
   const [components, setComponents] = useState<{
     ReactMarkdown: any;
@@ -46,8 +47,8 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
     mdxComponents: any;
   } | null>(null);
 
-  const editUrl = buildEditUrl(slug);
-  const discussUrl = buildDiscussUrl(slug);
+  const editUrl = buildEditUrl(slug, lang);
+  const discussUrl = buildDiscussUrl(slug, lang);
 
   useEffect(() => {
     // Dynamically import react-markdown and dependencies only on client-side
@@ -66,7 +67,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <Header />
+      <Header slug={slug} lang={lang} />
       <main className="min-w-full">
         <article className="px-8 mx-auto max-w-prose md:px-0">
           <header className="mb-10 md:mb-16 md:text-center">
@@ -142,13 +143,13 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
         <nav className="px-8 mx-auto mb-8 text-sm max-w-prose md:px-0 md:text-base">
           <ul className="flex flex-wrap items-center gap-4 place-content-between">
             {[
-              [prev, "prev"],
-              [next, "next"],
-            ].map(([post, rel]) => (
+              { post: prev, rel: "prev" },
+              { post: next, rel: "next" },
+            ].map(({ post, rel }) => (
               <li key={rel} className="whitespace-nowrap">
                 {post && (
                   <Link
-                    to={`/${post.slug}`}
+                    to={lang === "en" ? `/${post.slug}` : `/${lang}/${post.slug}`}
                     rel={rel}
                     title={post.title}
                     className="underline"
