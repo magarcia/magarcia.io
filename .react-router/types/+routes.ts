@@ -14,8 +14,20 @@ type Pages = {
   "/": {
     params: {};
   };
+  "/es": {
+    params: {};
+  };
+  "/ca": {
+    params: {};
+  };
   "/:slug": {
     params: {
+      "slug": string;
+    };
+  };
+  "/:lang/:slug": {
+    params: {
+      "lang": string;
       "slug": string;
     };
   };
@@ -24,30 +36,52 @@ type Pages = {
       "tag": string;
     };
   };
+  "/:lang/tags/:tag": {
+    params: {
+      "lang": string;
+      "tag": string;
+    };
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/:slug" | "/tags/:tag";
+    page: "/" | "/es" | "/ca" | "/:slug" | "/:lang/:slug" | "/tags/:tag" | "/:lang/tags/:tag";
   };
   "routes/_index.tsx": {
-    id: "routes/_index";
+    id: "index";
     page: "/";
+  } | {
+    id: "index-es";
+    page: "/es";
+  } | {
+    id: "index-ca";
+    page: "/ca";
   };
   "routes/$slug.tsx": {
-    id: "routes/$slug";
+    id: "post";
     page: "/:slug";
+  } | {
+    id: "post-lang";
+    page: "/:lang/:slug";
   };
   "routes/tags.$tag.tsx": {
-    id: "routes/tags.$tag";
+    id: "tag";
     page: "/tags/:tag";
+  } | {
+    id: "tag-lang";
+    page: "/:lang/tags/:tag";
   };
 };
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
-  "routes/_index": typeof import("./app/routes/_index.tsx");
-  "routes/$slug": typeof import("./app/routes/$slug.tsx");
-  "routes/tags.$tag": typeof import("./app/routes/tags.$tag.tsx");
+  "index": typeof import("./app/routes/_index.tsx");
+  "index-es": typeof import("./app/routes/_index.tsx");
+  "index-ca": typeof import("./app/routes/_index.tsx");
+  "post": typeof import("./app/routes/$slug.tsx");
+  "post-lang": typeof import("./app/routes/$slug.tsx");
+  "tag": typeof import("./app/routes/tags.$tag.tsx");
+  "tag-lang": typeof import("./app/routes/tags.$tag.tsx");
 };
