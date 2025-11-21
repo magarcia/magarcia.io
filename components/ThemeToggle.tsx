@@ -10,12 +10,11 @@ export default function ThemeToggle() {
   return (
     <button
       aria-label="Toggle theme"
+      data-testid="theme-toggle"
       className={`p-2 ${color} cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300 ease-out`}
+      onClick={toggleTheme}
     >
-      <Icon
-        size={24}
-        onClick={toggleTheme}
-      />
+      <Icon size={24} />
     </button>
   );
 }

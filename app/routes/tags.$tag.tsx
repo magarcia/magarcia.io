@@ -49,15 +49,18 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
     <>
       <Header />
       <main className="mx-auto max-w-prose px-8 md:px-0 mb-16">
-        <h2 className="text-2xl font-semibold">{title}</h2>
+        <h2 className="text-2xl font-semibold" data-testid="tag-heading">
+          {title}
+        </h2>
 
         <div
           style={{
             paddingLeft: 1.5 * anchorSize,
           }}
+          data-testid="article-list"
         >
           {posts.map(({ title, slug, readingTime, date }: FrontMatter) => (
-            <div key={slug} className="my-8">
+            <div key={slug} className="my-8" data-testid="article-item">
               <h3 className="font-medium text-lg">
                 <Link to={`/${slug}`} title={title}>
                   <LinkIcon

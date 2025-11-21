@@ -69,7 +69,10 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
       <main className="min-w-full">
         <article className="px-8 mx-auto max-w-prose md:px-0">
           <header className="mb-10 md:mb-16 md:text-center">
-            <h1 className="mt-10 mb-3 text-5xl font-bold text-gray-800 md:text-5xl dark:text-gray-50">
+            <h1
+              className="mt-10 mb-3 text-5xl font-bold text-gray-800 md:text-5xl dark:text-gray-50"
+              data-testid="post-title"
+            >
               {title}
             </h1>
 
@@ -77,7 +80,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
               <time dateTime={date}>
                 {format(parseISO(date), "MMMM d, yyyy")}
               </time>{" "}
-              &#8208; {readingTime.text}
+              &#8208; <span data-testid="reading-time">{readingTime.text}</span>
             </div>
           </header>
           <div className="mx-auto max-w-prose">
@@ -107,7 +110,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
           </div>
         </article>
         <footer className="px-8 mx-auto mt-16 text-sm max-w-prose md:px-0 md:text-base">
-          <div className="flex flex-wrap">
+          <div className="flex flex-wrap" data-testid="post-tags">
             {tags.map((tag) => (
               <Link
                 key={tag}

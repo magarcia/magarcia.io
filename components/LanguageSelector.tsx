@@ -32,6 +32,7 @@ export default function LanguageSelector({ lang, slug }: LanguageSelectorProps) 
                 <button
                     className="p-2 opacity-50 hover:opacity-100 transition-opacity"
                     aria-label="Select language"
+                    data-testid="language-selector"
                 >
                     <Globe size={20} />
                 </button>

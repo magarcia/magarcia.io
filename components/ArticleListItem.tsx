@@ -36,7 +36,7 @@ export default function ArticleListItem({
   const postPath = lang === "en" ? `/${slug}` : `/${lang}/${slug}`;
 
   return (
-    <article className="mx-auto max-w-prose px-8 md:px-0 mb-16">
+    <article className="mx-auto max-w-prose px-8 md:px-0 mb-16" data-testid="article-item">
       <Link to={postPath}>
         <header>
           <h2 className="font-semibold text-2xl mt-8 mb-2">{title}</h2>

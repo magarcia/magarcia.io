@@ -9,7 +9,12 @@
     "postbuild": "tsx scripts/generate-sitemap.ts && tsx scripts/generate-rss.ts && cp _redirects build/client/_redirects",
     "start": "react-router-serve ./build/client/index.html",
     "lint": "eslint app --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
@@ -38,7 +43,9 @@
     "ua-parser-js": "^1.0.33"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@mdx-js/rollup": "^3.0.1",
+    "@playwright/test": "^1.56.1",
     "@react-router/dev": "^7.9.5",
     "@types/markdown-it": "^14.0.1",
     "@types/node": "^24.10.1",
