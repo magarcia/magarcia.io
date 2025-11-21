@@ -27,12 +27,13 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   try {
-    const lang = params.lang || "en";
+    const pathname = new URL(request.url).pathname;
+    const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
     const post = getFileBySlug("blog", params.slug, lang);
     return { ...post, lang };
-  } catch (error) {
+  } catch {
     throw new Response("Not Found", { status: 404 });
   }
 }
@@ -41,11 +42,8 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
   const { frontMatter, content, prev, next, lang } =
     loaderData as BlogPostWithNavigation & { lang: string };
   const { title, date, readingTime, spoiler, tags, slug } = frontMatter;
-  const [components, setComponents] = useState<{
-    ReactMarkdown: any;
-    rehypeRaw: any;
-    mdxComponents: any;
-  } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [components, setComponents] = useState<Record<string, any> | null>(null);
 
   const editUrl = buildEditUrl(slug, lang);
   const discussUrl = buildDiscussUrl(slug, lang);

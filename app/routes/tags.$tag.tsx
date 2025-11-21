@@ -22,10 +22,11 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const tag = params.tag;
-  const lang = params.lang || "en";
-  let posts = getPostsByTag("blog", tag, lang);
+  const pathname = new URL(request.url).pathname;
+  const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
+  const posts = getPostsByTag("blog", tag, lang);
 
   if (posts.length === 0) {
     throw new Response("Tag Not Found", { status: 404 });
@@ -35,12 +36,11 @@ export async function loader({ params }: Route.LoaderArgs) {
     posts,
     tag,
     totalCount: posts.length,
-    lang,
   };
 }
 
 export default function TagPage({ loaderData }: Route.ComponentProps) {
-  const { posts, tag, totalCount, lang } = loaderData;
+  const { posts, tag, totalCount } = loaderData;
   const title = `${totalCount} post${totalCount === 1 ? "" : "s"
     } tagged with "${tag}"`;
   const anchorSize = 18;

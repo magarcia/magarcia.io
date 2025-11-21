@@ -4,7 +4,7 @@ import Header from "~/components/Header";
 import Footer from "~/components/Footer";
 import ArticleListItem from "~/components/ArticleListItem";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [
     { title: "magarcia — A personal blog" },
     {
@@ -27,14 +27,12 @@ export function meta({ }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params, request }: Route.LoaderArgs) {
-  let lang = params.lang;
-  if (!lang) {
-    const pathname = new URL(request.url).pathname;
-    if (pathname === "/es" || pathname === "/es/") lang = "es";
-    else if (pathname === "/ca" || pathname === "/ca/") lang = "ca";
-    else lang = "en";
-  }
+export async function loader({ request }: Route.LoaderArgs) {
+  const pathname = new URL(request.url).pathname;
+  let lang: string;
+  if (pathname === "/es" || pathname === "/es/") lang = "es";
+  else if (pathname === "/ca" || pathname === "/ca/") lang = "ca";
+  else lang = "en";
   const posts = getAllFilesFrontMatter("blog", lang).filter(
     ({ indexed }) => indexed !== false
   );
