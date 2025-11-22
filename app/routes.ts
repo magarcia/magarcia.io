@@ -5,6 +5,8 @@ export default [
   route("es", "routes/_index.tsx", { id: "index-es" }),
   route("ca", "routes/_index.tsx", { id: "index-ca" }),
 
+  route("about", "routes/about.tsx", { id: "about" }),
+
   route(":slug", "routes/$slug.tsx", { id: "post" }),
   route(":lang/:slug", "routes/$slug.tsx", { id: "post-lang" }),
 

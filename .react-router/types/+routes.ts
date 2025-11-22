@@ -20,6 +20,9 @@ type Pages = {
   "/ca": {
     params: {};
   };
+  "/about": {
+    params: {};
+  };
   "/:slug": {
     params: {
       "slug": string;
@@ -47,7 +50,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/es" | "/ca" | "/:slug" | "/:lang/:slug" | "/tags/:tag" | "/:lang/tags/:tag";
+    page: "/" | "/es" | "/ca" | "/about" | "/:slug" | "/:lang/:slug" | "/tags/:tag" | "/:lang/tags/:tag";
   };
   "routes/_index.tsx": {
     id: "index";
@@ -58,6 +61,10 @@ type RouteFiles = {
   } | {
     id: "index-ca";
     page: "/ca";
+  };
+  "routes/about.tsx": {
+    id: "about";
+    page: "/about";
   };
   "routes/$slug.tsx": {
     id: "post";
@@ -80,6 +87,7 @@ type RouteModules = {
   "index": typeof import("./app/routes/_index.tsx");
   "index-es": typeof import("./app/routes/_index.tsx");
   "index-ca": typeof import("./app/routes/_index.tsx");
+  "about": typeof import("./app/routes/about.tsx");
   "post": typeof import("./app/routes/$slug.tsx");
   "post-lang": typeof import("./app/routes/$slug.tsx");
   "tag": typeof import("./app/routes/tags.$tag.tsx");
