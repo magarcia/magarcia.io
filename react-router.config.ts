@@ -26,6 +26,8 @@ export default {
       "/es",
       "/ca",
       "/about",
+      "/es/about",
+      "/ca/about",
       ...blogPathsEn,
       ...blogPathsEs,
       ...blogPathsCa,
