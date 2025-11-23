@@ -4,6 +4,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  isRouteErrorResponse,
+  useRouteError,
+  Link,
 } from "react-router";
 import type { LinksFunction } from "react-router";
 
@@ -58,6 +61,46 @@ export function HydrateFallback() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-lg">Loading...</div>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  let title = "Something went wrong";
+  let message = "An unexpected error occurred.";
+
+  if (isRouteErrorResponse(error)) {
+    if (error.status === 404) {
+      title = "Page not found";
+      message = "The page you're looking for doesn't exist.";
+    } else {
+      title = `${error.status} ${error.statusText}`;
+      message = error.data || "An error occurred.";
+    }
+  } else if (error instanceof Error) {
+    // Handle client-side routing errors for non-existent pages
+    if (error.message.includes("No result found for routeId")) {
+      title = "Page not found";
+      message = "The page you're looking for doesn't exist.";
+    } else {
+      message = error.message;
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen px-8">
+      <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-50 mb-4">
+        {title}
+      </h1>
+      <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">{message}</p>
+      <Link
+        to="/"
+        className="px-6 py-3 bg-yellow-300 dark:bg-purple-500 text-gray-900 dark:text-gray-50 font-semibold rounded hover:opacity-80 transition-opacity"
+      >
+        Go back home
+      </Link>
     </div>
   );
 }
