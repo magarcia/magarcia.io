@@ -22,20 +22,25 @@ const markdown = new MarkdownIt();
     copyright: `All rights reserved ${date.getFullYear()}, ${author.name}`,
     generator: "React Router using RSS for Node.js",
     feed_url: `${baseUrl}/rss.xml`,
-    managingEditor: author.name,
+    managingEditor: `${author.email} (${author.name})`,
   });
 
   const posts = getAllFiles("blog");
 
   posts.forEach((post) => {
     const url = `${baseUrl}/${post.frontMatter.slug}`;
+    const renderedContent = markdown.render(post.content);
+    // Handle both regular quotes and HTML-encoded quotes
+    const absoluteContent = renderedContent
+      .replace(/(src|href)="\/([^"]+)"/g, `$1="${baseUrl}/$2"`)
+      .replace(/(src|href)=&quot;\/([^&]+)&quot;/g, `$1=&quot;${baseUrl}/$2&quot;`);
     feed.item({
       title: post.frontMatter.title,
       guid: url,
       url: url,
       description: post.frontMatter.spoiler,
-      custom_elements: [{ "content:encoded": markdown.render(post.content) }],
-      author: author.name,
+      custom_elements: [{ "content:encoded": absoluteContent }],
+      author: author.email,
       date: new Date(post.frontMatter.date),
       categories: post.frontMatter.tags,
     });
