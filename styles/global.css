@@ -73,6 +73,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  em,
+  i {
+    @apply font-serif;
+    font-size: 1.1em;
+  }
 }
 
 @font-face {

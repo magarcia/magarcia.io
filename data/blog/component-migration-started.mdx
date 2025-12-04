@@ -62,7 +62,7 @@ gulp adding the current version.
 The new footer component is equally simple. It's a [TypeScript file](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.directive.ts)
 (a component definition with an empty class) and an [Angular 2 template](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 But has a difference with the previous version, neither gulp or any other thing
-modifies the template for add the version. Instead, the previous solution, now
+modifies the template for add the version. *Instead*, the previous solution, now
 Webpack with the [DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
 add the version as a global constant during the build process, reading the
 `package.json`.

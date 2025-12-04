@@ -42,3 +42,21 @@ This is a static blog built with Next.js that exports to static files. Key archi
 - ViewCounter component for post analytics
 
 Package manager: Yarn (v4.1.1)
+
+### Writing Blog Posts
+
+When writing or editing blog articles, use semantic emphasis correctly:
+
+**Use `**strong**` for:**
+- Product/library names (e.g., **cross-keychain**, **React**)
+- Labels and headings (e.g., **Docs & API:**, **CLI usage:**)
+- Key technical terms being introduced
+- Important information the reader must not miss
+
+**Use `*em*` for:**
+- Vocal stress emphasis (as if spoken aloud with stress)
+- Foreign words or technical terms used conversationally
+- Titles of works
+- Introducing a term for the first time in a non-technical context
+
+The site uses Newsreader serif font for italics (`em`/`i` tags), providing visual contrast with the Inter sans-serif body text.

@@ -62,7 +62,7 @@ gulp afegint la versió actual.
 El nou component de peu de pàgina és igualment simple. És un [arxiu TypeScript](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.directive.ts)
 (una definició de component amb una classe buida) i una [plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 Però té una diferència amb la versió anterior, ni gulp ni cap altra cosa
-modifica la plantilla per afegir la versió. En el seu lloc, la solució anterior, ara
+modifica la plantilla per afegir la versió. *En el seu lloc*, la solució anterior, ara
 Webpack amb el [DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
 afegeix la versió com una constant global durant el procés de construcció, llegint el
 `package.json`.

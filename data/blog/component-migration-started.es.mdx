@@ -62,7 +62,7 @@ gulp añadiendo la versión actual.
 El nuevo componente de pie de página es igualmente simple. Es un [archivo TypeScript](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.directive.ts)
 (una definición de componente con una clase vacía) y una [plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 Pero tiene una diferencia con la versión anterior, ni gulp ni ninguna otra cosa
-modifica la plantilla para añadir la versión. En su lugar, la solución anterior, ahora
+modifica la plantilla para añadir la versión. *En su lugar*, la solución anterior, ahora
 Webpack con el [DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
 añade la versión como una constante global durante el proceso de construcción, leyendo el
 `package.json`.

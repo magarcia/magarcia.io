@@ -19,6 +19,10 @@ export const links: LinksFunction = () => [
     type: "font/woff2",
     crossOrigin: "anonymous",
   },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@1,400&display=swap",
+  },
   { rel: "stylesheet", href: globalStyles },
   { rel: "stylesheet", href: highlightStyles },
 ];
