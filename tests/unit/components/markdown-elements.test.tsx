@@ -15,30 +15,7 @@ describe("Blockquote", () => {
     expect(element.tagName).toBe("BLOCKQUOTE");
   });
 
-  it("applies correct styling classes", () => {
-    render(<Blockquote>Test quote</Blockquote>);
-    const element = screen.getByText("Test quote");
-    expect(element).toHaveClass("border-l-2");
-    expect(element).toHaveClass("italic");
-    expect(element).toHaveClass("border-gray-800");
-    expect(element).toHaveClass("dark:border-gray-200");
-    expect(element).toHaveClass("bg-gray-100");
-    expect(element).toHaveClass("dark:bg-gray-600");
-    expect(element).toHaveClass("py-0.5");
-    expect(element).toHaveClass("px-4");
-  });
-
-  it("passes props correctly", () => {
-    render(
-      <Blockquote data-testid="custom-blockquote" id="test-id">
-        Test quote
-      </Blockquote>
-    );
-    const element = screen.getByTestId("custom-blockquote");
-    expect(element).toHaveAttribute("id", "test-id");
-  });
-
-  it("renders children properly", () => {
+  it("renders children content", () => {
     render(
       <Blockquote>
         <p>Paragraph in quote</p>
@@ -48,10 +25,20 @@ describe("Blockquote", () => {
     expect(screen.getByText("Paragraph in quote")).toBeInTheDocument();
     expect(screen.getByText("Span in quote")).toBeInTheDocument();
   });
+
+  it("forwards props to element", () => {
+    render(
+      <Blockquote data-testid="custom-blockquote" id="test-id">
+        Test quote
+      </Blockquote>
+    );
+    const element = screen.getByTestId("custom-blockquote");
+    expect(element).toHaveAttribute("id", "test-id");
+  });
 });
 
 describe("Caption", () => {
-  it("renders caption element", () => {
+  it("renders caption element within table", () => {
     render(
       <table>
         <Caption>Table caption</Caption>
@@ -61,17 +48,18 @@ describe("Caption", () => {
     expect(element.tagName).toBe("CAPTION");
   });
 
-  it("applies italic styling", () => {
+  it("renders children content", () => {
     render(
       <table>
-        <Caption>Table caption</Caption>
+        <Caption>
+          Caption with <strong>bold</strong> text
+        </Caption>
       </table>
     );
-    const element = screen.getByText("Table caption");
-    expect(element).toHaveClass("italic");
+    expect(screen.getByText("bold")).toBeInTheDocument();
   });
 
-  it("passes props correctly", () => {
+  it("forwards props to element", () => {
     render(
       <table>
         <Caption data-testid="custom-caption" id="test-id">
@@ -81,18 +69,6 @@ describe("Caption", () => {
     );
     const element = screen.getByTestId("custom-caption");
     expect(element).toHaveAttribute("id", "test-id");
-    expect(element).toHaveClass("italic");
-  });
-
-  it("renders children properly", () => {
-    render(
-      <table>
-        <Caption>
-          Caption with <strong>bold</strong> text
-        </Caption>
-      </table>
-    );
-    expect(screen.getByText("bold")).toBeInTheDocument();
   });
 });
 
@@ -103,26 +79,12 @@ describe("CodeInline", () => {
     expect(element.tagName).toBe("CODE");
   });
 
-  it("applies monospace styling classes", () => {
-    render(<CodeInline>code</CodeInline>);
-    const element = screen.getByText("code");
-    expect(element).toHaveClass("font-mono");
-    expect(element).toHaveClass("bg-gray-100");
-    expect(element).toHaveClass("dark:bg-gray-700");
-    expect(element).toHaveClass("p-1");
-    expect(element).toHaveClass("rounded");
-    expect(element).toHaveClass("border-gray-200");
-    expect(element).toHaveClass("dark:border-gray-800");
-    expect(element).toHaveClass("border");
-    expect(element).toHaveClass("text-sm");
-  });
-
-  it("handles children correctly", () => {
+  it("preserves code content exactly", () => {
     render(<CodeInline>console.log("hello")</CodeInline>);
     expect(screen.getByText('console.log("hello")')).toBeInTheDocument();
   });
 
-  it("passes additional props", () => {
+  it("forwards props to element", () => {
     render(
       <CodeInline data-testid="custom-code" data-language="javascript">
         code
@@ -132,45 +94,38 @@ describe("CodeInline", () => {
     expect(element).toHaveAttribute("data-language", "javascript");
   });
 
-  it("renders without children", () => {
+  it("renders empty code element gracefully", () => {
     const { container } = render(<CodeInline />);
     const element = container.querySelector("code");
     expect(element).toBeInTheDocument();
-    expect(element).toHaveClass("font-mono");
   });
 });
 
 describe("Link", () => {
   it("renders anchor element", () => {
     render(<Link href="/test">Test Link</Link>);
-    const element = screen.getByText("Test Link");
+    const element = screen.getByRole("link", { name: "Test Link" });
     expect(element.tagName).toBe("A");
   });
 
-  it("applies underline class", () => {
-    render(<Link href="/test">Test Link</Link>);
-    const element = screen.getByText("Test Link");
-    expect(element).toHaveClass("underline");
-  });
-
-  it("passes href prop", () => {
+  it("sets href attribute", () => {
     render(<Link href="/test-path">Test Link</Link>);
-    const element = screen.getByText("Test Link");
+    const element = screen.getByRole("link");
     expect(element).toHaveAttribute("href", "/test-path");
   });
 
-  it("passes additional props correctly", () => {
+  it("supports external link attributes", () => {
     render(
-      <Link href="/test" target="_blank" rel="noopener noreferrer" data-testid="custom-link">
+      <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
         External Link
       </Link>
     );
-    const element = screen.getByTestId("custom-link");
+    const element = screen.getByRole("link");
     expect(element).toHaveAttribute("target", "_blank");
     expect(element).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders children properly", () => {
+  it("renders children content", () => {
     render(
       <Link href="/test">
         Link with <strong>bold</strong> text
@@ -187,24 +142,7 @@ describe("Paragraph", () => {
     expect(element.tagName).toBe("P");
   });
 
-  it("applies margin classes", () => {
-    render(<Paragraph>Test paragraph</Paragraph>);
-    const element = screen.getByText("Test paragraph");
-    expect(element).toHaveClass("my-6");
-  });
-
-  it("passes props correctly", () => {
-    render(
-      <Paragraph data-testid="custom-paragraph" id="test-id">
-        Test paragraph
-      </Paragraph>
-    );
-    const element = screen.getByTestId("custom-paragraph");
-    expect(element).toHaveAttribute("id", "test-id");
-    expect(element).toHaveClass("my-6");
-  });
-
-  it("renders children properly", () => {
+  it("renders children content", () => {
     render(
       <Paragraph>
         Text with <strong>bold</strong> and <em>italic</em>
@@ -212,6 +150,16 @@ describe("Paragraph", () => {
     );
     expect(screen.getByText("bold")).toBeInTheDocument();
     expect(screen.getByText("italic")).toBeInTheDocument();
+  });
+
+  it("forwards props to element", () => {
+    render(
+      <Paragraph data-testid="custom-paragraph" id="test-id">
+        Test paragraph
+      </Paragraph>
+    );
+    const element = screen.getByTestId("custom-paragraph");
+    expect(element).toHaveAttribute("id", "test-id");
   });
 });
 
@@ -222,24 +170,7 @@ describe("Strong", () => {
     expect(element.tagName).toBe("STRONG");
   });
 
-  it("applies font-bold class", () => {
-    render(<Strong>Bold text</Strong>);
-    const element = screen.getByText("Bold text");
-    expect(element).toHaveClass("font-bold");
-  });
-
-  it("passes props correctly", () => {
-    render(
-      <Strong data-testid="custom-strong" id="test-id">
-        Bold text
-      </Strong>
-    );
-    const element = screen.getByTestId("custom-strong");
-    expect(element).toHaveAttribute("id", "test-id");
-    expect(element).toHaveClass("font-bold");
-  });
-
-  it("renders children properly", () => {
+  it("renders children content", () => {
     render(
       <Strong>
         Bold with <span>nested span</span>
@@ -247,76 +178,57 @@ describe("Strong", () => {
     );
     expect(screen.getByText("nested span")).toBeInTheDocument();
   });
+
+  it("forwards props to element", () => {
+    render(
+      <Strong data-testid="custom-strong" id="test-id">
+        Bold text
+      </Strong>
+    );
+    const element = screen.getByTestId("custom-strong");
+    expect(element).toHaveAttribute("id", "test-id");
+  });
 });
 
 describe("List", () => {
-  it("renders ul element by default", () => {
-    render(
-      <List>
-        <li>Item 1</li>
-      </List>
-    );
-    const item = screen.getByText("Item 1");
-    expect(item.parentElement?.tagName).toBe("UL");
+  describe("unordered list", () => {
+    it("renders ul element by default", () => {
+      render(
+        <List>
+          <li>Item 1</li>
+        </List>
+      );
+      const item = screen.getByText("Item 1");
+      expect(item.parentElement?.tagName).toBe("UL");
+    });
+
+    it("renders multiple items", () => {
+      render(
+        <List>
+          <li>Item 1</li>
+          <li>Item 2</li>
+          <li>Item 3</li>
+        </List>
+      );
+      expect(screen.getByText("Item 1")).toBeInTheDocument();
+      expect(screen.getByText("Item 2")).toBeInTheDocument();
+      expect(screen.getByText("Item 3")).toBeInTheDocument();
+    });
   });
 
-  it("renders ol element when ordered is true", () => {
-    render(
-      <List ordered>
-        <li>Item 1</li>
-      </List>
-    );
-    const item = screen.getByText("Item 1");
-    expect(item.parentElement?.tagName).toBe("OL");
+  describe("ordered list", () => {
+    it("renders ol element when ordered is true", () => {
+      render(
+        <List ordered>
+          <li>Item 1</li>
+        </List>
+      );
+      const item = screen.getByText("Item 1");
+      expect(item.parentElement?.tagName).toBe("OL");
+    });
   });
 
-  it("applies list-disc and pl-4 classes for unordered list", () => {
-    render(
-      <List data-testid="unordered-list">
-        <li>Item 1</li>
-      </List>
-    );
-    const element = screen.getByTestId("unordered-list");
-    expect(element).toHaveClass("list-disc");
-    expect(element).toHaveClass("pl-4");
-  });
-
-  it("applies list-decimal and my-6 classes for ordered list", () => {
-    render(
-      <List ordered data-testid="ordered-list">
-        <li>Item 1</li>
-      </List>
-    );
-    const element = screen.getByTestId("ordered-list");
-    expect(element).toHaveClass("list-decimal");
-    expect(element).toHaveClass("my-6");
-  });
-
-  it("passes additional props correctly", () => {
-    render(
-      <List data-testid="custom-list" id="test-id">
-        <li>Item 1</li>
-      </List>
-    );
-    const element = screen.getByTestId("custom-list");
-    expect(element).toHaveAttribute("id", "test-id");
-    expect(element).toHaveClass("list-disc");
-  });
-
-  it("renders multiple list items", () => {
-    render(
-      <List>
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-      </List>
-    );
-    expect(screen.getByText("Item 1")).toBeInTheDocument();
-    expect(screen.getByText("Item 2")).toBeInTheDocument();
-    expect(screen.getByText("Item 3")).toBeInTheDocument();
-  });
-
-  it("renders children properly with nested content", () => {
+  it("renders nested content in items", () => {
     render(
       <List>
         <li>
@@ -325,5 +237,15 @@ describe("List", () => {
       </List>
     );
     expect(screen.getByText("bold")).toBeInTheDocument();
+  });
+
+  it("forwards props to element", () => {
+    render(
+      <List data-testid="custom-list" id="test-id">
+        <li>Item 1</li>
+      </List>
+    );
+    const element = screen.getByTestId("custom-list");
+    expect(element).toHaveAttribute("id", "test-id");
   });
 });

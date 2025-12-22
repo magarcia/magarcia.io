@@ -2,7 +2,7 @@ import { parseISO, format } from "date-fns";
 import { Link as LinkIcon } from "react-feather";
 import { Link } from "react-router";
 import type { Route } from "./+types/tags.$tag";
-import { getPostsByTag, type FrontMatter } from "~/lib/blog";
+import { getPostsByTagSlug, getTagBySlug, type FrontMatter } from "~/lib/blog";
 import Header from "~/components/Header";
 
 export function meta({ data }: Route.MetaArgs) {
@@ -23,14 +23,16 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ params, request }: Route.LoaderArgs) {
-  const tag = params.tag;
+  const tagSlug = params.tag;
   const pathname = new URL(request.url).pathname;
   const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
-  const posts = getPostsByTag("blog", tag, lang);
 
-  if (posts.length === 0) {
+  const tag = getTagBySlug("blog", tagSlug);
+  if (!tag) {
     throw new Response("Tag Not Found", { status: 404 });
   }
+
+  const posts = getPostsByTagSlug("blog", tagSlug, lang);
 
   return {
     posts,

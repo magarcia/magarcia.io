@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import type { Route } from "./+types/$slug";
 import { getFileBySlug, type BlogPostWithNavigation } from "~/lib/blog";
 import Header from "~/components/Header";
-import { buildDiscussUrl, buildEditUrl } from "~/lib/urls";
+import { buildDiscussUrl, buildEditUrl, buildTagUrl } from "~/lib/urls";
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data || !data.frontMatter) {
@@ -115,7 +115,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
               <Link
                 key={tag}
                 className="px-2 py-1 mb-3 mr-3 bg-gray-100 border border-gray-200 rounded dark:bg-gray-700 last:mr-0 dark:border-gray-800 whitespace-nowrap"
-                to={`/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`}
+                to={buildTagUrl(tag, lang)}
               >
                 #{tag}
               </Link>

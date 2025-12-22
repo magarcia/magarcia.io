@@ -2,6 +2,7 @@ import fs from "fs";
 import prettier from "prettier";
 import { siteMetadata } from "../blog.config";
 import { getAllFilesFrontMatter, getAllTags } from "../lib/blog";
+import { slugifyTag } from "../lib/urls";
 
 function buildEntry(
   url: string,
@@ -37,7 +38,7 @@ function buildEntry(
               .join("")}
             ${tags
               .map((tag) =>
-                buildEntry(`${baseUrl}/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`, { priority: 0.3 })
+                buildEntry(`${baseUrl}/tags/${slugifyTag(tag)}`, { priority: 0.3 })
               )
               .join("")}
         </urlset>

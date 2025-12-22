@@ -29,22 +29,16 @@ Object.defineProperty(window, "localStorage", {
 });
 
 // Mock react-router Link component
-vi.mock("react-router", () => ({
-  Link: React.forwardRef(
-    (
-      {
-        to,
-        children,
-        ...props
-      }: {
-        to: string;
-        children: React.ReactNode;
-        [key: string]: unknown;
-      },
-      ref: React.Ref<HTMLAnchorElement>
-    ) => React.createElement("a", { href: to, ref, ...props }, children)
-  ),
-}));
+vi.mock("react-router", () => {
+  const MockLink = React.forwardRef<
+    HTMLAnchorElement,
+    React.AnchorHTMLAttributes<HTMLAnchorElement> & { to: string }
+  >(({ to, children, ...props }, ref) =>
+    React.createElement("a", { href: to, ref, ...props }, children)
+  );
+  MockLink.displayName = "MockLink";
+  return { Link: MockLink };
+});
 
 // Mock react-feather icons
 vi.mock("react-feather", () => ({
@@ -61,4 +55,12 @@ vi.mock("~/hooks/useTheme", () => ({
     setTheme: vi.fn(),
     toggleTheme: vi.fn(),
   }),
+}));
+
+// Mock lucide-react icons
+vi.mock("lucide-react", () => ({
+  Check: () => React.createElement("svg", { "data-testid": "check-icon" }),
+  ChevronRight: () =>
+    React.createElement("svg", { "data-testid": "chevron-right-icon" }),
+  Circle: () => React.createElement("svg", { "data-testid": "circle-icon" }),
 }));

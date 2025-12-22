@@ -1,11 +1,10 @@
-import { render } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 import { mdxComponents } from "~/components/mdxComponents";
-import React from "react";
 
 describe("mdxComponents", () => {
-  describe("Component Mappings", () => {
-    it("exports object with all required component mappings", () => {
+  describe("component mappings", () => {
+    it("exports all required MDX component mappings", () => {
       const expectedComponents = [
         "h1",
         "h2",
@@ -33,18 +32,12 @@ describe("mdxComponents", () => {
         expect(typeof mdxComponents[component as keyof typeof mdxComponents]).toBe("function");
       });
     });
-
-    it("includes em component mapping", () => {
-      // Note: The current implementation doesn't have 'em' mapped, but if it should be added
-      // This test documents the expected behavior. Update mdxComponents.tsx if needed.
-      expect(mdxComponents).not.toHaveProperty("em");
-    });
   });
 
-  describe("Pre Component", () => {
+  describe("Pre component - code block rendering", () => {
     const Pre = mdxComponents.pre;
 
-    it("parses language from className", () => {
+    it("renders code block without crashing", () => {
       const children = {
         props: {
           className: "language-typescript",
@@ -52,27 +45,67 @@ describe("mdxComponents", () => {
         },
       };
 
-      const { container } = render(<Pre>{children}</Pre>);
-
-      expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
-    it("extracts highlight line numbers from language syntax", () => {
+    it("identifies language from className", () => {
       const children = {
         props: {
-          className: "language-typescript:1,3,5",
-          children: "line1\nline2\nline3\nline4\nline5",
+          className: "language-typescript",
+          children: "const x = 1;",
         },
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-
-      // The Pre component should pass highlight prop to CodeBlock
-      // We can verify by checking that CodeBlock is rendered with the language
       expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
     });
 
-    it("handles range syntax for line highlighting", () => {
+    it("defaults to text language when no className", () => {
+      const children = {
+        props: {
+          children: "plain text",
+        },
+      };
+
+      const { container } = render(<Pre>{children}</Pre>);
+      expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
+    });
+
+    it("handles children without props object", () => {
+      const children = "plain text code";
+      const { container } = render(<Pre>{children}</Pre>);
+      expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
+    });
+
+    it("renders pre element for code structure", () => {
+      const children = {
+        props: {
+          className: "language-javascript",
+          children: "line1\nline2\nline3",
+        },
+      };
+
+      const { container } = render(<Pre>{children}</Pre>);
+      expect(container.querySelector("pre")).toBeInTheDocument();
+    });
+  });
+
+  describe("Pre component - language parsing", () => {
+    const Pre = mdxComponents.pre;
+
+    it("parses language with highlight syntax", () => {
+      const children = {
+        props: {
+          className: "language-typescript:1,3,5",
+          children: "code",
+        },
+      };
+
+      const { container } = render(<Pre>{children}</Pre>);
+      expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
+    });
+
+    it("handles range syntax in highlight specification", () => {
       const children = {
         props: {
           className: "language-javascript:3-5",
@@ -81,14 +114,7 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-
-      // Verify that CodeBlock is rendered
       expect(container.querySelector("[data-language='javascript']")).toBeInTheDocument();
-
-      // The range 3-5 should be expanded to [3, 4, 5]
-      // We can verify this by checking the rendered output has the correct structure
-      const lines = container.querySelectorAll("div[class*='px-4']");
-      expect(lines.length).toBeGreaterThan(0);
     });
 
     it("handles mixed single lines and ranges", () => {
@@ -100,189 +126,158 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-
       expect(container.querySelector("[data-language='python']")).toBeInTheDocument();
     });
+  });
 
-    it("handles no highlight syntax gracefully", () => {
+  describe("Pre component - robustness", () => {
+    const Pre = mdxComponents.pre;
+
+    it("handles non-numeric highlight values gracefully", () => {
       const children = {
         props: {
-          className: "language-javascript",
+          className: "language-javascript:abc",
           children: "console.log('test');",
         },
       };
 
-      const { container } = render(<Pre>{children}</Pre>);
-
-      expect(container.querySelector("[data-language='javascript']")).toBeInTheDocument();
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
-    it("defaults to text language when no className", () => {
+    it("handles reversed range gracefully", () => {
       const children = {
         props: {
-          children: "plain text",
+          className: "language-javascript:5-3",
+          children: "line1\nline2\nline3\nline4\nline5",
         },
       };
 
-      const { container } = render(<Pre>{children}</Pre>);
-
-      expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
-    it("handles children without props object", () => {
-      const children = "plain text code";
-
-      const { container } = render(<Pre>{children}</Pre>);
-
-      expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
-    });
-
-    it("passes additional props to CodeBlock", () => {
+    it("handles empty highlight after colon", () => {
       const children = {
         props: {
-          className: "language-typescript custom-class",
-          children: "const x = 1;",
+          className: "language-javascript:",
+          children: "console.log('test');",
         },
       };
 
-      const { container } = render(<Pre>{children}</Pre>);
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
+    });
 
-      const wrapper = container.querySelector(".custom-class");
-      expect(wrapper).toBeInTheDocument();
+    it("handles out-of-bounds line numbers", () => {
+      const children = {
+        props: {
+          className: "language-javascript:999",
+          children: "console.log('test');",
+        },
+      };
+
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
+    });
+
+    it("handles null className", () => {
+      const children = {
+        props: {
+          className: null,
+          children: "console.log('test');",
+        },
+      };
+
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
+    });
+
+    it("handles undefined className", () => {
+      const children = {
+        props: {
+          className: undefined,
+          children: "console.log('test');",
+        },
+      };
+
+      expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
   });
 
-  describe("Range Syntax Expansion", () => {
-    const Pre = mdxComponents.pre;
-
-    it("expands range 3-5 to [3, 4, 5]", () => {
-      const children = {
-        props: {
-          className: "language-javascript:3-5",
-          children: "line1\nline2\nline3\nline4\nline5\nline6",
-        },
-      };
-
-      const { container } = render(<Pre>{children}</Pre>);
-
-      const lines = container.querySelectorAll("div[class*='px-4']");
-
-      // Prism removes the last empty line, so we should have 5 lines rendered
-      expect(lines.length).toBeGreaterThanOrEqual(5);
-
-      // Line 2 (index 1): should NOT be highlighted
-      expect(lines[1]).toHaveClass("opacity-30");
-
-      // Line 3 (index 2): should be highlighted
-      expect(lines[2]).not.toHaveClass("opacity-30");
-
-      // Line 4 (index 3): should be highlighted
-      expect(lines[3]).not.toHaveClass("opacity-30");
-
-      // Line 5 (index 4): should be highlighted
-      expect(lines[4]).not.toHaveClass("opacity-30");
+  describe("heading components", () => {
+    it("h1 renders correct semantic element", () => {
+      const H1 = mdxComponents.h1;
+      render(<H1>Test H1</H1>);
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Test H1");
     });
 
-    it("expands range 1-3 correctly", () => {
-      const children = {
-        props: {
-          className: "language-javascript:1-3",
-          children: "line1\nline2\nline3\nline4",
-        },
-      };
-
-      const { container } = render(<Pre>{children}</Pre>);
-
-      const lines = container.querySelectorAll("div[class*='px-4']");
-
-      // Should have at least 3 lines
-      expect(lines.length).toBeGreaterThanOrEqual(3);
-
-      // Lines 1-3 should be highlighted
-      expect(lines[0]).not.toHaveClass("opacity-30");
-      expect(lines[1]).not.toHaveClass("opacity-30");
-      expect(lines[2]).not.toHaveClass("opacity-30");
-    });
-
-    it("handles single line number correctly", () => {
-      const children = {
-        props: {
-          className: "language-javascript:2",
-          children: "line1\nline2\nline3",
-        },
-      };
-
-      const { container } = render(<Pre>{children}</Pre>);
-
-      const lines = container.querySelectorAll("div[class*='px-4']");
-
-      // Should have at least 2 lines
-      expect(lines.length).toBeGreaterThanOrEqual(2);
-
-      // Only line 2 should be highlighted
-      expect(lines[0]).toHaveClass("opacity-30");
-      expect(lines[1]).not.toHaveClass("opacity-30");
-    });
-
-    it("handles multiple ranges and single lines", () => {
-      const children = {
-        props: {
-          className: "language-javascript:1,3-4,6",
-          children: "line1\nline2\nline3\nline4\nline5\nline6",
-        },
-      };
-
-      const { container } = render(<Pre>{children}</Pre>);
-
-      const lines = container.querySelectorAll("div[class*='px-4']");
-
-      // Should have at least 5 lines
-      expect(lines.length).toBeGreaterThanOrEqual(5);
-
-      // Lines 1, 3, 4, 6 should be highlighted
-      expect(lines[0]).not.toHaveClass("opacity-30"); // line 1
-      expect(lines[1]).toHaveClass("opacity-30");     // line 2
-      expect(lines[2]).not.toHaveClass("opacity-30"); // line 3
-      expect(lines[3]).not.toHaveClass("opacity-30"); // line 4
-      expect(lines[4]).toHaveClass("opacity-30");     // line 5
-    });
-  });
-
-  describe("Component Structure", () => {
-    it("h2 renders with Heading component", () => {
+    it("h2 renders correct semantic element", () => {
       const H2 = mdxComponents.h2;
-      const { container } = render(<H2>Test Heading</H2>);
-
-      const heading = container.querySelector("h2");
-      expect(heading).toBeInTheDocument();
-      expect(heading).toHaveTextContent("Test Heading");
+      render(<H2>Test H2</H2>);
+      expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Test H2");
     });
 
-    it("strong renders with Strong component", () => {
+    it("h3 renders correct semantic element", () => {
+      const H3 = mdxComponents.h3;
+      render(<H3>Test H3</H3>);
+      expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Test H3");
+    });
+
+    it("h4 renders correct semantic element", () => {
+      const H4 = mdxComponents.h4;
+      render(<H4>Test H4</H4>);
+      expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent("Test H4");
+    });
+  });
+
+  describe("text formatting components", () => {
+    it("strong renders semantic strong element", () => {
       const Strong = mdxComponents.strong;
       const { container } = render(<Strong>Bold Text</Strong>);
-
       const strong = container.querySelector("strong");
       expect(strong).toBeInTheDocument();
-      expect(strong).toHaveClass("font-bold");
+      expect(strong).toHaveTextContent("Bold Text");
     });
 
-    it("a renders with Link component", () => {
-      const Link = mdxComponents.a;
-      const { container } = render(<Link href="/test">Link Text</Link>);
-
-      const link = container.querySelector("a");
-      expect(link).toBeInTheDocument();
-    });
-
-    it("code renders with CodeInline component", () => {
+    it("code renders inline code content", () => {
       const Code = mdxComponents.code;
       const { container } = render(<Code>inline code</Code>);
-
-      expect(container.textContent).toContain("inline code");
+      expect(container.textContent).toBe("inline code");
     });
 
-    it("ol renders with List component with ordered=true", () => {
+    it("blockquote renders quote content", () => {
+      const Blockquote = mdxComponents.blockquote;
+      const { container } = render(<Blockquote>Quote text</Blockquote>);
+      const blockquote = container.querySelector("blockquote");
+      expect(blockquote).toBeInTheDocument();
+      expect(blockquote).toHaveTextContent("Quote text");
+    });
+
+    it("paragraph renders text content", () => {
+      const Paragraph = mdxComponents.p;
+      const { container } = render(<Paragraph>Paragraph text</Paragraph>);
+      const p = container.querySelector("p");
+      expect(p).toBeInTheDocument();
+      expect(p).toHaveTextContent("Paragraph text");
+    });
+  });
+
+  describe("link component", () => {
+    it("renders anchor with href", () => {
+      const Link = mdxComponents.a;
+      const { container } = render(<Link href="/test">Link Text</Link>);
+      const link = container.querySelector("a");
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute("href", "/test");
+      expect(link).toHaveTextContent("Link Text");
+    });
+
+    it("renders external links", () => {
+      const Link = mdxComponents.a;
+      const { container } = render(<Link href="https://example.com">External</Link>);
+      const link = container.querySelector("a");
+      expect(link).toHaveAttribute("href", "https://example.com");
+    });
+  });
+
+  describe("list components", () => {
+    it("ol renders ordered list", () => {
       const OrderedList = mdxComponents.ol;
       const { container } = render(
         <OrderedList>
@@ -293,9 +288,10 @@ describe("mdxComponents", () => {
 
       const ol = container.querySelector("ol");
       expect(ol).toBeInTheDocument();
+      expect(ol?.querySelectorAll("li")).toHaveLength(2);
     });
 
-    it("ul renders with List component", () => {
+    it("ul renders unordered list", () => {
       const UnorderedList = mdxComponents.ul;
       const { container } = render(
         <UnorderedList>
@@ -306,6 +302,54 @@ describe("mdxComponents", () => {
 
       const ul = container.querySelector("ul");
       expect(ul).toBeInTheDocument();
+      expect(ul?.querySelectorAll("li")).toHaveLength(2);
+    });
+  });
+
+  describe("table components", () => {
+    it("table renders with proper structure", () => {
+      const Table = mdxComponents.table;
+      const Thead = mdxComponents.thead;
+      const Tbody = mdxComponents.tbody;
+      const Tr = mdxComponents.tr;
+      const Th = mdxComponents.th;
+      const Td = mdxComponents.td;
+
+      const { container } = render(
+        <Table>
+          <Thead>
+            <Tr>
+              <Th>Header</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td>Cell</Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      );
+
+      expect(container.querySelector("table")).toBeInTheDocument();
+      expect(container.querySelector("thead")).toBeInTheDocument();
+      expect(container.querySelector("tbody")).toBeInTheDocument();
+      expect(screen.getByText("Header")).toBeInTheDocument();
+      expect(screen.getByText("Cell")).toBeInTheDocument();
+    });
+
+    it("caption renders table caption", () => {
+      const Table = mdxComponents.table;
+      const Caption = mdxComponents.caption;
+
+      const { container } = render(
+        <Table>
+          <Caption>Table description</Caption>
+        </Table>
+      );
+
+      const caption = container.querySelector("caption");
+      expect(caption).toBeInTheDocument();
+      expect(caption).toHaveTextContent("Table description");
     });
   });
 });

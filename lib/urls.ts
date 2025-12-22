@@ -1,4 +1,4 @@
-import { siteMetadata } from "~/blog.config";
+import { siteMetadata } from "../blog.config";
 
 const GITHUB_USERNAME = "magarcia";
 const GITHUB_REPO_NAME = "magarcia.io";
@@ -21,4 +21,14 @@ export function buildDiscussUrl(slug: string, lang: string = "en"): string {
 export function getLocalizedPath(path: string, lang: string): string {
   if (lang === "en") return path;
   return `/${lang}${path === "/" ? "" : path}`;
+}
+
+export function slugifyTag(tag: string): string {
+  return tag.toLowerCase().replace(/\s+/g, "-");
+}
+
+export function buildTagUrl(tag: string, lang: string = "en"): string {
+  const slug = slugifyTag(tag);
+  const path = `/tags/${slug}`;
+  return lang === "en" ? path : `/${lang}${path}`;
 }

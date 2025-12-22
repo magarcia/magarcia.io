@@ -1,5 +1,6 @@
 import type { Config } from "@react-router/dev/config";
 import { getAllTags, getAllFilesFrontMatter } from "./lib/blog";
+import { slugifyTag } from "./lib/urls";
 
 export default {
   ssr: false,
@@ -10,16 +11,14 @@ export default {
     const postsCa = getAllFilesFrontMatter("blog", "ca");
 
     const tagsEn = getAllTags("blog", "en");
-    const tagsEs = getAllTags("blog", "es");
-    const tagsCa = getAllTags("blog", "ca");
 
     const blogPathsEn = postsEn.map((p) => `/${p.slug}`);
     const blogPathsEs = postsEs.map((p) => `/es/${p.slug}`);
     const blogPathsCa = postsCa.map((p) => `/ca/${p.slug}`);
 
-    const tagPathsEn = tagsEn.map((tag) => `/tags/${tag}`);
-    const tagPathsEs = tagsEs.map((tag) => `/es/tags/${tag}`);
-    const tagPathsCa = tagsCa.map((tag) => `/ca/tags/${tag}`);
+    const tagPathsEn = tagsEn.map((tag) => `/tags/${slugifyTag(tag)}`);
+    const tagPathsEs = tagsEn.map((tag) => `/es/tags/${slugifyTag(tag)}`);
+    const tagPathsCa = tagsEn.map((tag) => `/ca/tags/${slugifyTag(tag)}`);
 
     return [
       "/",

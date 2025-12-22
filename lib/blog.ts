@@ -2,6 +2,7 @@ import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
 import readingTime from "reading-time";
+import { slugifyTag } from "./urls";
 
 const root = process.cwd();
 
@@ -169,6 +170,21 @@ export function getAllTags(type: string, lang: string = "en"): string[] {
   });
 
   return Array.from(tagsSet).sort();
+}
+
+export function getTagBySlug(type: string, tagSlug: string): string | null {
+  const tags = getAllTags(type, "en");
+  return tags.find((tag) => slugifyTag(tag) === tagSlug) ?? null;
+}
+
+export function getPostsByTagSlug(type: string, tagSlug: string, lang: string = "en"): FrontMatter[] {
+  const originalTag = getTagBySlug(type, tagSlug);
+  if (!originalTag) return [];
+
+  const posts = getAllFilesFrontMatter(type, lang);
+  return posts.filter(
+    (post) => post.tags && post.tags.includes(originalTag)
+  );
 }
 
 export function getPostsByTag(type: string, tag: string, lang: string = "en"): FrontMatter[] {
