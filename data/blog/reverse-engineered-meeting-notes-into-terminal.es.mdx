@@ -1,0 +1,175 @@
+---
+title: "Hice Ingeniería Inversa de mis Notas de Reuniones para Usarlas en la Terminal"
+date: "2025-12-22"
+spoiler: Construí granola-cli para acceder a mis notas de reuniones con IA desde la línea de comandos. Ahora puedo consultar mis reuniones con Claude Code, buscar en transcripciones y canalizar tareas directamente a mis flujos de trabajo.
+tags:
+  - TypeScript
+  - Node.js
+  - CLI
+  - Developer Tools
+  - AI
+  - Open Source
+---
+
+> **Aviso:** Este proyecto es una herramienta de código abierto independiente y no está afiliada, respaldada ni conectada con Granola.ai.
+
+Construí **granola-cli** para acceder a mis notas de reuniones con IA desde la línea de comandos. Ahora puedo consultar mis reuniones con **Claude Code**, buscar en transcripciones y canalizar tareas directamente a mis flujos de trabajo.
+
+## ¿Qué es Granola?
+
+[Granola](https://www.granola.ai/) es un asistente de reuniones con IA que se integra en tu barra de menú. Graba el audio del sistema, transcribe localmente y usa LLMs para producir resúmenes estructurados: decisiones clave, tareas, puntos de discusión. No hay bots uniéndose a tus llamadas, ni notificaciones incómodas de "Granola está grabando" para tus compañeros. En **Buffer**, se ha convertido en una herramienta diaria para nuestro equipo.
+
+Las notas que genera son excelentes. Pero llegué a un límite.
+
+## El Problema que Necesitaba Resolver
+
+Quería datos en crudo en mi terminal. Quería alimentar las sincronizaciones de ingeniería de la semana pasada a **Claude Code** para planificar mi próximo sprint. Quería buscar en transcripciones o canalizar tareas directamente a mi gestor de tareas.
+
+Copiar y pegar desde una interfaz web no era suficiente. Busqué soluciones existentes y encontré [la investigación de Joseph Thacker](https://josephthacker.com/hacking/2025/05/08/reverse-engineering-granola-notes.html) sobre ingeniería inversa de la API de Granola, más el repositorio [getprobo/reverse-engineering-granola-api](https://github.com/getprobo/reverse-engineering-granola-api). El trabajo base existía. Lo que no existía era una CLI adecuada para hacer esto útil en el día a día.
+
+Así que construí una.
+
+## Cómo Mapeé la API de Granola
+
+La aplicación de escritorio de Granola almacena tokens de autenticación en un archivo JSON local. La CLI lee estas credenciales, las guarda de forma segura en el keychain de tu sistema mediante **cross-keychain** (sobre el cual [escribí anteriormente](/cross-platform-secret-storage-with-cross-keychain)), y las usa para llamar a las APIs internas de Granola.
+
+**Endpoints clave que mapeé:**
+
+- `POST /v2/get-documents` — listar reuniones con paginación por cursor
+- `POST /v1/get-document-metadata` — notas y datos de participantes
+- `POST /v1/get-document-transcript` — segmentos de transcripción con detección de hablante
+- `POST /v2/get-document-lists` — carpetas y organización del espacio de trabajo
+
+## Consulta, Filtra y Exporta tus Reuniones
+
+### Listar y Filtrar
+
+```bash
+# Reuniones recientes
+granola meeting list --limit 10
+
+# Filtrar por fecha (soporta lenguaje natural)
+granola meeting list --date yesterday
+granola meeting list --since "last week"
+granola meeting list --since 2025-12-01 --until 2025-12-15
+
+# Filtrar por asistente o búsqueda
+granola meeting list --attendee "john@example.com"
+granola meeting list --search "quarterly planning"
+```
+
+### Ver Contenido
+
+```bash
+# Detalles completos de la reunión con participantes
+granola meeting view <id>
+
+# Tus notas manuscritas (convertidas de ProseMirror a Markdown)
+granola meeting notes <id>
+
+# Resumen generado por IA con decisiones clave y tareas
+granola meeting enhanced <id>
+
+# Transcripción completa con detección de hablante
+granola meeting transcript <id>
+granola meeting transcript <id> --timestamps
+```
+
+### Exportar para Pipelines
+
+```bash
+# Exportar todo sobre una reunión
+granola meeting export <id> --format json
+granola meeting export <id> --format toon
+
+# Canalizar a LLMs
+granola meeting enhanced <id> --output toon | llm "What were the action items?"
+```
+
+## 40% Menos Tokens con TOON
+
+La CLI soporta [TOON](https://toonformat.dev/) (Token-Oriented Object Notation), un formato diseñado específicamente para consumo de LLMs. TOON entrega los mismos datos estructurados que JSON pero usa **40% menos tokens**.
+
+Cuando canalizas datos de reuniones a Claude u otro modelo, cada token ahorrado significa más contexto para tu pregunta real. TOON marca la diferencia entre incluir una reunión o tres en tu ventana de contexto.
+
+```
+$ granola meeting export abc123 --format json | wc -c
+  15234
+
+$ granola meeting export abc123 --format toon | wc -c
+  9140
+```
+
+Los mismos datos. 40% más pequeño. Esa es la diferencia entre hacer una pregunta de seguimiento o alcanzar tu límite de contexto.
+
+## Convirtiendo el Historial de Reuniones en Contexto para IA
+
+Por esto lo construí: para potenciar mis agentes de IA.
+
+Uso **Claude Code** intensivamente. Con **granola-cli** instalada, puedo pedirle a Claude que analice mis reuniones directamente:
+
+```
+Tú: Revisa mis sincronizaciones de ingeniería de la semana pasada y lista cualquier bloqueo mencionado.
+
+Claude: Consultaré tus reuniones recientes usando granola-cli.
+
+[Ejecuta: granola meeting list --since "last week" --search "sync"]
+
+Encontré 3 sincronizaciones de ingeniería. Analizando transcripciones...
+
+Bloqueos mencionados:
+1. Inestabilidad del pipeline de CI bloqueando el release (sync del 18 de diciembre)
+2. Esperando revisión de diseño para el rediseño del dashboard (sync del 19 de diciembre)
+3. Problemas de rate limiting en la API con la integración de terceros (sync del 20 de diciembre)
+```
+
+Sin copiar y pegar. Sin cambiar de ventanas. Claude lee los datos directamente y me da respuestas.
+
+También he construido [Agent Skills](https://agentskills.io/home) que revisan el historial de reuniones, resumen decisiones y destacan bloqueos de sincronizaciones anteriores. Tu historial de reuniones se convierte en una base de datos consultable para tu flujo de trabajo de IA.
+
+## Bajo el Capó
+
+### Almacenamiento Seguro de Credenciales
+
+Me niego a almacenar tokens de API en archivos de configuración en texto plano. Demasiadas herramientas CLI descargan secretos en `~/.config/toolname/credentials.json` y lo dan por terminado. Un `git add .` accidental o una copia de seguridad mal configurada, y tus tokens quedan expuestos.
+
+La CLI usa **cross-keychain** para almacenar credenciales en el gestor de credenciales nativo de tu sistema operativo: macOS Keychain, Windows Credential Manager o Linux Secret Service. Estos sistemas cifran secretos en reposo, se integran con tu sesión de inicio y siguen las mejores prácticas de seguridad de la plataforma. Tus tokens de Granola nunca tocan el sistema de archivos en forma legible.
+
+### Actualización de Tokens con Bloqueo de Archivos
+
+Granola usa tokens de actualización de un solo uso: cada token solo puede usarse una vez antes de invalidarse. Esto mejora la seguridad pero crea una condición de carrera: si dos procesos de CLI actualizan simultáneamente, uno obtiene un token válido mientras que el otro desperdicia el token de actualización y falla.
+
+La CLI resuelve esto con bloqueo basado en archivos. Antes de actualizar tokens, el proceso adquiere un bloqueo exclusivo en un archivo en tu directorio temporal. Si otro proceso ya está actualizando, el segundo espera (con un timeout de 30 segundos) en lugar de competir. El bloqueo se libera inmediatamente después de completar la actualización, por lo que las invocaciones paralelas de la CLI funcionan sin problemas: simplemente se turnan para actualizar cuando es necesario.
+
+### Conversión de ProseMirror a Markdown
+
+Granola almacena notas en formato ProseMirror, el mismo framework de texto enriquecido que usan Notion, The New York Times y Atlassian. Representa contenido como un árbol JSON de nodos con marcas (formato) adjuntas.
+
+La CLI recorre este árbol y lo convierte a Markdown. Los encabezados se convierten en líneas `#`, las listas en elementos `-`, y las marcas de texto en sus equivalentes de Markdown: negrita se envuelve en `**`, cursiva en `*`, código en comillas invertidas. La conversión preserva estructuras anidadas, por lo que una lista con viñetas dentro de una cita en bloque se renderiza correctamente. Obtienes Markdown legible que puedes canalizar a otras herramientas, buscar con grep o alimentar a un LLM.
+
+### Análisis de Fechas en Lenguaje Natural
+
+Nadie quiere escribir fechas ISO. La CLI acepta "today", "yesterday", "3 days ago", "last week" o fechas parciales como "Dec 1". Para rangos, combina `--since` y `--until` con cualquier formato. El parser se encarga del resto.
+
+El parser normaliza la entrada, maneja casos límite (¿qué significa "last week" un lunes?) y siempre devuelve timestamps UTC que coinciden con las expectativas de la API de Granola. Hace que el caso común—"muéstrame las reuniones de ayer"—sea un solo flag intuitivo.
+
+## 4 Horas con Claude Code Opus 4.5
+
+Construí esta herramienta en aproximadamente **4 a 5 horas** programando en pareja con **Claude Code Opus 4.5**. Me enfoqué en la arquitectura y la intención mientras Claude manejaba la implementación. El resultado: una CLI lista para producción con TypeScript estricto, más del 95% de cobertura de pruebas en más de 630 casos de prueba, y diseño modular—todo en una sola tarde.
+
+Esto es "vibe engineering" en la práctica. Me salté la fase de planificación extensa, describí lo que quería, revisé el resultado e iteré rápidamente.
+
+## Comenzar
+
+```bash
+# Instalar
+npm install -g granola-cli
+
+# Login (lee credenciales de tu aplicación de escritorio de Granola)
+granola auth login
+
+# Lista tus reuniones
+granola meeting list
+```
+
+El código fuente está en [github.com/magarcia/granola-cli](https://github.com/magarcia/granola-cli). Issues y PRs bienvenidos.
