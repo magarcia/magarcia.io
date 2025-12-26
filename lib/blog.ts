@@ -6,6 +6,29 @@ import { slugifyTag } from "./urls";
 
 const root = process.cwd();
 
+const VALID_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+const VALID_LANG_CODES = ["en", "es", "ca"] as const;
+
+export function isValidSlug(slug: string): boolean {
+  return VALID_SLUG_PATTERN.test(slug) && slug.length <= 200;
+}
+
+export function isValidLang(lang: string): lang is typeof VALID_LANG_CODES[number] {
+  return VALID_LANG_CODES.includes(lang as typeof VALID_LANG_CODES[number]);
+}
+
+export function validateSlug(slug: string): void {
+  if (!isValidSlug(slug)) {
+    throw new Error("Invalid slug format");
+  }
+}
+
+export function validateLang(lang: string): void {
+  if (!isValidLang(lang)) {
+    throw new Error("Invalid language code");
+  }
+}
+
 export interface FrontMatter {
   title: string;
   date: string;
@@ -48,6 +71,9 @@ export function getFileBySlug(
   slug: string,
   lang: string = "en"
 ): BlogPostWithNavigation {
+  validateSlug(slug);
+  validateLang(lang);
+
   let source: string;
   const mdxPath = path.join(root, "data", type, `${slug}.${lang}.mdx`);
   const mdPath = path.join(root, "data", type, `${slug}.${lang}.md`);
@@ -63,7 +89,7 @@ export function getFileBySlug(
   } else if (fs.existsSync(defaultMdPath)) {
     source = fs.readFileSync(defaultMdPath, "utf8");
   } else {
-    throw new Error(`No file found for slug: ${slug}`);
+    throw new Error("Post not found");
   }
 
   const allFiles = getAllFilesFrontMatter(type, lang);
@@ -173,6 +199,9 @@ export function getAllTags(type: string, lang: string = "en"): string[] {
 }
 
 export function getTagBySlug(type: string, tagSlug: string): string | null {
+  if (!isValidSlug(tagSlug)) {
+    return null;
+  }
   const tags = getAllTags(type, "en");
   return tags.find((tag) => slugifyTag(tag) === tagSlug) ?? null;
 }

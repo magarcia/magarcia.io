@@ -4,6 +4,8 @@ import type { BlogPostWithNavigation } from "~/lib/blog";
 
 vi.mock("~/lib/blog", () => ({
   getFileBySlug: vi.fn(),
+  isValidSlug: vi.fn((slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug)),
+  isValidLang: vi.fn((lang: string) => ["en", "es", "ca"].includes(lang)),
 }));
 
 const { getFileBySlug } = await import("~/lib/blog");
@@ -108,7 +110,7 @@ describe("$slug route loader", () => {
   describe("error handling", () => {
     it("throws 404 response when post not found", async () => {
       vi.mocked(getFileBySlug).mockImplementation(() => {
-        throw new Error("No file found for slug: non-existent");
+        throw new Error("Post not found");
       });
       const request = new Request("http://localhost/non-existent");
       const params = { slug: "non-existent" };

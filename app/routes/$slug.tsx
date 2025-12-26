@@ -2,7 +2,7 @@ import { parseISO, format } from "date-fns";
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import type { Route } from "./+types/$slug";
-import { getFileBySlug, type BlogPostWithNavigation } from "~/lib/blog";
+import { getFileBySlug, isValidSlug, isValidLang, type BlogPostWithNavigation } from "~/lib/blog";
 import Header from "~/components/Header";
 import { buildDiscussUrl, buildEditUrl, buildTagUrl } from "~/lib/urls";
 
@@ -28,10 +28,20 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ params, request }: Route.LoaderArgs) {
+  const slug = params.slug;
+  if (!slug || !isValidSlug(slug)) {
+    throw new Response("Not Found", { status: 404 });
+  }
+
+  const pathname = new URL(request.url).pathname;
+  const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
+
+  if (!isValidLang(lang)) {
+    throw new Response("Not Found", { status: 404 });
+  }
+
   try {
-    const pathname = new URL(request.url).pathname;
-    const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
-    const post = getFileBySlug("blog", params.slug, lang);
+    const post = getFileBySlug("blog", slug, lang);
     return { ...post, lang };
   } catch {
     throw new Response("Not Found", { status: 404 });

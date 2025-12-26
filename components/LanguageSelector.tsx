@@ -16,12 +16,23 @@ const languages = [
     { code: "en", label: "English" },
     { code: "es", label: "Español" },
     { code: "ca", label: "Català" },
-];
+] as const;
+
+const VALID_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+
+function sanitizeSlug(slug: string): string | null {
+    if (!slug || !VALID_SLUG_PATTERN.test(slug) || slug.length > 200) {
+        return null;
+    }
+    return slug;
+}
 
 export default function LanguageSelector({ lang, slug }: LanguageSelectorProps) {
+    const safeSlug = slug ? sanitizeSlug(slug) : null;
+
     const getLanguageLink = (targetLang: string) => {
-        if (slug) {
-            return targetLang === "en" ? `/${slug}` : `/${targetLang}/${slug}`;
+        if (safeSlug) {
+            return targetLang === "en" ? `/${safeSlug}` : `/${targetLang}/${safeSlug}`;
         }
         return targetLang === "en" ? "/" : `/${targetLang}`;
     };

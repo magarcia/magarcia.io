@@ -5,41 +5,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Common Commands
 
 - `yarn dev` - Start development server
-- `yarn build` - Build static site with image optimization and copy _redirects file
-- `yarn lint` - Run Next.js linter
-- `yarn start` - Start production server (after build)
+- `yarn build` - Build static site and generate sitemap/RSS
+- `yarn lint` - Run ESLint on app directory
+- `yarn typecheck` - Run TypeScript type checking
+- `yarn test:unit` - Run unit tests with Vitest
+- `yarn test:e2e` - Run end-to-end tests with Playwright
 
 ## Architecture Overview
 
-This is a static blog built with Next.js that exports to static files. Key architectural patterns:
+This is a static blog built with **React Router v7** that pre-renders to static files. Key architectural patterns:
 
 ### Content Management
 - Blog posts are stored as Markdown files in `data/blog/`
-- `lib/blog.js` handles all content parsing using gray-matter for frontmatter and reading-time for metrics
-- Content is processed at build time, not runtime
+- `lib/blog.ts` handles all content parsing using gray-matter for frontmatter and reading-time for metrics
+- Content is processed at build time via React Router's prerender feature
 - Draft posts are filtered out in production builds
+- Multi-language support: English (default), Spanish (`.es.mdx`), Catalan (`.ca.mdx`)
 
 ### Static Generation
-- Uses Next.js static export (`output: "export"` in next.config.js)
-- Images are optimized using next-image-export-optimizer
-- RSS feed and sitemap are generated during webpack build process (see next.config.js webpack function)
-- _redirects file is copied to output for Netlify/Vercel redirects
+- Uses React Router's static prerendering (`ssr: false` in react-router.config.ts)
+- Routes are pre-rendered at build time based on `prerender()` function exports
+- RSS feed and sitemap are generated via build scripts (`scripts/generate-*.ts`)
+- `_redirects` and `_headers` files are copied to output for Netlify
 
 ### Styling & Theming
 - Tailwind CSS for styling with custom global styles in `styles/`
-- Dark/light theme support via next-themes with ThemeProvider in `_app.js`
+- Dark/light theme support via custom `useTheme` hook with localStorage persistence
 - Syntax highlighting styles in `styles/highlight.css`
 
-### Page Structure
-- `[slug].js` - Dynamic blog post pages
-- `index.js` - Homepage with blog list
-- `tags/[tag].js` - Tag-based filtering
-- API routes in `pages/api/views/` for view tracking
+### Route Structure
+- `app/routes/_index.tsx` - Homepage with blog list
+- `app/routes/$slug.tsx` - Dynamic blog post pages
+- `app/routes/tags.$tag.tsx` - Tag-based filtering
+- Locale variants: `/es/`, `/ca/` prefixes
 
 ### Components
-- Custom markdown components in `components/markdownComponents.js`
+- Custom markdown components in `components/mdxComponents.tsx`
 - Reusable UI components for blog elements (CodeBlock, Heading, etc.)
-- ViewCounter component for post analytics
+- Uses react-markdown with rehype-raw for HTML in markdown
+
+### Security
+- Input validation for slugs and tags (alphanumeric, hyphens only)
+- Security headers configured in `_headers` file
+- External links use `rel="noopener noreferrer"`
 
 Package manager: Yarn (v4.1.1)
 

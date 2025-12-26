@@ -39,6 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           defer
           data-domain="magarcia.io"
           src="https://plausible.io/js/plausible.js"
+          crossOrigin="anonymous"
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

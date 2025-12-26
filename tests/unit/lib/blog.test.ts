@@ -5,6 +5,10 @@ import {
   getAllFiles,
   getAllTags,
   getPostsByTag,
+  isValidSlug,
+  isValidLang,
+  validateSlug,
+  validateLang,
   type FrontMatter,
   type BlogPost,
   type BlogPostWithNavigation,
@@ -59,6 +63,64 @@ describe("blog.ts", () => {
   afterEach(() => {
     process.env.NODE_ENV = originalEnv;
     vi.restoreAllMocks();
+  });
+
+  describe("isValidSlug", () => {
+    it("accepts valid slugs", () => {
+      expect(isValidSlug("hello-world")).toBe(true);
+      expect(isValidSlug("test")).toBe(true);
+      expect(isValidSlug("my-post-123")).toBe(true);
+      expect(isValidSlug("POST")).toBe(true);
+    });
+
+    it("rejects invalid slugs", () => {
+      expect(isValidSlug("")).toBe(false);
+      expect(isValidSlug("../etc/passwd")).toBe(false);
+      expect(isValidSlug("hello world")).toBe(false);
+      expect(isValidSlug("hello_world")).toBe(false);
+      expect(isValidSlug("hello/world")).toBe(false);
+      expect(isValidSlug("-invalid")).toBe(false);
+      expect(isValidSlug("invalid-")).toBe(false);
+    });
+
+    it("rejects slugs that are too long", () => {
+      const longSlug = "a".repeat(201);
+      expect(isValidSlug(longSlug)).toBe(false);
+    });
+  });
+
+  describe("isValidLang", () => {
+    it("accepts valid language codes", () => {
+      expect(isValidLang("en")).toBe(true);
+      expect(isValidLang("es")).toBe(true);
+      expect(isValidLang("ca")).toBe(true);
+    });
+
+    it("rejects invalid language codes", () => {
+      expect(isValidLang("fr")).toBe(false);
+      expect(isValidLang("")).toBe(false);
+      expect(isValidLang("english")).toBe(false);
+    });
+  });
+
+  describe("validateSlug", () => {
+    it("does not throw for valid slugs", () => {
+      expect(() => validateSlug("valid-slug")).not.toThrow();
+    });
+
+    it("throws for invalid slugs", () => {
+      expect(() => validateSlug("../invalid")).toThrow("Invalid slug format");
+    });
+  });
+
+  describe("validateLang", () => {
+    it("does not throw for valid languages", () => {
+      expect(() => validateLang("en")).not.toThrow();
+    });
+
+    it("throws for invalid languages", () => {
+      expect(() => validateLang("fr")).toThrow("Invalid language code");
+    });
   });
 
   describe("getFileBySlug", () => {
@@ -133,7 +195,7 @@ describe("blog.ts", () => {
       mockFs.existsSync.mockReturnValue(false);
 
       expect(() => getFileBySlug("blog", "non-existent", "en")).toThrow(
-        "No file found for slug: non-existent"
+        "Post not found"
       );
     });
 
