@@ -85,5 +85,8 @@
     "vite": "^5.0.0",
     "vitest": "^4.0.15"
   },
-  "packageManager": "yarn@4.1.1"
+  "packageManager": "yarn@4.1.1",
+  "resolutions": {
+    "glob": "^10.5.0"
+  }
 }
