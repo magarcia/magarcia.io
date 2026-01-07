@@ -3,16 +3,15 @@ import { Link } from "react-router";
 import type { Route } from "./+types/tags.$tag";
 import { getPostsByTagSlug, getTagBySlug, isValidSlug, isValidLang, type FrontMatter } from "~/lib/blog";
 import Header from "~/components/Header";
-import { formatDate, formatReadingTime } from "~/lib/i18n";
+import { formatDate, formatReadingTime, formatTagPageTitle } from "~/lib/i18n";
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data) {
     return [{ title: "Tag Not Found" }];
   }
 
-  const { tag, totalCount } = data;
-  const title = `${totalCount} post${totalCount === 1 ? "" : "s"
-    } tagged with "${tag}"`;
+  const { tag, totalCount, lang } = data;
+  const title = formatTagPageTitle(totalCount, tag, lang);
 
   return [
     { title: `${title} — magarcia` },
@@ -52,8 +51,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function TagPage({ loaderData }: Route.ComponentProps) {
   const { posts, tag, totalCount, lang } = loaderData;
-  const title = `${totalCount} post${totalCount === 1 ? "" : "s"
-    } tagged with "${tag}"`;
+  const title = formatTagPageTitle(totalCount, tag, lang);
   const anchorSize = 18;
 
   return (

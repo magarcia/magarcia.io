@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import { es, ca, enUS } from "date-fns/locale";
+import { es, ca, enUS, type Locale } from "date-fns/locale";
 
 const locales: Record<string, Locale> = {
   en: enUS,
@@ -26,4 +26,19 @@ export function formatReadingTime(
 
   const formatter = translations[lang] || translations.en;
   return formatter(roundedMinutes);
+}
+
+export function formatTagPageTitle(
+  count: number,
+  tag: string,
+  lang: string = "en"
+): string {
+  const translations: Record<string, (n: number, t: string) => string> = {
+    en: (n, t) => `${n} post${n === 1 ? "" : "s"} tagged with "${t}"`,
+    es: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetado${n === 1 ? "" : "s"} con "${t}"`,
+    ca: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetat${n === 1 ? "" : "s"} amb "${t}"`,
+  };
+
+  const formatter = translations[lang] || translations.en;
+  return formatter(count, tag);
 }
