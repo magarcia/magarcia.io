@@ -1,5 +1,5 @@
 ---
-title: YumML - Yet Another Recipe Metadata
+title: YumML - Yet Another Recipe Metadata Format
 date: '2020-01-06'
 spoiler: There are some recipe formats over the internet but they are old, not
   properly specified or license restrictions. YumML is an effort to make cooking
@@ -9,17 +9,17 @@ tags:
   - open-source
 ---
 
-Some time ago, talking with a friend we realized that there is not a "standard"
-format to save cooking recipes. At that time I was learning React and one of the
-first projects I tried to do was a recipe management app. I didn't success on
-that project (as many others I started and never finished) but on the way I
-found a draft spec of a recipe format: **YumML**.
+Years ago, talking with a friend, we realized that no standard format exists
+for saving cooking recipes. At that time I was learning React, and one of my early projects was a recipe
+management app. I didn't succeed (like many projects I started and never
+finished), but along the way I found a draft spec for a recipe format:
+**YumML**.
 
-This format was publish at that time on [vikingco.de](http://vikingco.de/) but
-the site is not available anymore. The only references available are from the
+Paul Jenkins published this format on [vikingco.de](http://vikingco.de/), but
+the site is now offline. The only references available are from the
 [Internet Archive](https://web.archive.org/web/20160730232450/http://vikingco.de/)
 and the [repository of the page](https://github.com/vikingcode/vikingcode.github.io)
-that stills available.
+that remains available.
 
 > The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
 > “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be
@@ -31,25 +31,24 @@ The first draft of the YumML format is from September 21 of 2011 made by Paul
 Jenkins, you can check the [original specification here](./original-yumml.md)
 that I rescued from the old archives I found.
 
-From my point of view, this draft it's really promising as a format for cooking
-recipes, so I want to recover it from the forgiven archives of Internet and bring
-it to live again, adding some extra functionalities/specifications.
+This draft is promising as a format for cooking recipes, so I want to recover
+it from the forgotten archives and revive it, adding extra functionalities and
+specifications.
 
 ## Motivation
 
-As the original author of YumML mentioned on his original blog post, I've been
-investigating a bit about recipe formats for cooking and been clear, most of
-them sucks. The landscape of recipe interchange formats is quite fragmented, but
-most of the have one think in common: they are not really human-friendly.
+As the original author of YumML mentioned in his blog post, I've investigated
+cooking recipe formats and, to be clear, most suck. The landscape of recipe
+interchange formats is fragmented, but most share one trait: they lack
+human readability.
 
-A lot of cooking-related software come with a format that usually only that
-software is able to work with an understand. Although some of them can be
-imported by other programs.
+Most cooking software ships with proprietary formats that only that software
+can read. Some can be imported by other programs.
 [Meal-Master](http://web.archive.org/web/20151029032924/http://episoft.home.comcast.net:80/~episoft/)
 is one of these widely supported formats and due to that there is a
 [huge collection of recipes](http://www.ffts.com/recipes.htm) available online.
 
-But looking to an example, it doesn't seems something well specified:
+But looking at an example, the format seems poorly specified:
 
 ```txt
 MMMMM----- Now You're Cooking! v5.65 [Meal-Master Export Format]
@@ -114,7 +113,7 @@ YumML is based on YAML to create a human _and_ system readable format.
 
 ## Goals
 
-From my side I want to define a more formal goals for the spec.
+I want to define more formal goals for the spec.
 
 YumML format:
 

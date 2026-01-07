@@ -1,5 +1,5 @@
 ---
-title: YumML - Una Altra Metadades de Receptes
+title: YumML - Un Altre Format de Metadades de Receptes
 date: '2020-01-06'
 spoiler: Hi ha alguns formats de receptes a internet però són antics, no
   estan especificats correctament o tenen restriccions de llicència. YumML és un esforç per fer receptes de cuina
@@ -9,17 +9,17 @@ tags:
   - codi-obert
 ---
 
-Fa algun temps, parlant amb un amic ens vam adonar que no hi ha un format "estàndard"
-per guardar receptes de cuina. En aquell moment estava aprenent React i un dels
-primers projectes que vaig intentar fer va ser una app de gestió de receptes. No vaig tenir èxit en
-aquell projecte (com molts altres que vaig començar i mai vaig acabar) però en el camí
-vaig trobar un esborrany d'especificació d'un format de receptes: **YumML**.
+Fa anys, parlant amb un amic, ens vam adonar que no existeix un format estàndard
+per guardar receptes de cuina. En aquell moment estava aprenent React, i un dels
+meus primers projectes va ser una app de gestió de receptes. No vaig tenir èxit
+(com molts projectes que vaig començar i mai vaig acabar), però en el camí vaig
+trobar un esborrany d'especificació d'un format de receptes: **YumML**.
 
-Aquest format va ser publicat en aquell moment a [vikingco.de](http://vikingco.de/) però
-el lloc ja no està disponible. Les úniques referències disponibles són de l'
+Paul Jenkins va publicar aquest format a [vikingco.de](http://vikingco.de/), però
+el lloc ara està fora de línia. Les úniques referències disponibles són de l'
 [Internet Archive](https://web.archive.org/web/20160730232450/http://vikingco.de/)
 i el [repositori de la pàgina](https://github.com/vikingcode/vikingcode.github.io)
-que encara està disponible.
+que encara roman disponible.
 
 > Les paraules clau “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
 > “SHOULD NOT”, “RECOMMENDED”, “MAY”, i “OPTIONAL” en aquest document han de ser
@@ -31,25 +31,24 @@ El primer esborrany del format YumML és del 21 de setembre de 2011 fet per Paul
 Jenkins, pots revisar l'[especificació original aquí](./original-yumml.md)
 que vaig rescatar dels vells arxius que vaig trobar.
 
-Des del meu punt de vista, aquest esborrany és realment prometedor com un format per a receptes de
-cuina, així que vull recuperar-lo dels arxius oblidats d'Internet i portar-lo
-a la vida de nou, afegint algunes funcionalitats/especificacions extra.
+Aquest esborrany és prometedor com a format per a receptes de cuina, així que vull
+recuperar-lo dels arxius oblidats i reviure'l, afegint funcionalitats i
+especificacions extra.
 
 ## Motivació
 
-Com l'autor original de YumML va mencionar en el seu post de blog original, he estat
-investigant una mica sobre formats de receptes per a cuina i sent clar, la majoria d'
-ells fan pena. El panorama de formats d'intercanvi de receptes està bastant fragmentat, però
-la majoria d'ells tenen una cosa en comú: no són realment amigables per als humans.
+Com l'autor original de YumML va mencionar en el seu post, he investigat formats de
+receptes de cuina i, sent clar, la majoria fan pena. El panorama de formats
+d'intercanvi de receptes està fragmentat, però la majoria comparteixen un tret:
+manquen de llegibilitat humana.
 
-Molt programari relacionat amb la cuina ve amb un format que usualment només aquest
-programari és capaç de treballar amb i entendre. Encara que alguns d'ells poden ser
-importats per altres programes.
+La majoria del programari de cuina utilitza formats propietaris que només aquest
+programari pot llegir. Alguns poden ser importats per altres programes.
 [Meal-Master](http://web.archive.org/web/20151029032924/http://episoft.home.comcast.net:80/~episoft/)
 és un d'aquests formats àmpliament suportats i a causa d'això hi ha una
 [enorme col·lecció de receptes](http://www.ffts.com/recipes.htm) disponible online.
 
-Però mirant un exemple, no sembla alguna cosa ben especificada:
+Però mirant un exemple, el format sembla mal especificat:
 
 ```txt
 MMMMM----- Now You're Cooking! v5.65 [Meal-Master Export Format]
@@ -114,7 +113,7 @@ YumML està basat en YAML per crear un format llegible per humans _i_ sistemes.
 
 ## Objectius
 
-Des del meu costat vull definir uns objectius més formals per a l'especificació.
+Vull definir objectius més formals per a l'especificació.
 
 Format YumML:
 

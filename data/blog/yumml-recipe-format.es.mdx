@@ -1,5 +1,5 @@
 ---
-title: YumML - Otra Metadatos de Recetas
+title: YumML - Otro Formato de Metadatos de Recetas
 date: '2020-01-06'
 spoiler: Hay algunos formatos de recetas en internet pero son antiguos, no
   están especificados correctamente o tienen restricciones de licencia. YumML es un esfuerzo para hacer recetas de cocina
@@ -9,17 +9,17 @@ tags:
   - codigo-abierto
 ---
 
-Hace algún tiempo, hablando con un amigo nos dimos cuenta de que no hay un formato "estándar"
-para guardar recetas de cocina. En ese momento estaba aprendiendo React y uno de los
-primeros proyectos que intenté hacer fue una app de gestión de recetas. No tuve éxito en
-ese proyecto (como muchos otros que empecé y nunca terminé) pero en el camino
-encontré un borrador de especificación de un formato de recetas: **YumML**.
+Hace años, hablando con un amigo, nos dimos cuenta de que no existe un formato estándar
+para guardar recetas de cocina. En ese momento estaba aprendiendo React, y uno de mis
+primeros proyectos fue una app de gestión de recetas. No tuve éxito (como muchos
+proyectos que empecé y nunca terminé), pero en el camino encontré un borrador de
+especificación de un formato de recetas: **YumML**.
 
-Este formato fue publicado en ese momento en [vikingco.de](http://vikingco.de/) pero
-el sitio ya no está disponible. Las únicas referencias disponibles son del
+Paul Jenkins publicó este formato en [vikingco.de](http://vikingco.de/), pero
+el sitio está ahora fuera de línea. Las únicas referencias disponibles son del
 [Internet Archive](https://web.archive.org/web/20160730232450/http://vikingco.de/)
 y el [repositorio de la página](https://github.com/vikingcode/vikingcode.github.io)
-que todavía está disponible.
+que aún permanece disponible.
 
 > Las palabras clave “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
 > “SHOULD NOT”, “RECOMMENDED”, “MAY”, y “OPTIONAL” en este documento deben ser
@@ -31,25 +31,24 @@ El primer borrador del formato YumML es del 21 de septiembre de 2011 hecho por P
 Jenkins, puedes revisar la [especificación original aquí](./original-yumml.md)
 que rescaté de los viejos archivos que encontré.
 
-Desde mi punto de vista, este borrador es realmente prometedor como un formato para recetas de
-cocina, así que quiero recuperarlo de los archivos olvidados de Internet y traerlo
-a la vida de nuevo, añadiendo algunas funcionalidades/especificaciones extra.
+Este borrador es prometedor como formato para recetas de cocina, así que quiero
+recuperarlo de los archivos olvidados y revivirlo, añadiendo funcionalidades y
+especificaciones extra.
 
 ## Motivación
 
-Como el autor original de YumML mencionó en su post de blog original, he estado
-investigando un poco sobre formatos de recetas para cocina y siendo claro, la mayoría de
-ellos apestan. El panorama de formatos de intercambio de recetas está bastante fragmentado, pero
-la mayoría de ellos tienen una cosa en común: no son realmente amigables para los humanos.
+Como el autor original de YumML mencionó en su post, he investigado formatos de
+recetas de cocina y, siendo claro, la mayoría apestan. El panorama de formatos de
+intercambio de recetas está fragmentado, pero la mayoría comparten un rasgo: carecen
+de legibilidad humana.
 
-Mucho software relacionado con la cocina viene con un formato que usualmente solo ese
-software es capaz de trabajar con y entender. Aunque algunos de ellos pueden ser
-importados por otros programas.
+La mayoría del software de cocina usa formatos propietarios que solo ese software
+puede leer. Algunos pueden ser importados por otros programas.
 [Meal-Master](http://web.archive.org/web/20151029032924/http://episoft.home.comcast.net:80/~episoft/)
 es uno de estos formatos ampliamente soportados y debido a eso hay una
 [enorme colección de recetas](http://www.ffts.com/recipes.htm) disponible online.
 
-Pero mirando un ejemplo, no parece algo bien especificado:
+Pero mirando un ejemplo, el formato parece mal especificado:
 
 ```txt
 MMMMM----- Now You're Cooking! v5.65 [Meal-Master Export Format]
@@ -114,7 +113,7 @@ YumML está basado en YAML para crear un formato legible por humanos _y_ sistema
 
 ## Objetivos
 
-Desde mi lado quiero definir unos objetivos más formales para la especificación.
+Quiero definir objetivos más formales para la especificación.
 
 Formato YumML:
 
