@@ -3,11 +3,11 @@ title: "Escrivint skills potents de Claude Code amb npx bun"
 date: "2026-01-07"
 spoiler: "Com escriure skills de Claude Code que utilitzin paquets npm de tercers sense un pas de compilació. Utilitzar npx bun et proporciona dependències auto-instal·lables, TypeScript natiu i una fixació de versions neta—l'equivalent en JavaScript a l'uv run de Python."
 tags:
-  - TypeScript
-  - Node.js
-  - Bun
-  - Claude Code
-  - Developer Tools
+  - typescript
+  - node-js
+  - bun
+  - ia
+  - eines-de-desenvolupador
 ---
 
 Volia construir skills de [Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) més complexes. Claude Code és la CLI d'Anthropic per a la programació amb agents—i les skills et permeten estendre-la amb instruccions personalitzades i scripts executables. No només markdown, sinó scripts que utilitzen biblioteques de tercers: analitzar fitxers CSV, manipular fulls de càlcul, cridar API amb clients HTTP adequats.
@@ -33,7 +33,7 @@ print(requests.get("https://example.com"))
 
 Executa-ho amb `uv run script.py` o simplement `./script.py`. Les dependències s'instal·len automàticament en un entorn aïllat. Sense `requirements.txt`, sense gestió d'entorns virtuals, sense pas de compilació. L'script és autònom.
 
-Python va ser el meu primer llenguatge de programació professional, i encara admiro com ha evolucionat el seu ecosistema. Però el meu equip a **Buffer** treballa en TypeScript. Necessitava alguna cosa que fos fàcil d'aprendre per als meus companys—paquets npm familiars, sintaxi familiar—però tan flexible i potent com `uv run`.
+Python va ser el meu primer llenguatge de programació professional, i encara admiro com ha evolucionat el seu ecosistema. Però el meu equip a [**Buffer**](https://buffer.com) treballa en TypeScript. Necessitava alguna cosa que fos fàcil d'aprendre per als meus companys—paquets npm familiars, sintaxi familiar—però tan flexible i potent com `uv run`.
 
 ## La restricció
 

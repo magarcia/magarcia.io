@@ -3,11 +3,11 @@ title: "Creando Skills Potentes de Claude Code con npx bun"
 date: "2026-01-07"
 spoiler: "Cómo escribir skills de Claude Code que utilizan paquetes npm de terceros sin un paso de compilación. Usar npx bun te proporciona instalación automática de dependencias, TypeScript nativo y un fijado de versiones limpio: el equivalente en JavaScript al uv run de Python."
 tags:
-  - TypeScript
-  - Node.js
-  - Bun
-  - Claude Code
-  - Developer Tools
+  - typescript
+  - node-js
+  - bun
+  - ia
+  - herramientas-de-desarrollador
 ---
 
 Quería construir skills de [Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) más complejas. Claude Code es la CLI de Anthropic para programación agéntica—y las skills te permiten extenderla con instrucciones personalizadas y scripts ejecutables. No solo markdown, sino scripts que usan librerías de terceros: parsear archivos CSV, manipular hojas de cálculo, llamar a APIs con clientes HTTP adecuados.
@@ -33,7 +33,7 @@ print(requests.get("https://example.com"))
 
 Ejecútalo con `uv run script.py` o simplemente `./script.py`. Las dependencias se instalan automáticamente en un entorno aislado. Sin `requirements.txt`, sin gestión de entornos virtuales, sin paso de compilación. El script es autocontenido.
 
-Python fue mi primer lenguaje de programación profesional, y todavía admiro cómo ha evolucionado su ecosistema. Pero mi equipo en **Buffer** trabaja en TypeScript. Necesitaba algo que fuera fácil de adoptar para mis compañeros—paquetes npm familiares, sintaxis familiar—pero tan flexible y potente como `uv run`.
+Python fue mi primer lenguaje de programación profesional, y todavía admiro cómo ha evolucionado su ecosistema. Pero mi equipo en [**Buffer**](https://buffer.com) trabaja en TypeScript. Necesitaba algo que fuera fácil de adoptar para mis compañeros—paquetes npm familiares, sintaxis familiar—pero tan flexible y potente como `uv run`.
 
 ## La Restricción
 

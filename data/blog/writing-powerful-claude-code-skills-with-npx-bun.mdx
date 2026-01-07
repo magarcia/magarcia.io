@@ -3,11 +3,11 @@ title: "Writing Powerful Claude Code Skills with npx bun"
 date: "2026-01-07"
 spoiler: How to write Claude Code skills that use third-party npm packages without a build step. Using npx bun gives you auto-installing dependencies, native TypeScript, and clean version pinning—the JavaScript equivalent of Python's uv run.
 tags:
-  - TypeScript
-  - Node.js
-  - Bun
-  - Claude Code
-  - Developer Tools
+  - typescript
+  - node-js
+  - bun
+  - ai
+  - developer-tools
 ---
 
 I wanted to build more complex [Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) skills. Claude Code is Anthropic's CLI for agentic coding—and skills let you extend it with custom instructions and executable scripts. Not just markdown, but scripts that use third-party libraries: parsing CSV files, manipulating spreadsheets, calling APIs with proper HTTP clients.
@@ -33,7 +33,7 @@ print(requests.get("https://example.com"))
 
 Run it with `uv run script.py` or just `./script.py`. Dependencies install automatically into an isolated environment. No `requirements.txt`, no virtual environment management, no build step. The script is self-contained.
 
-Python was my first professional programming language, and I still admire how its ecosystem has evolved. But my team at **Buffer** works in TypeScript. I needed something that would be easy for my teammates to pick up—familiar npm packages, familiar syntax—but as flexible and powerful as `uv run`.
+Python was my first professional programming language, and I still admire how its ecosystem has evolved. But my team at [**Buffer**](https://buffer.com) works in TypeScript. I needed something that would be easy for my teammates to pick up—familiar npm packages, familiar syntax—but as flexible and powerful as `uv run`.
 
 ## The Constraint
 
@@ -77,7 +77,7 @@ No installation needed. The runtime fetches the module on first use. Version pin
 
 The problem: Node.js doesn't natively support HTTPS imports without experimental flags or custom loaders. Some packages don't work well as pure ESM. Network latency on every cold start adds up.
 
-## Approach 3: Google zx with --install
+## Approach 3: Google `zx` with `--install`
 
 [zx](https://google.github.io/zx/) is Google's tool for writing shell scripts in JavaScript. It wraps `child_process` and adds conveniences like the `$` template literal for running commands.
 

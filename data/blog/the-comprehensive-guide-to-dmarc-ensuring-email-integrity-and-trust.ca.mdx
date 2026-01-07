@@ -3,8 +3,7 @@ title: "Una Guia Completa sobre DMARC: Assegurant la Integritat i Confiança del
 date: "2023-09-11"
 spoiler: En construir un projecte digital, assegurar que els teus correus electrònics arribin de manera segura i siguin de confiança és primordial. Però com navegues el laberint de la seguretat del correu electrònic? Entra DMARC. Juntament amb els seus companys, SPF i DKIM, aprofundim en establir la integritat del correu electrònic i combatre amenaces com la suplantació d'identitat i el phishing.
 tags:
-  - buildinpublic
-  - learninpublic
+  - seguretat
 ---
 
 En els primers dies de desenvolupar [Voices.ink](https://voices.ink/), un projecte col·laboratiu amb [@Ester Martí](https://github.com/estermv) que transcriu sense esforç notes de veu al teu compte de Notion, vaig enfrontar un dubte comú. Com podia assegurar que els nostres correus electrònics transaccionals no acabessin perduts en el buit de les carpetes d'spam o pitjor, fossin utilitzats com a arma per a phishing? La meva investigació per a un entorn de correu electrònic segur i de confiança em va portar a DMARC.
@@ -23,8 +22,8 @@ DMARC serveix tres propòsits principals:
 2. **Report**: Permetre als destinataris del domini reportar al remitent sobre els resultats de l'avaluació DMARC, oferint així informació sobre problemes potencials.
 3. **Aplicació de Polítiques**: Atorgar als propietaris de dominis el poder d'especificar com s'han de gestionar els correus electrònics no autenticats.
 
-![Diagrama de Com Funciona DMARC](https://www.globalcyberalliance.org/wp-content/uploads/GCA-DMARC-Resource-Kit-Infographic-update@2x@0.5x.png)
-_Crèdit de la Imatge: Global Cyber Alliance_
+![Diagrama de Com Funciona DMARC](https://media.emailonacid.com/wp-content/uploads/2022/09/How-DMARC-Policy-Works.png)
+_Crèdit: Emailonacid (Com funciona la política DMARC)_
 
 ### **Els Blocs de Construcció de DMARC: SPF i DKIM**
 

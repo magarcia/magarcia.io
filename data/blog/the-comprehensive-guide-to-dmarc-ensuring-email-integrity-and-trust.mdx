@@ -3,8 +3,7 @@ title: "A Comprehensive Guide to DMARC: Ensuring Email Integrity and Trust"
 date: "2023-09-11"
 spoiler: When building a digital project, ensuring your emails land safely and are trusted is paramount. But how do you navigate the maze of email security? Enter DMARC. Alongside its companions, SPF and DKIM, we delve deep into establishing email integrity and combating threats like email spoofing and phishing.
 tags:
-  - buildinpublic
-  - learninpublic
+  - security
 ---
 
 In the early days of developing [Voices.ink](https://voices.ink/), a collaborative project with [@Ester Martí](https://github.com/estermv) that effortlessly transcribes voice notes into your Notion account, I faced a common doubt. How could I ensure that our transactional emails wouldn’t end up lost in the void of spam folders or worse, be weaponized for phishing? My research for a secure and trustworthy email environment led me to DMARC.
@@ -23,8 +22,8 @@ DMARC serves three main purposes:
 2. **Reporting**: Enabling domain recipients to report back to the sender about DMARC evaluation results, thereby offering insights into potential issues.
 3. **Policy Enforcement**: Granting domain owners the power to specify how unauthenticated emails should be handled.
 
-![How DEMARC Works Diagram](https://www.globalcyberalliance.org/wp-content/uploads/GCA-DMARC-Resource-Kit-Infographic-update@2x@0.5x.png)
-_Image Credit: Global Cyber Alliance_
+![How DMARC Works Diagram](https://media.emailonacid.com/wp-content/uploads/2022/09/How-DMARC-Policy-Works.png)
+_Credit: Emailonacid (How DMARC policy works)_
 
 ### **The Building Blocks of DMARC: SPF & DKIM**
 
