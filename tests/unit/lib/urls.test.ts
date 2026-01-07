@@ -38,7 +38,8 @@ describe("buildPostUrl", () => {
 });
 
 describe("buildEditUrl", () => {
-  const GITHUB_BASE = "https://github.com/magarcia/magarcia.io/edit/main/data/blog";
+  const GITHUB_BASE =
+    "https://github.com/magarcia/magarcia.io/edit/main/data/blog";
 
   it("should build GitHub edit URL for English post", () => {
     const url = buildEditUrl("my-first-post");
