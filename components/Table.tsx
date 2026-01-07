@@ -26,3 +26,9 @@ export function TableCell(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
     <td className="block md:table-cell relative py-2 md:px-2" {...props} />
   );
 }
+
+export function TableHeaderCell(props: React.ThHTMLAttributes<HTMLTableCellElement>) {
+  return (
+    <th className="block md:table-cell relative py-2 md:px-2 font-bold" {...props} />
+  );
+}

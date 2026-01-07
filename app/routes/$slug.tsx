@@ -63,11 +63,13 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
     Promise.all([
       import("react-markdown"),
       import("rehype-raw"),
+      import("remark-gfm"),
       import("~/components/mdxComponents")
-    ]).then(([rm, rr, mc]) => {
+    ]).then(([rm, rr, rgfm, mc]) => {
       setComponents({
         ReactMarkdown: rm.default,
         rehypeRaw: rr.default,
+        remarkGfm: rgfm.default,
         mdxComponents: mc.mdxComponents
       });
     });
@@ -106,6 +108,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             {components ? (
               <div className="prose md:prose-lg dark:prose-dark">
                 <components.ReactMarkdown
+                  remarkPlugins={[components.remarkGfm]}
                   rehypePlugins={[components.rehypeRaw]}
                   components={components.mdxComponents}
                 >
