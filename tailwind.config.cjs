@@ -15,14 +15,21 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: "2rem",
+        md: "4rem",
+      },
       screens: {
-        "2xl": "1400px",
+        DEFAULT: "680px",
       },
     },
     extend: {
       fontFamily: {
-        serif: ['"Newsreader"', "Times", "serif"],
+        sans: ['"EB Garamond"', '"Times New Roman"', "serif"],
+        serif: ['"EB Garamond"', '"Times New Roman"', "serif"],
+        mono: ['"IBM Plex Mono"', '"Fira Code"', "Consolas", "monospace"],
+        heading: ['"Cormorant Garamond"', '"EB Garamond"', '"Times New Roman"', "serif"],
+        display: ['"Cormorant Garamond"', '"EB Garamond"', '"Times New Roman"', "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
