@@ -33,15 +33,14 @@ export default function Header({ main = false, lang = "en", slug }: HeaderProps)
             <h1 className="text-2xl tracking-wide text-[#1A1A1A] dark:text-gray-200 font-normal relative inline-block px-2 py-1">
               <span className="relative z-10 font-semibold">magarcia</span>
               <span
-                className="absolute inset-0 bg-yellow-300 dark:bg-purple-500 opacity-70 dark:opacity-60 transform origin-center pointer-events-none"
+                className="absolute inset-0 pointer-events-none header-highlight"
                 style={{
                   top: "0.35em",
-                  left: "0.05em",
-                  right: "0.05em",
+                  left: "-0.1em",
+                  right: "-0.1em",
                   bottom: "0.15em",
-                  borderRadius: "3px",
+                  borderRadius: "0.8em 0.3em",
                   transform: "rotate(-0.5deg) skewX(-1deg)",
-                  boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)",
                 }}
               ></span>
             </h1>

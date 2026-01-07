@@ -106,8 +106,64 @@ html {
   }
 }
 
+/* Text selection - highlighter effect */
 ::selection {
-  @apply bg-yellow-300 dark:bg-purple-500 bg-opacity-70;
+  background-color: rgba(255, 225, 0, 0.75);
+  color: inherit;
+  text-shadow:
+    -12px 12px 9.8px rgba(255, 225, 0, 0.3),
+    21px -18.1px 7.3px rgba(255, 255, 255, 0.5);
+}
+
+.dark ::selection {
+  background-color: rgba(168, 85, 247, 0.75);
+  text-shadow:
+    -12px 12px 9.8px rgba(168, 85, 247, 0.3),
+    21px -18.1px 7.3px rgba(255, 255, 255, 0.2);
+}
+
+/* Mark element - realistic highlighter/marker effect */
+mark {
+  margin: 0 -0.4em;
+  padding: 0.1em 0.4em;
+  border-radius: 0.8em 0.3em;
+  background: transparent;
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 225, 0, 0.1),
+    rgba(255, 225, 0, 0.7) 4%,
+    rgba(255, 225, 0, 0.3)
+  );
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.dark mark {
+  background-image: linear-gradient(
+    to right,
+    rgba(168, 85, 247, 0.1),
+    rgba(168, 85, 247, 0.7) 4%,
+    rgba(168, 85, 247, 0.3)
+  );
+}
+
+/* Header title highlight - marker effect */
+.header-highlight {
+  background: linear-gradient(
+    to right,
+    rgba(255, 225, 0, 0.1),
+    rgba(255, 225, 0, 0.7) 4%,
+    rgba(255, 225, 0, 0.3)
+  );
+}
+
+.dark .header-highlight {
+  background: linear-gradient(
+    to right,
+    rgba(168, 85, 247, 0.1),
+    rgba(168, 85, 247, 0.7) 4%,
+    rgba(168, 85, 247, 0.3)
+  );
 }
 
 /* Typography hierarchy */
