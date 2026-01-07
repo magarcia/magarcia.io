@@ -41,11 +41,11 @@ export default function LanguageSelector({ lang, slug }: LanguageSelectorProps) 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button
-                    className="p-2 opacity-50 hover:opacity-100 transition-opacity"
+                    className="p-2 opacity-50 hover:opacity-100 transition-opacity text-[#666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-200"
                     aria-label="Select language"
                     data-testid="language-selector"
                 >
-                    <Globe size={20} />
+                    <Globe size={18} />
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
