@@ -15,63 +15,65 @@ vi.mock("@/components/LanguageSelector", () => ({
 }));
 
 describe("Header", () => {
-  describe("Heading Tag", () => {
-    it("renders h1 when main is true", () => {
-      const { container } = render(<Header main={true} />);
+  describe("Site Title", () => {
+    it("renders h1 with site title when main is true", () => {
+      const { container } = render(<Header main />);
 
       const h1 = container.querySelector("h1");
       expect(h1).toBeInTheDocument();
       expect(h1).toHaveTextContent("magarcia");
-
-      const h3 = container.querySelector("h3");
-      expect(h3).not.toBeInTheDocument();
     });
 
-    it("renders h3 when main is false", () => {
-      const { container } = render(<Header main={false} />);
-
-      const h3 = container.querySelector("h3");
-      expect(h3).toBeInTheDocument();
-      expect(h3).toHaveTextContent("magarcia");
-
-      const h1 = container.querySelector("h1");
-      expect(h1).not.toBeInTheDocument();
-    });
-
-    it("renders h3 by default when main is not specified", () => {
-      const { container } = render(<Header />);
-
-      const h3 = container.querySelector("h3");
-      expect(h3).toBeInTheDocument();
-
-      const h1 = container.querySelector("h1");
-      expect(h1).not.toBeInTheDocument();
-    });
-  });
-
-  describe("Site Title", () => {
-    it("renders site title magarcia", () => {
+    it("renders back link when main is false", () => {
       render(<Header />);
-      expect(screen.getByText("magarcia")).toBeInTheDocument();
+
+      expect(screen.getByText("← BACK")).toBeInTheDocument();
+      const h1 = document.querySelector("h1");
+      expect(h1).not.toBeInTheDocument();
+    });
+
+    it("renders back link by default when main is not specified", () => {
+      render(<Header />);
+
+      expect(screen.getByText("← BACK")).toBeInTheDocument();
+    });
+
+    it("renders translated back link for Spanish", () => {
+      render(<Header lang="es" />);
+
+      expect(screen.getByText("← VOLVER")).toBeInTheDocument();
+    });
+
+    it("renders translated back link for Catalan", () => {
+      render(<Header lang="ca" />);
+
+      expect(screen.getByText("← TORNAR")).toBeInTheDocument();
     });
   });
 
   describe("Links and Language Support", () => {
-    it("links to / for English (default)", () => {
+    it("links to / for English (default) when main", () => {
+      render(<Header main />);
+
+      const link = screen.getByRole("link");
+      expect(link).toHaveAttribute("href", "/");
+    });
+
+    it("links to / for English when not main", () => {
       render(<Header />);
 
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", "/");
     });
 
-    it("links to / for English when explicitly set", () => {
-      render(<Header lang="en" />);
+    it("links to /es for Spanish when main", () => {
+      render(<Header main lang="es" />);
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/");
+      expect(link).toHaveAttribute("href", "/es");
     });
 
-    it("links to /es for Spanish", () => {
+    it("links to /es for Spanish when not main", () => {
       render(<Header lang="es" />);
 
       const link = screen.getByRole("link");
@@ -83,46 +85,6 @@ describe("Header", () => {
 
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", "/ca");
-    });
-  });
-
-  describe("Color Classes", () => {
-    it("applies main color classes when main is true", () => {
-      const { container } = render(<Header main={true} />);
-
-      const heading = container.querySelector("h1");
-      expect(heading).toHaveClass("bg-yellow-300", "dark:bg-purple-500");
-      expect(heading).not.toHaveClass(
-        "hover:bg-yellow-300",
-        "dark:hover:bg-purple-500"
-      );
-    });
-
-    it("applies hover color classes when main is false", () => {
-      const { container } = render(<Header main={false} />);
-
-      const heading = container.querySelector("h3");
-      expect(heading).toHaveClass(
-        "hover:bg-yellow-300",
-        "dark:hover:bg-purple-500"
-      );
-      expect(heading).not.toHaveClass("bg-yellow-300", "dark:bg-purple-500");
-    });
-  });
-
-  describe("Size Classes", () => {
-    it("applies text-4xl when main is true", () => {
-      const { container } = render(<Header main={true} />);
-
-      const heading = container.querySelector("h1");
-      expect(heading).toHaveClass("text-4xl");
-    });
-
-    it("applies text-2xl when main is false", () => {
-      const { container } = render(<Header main={false} />);
-
-      const heading = container.querySelector("h3");
-      expect(heading).toHaveClass("text-2xl");
     });
   });
 
@@ -165,35 +127,31 @@ describe("Header", () => {
     });
   });
 
-  describe("Layout Classes", () => {
-    it("applies main padding classes when main is true", () => {
-      const { container } = render(<Header main={true} />);
-
-      const header = container.querySelector("header");
-      expect(header).toHaveClass("p-8", "pt-16");
-    });
-
-    it("applies secondary padding classes when main is false", () => {
-      const { container } = render(<Header main={false} />);
-
-      const header = container.querySelector("header");
-      expect(header).toHaveClass("p-6");
-      expect(header).not.toHaveClass("p-8", "pt-16");
-    });
-
-    it("applies consistent flex and layout classes", () => {
+  describe("Layout", () => {
+    it("applies consistent layout classes", () => {
       const { container } = render(<Header />);
 
       const header = container.querySelector("header");
       expect(header).toHaveClass(
-        "flex",
-        "place-content-between",
-        "items-center",
-        "max-w-5xl",
+        "max-w-[75ch]",
         "mx-auto",
         "relative",
         "z-50"
       );
+    });
+
+    it("renders controls container with flex layout", () => {
+      const { container } = render(<Header />);
+
+      const controlsContainer = container.querySelector(".flex.items-center.gap-4");
+      expect(controlsContainer).toBeInTheDocument();
+    });
+
+    it("has horizontal layout with content spread between left and right", () => {
+      const { container } = render(<Header />);
+
+      const flexContainer = container.querySelector(".flex.place-content-between");
+      expect(flexContainer).toBeInTheDocument();
     });
   });
 });

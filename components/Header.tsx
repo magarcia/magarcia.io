@@ -9,36 +9,55 @@ interface HeaderProps {
   slug?: string;
 }
 
-export default function Header({ main, lang = "en", slug }: HeaderProps) {
-  const [mounted, setMounted] = useState(false);
+const backTranslations: Record<string, string> = {
+  en: "BACK",
+  es: "VOLVER",
+  ca: "TORNAR",
+};
 
-  const Tag = main ? "h1" : "h3";
-  const size = main ? "text-4xl" : "text-2xl";
-  const colors = main
-    ? "bg-yellow-300 dark:bg-purple-500"
-    : "hover:bg-yellow-300 dark:hover:bg-purple-500";
+export default function Header({ main = false, lang = "en", slug }: HeaderProps) {
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-
+  const homeUrl = lang === "en" ? "/" : `/${lang}`;
+  const backText = backTranslations[lang] || backTranslations.en;
 
   return (
-    <header
-      className={`${main ? "p-8 pt-16" : "p-6"
-        } flex place-content-between items-center max-w-5xl mx-auto relative z-50`}
-    >
-      <Link to={lang === "en" ? "/" : `/${lang}`}>
-        <Tag
-          className={`${size} ${colors} text-gray-900 dark:text-gray-50 font-semibold py-2 px-4 transition-bg duration-300 ease-in-out motion-reduce:transition-none`}
-        >
-          magarcia
-        </Tag>
-      </Link>
-      <div className="flex items-center">
-        <LanguageSelector lang={lang} slug={slug} />
-        {mounted && <ThemeToggle />}
+    <header className="pt-16 pb-8 px-8 md:px-16 max-w-[75ch] mx-auto relative z-50">
+      <div className="flex place-content-between items-center">
+        {main ? (
+          <Link to={homeUrl}>
+            <h1 className="text-2xl tracking-wide text-[#1A1A1A] dark:text-gray-200 font-normal relative inline-block px-2 py-1">
+              <span className="relative z-10 font-semibold">magarcia</span>
+              <span
+                className="absolute inset-0 bg-yellow-300 dark:bg-purple-500 opacity-70 dark:opacity-60 transform origin-center pointer-events-none"
+                style={{
+                  top: "0.35em",
+                  left: "0.05em",
+                  right: "0.05em",
+                  bottom: "0.15em",
+                  borderRadius: "3px",
+                  transform: "rotate(-0.5deg) skewX(-1deg)",
+                  boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)",
+                }}
+              ></span>
+            </h1>
+          </Link>
+        ) : (
+          <Link
+            to={homeUrl}
+            className="text-xs uppercase tracking-widest text-[#666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+          >
+            ← {backText}
+          </Link>
+        )}
+        <div className="flex items-center gap-4">
+          <LanguageSelector lang={lang} slug={slug} />
+          {mounted && <ThemeToggle />}
+        </div>
       </div>
     </header>
   );
