@@ -42,3 +42,15 @@ export function formatTagPageTitle(
   const formatter = translations[lang] || translations.en;
   return formatter(count, tag);
 }
+
+export function getSectionTitle(
+  section: "about" | "projects" | "writing",
+  lang: string = "en"
+): string {
+  const titles: Record<string, Record<string, string>> = {
+    about: { en: "About", es: "Sobre mí", ca: "Sobre mi" },
+    projects: { en: "Projects", es: "Proyectos", ca: "Projectes" },
+    writing: { en: "Writing", es: "Escritura", ca: "Escriptura" },
+  };
+  return titles[section]?.[lang] || titles[section]?.en || section;
+}

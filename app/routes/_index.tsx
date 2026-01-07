@@ -1,8 +1,10 @@
 import type { Route } from "./+types/_index";
-import { getAllFilesFrontMatter, type FrontMatter } from "~/lib/blog";
+import { getAllFilesFrontMatter } from "~/lib/blog";
 import Header from "~/components/Header";
 import Footer from "~/components/Footer";
-import ArticleListItem from "~/components/ArticleListItem";
+import AboutSection from "~/components/AboutSection";
+import ProjectsSection from "~/components/ProjectsSection";
+import WritingSection from "~/components/WritingSection";
 
 export function meta(_args: Route.MetaArgs) {
   return [
@@ -46,10 +48,10 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Header main lang={lang} />
-      <main className="max-w-[75ch] mx-auto px-8 md:px-16" data-testid="article-list">
-        {posts.map((post: FrontMatter) => (
-          <ArticleListItem {...post} key={post.slug} lang={lang} />
-        ))}
+      <main className="max-w-[75ch] mx-auto px-8 md:px-16" data-testid="homepage">
+        <AboutSection lang={lang} />
+        <ProjectsSection lang={lang} />
+        <WritingSection posts={posts} lang={lang} />
       </main>
       <Footer />
     </>

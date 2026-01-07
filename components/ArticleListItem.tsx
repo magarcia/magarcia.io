@@ -36,7 +36,7 @@ export default function ArticleListItem({
   const year = format(parseISO(date), "yyyy");
 
   return (
-    <article className="mb-12" data-testid="article-item">
+    <article className="mb-16" data-testid="article-item">
       <Link to={postPath} className="group block">
         <div className="flex items-start justify-between gap-4 mb-1">
           <h2 className="font-heading text-[27px] font-medium text-[#1A1A1A] leading-[33.75px] dark:text-gray-100 group-hover:text-yellow-600 dark:group-hover:text-purple-400 transition-colors">
