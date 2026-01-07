@@ -68,3 +68,18 @@ When writing or editing blog articles, use semantic emphasis correctly:
 - Introducing a term for the first time in a non-technical context
 
 The site uses Newsreader serif font for italics (`em`/`i` tags), providing visual contrast with the Inter sans-serif body text.
+
+### Blog Post Tags
+
+Tags must be **lowercase and slug-friendly** (e.g., `developer-tools`, `node-js`, `open-source`).
+
+**Before adding tags to a post:**
+1. Check existing tags by running: `grep -rh "^  - " data/blog/*.mdx | sort -u`
+2. Prefer reusing existing tags to maintain consistency and ensure tags have multiple posts
+3. New tags are allowed when they represent a genuinely distinct topic not covered by existing tags
+
+**Current English tags:** `ai`, `angular`, `bun`, `cli`, `developer-tools`, `gsoc`, `javascript`, `mvp`, `node-js`, `open-source`, `patterns`, `performance`, `react`, `redux`, `security`, `service-workers`, `typescript`
+
+**Translated tags** should follow the same slug format in each language:
+- Spanish: `herramientas-de-desarrollador`, `codigo-abierto`, `seguridad`, `patrones`, `rendimiento`, `ia`
+- Catalan: `eines-de-desenvolupador`, `codi-obert`, `seguretat`, `patrons`, `rendiment`, `ia`
