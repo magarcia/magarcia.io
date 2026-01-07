@@ -29,6 +29,14 @@ export function validateLang(lang: string): void {
   }
 }
 
+function isFutureDate(dateString: string): boolean {
+  const postDate = new Date(dateString);
+  const now = new Date();
+  postDate.setUTCHours(0, 0, 0, 0);
+  now.setUTCHours(0, 0, 0, 0);
+  return postDate > now;
+}
+
 export interface FrontMatter {
   title: string;
   date: string;
@@ -143,6 +151,10 @@ export function getAllFilesFrontMatter(type: string, lang: string = "en"): Front
         return allFiles;
       }
 
+      if (isFutureDate(frontMatter.date) && process.env.NODE_ENV === "production") {
+        return allFiles;
+      }
+
       return [
         {
           ...frontMatter,
@@ -168,6 +180,10 @@ export function getAllFiles(type: string, lang: string = "en"): BlogPost[] {
       const { frontMatter, content } = getFileBySlug(type, slug, lang);
 
       if (frontMatter.draft && process.env.NODE_ENV === "production") {
+        return allFiles;
+      }
+
+      if (isFutureDate(frontMatter.date) && process.env.NODE_ENV === "production") {
         return allFiles;
       }
 
