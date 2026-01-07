@@ -154,6 +154,23 @@ describe("slugifyTag", () => {
   it("handles already lowercase tags", () => {
     expect(slugifyTag("typescript")).toBe("typescript");
   });
+
+  it("replaces dots with hyphens", () => {
+    expect(slugifyTag("Node.js")).toBe("node-js");
+  });
+
+  it("handles tags with multiple special characters", () => {
+    expect(slugifyTag("C++")).toBe("c");
+    expect(slugifyTag("C#")).toBe("c");
+  });
+
+  it("collapses multiple consecutive hyphens", () => {
+    expect(slugifyTag("Node.js & More")).toBe("node-js-more");
+  });
+
+  it("removes leading and trailing hyphens", () => {
+    expect(slugifyTag(".NET")).toBe("net");
+  });
 });
 
 describe("buildTagUrl", () => {

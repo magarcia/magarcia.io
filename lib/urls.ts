@@ -24,7 +24,12 @@ export function getLocalizedPath(path: string, lang: string): string {
 }
 
 export function slugifyTag(tag: string): string {
-  return tag.toLowerCase().replace(/\s+/g, "-");
+  return tag
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "-") // Replace non-word characters (except hyphens) with hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Collapse multiple hyphens to single hyphen
+    .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
 }
 
 export function buildTagUrl(tag: string, lang: string = "en"): string {
