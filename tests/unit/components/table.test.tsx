@@ -57,11 +57,11 @@ describe("Table Components", () => {
       const thead = container.querySelector("thead");
       expect(thead).toBeInTheDocument();
       expect(thead).toHaveClass(
-        "hidden",
+        "sr-only",
+        "md:not-sr-only",
         "md:table-header-group",
-        "font-bold",
-        "border-b",
-        "last:border-b-0"
+        "font-medium",
+        "border-b"
       );
     });
 
@@ -133,7 +133,9 @@ describe("Table Components", () => {
         "block",
         "md:table-row",
         "border-b",
-        "last:border-b-0"
+        "last:border-b-0",
+        "mb-4",
+        "md:mb-0"
       );
     });
 
@@ -172,8 +174,9 @@ describe("Table Components", () => {
         "block",
         "md:table-cell",
         "relative",
-        "py-2",
-        "md:px-2"
+        "py-3",
+        "px-4",
+        "md:px-4"
       );
     });
 
