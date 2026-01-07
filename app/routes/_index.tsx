@@ -45,8 +45,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <Header main={true} lang={lang} />
-      <main className="min-w-full" data-testid="article-list">
+      <Header main lang={lang} />
+      <main className="max-w-[75ch] mx-auto px-8 md:px-16" data-testid="article-list">
         {posts.map((post: FrontMatter) => (
           <ArticleListItem {...post} key={post.slug} lang={lang} />
         ))}

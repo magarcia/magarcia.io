@@ -1,10 +1,10 @@
-import { parseISO, format } from "date-fns";
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import type { Route } from "./+types/$slug";
 import { getFileBySlug, isValidSlug, isValidLang, type BlogPostWithNavigation } from "~/lib/blog";
 import Header from "~/components/Header";
-import { buildDiscussUrl, buildEditUrl, buildTagUrl } from "~/lib/urls";
+import { buildTagUrl } from "~/lib/urls";
+import { formatDate, formatReadingTime } from "~/lib/i18n";
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data || !data.frontMatter) {
@@ -51,12 +51,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 export default function BlogPost({ loaderData }: Route.ComponentProps) {
   const { frontMatter, content, prev, next, lang } =
     loaderData as BlogPostWithNavigation & { lang: string };
-  const { title, date, readingTime, spoiler, tags, slug } = frontMatter;
+  const { title, date, readingTime, tags, slug } = frontMatter;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [components, setComponents] = useState<Record<string, any> | null>(null);
-
-  const editUrl = buildEditUrl(slug, lang);
-  const discussUrl = buildDiscussUrl(slug, lang);
 
   useEffect(() => {
     // Dynamically import react-markdown and dependencies only on client-side
@@ -78,99 +75,69 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Header slug={slug} lang={lang} />
-      <main className="min-w-full">
-        <article className="px-8 mx-auto max-w-prose md:px-0">
-          <header className="mb-10 md:mb-16 md:text-center">
+      <main className="max-w-[75ch] mx-auto px-8 md:px-16">
+        <article>
+          <header className="mb-16 text-center">
             <h1
-              className="mt-10 mb-3 text-5xl font-bold text-gray-800 md:text-5xl dark:text-gray-50"
+              className="font-heading text-3xl md:text-4xl uppercase tracking-wide font-normal text-[#1A1A1A] dark:text-gray-100 mb-4"
               data-testid="post-title"
             >
               {title}
             </h1>
 
-            <div className="text-sm opacity-75 md:text-base">
+            <div className="text-sm text-[#666] dark:text-gray-400">
               <time dateTime={date}>
-                {format(parseISO(date), "MMMM d, yyyy")}
+                {formatDate(date, lang)}
               </time>{" "}
-              &#8208; <span data-testid="reading-time">{readingTime.text}</span>
+              — <span data-testid="reading-time">{formatReadingTime(readingTime.minutes, lang)}</span>
             </div>
           </header>
-          <div className="mx-auto max-w-prose">
-            <div className="my-16 text-2xl font-light leading-relaxed">
-              {components ? (
-                <components.ReactMarkdown components={components.mdxComponents}>
-                  {spoiler}
-                </components.ReactMarkdown>
-              ) : (
-                <p>{spoiler}</p>
-              )}
+          {components ? (
+            <div className="prose prose-lg dark:prose-dark max-w-none">
+              <components.ReactMarkdown
+                remarkPlugins={[components.remarkGfm]}
+                rehypePlugins={[components.rehypeRaw]}
+                components={components.mdxComponents}
+              >
+                {content}
+              </components.ReactMarkdown>
             </div>
-            {components ? (
-              <div className="prose md:prose-lg dark:prose-dark">
-                <components.ReactMarkdown
-                  remarkPlugins={[components.remarkGfm]}
-                  rehypePlugins={[components.rehypeRaw]}
-                  components={components.mdxComponents}
-                >
-                  {content}
-                </components.ReactMarkdown>
-              </div>
-            ) : (
-              <div className="prose md:prose-lg dark:prose-dark">
-                <p>{content.substring(0, 200)}...</p>
-              </div>
-            )}
-          </div>
+          ) : (
+            <div className="prose prose-lg dark:prose-dark max-w-none">
+              <p>{content.substring(0, 200)}...</p>
+            </div>
+          )}
         </article>
-        <footer className="px-8 mx-auto mt-16 text-sm max-w-prose md:px-0 md:text-base">
-          <div className="flex flex-wrap" data-testid="post-tags">
+        <footer className="mt-24 text-sm text-[#666] dark:text-gray-400">
+          <div className="flex flex-wrap gap-2 mb-16" data-testid="post-tags">
             {tags.map((tag) => (
               <Link
                 key={tag}
-                className="px-2 py-1 mb-3 mr-3 bg-gray-100 border border-gray-200 rounded dark:bg-gray-700 last:mr-0 dark:border-gray-800 whitespace-nowrap"
+                className="hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
                 to={buildTagUrl(tag, lang)}
               >
                 #{tag}
               </Link>
             ))}
           </div>
-          <p className="mt-12 mb-16">
-            <a
-              href={discussUrl}
-              target="_blank"
-              className="underline"
-              rel="noopener noreferrer"
-            >
-              Discuss on Twitter
-            </a>{" "}
-            ‐{" "}
-            <a
-              href={editUrl}
-              target="_blank"
-              className="underline"
-              rel="noopener noreferrer"
-            >
-              Edit on GitHub
-            </a>
-          </p>
         </footer>
-        <nav className="px-8 mx-auto mb-8 text-sm max-w-prose md:px-0 md:text-base">
-          <ul className="flex flex-wrap items-center gap-4 place-content-between">
+        <nav className="mb-16 text-sm">
+          <ul className="flex flex-wrap items-center justify-between gap-4">
             {[
               { post: prev, rel: "prev" },
               { post: next, rel: "next" },
             ].map(({ post, rel }) => (
-              <li key={rel} className="whitespace-nowrap">
+              <li key={rel} className="min-w-0 max-w-[45%]">
                 {post && (
                   <Link
                     to={lang === "en" ? `/${post.slug}` : `/${lang}/${post.slug}`}
                     rel={rel}
                     title={post.title}
-                    className="underline"
+                    className="flex items-center gap-1 text-[#666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
                   >
-                    {rel === "prev" && `← `}
-                    {post.title}
-                    {rel === "next" && ` →`}
+                    {rel === "prev" && <span className="shrink-0">←</span>}
+                    <span className="truncate">{post.title}</span>
+                    {rel === "next" && <span className="shrink-0">→</span>}
                   </Link>
                 )}
               </li>

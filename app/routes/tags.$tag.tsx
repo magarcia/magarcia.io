@@ -1,9 +1,9 @@
-import { parseISO, format } from "date-fns";
 import { Link as LinkIcon } from "react-feather";
 import { Link } from "react-router";
 import type { Route } from "./+types/tags.$tag";
 import { getPostsByTagSlug, getTagBySlug, isValidSlug, isValidLang, type FrontMatter } from "~/lib/blog";
 import Header from "~/components/Header";
+import { formatDate, formatReadingTime } from "~/lib/i18n";
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data) {
@@ -46,20 +46,21 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     posts,
     tag,
     totalCount: posts.length,
+    lang,
   };
 }
 
 export default function TagPage({ loaderData }: Route.ComponentProps) {
-  const { posts, tag, totalCount } = loaderData;
+  const { posts, tag, totalCount, lang } = loaderData;
   const title = `${totalCount} post${totalCount === 1 ? "" : "s"
     } tagged with "${tag}"`;
   const anchorSize = 18;
 
   return (
     <>
-      <Header />
-      <main className="mx-auto max-w-prose px-8 md:px-0 mb-16">
-        <h2 className="text-2xl font-semibold" data-testid="tag-heading">
+      <Header lang={lang} />
+      <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-24">
+        <h2 className="text-2xl font-normal text-[#1A1A1A] dark:text-gray-100 mb-12" data-testid="tag-heading">
           {title}
         </h2>
 
@@ -71,11 +72,11 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
         >
           {posts.map(({ title, slug, readingTime, date }: FrontMatter) => (
             <div key={slug} className="my-8" data-testid="article-item">
-              <h3 className="font-medium text-lg">
-                <Link to={`/${slug}`} title={title}>
+              <h3 className="font-medium text-lg text-[#1A1A1A] dark:text-gray-100">
+                <Link to={`/${slug}`} title={title} className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors">
                   <LinkIcon
                     size={anchorSize}
-                    className="inline-block"
+                    className="inline-block text-[#999] dark:text-gray-500"
                     style={{
                       marginLeft: -1.5 * anchorSize,
                       marginRight: anchorSize / 2,
@@ -84,11 +85,11 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
                   {title}
                 </Link>
               </h3>
-              <small className="text-sm opacity-75">
+              <small className="text-sm text-[#666] dark:text-gray-400">
                 <time dateTime={date}>
-                  {format(parseISO(date), "MMMM d, yyyy")}
+                  {formatDate(date, lang)}
                 </time>{" "}
-                &#8208; {readingTime.text}
+                — {formatReadingTime(readingTime.minutes, lang)}
               </small>
             </div>
           ))}

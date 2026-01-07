@@ -10,18 +10,21 @@ import type { LinksFunction } from "react-router";
 import { themeScript } from "~/hooks/useTheme";
 import globalStyles from "~/styles/global.css?url";
 import highlightStyles from "~/styles/highlight.css?url";
+import { Toaster } from "~/components/ui/toaster";
 
 export const links: LinksFunction = () => [
   {
-    rel: "preload",
-    href: "https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19",
-    as: "font",
-    type: "font/woff2",
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com",
+  },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
     crossOrigin: "anonymous",
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@1,400&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap",
   },
   { rel: "stylesheet", href: globalStyles },
   { rel: "stylesheet", href: highlightStyles },
@@ -44,10 +47,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className="text-gray-700 transition-colors duration-300 ease-in-out bg-white dark:bg-gray-800 dark:text-gray-200 motion-reduce:transition-none"
+        className="text-[#1A1A1A] transition-colors duration-300 ease-in-out bg-white dark:bg-gray-900 dark:text-gray-200 motion-reduce:transition-none"
         suppressHydrationWarning
       >
         {children}
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>

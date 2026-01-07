@@ -14,6 +14,17 @@ export default function handleRequest(
   entryContext: EntryContext,
   _loadContext: AppLoadContext
 ) {
+  // Handle Chrome DevTools requests silently
+  const url = new URL(request.url);
+  if (url.pathname.startsWith("/.well-known/")) {
+    return Promise.resolve(
+      new Response(null, {
+        status: 404,
+        headers: responseHeaders,
+      })
+    );
+  }
+
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const userAgent = request.headers.get("user-agent");
