@@ -6,7 +6,7 @@ interface CodeInlineProps {
 export default function CodeInline({ children, ...props }: CodeInlineProps) {
   return (
     <code
-      className="font-mono bg-gray-100 dark:bg-gray-700 p-1 rounded border-gray-200 dark:border-gray-800 border text-sm"
+      className="font-mono bg-[#F7F7F7] dark:bg-gray-800 px-1.5 py-0.5 rounded text-[15px] text-[#333] dark:text-gray-300"
       {...props}
     >
       {children}

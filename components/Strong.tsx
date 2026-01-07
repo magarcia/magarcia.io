@@ -1,3 +1,3 @@
 export default function Strong(props: React.HTMLAttributes<HTMLElement>) {
-  return <strong className="font-bold" {...props} />;
+  return <strong className="font-medium text-[#1A1A1A] dark:text-gray-100" {...props} />;
 }
