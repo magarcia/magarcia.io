@@ -1,0 +1,256 @@
+---
+title: "Creando Skills Potentes de Claude Code con npx bun"
+date: "2026-01-07"
+spoiler: "Cómo escribir skills de Claude Code que utilizan paquetes npm de terceros sin un paso de compilación. Usar npx bun te proporciona instalación automática de dependencias, TypeScript nativo y un fijado de versiones limpio: el equivalente en JavaScript al uv run de Python."
+tags:
+  - TypeScript
+  - Node.js
+  - Bun
+  - Claude Code
+  - Developer Tools
+---
+
+Quería construir skills de [Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) más complejas. Claude Code es la CLI de Anthropic para programación agéntica—y las skills te permiten extenderla con instrucciones personalizadas y scripts ejecutables. No solo markdown, sino scripts que usan librerías de terceros: parsear archivos CSV, manipular hojas de cálculo, llamar a APIs con clientes HTTP adecuados.
+
+El problema: las skills no tienen paso de compilación (*build step*). No puedes simplemente hacer `import lodash from 'lodash'` y esperar que funcione. El script se ejecuta en un entorno limpio sin carpeta `node_modules`.
+
+## Lo que quería: uv run para JavaScript
+
+Python resuelve esto elegantemente con [uv](https://docs.astral.sh/uv/). Declaras las dependencias en línea (*inline*) usando metadatos [PEP 723](https://peps.python.org/pep-0723/):
+
+```python
+#!/usr/bin/env -S uv run
+# /// script
+# dependencies = ["requests", "rich"]
+# requires-python = ">=3.10"
+# ///
+
+import requests
+from rich import print
+
+print(requests.get("https://example.com"))
+```
+
+Ejecútalo con `uv run script.py` o simplemente `./script.py`. Las dependencias se instalan automáticamente en un entorno aislado. Sin `requirements.txt`, sin gestión de entornos virtuales, sin paso de compilación. El script es autocontenido.
+
+Python fue mi primer lenguaje de programación profesional, y todavía admiro cómo ha evolucionado su ecosistema. Pero mi equipo en **Buffer** trabaja en TypeScript. Necesitaba algo que fuera fácil de adoptar para mis compañeros—paquetes npm familiares, sintaxis familiar—pero tan flexible y potente como `uv run`.
+
+## La Restricción
+
+Una skill típica de Claude Code se ve así:
+
+```
+my-skill/
+├── SKILL.md
+└── scripts/
+    └── process.js
+```
+
+Claude lee `SKILL.md` para obtener las instrucciones y ejecuta los scripts cuando es relevante. Pero si `process.js` importa algún paquete npm, falla. Sin `package.json`, sin `node_modules`, sin dependencias.
+
+Las soluciones obvias—incluir `node_modules` en el commit o ejecutar `npm install` en tiempo de ejecución—son feas. La primera infla la carpeta de tu skill. La segunda añade latencia cada vez.
+
+Exploré varios enfoques.
+
+## Enfoque 1: Pre-empaquetado con esbuild
+
+Empaqueta tu script en un solo archivo con todas las dependencias incluidas:
+
+```bash
+esbuild script.ts --bundle --platform=node --outfile=script.mjs
+```
+
+La salida es autocontenida. Sin dependencias en tiempo de ejecución. Envíalo con tu skill y Claude lo ejecuta directamente.
+
+Esto funciona, pero requiere un paso de compilación. Debes reconstruir después de cada cambio. Depurar código empaquetado es más difícil. Es lo opuesto a lo que quería.
+
+## Enfoque 2: Importaciones dinámicas con esm.sh
+
+[esm.sh](https://esm.sh) sirve paquetes npm como módulos ES a través de HTTPS:
+
+```javascript
+import _ from 'https://esm.sh/lodash @4.17.21'
+import { z } from 'https://esm.sh/zod @3.23.0'
+```
+
+No requiere instalación. El entorno de ejecución (*runtime*) obtiene el módulo en el primer uso. La versión fijada vive en la URL.
+
+El problema: Node.js no soporta nativamente importaciones HTTPS sin *flags* experimentales o *loaders* personalizados. Algunos paquetes no funcionan bien como ESM puro. La latencia de red en cada arranque en frío se acumula.
+
+## Enfoque 3: Google zx con --install
+
+[zx](https://google.github.io/zx/) es la herramienta de Google para escribir scripts de shell en JavaScript. Envuelve `child_process` y añade comodidades como el literal de plantilla `$` para ejecutar comandos.
+
+El flag `--install` auto-instala las dependencias faltantes:
+
+```javascript
+#!/usr/bin/env zx
+import _ from 'lodash'        // @^4.17
+import { parse } from 'yaml'  // @^2.0
+
+await $`echo "Dependencies auto-installed"`
+```
+
+Ejecútalo con `npx zx --install script.mjs`. En la primera ejecución, **zx** detecta las importaciones, instala los paquetes y los almacena en caché.
+
+Esto se acerca más a lo que quería. Pero fijar versiones a través de comentarios se siente como un parche. Y no hay soporte nativo de TypeScript—necesitarías [tsx](https://github.com/privatenumber/tsx) o similar.
+
+## Enfoque 4: Bun
+
+[Bun](https://bun.sh) toma un enfoque diferente. La auto-instalación está integrada en el *runtime*. Escribe importaciones normales y Bun maneja el resto:
+
+```typescript
+#!/usr/bin/env bun
+import _ from 'lodash'
+import { z } from 'zod @^3.20'
+import chalk from 'chalk @^5.0.0'
+
+console.log(chalk.green('Dependencies just work'))
+```
+
+La fijación de versiones ocurre directamente en la ruta de importación—más limpio que la sintaxis de comentarios de **zx**. TypeScript se ejecuta nativamente. El arranque es rápido.
+
+La trampa: Puede que **Bun** no esté instalado en todos los entornos. Los entornos de Claude Code tienen Node.js y npm, pero no necesariamente Bun.
+
+## El Descubrimiento: npx bun
+
+Entonces me di cuenta: No necesito Bun instalado globalmente. Solo necesito npm.
+
+```bash
+npx -y bun script.ts
+```
+
+El flag `-y` salta el aviso de confirmación, lo cual importa para ejecuciones no interactivas. Esto funciona porque `bun` está publicado como un paquete npm. Cuando ejecutas `npx bun`, npm descarga el binario de Bun y ejecuta tu script. Obtienes la auto-instalación de Bun, soporte de TypeScript y velocidad—todo a través de la cadena de herramientas de npm/Node.js que ya está en todas partes.
+
+Probé esto en un entorno limpio:
+
+```typescript
+import chalk from "chalk @^5.0.0"
+import { z } from "zod @3.23.0"
+import _ from "lodash @^4.17.0"
+
+console.log(chalk.green("✓ chalk loaded"))
+
+const schema = z.object({ name: z.string() })
+console.log(chalk.blue(`✓ zod loaded - validation works`))
+
+const grouped = _.groupBy(["one", "two", "three"], "length")
+console.log(chalk.yellow(`✓ lodash loaded`))
+```
+
+Salida:
+
+```
+✓ chalk loaded
+✓ zod loaded - validation works
+✓ lodash loaded
+```
+
+Sin `package.json`. Sin `node_modules`. Sin paso de compilación. La primera ejecución instala dependencias en la caché global de Bun. Las ejecuciones subsiguientes son instantáneas.
+
+Este es el equivalente en JavaScript de `uv run`. La misma experiencia de desarrollador, los mismos scripts autocontenidos, ecosistema npm familiar.
+
+### Haciendo Scripts Directamente Ejecutables
+
+Mejora aún más. Al igual que con `#!/usr/bin/env -S uv run` de Python, puedes usar un shebang para hacer los scripts directamente ejecutables:
+
+```typescript
+#!/usr/bin/env -S npx -y bun
+
+import chalk from "chalk @^5.0.0"
+
+console.log(chalk.green("Hello!"))
+```
+
+El flag `-S` le dice a `env` que divida la cadena en argumentos separados. Haz el script ejecutable y ejecútalo directamente:
+
+```bash
+chmod +x script.ts
+./script.ts
+```
+
+Ahora tienes scripts TypeScript autocontenidos—sin invocación explícita necesaria.
+
+## Usando Esto en Skills de Claude Code
+
+Estructura tu skill así:
+
+```
+my-skill/
+├── SKILL.md
+└── scripts/
+    └── process.ts
+```
+
+En `SKILL.md`:
+
+```yaml
+---
+name: data-processor
+description: Process and transform data files using advanced libraries
+allowed-tools: [Bash, Read, Write]
+---
+
+# Data Processor
+
+Run the processing script:
+
+\`\`\`bash
+npx -y bun ./scripts/process.ts <input-file>
+\`\`\`
+```
+
+En `scripts/process.ts`:
+
+```typescript
+import { parse } from 'csv-parse/sync @^5.0'
+import * as XLSX from 'xlsx @^0.20'
+
+const [,, inputPath] = Bun.argv
+const file = Bun.file(inputPath)
+const content = await file.text()
+
+const rows = parse(content, { columns: true })
+console.log(JSON.stringify(rows, null, 2))
+```
+
+Claude ejecuta la skill, el script se ejecuta con acceso completo a paquetes npm, y nunca tocas un `package.json`.
+
+## Comparación
+
+| Enfoque | Paso de Compilación | TypeScript | Fijación de Versión | Velocidad Primera Ejecución |
+|----------|------------|------------|-----------------|-----------------|
+| [esbuild](https://esbuild.github.io/) bundle | Sí | Vía compilación | En código fuente | Rápida |
+| [esm.sh](https://esm.sh) | No | No | En URL | Limitada por red |
+| [npx zx --install](https://google.github.io/zx/) | No | Vía tsx | Comentarios | Moderada |
+| **npx -y bun** | No | Nativo | En ruta de importación | Rápida tras caché |
+
+## Advertencias
+
+Este enfoque no es perfecto. Algunas cosas a considerar:
+
+**Bun no es totalmente compatible con Node.js.** La mayoría de paquetes npm funcionan bien, pero algunas APIs de Node.js se comportan diferente o no están implementadas aún. Si tu script depende de comportamientos extremos (*edge-case*) de Node.js—ciertas operaciones de `fs`, opciones específicas de `child_process`, addons nativos—podrías encontrar problemas inesperados. Revisa la [documentación de compatibilidad de Bun con Node.js](https://bun.sh/docs/runtime/nodejs-apis) antes de comprometerte con este enfoque.
+
+**La latencia de la primera ejecución existe.** La primera ejecución descarga Bun vía npx (~100MB dependiendo de la arquitectura) e instala dependencias. En una conexión lenta o en un entorno de arranque en frío, esto añade un tiempo notable. Las ejecuciones subsiguientes son rápidas, pero ese impacto inicial importa si tu skill se ejecuta en entornos efímeros que no preservan la caché de Bun.
+
+**La fijación de versiones en importaciones no es estándar.** La sintaxis `import x from "pkg @^1.0"` es específica de Bun. Tu IDE no la entenderá para autocompletado o chequeo de tipos. Para scripts rápidos, puedes añadir `// @ts-ignore` sobre las importaciones problemáticas. Para un desarrollo más serio, mantén un `package.json` con versiones adecuadas y solo usa la sintaxis en línea (*inline*) en la skill desplegada.
+
+**Cuándo usar zx en su lugar.** Si necesitas compatibilidad garantizada con Node.js—porque estás usando un paquete que depende de internos específicos de Node, o tu equipo tiene requisitos estrictos de *runtime*—[zx con --install](https://google.github.io/zx/cli#install) es la opción más segura. Se ejecuta en Node.js directamente, así que la compatibilidad nunca es una duda. El compromiso es no tener TypeScript nativo y la fijación de versiones basada en comentarios.
+
+Para la mayoría de skills que usan paquetes comunes como **lodash**, **zod** o **csv-parse**, Bun funciona bien. Pero ten en cuenta que existe esa vía de escape.
+
+## Conclusión
+
+`npx -y bun` combina las mejores propiedades: sin paso de compilación, TypeScript nativo, fijación de versiones limpia y disponibilidad donde sea que npm se ejecute. Para skills de Claude Code que necesitan paquetes de terceros, es el camino más simple hacia scripts potentes—mientras te mantengas dentro de los límites de compatibilidad de Bun.
+
+Si has usado **uv** de Python y deseabas que JavaScript tuviera algo similar, es esto. Misma filosofía, mismo flujo de trabajo, herramientas familiares. Y cuando llegues a los límites de Bun, **zx** está ahí como respaldo.
+
+## Referencias
+
+- [Documentación de Skills de Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills)
+- [Bun](https://bun.sh) — El runtime de JavaScript con auto-instalación integrada
+- [Google zx](https://google.github.io/zx/) — Una herramienta para escribir mejores scripts
+- [esm.sh](https://esm.sh) — Paquetes npm como módulos ES a través de CDN
+- [uv](https://docs.astral.sh/uv/) — Gestor de paquetes de Python con dependencias de script en línea (`uv run`)
+- [PEP 723](https://peps.python.org/pep-0723/) — Especificación de metadatos de script en línea para Python
+- [esbuild](https://esbuild.github.io/) — Empaquetador de JavaScript rápido
