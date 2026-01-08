@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build && tsx scripts/generate-sitemap.ts && tsx scripts/generate-rss.ts && cp _redirects build/client/_redirects && cp _headers build/client/_headers && cp public/robots.txt build/client/robots.txt",
+    "build": "react-router build && NODE_ENV=production tsx scripts/generate-sitemap.ts && NODE_ENV=production tsx scripts/generate-rss.ts && cp _redirects build/client/_redirects && cp _headers build/client/_headers && cp public/robots.txt build/client/robots.txt",
     "build:ci": "yarn typecheck && yarn lint && yarn test:unit && yarn build && yarn test:unit:build",
     "serve": "npx serve build/client",
     "start": "react-router-serve ./build/client/index.html",

@@ -9,6 +9,17 @@ import {
   extractEmailFromEditor,
   isValidLanguageCode,
 } from "./helpers/rss-validators";
+import { getAllFilesFrontMatter, FrontMatter } from "../../lib/blog";
+import { siteMetadata } from "../../blog.config";
+
+function isPublished(post: FrontMatter): boolean {
+  if (post.draft) return false;
+  const postDate = new Date(post.date);
+  const now = new Date();
+  postDate.setUTCHours(0, 0, 0, 0);
+  now.setUTCHours(0, 0, 0, 0);
+  return postDate <= now;
+}
 
 const RSS_PATH = path.join(process.cwd(), "build/client/rss.xml");
 
@@ -307,6 +318,53 @@ describe("RSS Feed Validation", () => {
             `Item ${index} (${item.title}) has relative URLs: ${matches.map((m) => m[1] + "/" + m[2]).join(", ")}`
           ).toBe(0);
         }
+      });
+    });
+  });
+
+  describe("Content Completeness", () => {
+    function getItems(): RssItem[] {
+      const items = parsedRss.rss?.channel?.item;
+      if (!items) return [];
+      return Array.isArray(items) ? items : [items];
+    }
+
+    function getItemGuid(item: RssItem): string | undefined {
+      if (typeof item.guid === "object") {
+        return item.guid["#text"];
+      }
+      return item.guid;
+    }
+
+    it("should include all published blog posts", () => {
+      const posts = getAllFilesFrontMatter("blog").filter(isPublished);
+      const items = getItems();
+
+      posts.forEach((post) => {
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const found = items.some((item) => getItemGuid(item) === expectedUrl);
+
+        expect(
+          found,
+          `RSS should include post: ${post.slug} (${expectedUrl})`
+        ).toBe(true);
+      });
+    });
+
+    it("should exclude future-dated posts", () => {
+      const futurePosts = getAllFilesFrontMatter("blog").filter(
+        (post) => !isPublished(post)
+      );
+      const items = getItems();
+
+      futurePosts.forEach((post) => {
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const found = items.some((item) => getItemGuid(item) === expectedUrl);
+
+        expect(
+          found,
+          `RSS should NOT include future post: ${post.slug} (${expectedUrl})`
+        ).toBe(false);
       });
     });
   });

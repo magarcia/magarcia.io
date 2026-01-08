@@ -8,9 +8,18 @@ import {
   isValidChangefreq,
   isValidLastmod,
 } from "../helpers/sitemap-validators";
-import { getAllFilesFrontMatter, getAllTags } from "../../../lib/blog";
+import { getAllFilesFrontMatter, getAllTags, FrontMatter } from "../../../lib/blog";
 import { slugifyTag } from "../../../lib/urls";
 import { siteMetadata } from "../../../blog.config";
+
+function isPublished(post: FrontMatter): boolean {
+  if (post.draft) return false;
+  const postDate = new Date(post.date);
+  const now = new Date();
+  postDate.setUTCHours(0, 0, 0, 0);
+  now.setUTCHours(0, 0, 0, 0);
+  return postDate <= now;
+}
 
 const SITEMAP_PATH = path.join(process.cwd(), "build/client/sitemap.xml");
 
@@ -276,8 +285,8 @@ describe("Sitemap Generation", () => {
       return Array.isArray(urls) ? urls : [urls];
     }
 
-    it("should include all blog posts", () => {
-      const posts = getAllFilesFrontMatter("blog");
+    it("should include all published blog posts", () => {
+      const posts = getAllFilesFrontMatter("blog").filter(isPublished);
       const urls = getUrls();
 
       posts.forEach((post) => {
@@ -288,6 +297,23 @@ describe("Sitemap Generation", () => {
           found,
           `Sitemap should include post: ${post.slug} (${expectedUrl})`
         ).toBe(true);
+      });
+    });
+
+    it("should exclude future-dated posts", () => {
+      const futurePosts = getAllFilesFrontMatter("blog").filter(
+        (post) => !isPublished(post)
+      );
+      const urls = getUrls();
+
+      futurePosts.forEach((post) => {
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const found = urls.some((url) => url.loc === expectedUrl);
+
+        expect(
+          found,
+          `Sitemap should NOT include future post: ${post.slug} (${expectedUrl})`
+        ).toBe(false);
       });
     });
 
