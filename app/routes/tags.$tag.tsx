@@ -56,14 +56,14 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Header lang={lang} />
-      <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-24">
-        <h2 className="text-2xl font-normal text-foreground mb-12" data-testid="tag-heading">
+      <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-12 md:mb-24">
+        <h2 className="text-2xl font-normal text-foreground mb-8 md:mb-12" data-testid="tag-heading">
           {title}
         </h2>
 
         <div className="pl-7" data-testid="article-list">
           {posts.map(({ title, slug, readingTime, date }: FrontMatter) => (
-            <div key={slug} className="my-8" data-testid="article-item">
+            <div key={slug} className="my-6 md:my-8" data-testid="article-item">
               <h3 className="font-medium text-lg text-foreground">
                 <Link to={`/${slug}`} title={title} className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors">
                   <LinkIcon

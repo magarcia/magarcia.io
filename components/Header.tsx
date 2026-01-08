@@ -26,7 +26,7 @@ export default function Header({ main = false, lang = "en", slug }: HeaderProps)
   const backText = backTranslations[lang] || backTranslations.en;
 
   return (
-    <header className="pt-16 pb-8 px-8 md:px-16 max-w-[75ch] mx-auto relative z-50">
+    <header className="pt-8 md:pt-16 pb-4 md:pb-8 px-8 md:px-16 max-w-[75ch] mx-auto relative z-50">
       <div className="flex place-content-between items-center">
         {main ? (
           <Link to={homeUrl} aria-label="magarcia - Go to homepage">

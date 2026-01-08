@@ -9,7 +9,7 @@ interface ProjectsSectionProps {
 
 export default function ProjectsSection({ lang }: ProjectsSectionProps) {
   return (
-    <section className="mb-16">
+    <section className="mb-10 md:mb-16">
       <SectionHeader>{getSectionTitle("projects", lang)}</SectionHeader>
       <div className="space-y-1">
         {projects.map((project) => (

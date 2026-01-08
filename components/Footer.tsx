@@ -1,10 +1,10 @@
 export default function Footer() {
   return (
-    <footer className="px-8 md:px-16 mx-auto my-24 max-w-[75ch]">
-      <div className="flex items-center justify-between text-sm text-[#666] dark:text-gray-400 font-mono">
+    <footer className="px-8 md:px-16 mx-auto my-12 md:my-24 max-w-[75ch]">
+      <div className="flex items-center justify-between text-sm text-muted-foreground font-mono">
         <div className="flex flex-wrap gap-4">
           <a
-            className="hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+            className="hover:text-foreground transition-colors"
             href="https://bsky.app/profile/mgarcia.bsky.social"
             target="_blank"
             rel="me noopener noreferrer"
@@ -13,7 +13,7 @@ export default function Footer() {
           </a>
           <span>—</span>
           <a
-            className="hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+            className="hover:text-foreground transition-colors"
             href="https://github.com/magarcia"
             target="_blank"
             rel="me noopener noreferrer"
@@ -22,7 +22,7 @@ export default function Footer() {
           </a>
           <span>—</span>
           <a
-            className="hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+            className="hover:text-foreground transition-colors"
             href="https://www.linkedin.com/in/martingarciamonterde/"
             target="_blank"
             rel="me noopener noreferrer"
@@ -33,7 +33,7 @@ export default function Footer() {
 
         <div>
           <a
-            className="hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+            className="hover:text-foreground transition-colors"
             href="/rss.xml"
             target="_blank"
             rel="noopener noreferrer"
