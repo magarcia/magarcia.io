@@ -69,7 +69,7 @@ export default function CodeBlock({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <div className="overflow-x-auto px-4 md:px-8 codeblock-scroll">
+      <div className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-yellow-600 dark:focus:ring-purple-400" tabIndex={0}>
         <Highlight {...defaultProps} code={code} language={lang as any}>
           {({ tokens, getLineProps, getTokenProps }) => (
             <pre className={`language-${lang} font-mono`}>

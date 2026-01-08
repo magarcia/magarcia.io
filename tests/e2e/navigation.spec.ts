@@ -17,8 +17,8 @@ test.describe("Navigation", () => {
     const blogPostPage = new BlogPostPage(page);
     await expect(page.getByTestId("post-title")).toBeVisible();
 
-    // Click logo to go back to homepage
-    await blogPostPage.header.clickLogo();
+    // Click back link to go back to homepage
+    await blogPostPage.header.navigateToHome();
 
     // Verify we're back on homepage
     await expect(page).toHaveURL("/");

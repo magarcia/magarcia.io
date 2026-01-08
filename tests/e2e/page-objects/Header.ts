@@ -6,12 +6,14 @@ export class Header {
   private readonly themeToggle: Locator;
   private readonly languageSelector: Locator;
   private readonly siteLogo: Locator;
+  private readonly backLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.themeToggle = page.getByTestId("theme-toggle");
     this.languageSelector = page.getByTestId("language-selector");
     this.siteLogo = page.getByRole("link", { name: "magarcia" });
+    this.backLink = page.getByRole("link", { name: /back|volver|tornar/i });
   }
 
   async toggleTheme(): Promise<void> {
@@ -34,6 +36,20 @@ export class Header {
 
   async clickLogo(): Promise<void> {
     await this.siteLogo.click();
+  }
+
+  async navigateToHome(): Promise<void> {
+    // On homepage, click the logo; on blog posts, click the back link
+    const logoVisible = await this.siteLogo.isVisible();
+    if (logoVisible) {
+      await this.siteLogo.click();
+    } else {
+      await this.backLink.click();
+    }
+  }
+
+  getBackLink(): Locator {
+    return this.backLink;
   }
 
   getThemeToggle(): Locator {

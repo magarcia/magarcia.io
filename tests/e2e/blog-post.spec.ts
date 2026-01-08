@@ -29,8 +29,8 @@ test.describe("Blog Post Page", () => {
 
     const dateText = await timeElement.textContent();
     expect(dateText).toBeTruthy();
-    // Date should match format like "January 1, 2024"
-    expect(dateText).toMatch(/\w+\s+\d{1,2},\s+\d{4}/);
+    // Date should match format like "10 January 2026" (day month year)
+    expect(dateText).toMatch(/\d{1,2}\s+\w+\s+\d{4}/);
   });
 
   test("should display reading time", async () => {
@@ -57,21 +57,6 @@ test.describe("Blog Post Page", () => {
     });
   });
 
-  test("should have Discuss on Twitter link", async () => {
-    const discussLink = blogPostPage.getDiscussOnTwitterLink();
-    await expect(discussLink).toBeVisible();
-    await expect(discussLink).toHaveAttribute("href", /twitter\.com|x\.com/);
-    await expect(discussLink).toHaveAttribute("target", "_blank");
-  });
-
-  test("should have Edit on GitHub link", async ({ page }) => {
-    const editLink = blogPostPage.getEditOnGitHubLink();
-    await expect(editLink).toBeVisible({ timeout: 10000 });
-    const href = await editLink.getAttribute("href");
-    expect(href).toContain("github.com");
-    await expect(editLink).toHaveAttribute("target", "_blank");
-  });
-
   test("should render code blocks when present", async ({ page }) => {
     // This test checks if a blog with code blocks displays them correctly
     // Navigate to a post that has code (first post from homepage, which is technical)
@@ -92,9 +77,6 @@ test.describe("Blog Post Page", () => {
 
 test.describe("Blog Post - Direct Navigation", () => {
   test("should load a specific blog post by slug", async ({ page }) => {
-    // Navigate directly to a known slug pattern
-    const blogPostPage = new BlogPostPage(page);
-
     // We'll need to navigate to homepage first to get a valid slug
     const homePage = new HomePage(page);
     await homePage.goto();

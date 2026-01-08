@@ -10,7 +10,7 @@ interface WritingSectionProps {
 
 export default function WritingSection({ posts, lang }: WritingSectionProps) {
   return (
-    <section>
+    <section data-testid="article-list">
       <SectionHeader>{getSectionTitle("writing", lang)}</SectionHeader>
       {posts.map((post) => (
         <ArticleListItem {...post} key={post.slug} lang={lang} />

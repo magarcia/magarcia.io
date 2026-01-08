@@ -28,13 +28,10 @@ test.describe("Homepage", () => {
     const title = firstArticle.locator("h2");
     await expect(title).toBeVisible();
 
-    // Article should have a date
+    // Article should have a year (new design shows year instead of full date)
     const date = firstArticle.locator("time");
     await expect(date).toBeVisible();
-
-    // Article should have reading time
-    const metadata = firstArticle.locator("div").first();
-    await expect(metadata).toContainText("min read");
+    await expect(date).toHaveText(/\d{4}/);
   });
 
   test("should navigate to blog post when clicking article", async ({

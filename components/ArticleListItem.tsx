@@ -44,7 +44,7 @@ export default function ArticleListItem({
           </h2>
           <time
             dateTime={date}
-            className="text-xs font-mono text-[#999] dark:text-gray-500 flex-shrink-0 leading-[33.75px] "
+            className="text-xs font-mono text-gray-500 dark:text-gray-400 flex-shrink-0 leading-[33.75px]"
           >
             {year}
           </time>

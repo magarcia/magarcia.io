@@ -6,7 +6,7 @@ interface AboutSectionProps {
 }
 
 const linkClass =
-  "underline hover:text-yellow-600 dark:hover:text-purple-400 transition-colors";
+  "text-blue-600 dark:text-blue-400 underline hover:text-yellow-600 dark:hover:text-purple-400 transition-colors";
 
 export default function AboutSection({ lang }: AboutSectionProps) {
   const content: Record<string, React.ReactNode> = {
