@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build && tsx scripts/generate-sitemap.ts && tsx scripts/generate-rss.ts && cp _redirects build/client/_redirects && cp _headers build/client/_headers && cp public/robots.txt build/client/robots.txt",
-    "build:ci": "yarn typecheck && yarn lint && yarn test:unit && yarn build",
+    "build:ci": "yarn typecheck && yarn lint && yarn test:unit && yarn build && yarn test:unit:build",
     "serve": "npx serve build/client",
     "start": "react-router-serve ./build/client/index.html",
     "lint": "eslint app --ext .ts,.tsx",
@@ -16,8 +16,9 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
-    "test:unit": "vitest run",
-    "test:unit:watch": "vitest"
+    "test:unit": "vitest run --exclude 'tests/unit/rss-validation.test.ts' --exclude 'tests/unit/scripts/sitemap.test.ts'",
+    "test:unit:watch": "vitest --exclude 'tests/unit/rss-validation.test.ts' --exclude 'tests/unit/scripts/sitemap.test.ts'",
+    "test:unit:build": "vitest run tests/unit/rss-validation.test.ts tests/unit/scripts/sitemap.test.ts"
   },
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
