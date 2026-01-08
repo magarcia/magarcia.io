@@ -73,8 +73,11 @@
   html {
     @apply bg-white;
   }
+  html.dark {
+    @apply bg-gray-900;
+  }
   body {
-    @apply bg-white text-foreground font-serif;
+    @apply bg-white dark:bg-gray-900 text-foreground font-serif;
   }
   em,
   i {
