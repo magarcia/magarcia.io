@@ -1,18 +1,18 @@
 ---
 title: YumML - Otro Formato de Metadatos de Recetas
 date: '2026-01-10'
-spoiler: Hay algunos formatos de recetas en internet pero son antiguos, no
-  están especificados correctamente o tienen restricciones de licencia. YumML es un esfuerzo para hacer recetas de cocina
-  legibles por humanos y máquinas.
+spoiler: Los formatos de recetas existentes son antiguos, están mal especificados
+  o tienen restricciones de licencia. YumML hace las recetas de cocina legibles
+  tanto para humanos como para máquinas.
 tags:
   - open-source
 ---
 
-Hace años, hablando con un amigo, nos dimos cuenta de que no existe un formato estándar
-para guardar recetas de cocina. En ese momento estaba aprendiendo React, y uno de mis
-primeros proyectos fue una app de gestión de recetas. No tuve éxito (como muchos
-proyectos que empecé y nunca terminé), pero en el camino encontré un borrador de
-especificación de un formato de recetas: **YumML**.
+Hace años, hablando con un amigo, nos dimos cuenta de que no existe un formato
+estándar para guardar recetas de cocina. En ese momento estaba aprendiendo React,
+y uno de mis primeros proyectos fue una app de gestión de recetas. No tuve éxito
+(como tantos proyectos que empecé y nunca terminé), pero en el camino encontré
+un borrador de especificación para un formato de recetas: **YumML**.
 
 <br />
 
@@ -23,39 +23,39 @@ especificación de un formato de recetas: **YumML**.
 <br />
 
 Paul Jenkins publicó este formato en [vikingco.de](http://vikingco.de/), pero
-el sitio está ahora fuera de línea. Las únicas referencias disponibles son del
+el sitio ya no está disponible. Las únicas referencias que quedan son del
 [Internet Archive](https://web.archive.org/web/20160730232450/http://vikingco.de/)
-y el [repositorio de la página](https://github.com/vikingcode/vikingcode.github.io)
-que aún permanece disponible.
+y del [repositorio de la página](https://github.com/vikingcode/vikingcode.github.io),
+que todavía sigue accesible.
 
-> Las palabras clave “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
-> “SHOULD NOT”, “RECOMMENDED”, “MAY”, y “OPTIONAL” en este documento deben ser
-> interpretadas como se describe en [RFC 2119](https://tools.ietf.org/html/rfc2119).
+> Las palabras clave "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+> "SHOULD NOT", "RECOMMENDED", "MAY" y "OPTIONAL" en este documento deben
+> interpretarse como se describe en [RFC 2119](https://tools.ietf.org/html/rfc2119).
 
 ## Historia
 
-El primer borrador del formato YumML es del 21 de septiembre de 2011 hecho por Paul
-Jenkins, puedes revisar la [especificación original aquí](./original-yumml.md)
+El primer borrador del formato YumML es del 21 de septiembre de 2011, creado por
+Paul Jenkins. Puedes revisar la [especificación original aquí](https://web.archive.org/web/20160730232450/http://vikingco.de/yumml.html),
 que rescaté de los viejos archivos que encontré.
 
-Este borrador es prometedor como formato para recetas de cocina, así que quiero
-recuperarlo de los archivos olvidados y revivirlo, añadiendo funcionalidades y
-especificaciones extra.
+Este borrador resulta prometedor como formato para recetas de cocina, así que
+quiero recuperarlo del olvido y revivirlo, añadiendo funcionalidades y
+especificaciones adicionales.
 
 ## Motivación
 
-Como el autor original de YumML mencionó en su post, he investigado formatos de
-recetas de cocina y, siendo claro, la mayoría apestan. El panorama de formatos de
-intercambio de recetas está fragmentado, pero la mayoría comparten un rasgo: carecen
-de legibilidad humana.
+Como mencionó el autor original de YumML en su blog, he investigado formatos de
+recetas de cocina y, siendo sincero, la mayoría son bastante malos. El panorama de
+formatos de intercambio de recetas está fragmentado, pero casi todos comparten
+un problema común: la falta de legibilidad humana.
 
 La mayoría del software de cocina usa formatos propietarios que solo ese software
-puede leer. Algunos pueden ser importados por otros programas.
+puede leer. Algunos pueden importarse a otros programas.
 [Meal-Master](http://web.archive.org/web/20151029032924/http://episoft.home.comcast.net:80/~episoft/)
-es uno de estos formatos ampliamente soportados y debido a eso hay una
-[enorme colección de recetas](http://www.ffts.com/recipes.htm) disponible online.
+es uno de estos formatos ampliamente soportados y gracias a ello existe una
+[enorme colección de recetas](http://www.ffts.com/recipes.htm) disponible en línea.
 
-Pero mirando un ejemplo, el formato parece mal especificado:
+Pero si miramos un ejemplo, el formato parece estar mal especificado:
 
 ```txt
 MMMMM----- Now You're Cooking! v5.65 [Meal-Master Export Format]
@@ -85,58 +85,103 @@ Hay algunos otros formatos "famosos" como:
 - [Recipe Exchange Markup Language](http://reml.sourceforge.net/)
 - [CookML](http://www.kalorio.de/index.php?Mod=Ac&Cap=CE&SCa=../cml/CookML_EN)
 
-Pero son principalmente formatos basados en XML y es imposible para un humano real ser
-capaz de leer y entender una receta escrita en ese formato. Si estás
-interesado en encontrar otros formatos de recetas hay una
+Pero están basados principalmente en XML, y ningún humano puede leer una receta
+escrita en ellos. Si te interesa encontrar otros formatos de recetas, existe una
 [lista de formatos de cocina relacionados con software](http://microformats.org/wiki/recipe-formats).
 
-Vale la pena mencionar algunos formatos que vinieron con la era de Internet. Los microdatos HTML
-como [Google rich snippets](https://developers.google.com/search/docs/data-types/recipe)
-y los [microdatos de schema.org](http://schema.org/Recipe), son ampliamente usados por
-sitios de recetas comerciales. Aunque el objetivo principal de los microdatos es hacer el
-contenido legible por máquina (especialmente para propósitos de SEO), pero las recetas hoy en día están
-pensadas para ser leídas y ejecutadas por un humano.
+Vale la pena mencionar algunos formatos que surgieron con la era de Internet.
+Los microdatos HTML como [Google rich snippets](https://developers.google.com/search/docs/data-types/recipe)
+y los [microdatos de schema.org](http://schema.org/Recipe) son ampliamente usados
+por sitios comerciales de recetas. Aunque el objetivo principal de los microdatos
+es la legibilidad por máquinas (especialmente para SEO), la gente sigue leyendo
+y siguiendo las recetas.
 
-Finalmente encontré [pesto](https://6xq.net/pesto/) que apunta a hacer un formato más
-simple legible por humanos, pero personalmente encuentro difícil de entender
-para alguien que no está acostumbrado a la sintaxis.
+Finalmente, encontré [pesto](https://6xq.net/pesto/), que busca ser un formato
+más simple y legible por humanos, pero personalmente lo encuentro difícil de
+entender para alguien que no está familiarizado con su sintaxis.
 
 ## Consideraciones de diseño originales
 
-El autor original de YumML tenía algunas consideraciones en mente durante el diseño
-del formato:
+El autor original de YumML tenía en mente algunas consideraciones durante el
+diseño del formato:
 
-- No necesita una guía de referencia larga.
-- Puede ser fácilmente leído por personas no técnicas en el formato "crudo".
-- Puede ser traducible entre imperial y métrico.
-- Quiere algo como el _markdown_ de recetas (pero todavía fácil de analizar con software).
+- No necesita una guía de referencia extensa.
+- Puede ser leído fácilmente por personas no técnicas en su formato "crudo".
+- Permite conversión entre sistema imperial y métrico.
+- Busca ser algo así como el *markdown* de las recetas (pero que siga siendo fácil de procesar por software).
 
-YumML está basado en YAML para crear un formato legible por humanos _y_ sistemas.
+YumML está basado en YAML para crear un formato legible tanto por humanos *como*
+por sistemas.
 
 **De [yaml.org](https://yaml.org/)**
 
-> Qué Es: YAML es un estándar de serialización de datos amigable para humanos para todos los
-> lenguajes de programación.
+> Qué es: YAML es un estándar de serialización de datos amigable para humanos,
+> compatible con todos los lenguajes de programación.
+
+## Por qué YAML en la era de la IA
+
+Cuando se redactó la especificación original de YumML en 2011, la consideración
+era puramente sobre legibilidad humana y por máquinas. Hoy en día hay un tercer
+lector a tener en cuenta: **los Modelos de Lenguaje de Gran Escala (LLMs)**.
+
+A medida que los asistentes de IA se vuelven comunes en las cocinas (piensa en
+asistentes de voz leyendo recetas en voz alta, o chatbots ayudándote a adaptar
+recetas), el formato que elijas para datos estructurados importa más que nunca.
+Investigaciones recientes muestran que el formato de datos impacta significativamente
+tanto la **eficiencia de tokens** (coste) como la **precisión del modelo** cuando
+los LLMs procesan información estructurada.
+
+[Comparativas entre diferentes modelos](https://www.improvingagents.com/blog/best-nested-data-format/)
+muestran que YAML usa entre un **27-40% menos tokens que JSON** y un **38-40% menos
+que XML** para los mismos datos. Más allá del ahorro de costes, el formato también
+afecta la comprensión: YAML logró una **precisión entre 12-18 puntos porcentuales
+mayor** que JSON cuando los modelos extraían información de datos anidados. La
+sintaxis más limpia con menos ruido de puntuación ayuda a los modelos a procesar
+el contenido semántico de forma más fiable. Aunque [JSON minificado puede ser
+más eficiente](https://www.curiouslychase.com/posts/yaml-vs-json-for-llm-token-efficiency-the-minification-truth),
+sacrifica por completo la legibilidad humana, lo cual va en contra de los objetivos
+fundamentales de YumML.
+
+### Lo mejor de ambos mundos
+
+El diseño de YAML logra un equilibrio que funciona bien para este requisito de
+legibilidad triple:
+
+- **Humanos** pueden leerlo sin entrenamiento (sin corchetes angulares ni llaves)
+- **Máquinas** pueden procesarlo con bibliotecas estándar en cualquier lenguaje
+- **Modelos de IA** lo procesan de forma más eficiente y precisa que las alternativas
+
+Esto hace que YumML sea particularmente adecuado para aplicaciones modernas de
+recetas donde una IA podría ayudarte a escalar una receta, sugerir sustituciones,
+o convertir entre sistema métrico e imperial—todo mientras mantiene el formato
+fuente legible en un editor de texto.
 
 ## Objetivos
 
 Quiero definir objetivos más formales para la especificación.
 
-Formato YumML:
+El formato YumML:
 
-- **DEBE** ser legible por humanos **y** sistemas.
-- **DEBE** ser autocontenido, así que **NO DEBE** requerir recursos adicionales para ser interpretado.
-- **DEBE** tener soporte para diferentes sistemas métricos _(métrico, imperial)_.
-- **DEBERÍA** ser fácil de traducir a diferentes idiomas _(las recetas tienen una fuerte influencia cultural y el idioma no debería ser una barrera para alguien que quiere entender)_.
-- **DEBERÍA** ser fácil de analizar usando herramientas ya existentes.
+- **DEBE** ser legible por humanos **y** por sistemas.
+- **DEBE** ser autocontenido, por lo que **NO DEBE** requerir recursos adicionales para ser interpretado.
+- **DEBE** tener soporte para diferentes sistemas de medidas *(métrico, imperial)*.
+- **DEBERÍA** ser fácil de traducir a diferentes idiomas *(las recetas tienen una fuerte influencia cultural y el idioma no debería ser una barrera para quien quiera entenderlas)*.
+- **DEBERÍA** ser fácil de procesar usando herramientas ya existentes.
 - **DEBERÍA** ser fácil de extender en el futuro.
+
+## Detalles Técnicos
+
+- **Extensión de archivo**: `.yumml` (los archivos **DEBEN** ser YAML válido)
+- **Tipo MIME**: `application/x-yumml+yaml`
+- **Codificación**: UTF-8
 
 ## Ejemplo Básico
 
 ```yumml
 name: Mrs Fields Choc-Chip Cookies
 date: 2011-09-21
-time: 25 minutes
+prepTime: 15 minutes
+cookTime: 10 minutes
 ingredients:
   - quantity: 2.5
     unit: cups
@@ -144,47 +189,53 @@ ingredients:
 
   - quantity: 0.5
     unit: tsp
-    item: bi-carb of soda
+    item: bicarbonate of soda
 
 instructions:
-  - step: Mix flour, bi-carb soda, and salt in a large bowl
+  - step: Mix flour, bicarbonate of soda, and salt in a large bowl
   - step: Blend sugars with electric mixer, add margarine to form a grainy paste
 ```
 
 ## Especificación
 
-Hay tres secciones principales que cada receta debe incluir: el encabezado, la lista de ingredientes, y las instrucciones.
+Hay tres secciones principales que toda receta **DEBE** incluir: la cabecera, la lista de ingredientes y las instrucciones.
 
-### Encabezado
+### Cabecera
 
-El encabezado es una sección implícita donde todos los atributos se colocan en el
-nivel raíz del archivo. Todos los atributos deberían colocarse en la parte superior del
-archivo.
+La cabecera es una sección implícita donde todos los atributos se colocan en el
+nivel raíz del archivo. Todos los atributos **DEBERÍAN** ubicarse en la parte
+superior del archivo, antes de `ingredients` e `instructions`.
 
-- **name**:
-  - descripción: `Nombre de la receta.`
-  - tipo: `string`
-  - requerido: `true`
-- `date`:
-  - descripción: Fecha de la receta.
-  - tipo: `string` (notación de fecha completa como se define por [RFC 3339, sección 5.6](https://tools.ietf.org/html/rfc3339#section-5.6), por ejemplo, _2017-07-21_)
-  - requerido: false
-- `time`: (_opcional_) Cuánto tiempo tomaría la receta.
-- `author`: (_opcional_) Autor de la receta.
-- `servings`: (_opcional_) Para cuántas porciones está dimensionada la receta (ej: una
-  sopa de tomate con 4 porciones significa que es para 4 personas, pero galletas de chocolate con
-  20 porciones significa que va a hacer 20 galletas).
-- `description`: (_opcional_) Una descripción más detallada sobre la receta.
-- `rating`: (_opcional_) Calificación de la receta.
+| Atributo | Tipo | Estado | Descripción |
+|:---------|:-----|:-------|:------------|
+| `name` | string | **REQUERIDO** | Nombre de la receta |
+| `date` | string | OPCIONAL | Fecha de publicación (formato [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6), ej., `2017-07-21`) |
+| `author` | string | OPCIONAL | Autor de la receta |
+| `description` | string | OPCIONAL | Breve descripción de la receta |
+| `prepTime` | duración | OPCIONAL | Tiempo de preparación (ej., `15 minutes`) |
+| `cookTime` | duración | OPCIONAL | Tiempo de cocción/horneado (ej., `10 minutes`) |
+| `totalTime` | duración | OPCIONAL | Tiempo total (**PUEDE** derivarse de `prepTime` + `cookTime`) |
+| `servings` | integer | OPCIONAL | Número de porciones que rinde la receta |
+| `yield` | string | OPCIONAL | Lo que produce la receta (ej., `24 cookies`, `1 loaf`) |
+| `rating` | number (1-5) | OPCIONAL | Calificación de la receta |
+| `tags` | string[] | OPCIONAL | Etiquetas de categorización |
+
+**Formato de duración**: Cadenas legibles por humanos. Para máxima compatibilidad, usa
+números enteros seguidos de `minutes`, `hours` o `seconds` (ej., `15 minutes`,
+`1 hour 30 minutes`). Los procesadores **DEBERÍAN** también aceptar abreviaciones
+comunes (`15 min`, `1 hr`) y variaciones naturales (`1.5 hours`).
 
 #### Ejemplo
 
-```yumml:1-8
+```yumml:1-10
 name: Mrs Fields Choc-Chip Cookies
 date: 2011-09-21
-time: 25 minutes
-serves: 1
-makes: 25
+author: Paul Jenkins
+description: Classic chocolate chip cookies, crispy outside and chewy inside.
+prepTime: 15 minutes
+cookTime: 10 minutes
+servings: 4
+yield: 24 cookies
 tags:
   - cookies
   - chocolate
@@ -195,9 +246,242 @@ ingredients:
 
   - quantity: 0.5
     unit: tsp
-    item: bi-carb of soda
+    item: bicarbonate of soda
 
 instructions:
-  - step: Mix flour, bi-carb soda, and salt in a large bowl
+  - step: Mix flour, bicarbonate of soda, and salt in a large bowl
   - step: Blend sugars with electric mixer, add margarine to form a grainy paste
 ```
+
+### Ingredientes
+
+La sección `ingredients` es una lista **REQUERIDA** de todos los ingredientes necesarios para la receta.
+
+| Atributo | Tipo | Estado | Descripción |
+|:---------|:-----|:-------|:------------|
+| `quantity` | number \| string | OPCIONAL | Cantidad (número, fracción como `"1/2"`, o descriptor como `"to taste"`) |
+| `unit` | string | OPCIONAL | Unidad de medida (ver unidades canónicas abajo) |
+| `item` | string | **REQUERIDO** | Nombre del ingrediente |
+| `notes` | string | OPCIONAL | Notas adicionales (ej., `room temperature`, `finely chopped`) |
+| `optional` | boolean | OPCIONAL | Si el ingrediente es opcional (por defecto: `false`) |
+
+#### Unidades Canónicas
+
+Para soportar la conversión entre sistemas métrico e imperial, las implementaciones **DEBERÍAN** reconocer estas abreviaciones de unidades canónicas:
+
+| Categoría | Unidades |
+|:----------|:---------|
+| Volumen | `tsp`, `tbsp`, `cup`, `ml`, `l`, `fl-oz` |
+| Peso | `g`, `kg`, `oz`, `lb` |
+| Conteo | *(omitir `unit` para elementos contables como huevos)* |
+
+#### Ejemplo
+
+```yumml
+ingredients:
+  # Cantidades numéricas
+  - quantity: 2.5
+    unit: cups
+    item: plain flour
+
+  - quantity: 200
+    unit: g
+    item: chocolate chips
+    notes: semi-sweet
+
+  # Fracción en string (más legible que 0.5)
+  - quantity: "1/2"
+    unit: cup
+    item: walnuts
+    notes: chopped
+    optional: true
+
+  # Elementos contables (no necesitan unidad)
+  - quantity: 2
+    item: eggs
+    notes: room temperature
+
+  # Descriptor string para cantidades imprecisas
+  - quantity: "to taste"
+    item: salt
+
+  # Sin cantidad (implica "algo de")
+  - item: cooking spray
+    notes: for greasing
+```
+
+### Instrucciones
+
+La sección `instructions` es una lista **REQUERIDA** de pasos para preparar la receta. Las instrucciones soportan dos formatos: una lista simple plana o secciones agrupadas para recetas complejas.
+
+#### Formato Simple
+
+| Atributo | Tipo | Estado | Descripción |
+|:---------|:-----|:-------|:------------|
+| `step` | string | **REQUERIDO** | El texto de la instrucción |
+| `duration` | duración | OPCIONAL | Tiempo para este paso |
+| `temperature` | string | OPCIONAL | Configuración de temperatura (ej., `180C`, `350F`) |
+
+```yumml
+instructions:
+  - step: Preheat oven
+    temperature: 180C
+  - step: Mix dry ingredients in a large bowl
+  - step: Bake until golden brown
+    duration: 10 minutes
+```
+
+#### Formato Agrupado
+
+Para recetas complejas con múltiples etapas, las instrucciones **PUEDEN** organizarse en secciones:
+
+> **Nota de implementación**: Los procesadores **DEBEN** manejar ambos formatos.
+> Verificar la presencia de `section` para determinar el formato: si algún elemento
+> tiene un campo `section`, tratar como agrupado; de lo contrario, tratar como simple.
+
+```yumml
+instructions:
+  - section: For the dough
+    steps:
+      - step: Mix flour and salt
+      - step: Add water gradually
+
+  - section: For the filling
+    steps:
+      - step: Sauté onions until translucent
+        duration: 5 minutes
+      - step: Add remaining filling ingredients
+```
+
+## Notas de Diseño
+
+Algunas decisiones merecen explicación.
+
+### Por qué `quantity` es opcional y acepta strings
+
+Cocinar es impreciso. Las recetas reales incluyen instrucciones como "sal al gusto",
+"una pizca de nuez moscada" o "mantequilla para engrasar". Forzar una cantidad
+numérica excluiría estos casos o llevaría a los autores a soluciones forzadas
+como `quantity: 0`.
+
+Permitir strings también habilita fracciones como `"1/2"`, que son más legibles
+en el contexto de una receta que `0.5`. La contrapartida es que los procesadores
+deben manejar múltiples tipos, pero esto refleja la ambigüedad inherente de la
+cocina en lugar de luchar contra ella.
+
+### Por qué duraciones legibles en lugar de ISO 8601
+
+Las duraciones ISO 8601 (`PT25M`) son inequívocas y amigables para las máquinas,
+pero fallan en el objetivo de "legible por una persona no técnica". Un cocinero
+casero que echa un vistazo a un archivo `.yumml` debería entender inmediatamente
+`25 minutes` sin necesidad de consultar una referencia.
+
+La especificación recomienda un subconjunto estructurado (`entero + unidad`) para
+herramientas que necesitan un procesamiento fiable, pero mantiene la flexibilidad
+suficiente para aceptar variaciones naturales.
+
+### Por qué las instrucciones soportan dos formatos
+
+Las recetas simples no necesitan secciones. Obligar a los autores a escribir
+`section: main` para una receta básica de galletas añade fricción innecesaria.
+Pero las recetas complejas (como un pastel de varios componentes) realmente se
+benefician de agrupar los pasos por etapas.
+
+El diseño polimórfico prioriza la comodidad del autor sobre la simplicidad del
+procesador. La nota de implementación hace explícita la lógica de procesamiento:
+verificar `section` para determinar el formato.
+
+## Ejemplo Completo
+
+Aquí hay un ejemplo exhaustivo que demuestra todas las características de YumML:
+
+```yumml
+name: Classic Apple Pie
+date: 2024-03-15
+author: Jane Baker
+description: A traditional apple pie with a flaky butter crust and cinnamon-spiced filling.
+prepTime: 45 minutes
+cookTime: 55 minutes
+totalTime: 1 hour 40 minutes
+servings: 8
+yield: 1 pie (9-inch)
+rating: 5
+tags:
+  - dessert
+  - pie
+  - baking
+
+ingredients:
+  - quantity: 2.5
+    unit: cups
+    item: all-purpose flour
+
+  - quantity: 1
+    unit: tsp
+    item: salt
+
+  - quantity: 1
+    unit: cup
+    item: unsalted butter
+    notes: cold, cubed
+
+  - quantity: 6
+    unit: tbsp
+    item: ice water
+
+  - quantity: 6
+    item: apples
+    notes: peeled and sliced (Granny Smith recommended)
+
+  - quantity: 0.75
+    unit: cup
+    item: sugar
+
+  - quantity: 2
+    unit: tsp
+    item: cinnamon
+
+  - quantity: 0.25
+    unit: cup
+    item: caramel sauce
+    optional: true
+
+instructions:
+  - section: For the crust
+    steps:
+      - step: Combine flour and salt in a large bowl
+      - step: Cut in cold butter until mixture resembles coarse crumbs
+      - step: Add ice water gradually, mixing until dough forms
+      - step: Divide dough in half, wrap in plastic, and refrigerate
+        duration: 30 minutes
+
+  - section: For the filling
+    steps:
+      - step: Preheat oven
+        temperature: 375F
+      - step: Toss sliced apples with sugar and cinnamon
+      - step: Roll out bottom crust and place in pie dish
+
+  - section: Assembly
+    steps:
+      - step: Add apple filling to crust
+      - step: Roll out top crust and place over filling
+      - step: Crimp edges and cut vents in top
+      - step: Bake until golden brown and bubbling
+        duration: 55 minutes
+        temperature: 375F
+      - step: Cool before serving
+        duration: 30 minutes
+```
+
+## Próximos Pasos
+
+Esta especificación es un punto de partida—para ser útil, YumML necesita implementaciones.
+Si te interesa contribuir:
+
+- **Escribe un parser** en tu lenguaje favorito (TypeScript, Python, Go, Rust...)
+- **Crea un convertidor** de [schema.org/Recipe](http://schema.org/Recipe) a YumML
+- **Desarrolla una extensión para VS Code** con resaltado de sintaxis y validación
+- **Experimenta con LLMs** para ver qué tan bien pueden generar y procesar YumML
+
+Si construyes algo, me encantaría saberlo.
