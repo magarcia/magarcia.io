@@ -109,7 +109,7 @@ describe("Footer", () => {
       const { container } = render(<Footer />);
 
       const footer = container.querySelector("footer");
-      expect(footer).toHaveClass("px-8", "mx-auto", "my-24");
+      expect(footer).toHaveClass("px-8", "md:px-16", "mx-auto", "my-12", "md:my-24", "max-w-[75ch]");
     });
   });
 
