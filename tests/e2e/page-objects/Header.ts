@@ -26,6 +26,8 @@ export class Header {
 
   async selectLanguage(lang: Language): Promise<void> {
     await this.openLanguageMenu();
+    // Wait for menu to be fully visible
+    await this.page.waitForSelector('[role="menu"]', { state: "visible" });
     const langLabels: Record<Language, string> = {
       en: "English",
       es: "Español",

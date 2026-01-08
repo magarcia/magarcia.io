@@ -40,7 +40,7 @@ describe("_index route loader", () => {
     it("detects English as default language", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(mockPosts);
       const request = new Request("http://localhost/");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.lang).toBe("en");
       expect(getAllFilesFrontMatter).toHaveBeenCalledWith("blog", "en");
@@ -49,7 +49,7 @@ describe("_index route loader", () => {
     it("detects Spanish language from URL", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(mockPosts);
       const request = new Request("http://localhost/es");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.lang).toBe("es");
       expect(getAllFilesFrontMatter).toHaveBeenCalledWith("blog", "es");
@@ -58,7 +58,7 @@ describe("_index route loader", () => {
     it("detects Spanish language from URL with trailing slash", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(mockPosts);
       const request = new Request("http://localhost/es/");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.lang).toBe("es");
       expect(getAllFilesFrontMatter).toHaveBeenCalledWith("blog", "es");
@@ -67,7 +67,7 @@ describe("_index route loader", () => {
     it("detects Catalan language from URL", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(mockPosts);
       const request = new Request("http://localhost/ca");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.lang).toBe("ca");
       expect(getAllFilesFrontMatter).toHaveBeenCalledWith("blog", "ca");
@@ -76,7 +76,7 @@ describe("_index route loader", () => {
     it("detects Catalan language from URL with trailing slash", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(mockPosts);
       const request = new Request("http://localhost/ca/");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.lang).toBe("ca");
       expect(getAllFilesFrontMatter).toHaveBeenCalledWith("blog", "ca");
@@ -87,7 +87,7 @@ describe("_index route loader", () => {
     it("returns all posts when indexed is true", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(mockPosts);
       const request = new Request("http://localhost/");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.posts).toHaveLength(2);
       expect(result.posts).toEqual(mockPosts);
@@ -104,7 +104,7 @@ describe("_index route loader", () => {
       ];
       vi.mocked(getAllFilesFrontMatter).mockReturnValue(postsWithUnindexed);
       const request = new Request("http://localhost/");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.posts).toHaveLength(2);
       expect(result.posts.every((p) => p.indexed !== false)).toBe(true);
@@ -113,7 +113,7 @@ describe("_index route loader", () => {
     it("returns empty array when no posts exist", async () => {
       vi.mocked(getAllFilesFrontMatter).mockReturnValue([]);
       const request = new Request("http://localhost/");
-      const result = await loader({ request, params: {}, context: {} });
+      const result = await loader({ request, params: {}, context: {} } as any);
 
       expect(result.posts).toHaveLength(0);
       expect(result.posts).toEqual([]);

@@ -63,4 +63,5 @@ vi.mock("lucide-react", () => ({
   ChevronRight: () =>
     React.createElement("svg", { "data-testid": "chevron-right-icon" }),
   Circle: () => React.createElement("svg", { "data-testid": "circle-icon" }),
+  Copy: () => React.createElement("svg", { "data-testid": "copy-icon" }),
 }));

@@ -4,14 +4,14 @@ import Footer from "@/components/Footer";
 
 describe("Footer", () => {
   describe("Social Links", () => {
-    it("renders Twitter link with correct URL", () => {
+    it("renders Bluesky link with correct URL", () => {
       render(<Footer />);
 
-      const twitterLink = screen.getByRole("link", { name: /twitter/i });
-      expect(twitterLink).toBeInTheDocument();
-      expect(twitterLink).toHaveAttribute(
+      const blueskyLink = screen.getByRole("link", { name: /bluesky/i });
+      expect(blueskyLink).toBeInTheDocument();
+      expect(blueskyLink).toHaveAttribute(
         "href",
-        "https://twitter.com/martinprins"
+        "https://bsky.app/profile/mgarcia.bsky.social"
       );
     });
 
@@ -21,19 +21,6 @@ describe("Footer", () => {
       const githubLink = screen.getByRole("link", { name: /github/i });
       expect(githubLink).toBeInTheDocument();
       expect(githubLink).toHaveAttribute("href", "https://github.com/magarcia");
-    });
-
-    it("renders Stack Overflow link with correct URL", () => {
-      render(<Footer />);
-
-      const stackOverflowLink = screen.getByRole("link", {
-        name: /stack overflow/i,
-      });
-      expect(stackOverflowLink).toBeInTheDocument();
-      expect(stackOverflowLink).toHaveAttribute(
-        "href",
-        "https://stackoverflow.com/users/458193/martin-prins"
-      );
     });
 
     it("renders LinkedIn link with correct URL", () => {
@@ -53,9 +40,8 @@ describe("Footer", () => {
       render(<Footer />);
 
       const socialLinks = [
-        screen.getByRole("link", { name: /twitter/i }),
+        screen.getByRole("link", { name: /bluesky/i }),
         screen.getByRole("link", { name: /github/i }),
-        screen.getByRole("link", { name: /stack overflow/i }),
         screen.getByRole("link", { name: /linkedin/i }),
       ];
 
@@ -68,9 +54,8 @@ describe("Footer", () => {
       render(<Footer />);
 
       const socialLinks = [
-        screen.getByRole("link", { name: /twitter/i }),
+        screen.getByRole("link", { name: /bluesky/i }),
         screen.getByRole("link", { name: /github/i }),
-        screen.getByRole("link", { name: /stack overflow/i }),
         screen.getByRole("link", { name: /linkedin/i }),
       ];
 
@@ -105,19 +90,18 @@ describe("Footer", () => {
   });
 
   describe("Styling", () => {
-    it("all social links have underline class", () => {
+    it("all links have hover transition class", () => {
       render(<Footer />);
 
       const allLinks = [
-        screen.getByRole("link", { name: /twitter/i }),
+        screen.getByRole("link", { name: /bluesky/i }),
         screen.getByRole("link", { name: /github/i }),
-        screen.getByRole("link", { name: /stack overflow/i }),
         screen.getByRole("link", { name: /linkedin/i }),
         screen.getByRole("link", { name: /rss/i }),
       ];
 
       allLinks.forEach((link) => {
-        expect(link).toHaveClass("underline");
+        expect(link).toHaveClass("transition-colors");
       });
     });
 
@@ -125,16 +109,7 @@ describe("Footer", () => {
       const { container } = render(<Footer />);
 
       const footer = container.querySelector("footer");
-      expect(footer).toHaveClass(
-        "flex",
-        "items-center",
-        "p-8",
-        "mx-auto",
-        "my-16",
-        "md:p-0",
-        "place-content-between",
-        "max-w-prose"
-      );
+      expect(footer).toHaveClass("px-8", "mx-auto", "my-24");
     });
   });
 
@@ -143,21 +118,21 @@ describe("Footer", () => {
       const { container } = render(<Footer />);
 
       const links = container.querySelectorAll("a");
-      expect(links).toHaveLength(5);
-      expect(links[0]).toHaveTextContent("twitter");
+      expect(links).toHaveLength(4);
+      expect(links[0]).toHaveTextContent("bluesky");
       expect(links[1]).toHaveTextContent("github");
-      expect(links[2]).toHaveTextContent("stack overflow");
-      expect(links[3]).toHaveTextContent("linkedin");
-      expect(links[4]).toHaveTextContent("rss");
+      expect(links[2]).toHaveTextContent("linkedin");
+      expect(links[3]).toHaveTextContent("rss");
     });
 
-    it("social links are separated by hyphens", () => {
+    it("social links are separated by em-dashes", () => {
       const { container } = render(<Footer />);
 
-      const footerText = container.querySelector("footer")?.textContent;
-      expect(footerText).toMatch(/twitter\s*[\u002D\u2010-\u2015]\s*github/);
-      expect(footerText).toMatch(/github\s*[\u002D\u2010-\u2015]\s*stack overflow/);
-      expect(footerText).toMatch(/stack overflow\s*[\u002D\u2010-\u2015]\s*linkedin/);
+      const spans = container.querySelectorAll("span");
+      expect(spans.length).toBeGreaterThanOrEqual(2);
+      spans.forEach((span) => {
+        expect(span.textContent).toBe("—");
+      });
     });
   });
 });

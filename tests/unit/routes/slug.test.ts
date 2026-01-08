@@ -52,7 +52,7 @@ describe("$slug route loader", () => {
       const request = new Request("http://localhost/test-post");
       const params = { slug: "test-post" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(getFileBySlug).toHaveBeenCalledWith("blog", "test-post", "en");
       expect(result.frontMatter).toEqual(mockPost.frontMatter);
@@ -65,7 +65,7 @@ describe("$slug route loader", () => {
       const request = new Request("http://localhost/test-post");
       const params = { slug: "test-post" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(result.prev).toEqual(mockPost.prev);
       expect(result.next).toEqual(mockPost.next);
@@ -78,7 +78,7 @@ describe("$slug route loader", () => {
       const request = new Request("http://localhost/es/test-post");
       const params = { slug: "test-post" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(getFileBySlug).toHaveBeenCalledWith("blog", "test-post", "es");
       expect(result.lang).toBe("es");
@@ -89,7 +89,7 @@ describe("$slug route loader", () => {
       const request = new Request("http://localhost/ca/test-post");
       const params = { slug: "test-post" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(getFileBySlug).toHaveBeenCalledWith("blog", "test-post", "ca");
       expect(result.lang).toBe("ca");
@@ -100,7 +100,7 @@ describe("$slug route loader", () => {
       const request = new Request("http://localhost/some-post");
       const params = { slug: "some-post" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(getFileBySlug).toHaveBeenCalledWith("blog", "some-post", "en");
       expect(result.lang).toBe("en");
@@ -116,7 +116,7 @@ describe("$slug route loader", () => {
       const params = { slug: "non-existent" };
 
       await expect(
-        loader({ request, params, context: {} })
+        loader({ request, params, context: {} } as any)
       ).rejects.toMatchObject({
         status: 404,
       });
@@ -130,7 +130,7 @@ describe("$slug route loader", () => {
       const params = { slug: "broken-post" };
 
       await expect(
-        loader({ request, params, context: {} })
+        loader({ request, params, context: {} } as any)
       ).rejects.toMatchObject({
         status: 404,
       });

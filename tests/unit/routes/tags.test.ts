@@ -44,7 +44,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/tags/typescript");
       const params = { tag: "typescript" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
       expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "en");
@@ -59,7 +59,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/tags/developer-tools");
       const params = { tag: "developer-tools" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(result.tag).toBe("Developer Tools");
     });
@@ -71,7 +71,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/tags/javascript");
       const params = { tag: "javascript" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(result.posts).toHaveLength(1);
       expect(result.totalCount).toBe(1);
@@ -85,7 +85,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/es/tags/typescript");
       const params = { tag: "typescript" };
 
-      await loader({ request, params, context: {} });
+      await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
       expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "es");
@@ -97,7 +97,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/ca/tags/typescript");
       const params = { tag: "typescript" };
 
-      await loader({ request, params, context: {} });
+      await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
       expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "ca");
@@ -109,7 +109,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/tags/typescript");
       const params = { tag: "typescript" };
 
-      await loader({ request, params, context: {} });
+      await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
       expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "en");
@@ -123,7 +123,7 @@ describe("tags.$tag route loader", () => {
       const params = { tag: "nonexistent" };
 
       await expect(
-        loader({ request, params, context: {} })
+        loader({ request, params, context: {} } as any)
       ).rejects.toMatchObject({
         status: 404,
       });
@@ -135,7 +135,7 @@ describe("tags.$tag route loader", () => {
       const params = { tag: "typescript" };
 
       await expect(
-        loader({ request, params, context: {} })
+        loader({ request, params, context: {} } as any)
       ).rejects.toMatchObject({
         status: 404,
       });
@@ -149,7 +149,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/tags/object-oriented");
       const params = { tag: "object-oriented" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(result.tag).toBe("Object Oriented");
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "object-oriented");
@@ -161,7 +161,7 @@ describe("tags.$tag route loader", () => {
       const request = new Request("http://localhost/ca/tags/object-oriented");
       const params = { tag: "object-oriented" };
 
-      const result = await loader({ request, params, context: {} });
+      const result = await loader({ request, params, context: {} } as any);
 
       expect(result.tag).toBe("Object Oriented");
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "object-oriented");

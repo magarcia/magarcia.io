@@ -26,8 +26,8 @@ import fs from "fs";
 
 const mockFs = {
   existsSync: vi.mocked(fs.existsSync),
-  readFileSync: vi.mocked(fs.readFileSync),
-  readdirSync: vi.mocked(fs.readdirSync),
+  readFileSync: fs.readFileSync as ReturnType<typeof vi.fn>,
+  readdirSync: fs.readdirSync as ReturnType<typeof vi.fn>,
 };
 
 const createMarkdown = (frontmatter: Record<string, unknown>, content = "This is test content.") => {

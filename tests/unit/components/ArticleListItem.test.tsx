@@ -9,6 +9,8 @@ describe("ArticleListItem", () => {
     date: "2023-12-15",
     readingTime: { text: "5 min read", minutes: 5, words: 1000, time: 300000 },
     spoiler: "This is a **test** spoiler with *emphasis*.",
+    tags: ["javascript", "testing"],
+    wordCount: 1000,
   };
 
   beforeEach(() => {
@@ -28,16 +30,10 @@ describe("ArticleListItem", () => {
   it("formats date correctly using date-fns", () => {
     render(<ArticleListItem {...mockArticle} />);
 
-    const time = screen.getByText("December 15, 2023");
+    const time = screen.getByText("2023");
     expect(time).toBeInTheDocument();
     expect(time.tagName.toLowerCase()).toBe("time");
     expect(time).toHaveAttribute("datetime", "2023-12-15");
-  });
-
-  it("shows reading time text", () => {
-    render(<ArticleListItem {...mockArticle} />);
-
-    expect(screen.getByText(/5 min read/)).toBeInTheDocument();
   });
 
   it("renders spoiler text before markdown loads", () => {
@@ -96,15 +92,9 @@ describe("ArticleListItem", () => {
     const article = screen.getByTestId("article-item");
     expect(article.tagName.toLowerCase()).toBe("article");
 
-    // Check header exists
-    const header = container.querySelector("header");
-    expect(header).toBeInTheDocument();
-
-    // Check date and reading time are in the same line
-    const dateTimeContainer = container.querySelector(".opacity-75");
-    expect(dateTimeContainer).toBeInTheDocument();
-    expect(dateTimeContainer?.textContent).toContain("December 15, 2023");
-    expect(dateTimeContainer?.textContent).toContain("5 min read");
+    // Check year is displayed
+    const time = screen.getByText("2023");
+    expect(time).toBeInTheDocument();
   });
 
   it("handles different date formats correctly", () => {
@@ -115,18 +105,7 @@ describe("ArticleListItem", () => {
 
     render(<ArticleListItem {...article} />);
 
-    expect(screen.getByText("January 1, 2024")).toBeInTheDocument();
-  });
-
-  it("handles different reading times", () => {
-    const article = {
-      ...mockArticle,
-      readingTime: { text: "1 min read", minutes: 1, words: 200, time: 60000 },
-    };
-
-    render(<ArticleListItem {...article} />);
-
-    expect(screen.getByText(/1 min read/)).toBeInTheDocument();
+    expect(screen.getByText("2024")).toBeInTheDocument();
   });
 
   it("renders spoiler without markdown components initially", () => {

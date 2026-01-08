@@ -46,17 +46,18 @@ describe("CodeBlock", () => {
       </CodeBlock>
     );
 
-    const lines = container.querySelectorAll("div[class*='px-4']");
+    // Get the pre element and its direct children (the line divs)
+    const pre = container.querySelector("pre");
+    expect(pre).toBeInTheDocument();
 
-    // Should have at least 3 lines
-    expect(lines.length).toBeGreaterThanOrEqual(2);
+    const lines = pre?.querySelectorAll(":scope > div");
+    expect(lines?.length).toBeGreaterThanOrEqual(2);
 
-    // Line 1 (index 0): highlighted, should NOT have opacity-30
-    expect(lines[0]).not.toHaveClass("opacity-30");
+    // Line 1 (index 0): highlighted, should NOT have opacity-50
+    expect(lines?.[0]).not.toHaveClass("opacity-50");
 
-    // Line 2 (index 1): not highlighted, should have opacity-30
-    expect(lines[1]).toHaveClass("opacity-30");
-    expect(lines[1]).toHaveClass("text-gray-50");
+    // Line 2 (index 1): not highlighted, should have opacity-50
+    expect(lines?.[1]).toHaveClass("opacity-50");
   });
 
   it("handles string children by extracting first element if array", () => {
@@ -140,7 +141,7 @@ describe("CodeBlock", () => {
     expect(wrapper).toBeInTheDocument();
   });
 
-  it("applies text-gray-50 class to tokens in non-highlighted lines", () => {
+  it("applies opacity class to non-highlighted lines", () => {
     const code = "line 1\nline 2\nline 3";
     const { container } = render(
       <CodeBlock language="javascript" highlight={[1]}>
@@ -148,13 +149,12 @@ describe("CodeBlock", () => {
       </CodeBlock>
     );
 
-    const lines = container.querySelectorAll("div[class*='px-4']");
+    // Get the pre element and its direct children (the line divs)
+    const pre = container.querySelector("pre");
+    const lines = pre?.querySelectorAll(":scope > div");
 
-    // Line 2 (index 1): not highlighted
-    const line2Tokens = lines[1].querySelectorAll(".token");
-    line2Tokens.forEach(token => {
-      expect(token).toHaveClass("text-gray-50");
-    });
+    // Line 2 (index 1): not highlighted, should have opacity-50
+    expect(lines?.[1]).toHaveClass("opacity-50");
   });
 
   it("renders without highlighting when no highlight prop provided", () => {

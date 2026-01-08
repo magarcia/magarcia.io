@@ -79,6 +79,9 @@ test.describe("Internationalization (i18n)", () => {
 
     await homePage.header.openLanguageMenu();
 
+    // Wait for menu to be visible
+    await page.waitForSelector('[role="menu"]', { state: "visible" });
+
     // Check all language options are visible
     await expect(page.getByRole("menuitem", { name: "English" })).toBeVisible();
     await expect(page.getByRole("menuitem", { name: "Español" })).toBeVisible();

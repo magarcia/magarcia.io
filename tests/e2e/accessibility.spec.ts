@@ -116,7 +116,10 @@ test.describe("Keyboard Navigation", () => {
     await languageSelector.focus();
     await page.keyboard.press("Enter");
 
-    // Menu should be visible
+    // Wait for menu to be visible
+    await page.waitForSelector('[role="menu"]', { state: "visible" });
+
+    // Menu items should be visible
     await expect(page.getByRole("menuitem", { name: "English" })).toBeVisible();
 
     // Close with Escape
