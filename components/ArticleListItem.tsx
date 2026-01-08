@@ -39,17 +39,17 @@ export default function ArticleListItem({
     <article className="mb-16" data-testid="article-item">
       <Link to={postPath} className="group block">
         <div className="flex items-start justify-between gap-4 mb-1">
-          <h2 className="font-heading text-[27px] font-medium text-[#1A1A1A] leading-[33.75px] dark:text-gray-100 group-hover:text-yellow-600 dark:group-hover:text-purple-400 transition-colors">
+          <h2 className="font-heading text-[1.35rem] font-medium text-foreground leading-snug group-hover:text-yellow-600 dark:group-hover:text-purple-400 transition-colors">
             {title}
           </h2>
           <time
             dateTime={date}
-            className="text-xs font-mono text-gray-500 dark:text-gray-400 flex-shrink-0 leading-[33.75px]"
+            className="text-xs font-mono text-muted-foreground flex-shrink-0 leading-snug"
           >
             {year}
           </time>
         </div>
-        <div className="text-[#666] dark:text-gray-400 text-base leading-relaxed [&_p]:my-0">
+        <div className="text-muted-foreground text-base leading-relaxed [&_p]:my-0">
           {components ? (
             <components.ReactMarkdown components={components.mdxComponents}>
               {spoiler}
