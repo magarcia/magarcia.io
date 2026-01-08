@@ -84,9 +84,9 @@ export default function AboutSection({ lang }: AboutSectionProps) {
   };
 
   return (
-    <section className="mb-16">
+    <section className="mb-10 md:mb-16">
       <SectionHeader>{getSectionTitle("about", lang)}</SectionHeader>
-      <p className="text-[#333] dark:text-gray-300 leading-relaxed text-center">
+      <p className="text-foreground leading-relaxed text-center">
         {content[lang] || content.en}
       </p>
     </section>
