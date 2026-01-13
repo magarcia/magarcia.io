@@ -38,9 +38,7 @@ export default function Footer() {
           <a
             className="hover:text-foreground transition-colors inline-block py-2 md:py-0"
             href="/rss.xml"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Subscribe to RSS feed (opens in new tab)"
+            aria-label="Subscribe to RSS feed"
           >
             rss
           </a>

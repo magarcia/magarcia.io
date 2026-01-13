@@ -91,7 +91,7 @@ describe("Footer", () => {
       render(<Footer />);
 
       const rssLink = screen.getByRole("link", { name: /rss/i });
-      expect(rssLink).toHaveAttribute("aria-label", "Subscribe to RSS feed (opens in new tab)");
+      expect(rssLink).toHaveAttribute("aria-label", "Subscribe to RSS feed");
     });
   });
 
@@ -104,18 +104,11 @@ describe("Footer", () => {
       expect(rssLink).toHaveAttribute("href", "/rss.xml");
     });
 
-    it("RSS link opens in new tab", () => {
+    it("RSS link opens in same tab (internal resource)", () => {
       render(<Footer />);
 
       const rssLink = screen.getByRole("link", { name: /rss/i });
-      expect(rssLink).toHaveAttribute("target", "_blank");
-    });
-
-    it("RSS link has security attributes", () => {
-      render(<Footer />);
-
-      const rssLink = screen.getByRole("link", { name: /rss/i });
-      expect(rssLink).toHaveAttribute("rel", "noopener noreferrer");
+      expect(rssLink).not.toHaveAttribute("target");
     });
   });
 
