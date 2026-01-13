@@ -77,6 +77,16 @@ describe("Heading", () => {
     });
   });
 
+  describe("accessibility", () => {
+    it("anchor link has accessible label for screen readers", () => {
+      render(<Heading>Test Heading</Heading>);
+      const heading = screen.getByRole("heading", { level: 2 });
+      const anchor = heading.querySelector("a");
+
+      expect(anchor).toHaveAttribute("aria-label", "Link to this section");
+    });
+  });
+
   describe("prop forwarding", () => {
     it("passes through data attributes", () => {
       render(
