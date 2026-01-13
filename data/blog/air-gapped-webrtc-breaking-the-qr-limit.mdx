@@ -18,12 +18,6 @@ I hardcoded passwords into production. I violated WebRTC best practices. I desig
 
 This is the story of a Thursday evening, a Friday morning, and an unreasonable protocol that shouldn't exist.
 
-> **What QWBP is (and isn't):**
-> - DataChannel-only bootstrap (DataChannel is WebRTC's raw data pipe, separate from audio/video)—not a general SDP replacement
-> - Optimized for two devices in physical proximity with controlled scanner/encoder
-> - "Serverless" on LAN; requires STUN/TURN servers for cross-network scenarios (explained later)
-> - Not designed for video/audio negotiation, mesh networks, or untrusted environments
-
 ## The User Request I Couldn't Answer
 
 January 2025. [**Palabreja**](https://palabreja.com), my daily Spanish word game, had grown over 30K monthly active players across Spain and Latin America. Built as a static Progressive Web App with zero backend—no database, no user accounts—everything lived in `localStorage`.
@@ -580,6 +574,12 @@ When you control both endpoints, **domain knowledge is a compression algorithm**
 ## The Final Protocol
 
 By Friday afternoon, I had completed the QR-WebRTC Bootstrap Protocol (QWBP) v1.0.0.
+
+> **What QWBP is (and isn't):**
+> - DataChannel-only bootstrap (DataChannel is WebRTC's raw data pipe, separate from audio/video)—not a general SDP replacement
+> - Optimized for two devices in physical proximity with controlled scanner/encoder
+> - "Serverless" on LAN; requires STUN/TURN servers for cross-network scenarios (explained later)
+> - Not designed for video/audio negotiation, mesh networks, or untrusted environments
 
 The packet structure evolved from my Thursday prototype. I added a **Magic Byte** (`0x51` = 'Q') for protocol identification—so scanning a restaurant menu QR fails fast instead of crashing—and a **Version** field for future compatibility:
 
