@@ -427,31 +427,7 @@ This isn't a workaround—it's compliance optimization. Modern browsers (Chrome,
 [^10]: draft-ietf-mmusic-mdns-ice-candidates-03, Section 3.1.1, https://datatracker.ietf.org/doc/html/draft-ietf-mmusic-mdns-ice-candidates-03#section-3.1.1
 [^11]: RFC 4122 - A Universally Unique IDentifier (UUID) URN Namespace, https://datatracker.ietf.org/doc/html/rfc4122
 
-However, mDNS resolution between devices that haven't exchanged packets can be slow or fail entirely. For the initial bootstrap, raw IPs are more reliable. On Android and Chrome, requesting camera permission (needed anyway for QR scanning) often causes the browser to reveal the raw local IP alongside the mDNS name.
-
-## Browser Compatibility: The iOS Gateway
-
-The mDNS UUID packing isn't optional—it's what makes QWBP work on iPhone.
-
-Safari enforces strict IP privacy and refuses to expose raw local IPs, even with camera permission, providing only mDNS hostnames (format: `{uuid}.local`). Without mDNS support, QWBP would fail on every iOS device—30-40% of mobile users.
-
-**Browser Compatibility Matrix:**
-
-| Browser | Candidate Types | mDNS Behavior | Notes |
-|---------|----------------|---------------|-------|
-| **Chrome Android** | Host + srflx | Camera permission reveals raw IP | Best support |
-| **Safari iOS** | mDNS only | Strict privacy, UUID format | Local Network prompt |
-| **Firefox** | Host + srflx | Varies by platform | Check `media.peerconnection` prefs |
-| **Desktop Chrome/Safari** | Mixed | Privacy settings dependent | Generally reliable |
-
-The protocol handles all cases:
-1. **Same network:** Host candidates (raw IP or mDNS) connect directly
-2. **Different networks:** STUN-discovered srflx candidate provides fallback
-3. **Symmetric NAT:** Simultaneous open handles single-side NAT; TURN needed for both sides
-
-The 2-bit address type flag (`00`=IPv4, `01`=IPv6, `10`=mDNS) enables universal browser support without sacrificing the 55-100 byte payload size.
-
-**iOS Local Network Privacy**: iOS 14+ prompts users when apps access local network resources. Safari inherits this behavior—users may see "Allow [website] to find and connect to devices on your local network?" If denied, LAN-only connections fail silently. For robust operation, include a STUN-discovered srflx candidate as fallback, or guide users to enable local network access in Settings.
+However, mDNS resolution between devices that haven't exchanged packets can be slow or fail entirely. For the initial bootstrap, raw IPs are more reliable. On Android and Chrome, requesting camera permission (needed anyway for QR scanning) often causes the browser to reveal the raw local IP alongside the mDNS name. Safari on iOS is stricter—it *only* provides mDNS hostnames, making the UUID packing essential rather than optional.
 
 The protocol was functionally complete. But was it *secure*?
 
