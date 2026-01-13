@@ -62,6 +62,20 @@ export interface BlogPostWithNavigation extends BlogPost {
 function getFrontMatter(source: string, slug: string): BlogPost {
   const { data, content } = matter(source);
 
+  // Validate required frontmatter fields
+  if (!data.title || typeof data.title !== "string") {
+    throw new Error("Invalid frontmatter: missing or invalid 'title' field");
+  }
+  if (!data.date || typeof data.date !== "string") {
+    throw new Error("Invalid frontmatter: missing or invalid 'date' field");
+  }
+  if (!data.spoiler || typeof data.spoiler !== "string") {
+    throw new Error("Invalid frontmatter: missing or invalid 'spoiler' field");
+  }
+  if (!Array.isArray(data.tags)) {
+    throw new Error("Invalid frontmatter: missing or invalid 'tags' field");
+  }
+
   return {
     content,
     frontMatter: {

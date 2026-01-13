@@ -5,6 +5,8 @@ import {
   getAllFiles,
   getAllTags,
   getPostsByTag,
+  getTagBySlug,
+  getPostsByTagSlug,
   isValidSlug,
   isValidLang,
   validateSlug,
@@ -124,6 +126,19 @@ describe("blog.ts", () => {
   });
 
   describe("getFileBySlug", () => {
+    it("should throw error for missing required frontmatter fields", () => {
+      const invalidMarkdown = createMarkdown({
+        title: "Test Post",
+        // Missing date, spoiler, tags
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readFileSync.mockReturnValue(invalidMarkdown);
+      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+
+      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("Invalid frontmatter");
+    });
+
     it("should load a post with .mdx extension for the specified language", () => {
       const markdown = createMarkdown({
         title: "Test Post",
@@ -898,6 +913,207 @@ describe("blog.ts", () => {
       expect(posts[0].title).toBe("New Post");
       expect(posts[1].title).toBe("Middle Post");
       expect(posts[2].title).toBe("Old Post");
+    });
+  });
+
+  describe("getTagBySlug", () => {
+    it("should return the original tag when slug matches", () => {
+      const post1 = createMarkdown({
+        title: "Post 1",
+        date: "2024-01-01",
+        spoiler: "Test",
+        tags: ["open-source", "javascript"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["post-1.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readFileSync.mockReturnValue(post1);
+
+      const result = getTagBySlug("blog", "open-source");
+
+      expect(result).toBe("open-source");
+    });
+
+    it("should return null for invalid slug format", () => {
+      const result = getTagBySlug("blog", "../invalid");
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null when tag slug not found", () => {
+      const post = createMarkdown({
+        title: "Post",
+        date: "2024-01-01",
+        spoiler: "Test",
+        tags: ["javascript"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readFileSync.mockReturnValue(post);
+
+      const result = getTagBySlug("blog", "nonexistent");
+
+      expect(result).toBeNull();
+    });
+
+    it("should handle slugified tag lookup", () => {
+      const post = createMarkdown({
+        title: "Post",
+        date: "2024-01-01",
+        spoiler: "Test",
+        tags: ["Node.js"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readFileSync.mockReturnValue(post);
+
+      const result = getTagBySlug("blog", "node-js");
+
+      expect(result).toBe("Node.js");
+    });
+  });
+
+  describe("getPostsByTagSlug", () => {
+    it("should return posts filtered by tag slug", () => {
+      const post1 = createMarkdown({
+        title: "Post 1",
+        date: "2024-01-02",
+        spoiler: "First",
+        tags: ["open-source", "javascript"],
+      });
+
+      const post2 = createMarkdown({
+        title: "Post 2",
+        date: "2024-01-01",
+        spoiler: "Second",
+        tags: ["typescript"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+
+      mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
+        const pathStr = path.toString();
+        if (pathStr.includes("post-1")) return post1;
+        if (pathStr.includes("post-2")) return post2;
+        return "";
+      });
+
+      const result = getPostsByTagSlug("blog", "open-source", "en");
+
+      expect(result).toHaveLength(1);
+      expect(result[0].title).toBe("Post 1");
+    });
+
+    it("should return empty array for invalid tag slug", () => {
+      const result = getPostsByTagSlug("blog", "../invalid", "en");
+
+      expect(result).toEqual([]);
+    });
+
+    it("should return empty array when tag not found", () => {
+      const post = createMarkdown({
+        title: "Post",
+        date: "2024-01-01",
+        spoiler: "Test",
+        tags: ["javascript"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readFileSync.mockReturnValue(post);
+
+      const result = getPostsByTagSlug("blog", "nonexistent", "en");
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe("isFutureDate filtering", () => {
+    it("should filter out future dated posts in production", () => {
+      process.env.NODE_ENV = "production";
+
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const pastPost = createMarkdown({
+        title: "Past Post",
+        date: yesterday.toISOString().split("T")[0],
+        spoiler: "Past",
+        tags: ["test"],
+      });
+
+      const futurePost = createMarkdown({
+        title: "Future Post",
+        date: tomorrow.toISOString().split("T")[0],
+        spoiler: "Future",
+        tags: ["test"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["past.mdx", "future.mdx"] as unknown as fs.Dirent[]);
+
+      mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
+        const pathStr = path.toString();
+        if (pathStr.includes("past")) return pastPost;
+        if (pathStr.includes("future")) return futurePost;
+        return "";
+      });
+
+      const results = getAllFilesFrontMatter("blog", "en");
+
+      expect(results).toHaveLength(1);
+      expect(results[0].title).toBe("Past Post");
+    });
+
+    it("should include future dated posts in development", () => {
+      process.env.NODE_ENV = "development";
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const futurePost = createMarkdown({
+        title: "Future Post",
+        date: tomorrow.toISOString().split("T")[0],
+        spoiler: "Future",
+        tags: ["test"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["future.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readFileSync.mockReturnValue(futurePost);
+
+      const results = getAllFilesFrontMatter("blog", "en");
+
+      expect(results).toHaveLength(1);
+      expect(results[0].title).toBe("Future Post");
+    });
+
+    it("should include today's post", () => {
+      process.env.NODE_ENV = "production";
+
+      const today = new Date().toISOString().split("T")[0];
+
+      const todayPost = createMarkdown({
+        title: "Today Post",
+        date: today,
+        spoiler: "Today",
+        tags: ["test"],
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(["today.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readFileSync.mockReturnValue(todayPost);
+
+      const results = getAllFilesFrontMatter("blog", "en");
+
+      expect(results).toHaveLength(1);
+      expect(results[0].title).toBe("Today Post");
     });
   });
 });
