@@ -16,12 +16,33 @@ const H3 = (props: any) => <Heading level={3} {...props} />;
 const H4 = (props: any) => <Heading level={4} {...props} />;
 const OrderedList = (props: any) => <List ordered={true} {...props} />;
 
-const Pre = ({ children, ...props }: any) => {
+const Pre = ({ children, node, ...props }: any) => {
   // Extract language and code from the pre > code structure
-  const childProps = children?.props || {};
-  const className = childProps.className || "";
+  // Handle both React element children and raw content
+  let className = "";
+  let codeContent: string = "";
+
+  // Check if children is a React element (has props)
+  if (children && typeof children === "object" && children.props) {
+    className = children.props.className || "";
+    const childContent = children.props.children;
+    // Ensure we get a string
+    codeContent = typeof childContent === "string" ? childContent : "";
+  } else if (Array.isArray(children) && children[0]?.props) {
+    // Handle array of children
+    className = children[0].props.className || "";
+    const childContent = children[0].props.children;
+    codeContent = typeof childContent === "string" ? childContent : "";
+  } else if (typeof children === "string") {
+    codeContent = children;
+  }
+
+  // If we couldn't extract code properly, fall back to simple pre
+  if (!codeContent) {
+    return <pre className="font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded overflow-x-auto my-8" {...props}>{children}</pre>;
+  }
+
   const language = className.replace("language-", "") || "text";
-  const code = childProps.children || children;
 
   // Parse highlight syntax (e.g., "typescript:1,3-5")
   const [lang, lines] = language.split(":");
@@ -42,9 +63,8 @@ const Pre = ({ children, ...props }: any) => {
       highlight={highlight}
       data-language={lang}
       className={className}
-      {...props}
     >
-      {code}
+      {codeContent}
     </CodeBlock>
   );
 };

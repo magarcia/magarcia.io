@@ -1,44 +1,44 @@
 import { Copy } from "lucide-react";
-import Highlight, { defaultProps } from "prism-react-renderer";
-import { toast } from "@/hooks/use-toast";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface CodeBlockProps {
   language?: string;
-  children: string[];
+  children: React.ReactNode;
   highlight?: number[];
   className?: string;
   "data-language"?: string;
 }
 
+// Helper to extract text content from React elements for copy functionality
+function extractTextContent(node: React.ReactNode): string {
+  if (typeof node === "string") {
+    return node;
+  }
+  if (typeof node === "number") {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(extractTextContent).join("");
+  }
+  if (node && typeof node === "object" && "props" in node) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return extractTextContent((node as any).props?.children);
+  }
+  return "";
+}
+
 export default function CodeBlock({
   language = "text",
   children,
-  highlight,
   ...props
 }: CodeBlockProps) {
-  let lang = language;
-  if (lang === "yumml") lang = "yaml";
+  const lang = language === "yumml" ? "yaml" : language;
+  // Extract plain text for copy functionality
+  const codeText = extractTextContent(children);
 
-  const code = Array.isArray(children) ? children[0] : children;
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast({
-        title: "Copied to clipboard",
-        description: "Code has been copied to your clipboard.",
-      });
-    } catch {
-      toast({
-        title: "Failed to copy",
-        description: "Unable to copy code to clipboard.",
-        variant: "destructive",
+  const handleCopy = () => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(codeText).catch(() => {
+        // Silently fail on SSR or when clipboard is unavailable
       });
     }
   };
@@ -48,60 +48,26 @@ export default function CodeBlock({
       {...props}
       className="group relative my-8 -mx-8 md:-mx-16 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded"
     >
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={handleCopy}
-              className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              aria-label="Copy code to clipboard"
-              type="button"
-            >
-              <Copy
-                className="w-4 h-4 text-muted-foreground"
-                aria-hidden="true"
-              />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Copy code</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <div className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-ring" tabIndex={0} aria-label="Scrollable code block, use arrow keys to scroll">
-        <Highlight {...defaultProps} code={code} language={lang as any}>
-          {({ tokens, getLineProps, getTokenProps }) => (
-            <pre className={`language-${lang} font-mono`}>
-              {tokens.slice(0, -1).map((line, i) => {
-                const { style, ...lineProps } = getLineProps({ line, key: i });
-                let className = "";
-                if (highlight && !highlight.includes(i + 1)) {
-                  className = "opacity-50";
-                }
-                return (
-                  <div {...lineProps} className={className} key={i}>
-                    {line.map((token, key) => {
-                      const type = token.types[0];
-                      if (type === "plain") return token.content;
-                      const { style, ...tokenProps } = getTokenProps({
-                        token,
-                        key,
-                      });
-                      let tokenClassName = token.types.join(" ");
-                      return (
-                        <span
-                          {...tokenProps}
-                          className={`token ${tokenClassName}`}
-                          key={key}
-                        />
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </pre>
-          )}
-        </Highlight>
+      <button
+        onClick={handleCopy}
+        className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        aria-label="Copy code to clipboard"
+        title="Copy code"
+        type="button"
+      >
+        <Copy
+          className="w-4 h-4 text-muted-foreground"
+          aria-hidden="true"
+        />
+      </button>
+      <div
+        className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-ring"
+        tabIndex={0}
+        aria-label="Scrollable code block, use arrow keys to scroll"
+      >
+        <pre className={`language-${lang} font-mono`}>
+          <code className={`language-${lang}`}>{children}</code>
+        </pre>
       </div>
     </div>
   );

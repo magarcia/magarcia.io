@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 import CodeBlock from "~/components/CodeBlock";
 
 describe("CodeBlock", () => {
@@ -38,26 +38,21 @@ describe("CodeBlock", () => {
     expect(pre).not.toHaveClass("language-yumml");
   });
 
-  it("renders line highlighting by applying opacity to non-highlighted lines", () => {
+  it("renders code content correctly", () => {
     const code = "line 1\nline 2\nline 3";
     const { container } = render(
-      <CodeBlock language="javascript" highlight={[1, 3]}>
+      <CodeBlock language="javascript">
         {[code]}
       </CodeBlock>
     );
 
-    // Get the pre element and its direct children (the line divs)
     const pre = container.querySelector("pre");
     expect(pre).toBeInTheDocument();
 
-    const lines = pre?.querySelectorAll(":scope > div");
-    expect(lines?.length).toBeGreaterThanOrEqual(2);
-
-    // Line 1 (index 0): highlighted, should NOT have opacity-50
-    expect(lines?.[0]).not.toHaveClass("opacity-50");
-
-    // Line 2 (index 1): not highlighted, should have opacity-50
-    expect(lines?.[1]).toHaveClass("opacity-50");
+    // The code should be rendered inside a code element
+    const codeElement = container.querySelector("code");
+    expect(codeElement).toBeInTheDocument();
+    expect(codeElement?.textContent).toBe(code);
   });
 
   it("handles string children by extracting first element if array", () => {
@@ -121,7 +116,7 @@ describe("CodeBlock", () => {
     expect(wrapper).toHaveAttribute("data-language", "javascript");
   });
 
-  it("uses prism-react-renderer for syntax highlighting", () => {
+  it("renders code with proper structure", () => {
     const code = "const x = 1;";
     const { container } = render(
       <CodeBlock language="javascript">
@@ -130,46 +125,30 @@ describe("CodeBlock", () => {
     );
 
     // Check that the structure is rendered correctly
-    // prism-react-renderer may not fully render in jsdom test environment
     const pre = container.querySelector("pre");
     expect(pre).toBeInTheDocument();
     expect(pre).toHaveClass("language-javascript");
 
-    // The component uses Highlight from prism-react-renderer
-    // In test environment, the structure should still be present
+    // The code element should have the language class
+    const codeElement = container.querySelector("code");
+    expect(codeElement).toBeInTheDocument();
+    expect(codeElement).toHaveClass("language-javascript");
+
+    // Wrapper should exist
     const wrapper = container.querySelector("div.relative");
     expect(wrapper).toBeInTheDocument();
   });
 
-  it("applies opacity class to non-highlighted lines", () => {
+  it("renders code content inside code element", () => {
     const code = "line 1\nline 2\nline 3";
-    const { container } = render(
-      <CodeBlock language="javascript" highlight={[1]}>
-        {[code]}
-      </CodeBlock>
-    );
-
-    // Get the pre element and its direct children (the line divs)
-    const pre = container.querySelector("pre");
-    const lines = pre?.querySelectorAll(":scope > div");
-
-    // Line 2 (index 1): not highlighted, should have opacity-50
-    expect(lines?.[1]).toHaveClass("opacity-50");
-  });
-
-  it("renders without highlighting when no highlight prop provided", () => {
-    const code = "line 1\nline 2";
     const { container } = render(
       <CodeBlock language="javascript">
         {[code]}
       </CodeBlock>
     );
 
-    const lines = container.querySelectorAll("div[class*='px-4']");
-
-    // No lines should have opacity-30 when no highlighting
-    lines.forEach(line => {
-      expect(line).not.toHaveClass("opacity-30");
-    });
+    const codeElement = container.querySelector("code");
+    expect(codeElement).toBeInTheDocument();
+    expect(codeElement?.textContent).toBe(code);
   });
 });

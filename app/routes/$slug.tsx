@@ -1,8 +1,12 @@
 import { Link } from "react-router";
-import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypePrism from "rehype-prism-plus";
+import remarkGfm from "remark-gfm";
 import type { Route } from "./+types/$slug";
 import { getFileBySlug, isValidSlug, isValidLang, type BlogPostWithNavigation } from "~/lib/blog";
 import Header from "~/components/Header";
+import { mdxComponents } from "~/components/mdxComponents";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime } from "~/lib/i18n";
 
@@ -52,25 +56,6 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
   const { frontMatter, content, prev, next, lang } =
     loaderData as BlogPostWithNavigation & { lang: string };
   const { title, date, readingTime, tags, slug } = frontMatter;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [components, setComponents] = useState<Record<string, any> | null>(null);
-
-  useEffect(() => {
-    // Dynamically import react-markdown and dependencies only on client-side
-    Promise.all([
-      import("react-markdown"),
-      import("rehype-raw"),
-      import("remark-gfm"),
-      import("~/components/mdxComponents")
-    ]).then(([rm, rr, rgfm, mc]) => {
-      setComponents({
-        ReactMarkdown: rm.default,
-        rehypeRaw: rr.default,
-        remarkGfm: rgfm.default,
-        mdxComponents: mc.mdxComponents
-      });
-    });
-  }, []);
 
   return (
     <>
@@ -92,21 +77,15 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
               — <span data-testid="reading-time">{formatReadingTime(readingTime.minutes, lang)}</span>
             </div>
           </header>
-          {components ? (
-            <div className="prose prose-lg dark:prose-dark max-w-none">
-              <components.ReactMarkdown
-                remarkPlugins={[components.remarkGfm]}
-                rehypePlugins={[components.rehypeRaw]}
-                components={components.mdxComponents}
-              >
-                {content}
-              </components.ReactMarkdown>
-            </div>
-          ) : (
-            <div className="prose prose-lg dark:prose-dark max-w-none">
-              <p>{content.substring(0, 200)}...</p>
-            </div>
-          )}
+          <div className="prose prose-lg dark:prose-dark max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw, [rehypePrism, { ignoreMissing: true }]]}
+              components={mdxComponents}
+            >
+              {content}
+            </ReactMarkdown>
+          </div>
         </article>
         <footer className="mt-12 md:mt-24 text-sm text-muted-foreground">
           <div className="flex flex-wrap gap-2 mb-10 md:mb-16" data-testid="post-tags">
