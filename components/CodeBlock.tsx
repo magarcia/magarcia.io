@@ -53,7 +53,7 @@ export default function CodeBlock({
           <TooltipTrigger asChild>
             <button
               onClick={handleCopy}
-              className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-yellow-600 dark:focus:ring-purple-400 focus:ring-offset-2"
+              className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               aria-label="Copy code to clipboard"
               type="button"
             >
@@ -61,7 +61,6 @@ export default function CodeBlock({
                 className="w-4 h-4 text-muted-foreground"
                 aria-hidden="true"
               />
-              <span className="sr-only">Copy code to clipboard</span>
             </button>
           </TooltipTrigger>
           <TooltipContent>
@@ -69,7 +68,7 @@ export default function CodeBlock({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <div className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-yellow-600 dark:focus:ring-purple-400" tabIndex={0}>
+      <div className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-ring" tabIndex={0} aria-label="Scrollable code block, use arrow keys to scroll">
         <Highlight {...defaultProps} code={code} language={lang as any}>
           {({ tokens, getLineProps, getTokenProps }) => (
             <pre className={`language-${lang} font-mono`}>
