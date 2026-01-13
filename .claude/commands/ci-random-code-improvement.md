@@ -165,9 +165,31 @@ yarn test:unit
 
 **If verification fails**: Fix the issue or revert the problematic change.
 
-### Step 8: Summary
+### Step 8: Summary & PR Metadata
 
-Output final summary:
+Output final summary and write PR metadata file for the GitHub Action.
+
+**1. Write PR metadata to `.github/pr-metadata.json`:**
+
+```json
+{
+  "title": "<type>(<scope>): <short description>",
+  "body": "## Summary\n\n<bullet points of changes>\n\n## Modified Files\n\n<list of files with changes>\n\n## Verification\n\n- Lint: pass/fail\n- Types: pass/fail\n- Tests: pass/fail"
+}
+```
+
+**Title format:**
+- Use conventional commit format: `<type>(<scope>): <description>`
+- `type`: refactor, fix, a11y, perf, test, chore
+- `scope`: main component/file name (e.g., `CodeBlock`, `useTheme`)
+- `description`: concise summary of improvements (max 50 chars)
+
+**Body format:**
+- Summary: bullet points of each improvement made
+- Modified Files: list each file with brief description of changes
+- Verification: lint/types/tests status
+
+**2. Output summary to console:**
 
 ```markdown
 ## Improvement Complete
