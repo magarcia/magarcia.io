@@ -238,3 +238,13 @@ export function getPostsByTag(type: string, tag: string, lang: string = "en"): F
     (post) => post.tags && post.tags.includes(tag)
   );
 }
+
+export function getAllSlugs(type: string): string[] {
+  const dirPath = path.join(root, "data", type);
+  const files = fs
+    .readdirSync(dirPath)
+    .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
+    .map((f) => f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""));
+
+  return Array.from(new Set(files));
+}
