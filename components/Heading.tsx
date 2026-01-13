@@ -17,7 +17,7 @@ export default function Heading({ level = 2, children, ...props }: HeadingProps)
 
   return (
     <Tag
-      className={`heading font-heading font-normal text-[#1A1A1A] dark:text-gray-100 ${size} mt-16 mb-4`}
+      className={`heading font-heading font-normal text-[#1A1A1A] dark:text-gray-100 ${size} mt-12 mb-4`}
       id={id}
       {...props}
     >

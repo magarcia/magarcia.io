@@ -267,6 +267,12 @@ h6 {
   @apply my-2;
 }
 
+/* Footnotes section styling */
+.prose section.footnotes,
+.prose [data-footnotes] {
+  @apply text-xs mt-10 border-t pt-5;
+}
+
 .prose table {
   @apply my-6;
   width: calc(100% + 4rem);
