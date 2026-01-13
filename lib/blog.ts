@@ -45,6 +45,7 @@ export interface FrontMatter {
   slug: string;
   draft?: boolean;
   indexed?: boolean;
+  ogImage?: string;
   wordCount: number;
   readingTime: ReturnType<typeof readingTime>;
 }
