@@ -18,7 +18,7 @@
     "test:e2e:report": "playwright show-report",
     "test:unit": "vitest run --exclude 'tests/unit/rss-validation.test.ts' --exclude 'tests/unit/scripts/sitemap.test.ts'",
     "test:unit:watch": "vitest --exclude 'tests/unit/rss-validation.test.ts' --exclude 'tests/unit/scripts/sitemap.test.ts'",
-    "test:unit:build": "vitest run tests/unit/rss-validation.test.ts tests/unit/scripts/sitemap.test.ts"
+    "test:unit:build": "vitest run --config vitest.config.build.ts"
   },
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
