@@ -65,6 +65,36 @@ describe("Footer", () => {
     });
   });
 
+  describe("Accessibility", () => {
+    it("Bluesky link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const blueskyLink = screen.getByRole("link", { name: /bluesky/i });
+      expect(blueskyLink).toHaveAttribute("aria-label", "Visit Martin Garcia on Bluesky (opens in new tab)");
+    });
+
+    it("GitHub link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const githubLink = screen.getByRole("link", { name: /github/i });
+      expect(githubLink).toHaveAttribute("aria-label", "Visit Martin Garcia on GitHub (opens in new tab)");
+    });
+
+    it("LinkedIn link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const linkedinLink = screen.getByRole("link", { name: /linkedin/i });
+      expect(linkedinLink).toHaveAttribute("aria-label", "Visit Martin Garcia on LinkedIn (opens in new tab)");
+    });
+
+    it("RSS link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const rssLink = screen.getByRole("link", { name: /rss/i });
+      expect(rssLink).toHaveAttribute("aria-label", "Subscribe to RSS feed (opens in new tab)");
+    });
+  });
+
   describe("RSS Link", () => {
     it("renders RSS link with correct href", () => {
       render(<Footer />);
