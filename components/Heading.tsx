@@ -17,16 +17,15 @@ export default function Heading({ level = 2, children, ...props }: HeadingProps)
 
   return (
     <Tag
-      className={`heading font-heading font-normal text-[#1A1A1A] dark:text-gray-100 ${size} mt-12 mb-4`}
+      className={`heading font-heading font-normal text-foreground ${size} mt-10 md:mt-16 mb-4`}
       id={id}
       {...props}
     >
       <a
         href={`#${id}`}
-        className="anchor opacity-0 inline-block cursor-pointer transition-opacity duration-500 ease-in-out motion-reduce:transition-none hover:opacity-100"
-        style={{ marginLeft: -1.5 * anchorSize, marginRight: anchorSize / 2 }}
+        className="anchor opacity-0 inline-block cursor-pointer transition-opacity duration-500 ease-in-out motion-reduce:transition-none hover:opacity-100 -ml-7 mr-2"
       >
-        <Hash size={anchorSize} className="text-[#999] dark:text-gray-500" />
+        <Hash size={anchorSize} className="text-muted-foreground" />
       </a>
       {children}
     </Tag>

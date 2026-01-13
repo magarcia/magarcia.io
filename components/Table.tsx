@@ -82,14 +82,14 @@ export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>
 
 export function TableRow(props: React.HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className="block md:table-row border-b border-[#DDD] dark:border-gray-700 last:border-b-0 mb-4 md:mb-0" {...props} />
+    <tr className="block md:table-row border-b border-border last:border-b-0 mb-4 md:mb-0" {...props} />
   );
 }
 
 export function TableHead(props: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <thead
-      className="sr-only md:not-sr-only md:table-header-group font-medium border-b border-[#DDD] dark:border-gray-700"
+      className="sr-only md:not-sr-only md:table-header-group font-medium border-b border-border"
       {...props}
     />
   );
@@ -101,12 +101,12 @@ export function TableBody(props: React.HTMLAttributes<HTMLTableSectionElement>) 
 
 export function TableCell(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <td className="block md:table-cell relative py-3 px-4 md:px-4 text-[#333] dark:text-gray-300" {...props} />
+    <td className="block md:table-cell relative py-3 px-4 md:px-4 text-foreground" {...props} />
   );
 }
 
 export function TableHeaderCell(props: React.ThHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <th className="block md:table-cell relative py-3 px-4 md:px-4 font-medium text-[#1A1A1A] dark:text-gray-100" {...props} />
+    <th className="block md:table-cell relative py-3 px-4 md:px-4 font-medium text-foreground" {...props} />
   );
 }

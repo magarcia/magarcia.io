@@ -84,15 +84,15 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
       <Header slug={slug} lang={lang} />
       <main className="max-w-[75ch] mx-auto px-8 md:px-16">
         <article>
-          <header className="mb-16 text-center">
+          <header className="mb-10 md:mb-16 text-center">
             <h1
-              className="font-heading text-3xl md:text-4xl uppercase tracking-wide font-normal text-[#1A1A1A] dark:text-gray-100 mb-4"
+              className="font-heading text-3xl md:text-4xl uppercase tracking-wide font-normal text-foreground mb-4"
               data-testid="post-title"
             >
               {title}
             </h1>
 
-            <div className="text-sm text-[#666] dark:text-gray-400">
+            <div className="text-sm text-muted-foreground">
               <time dateTime={date}>
                 {formatDate(date, lang)}
               </time>{" "}
@@ -115,12 +115,12 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             </div>
           )}
         </article>
-        <footer className="mt-24 text-sm text-[#666] dark:text-gray-400">
-          <div className="flex flex-wrap gap-2 mb-16" data-testid="post-tags">
+        <footer className="mt-12 md:mt-24 text-sm text-muted-foreground">
+          <div className="flex flex-wrap gap-2 mb-10 md:mb-16" data-testid="post-tags">
             {tags.map((tag) => (
               <Link
                 key={tag}
-                className="hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+                className="hover:text-foreground transition-colors"
                 to={buildTagUrl(tag, lang)}
               >
                 #{tag}
@@ -128,7 +128,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
         </footer>
-        <nav className="mb-16 text-sm">
+        <nav className="mb-10 md:mb-16 text-sm">
           <ul className="flex flex-wrap items-center justify-between gap-4">
             {[
               { post: prev, rel: "prev" },
@@ -140,7 +140,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
                     to={lang === "en" ? `/${post.slug}` : `/${lang}/${post.slug}`}
                     rel={rel}
                     title={post.title}
-                    className="flex items-center gap-1 text-[#666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-200 transition-colors"
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {rel === "prev" && <span className="shrink-0">←</span>}
                     <span className="truncate">{post.title}</span>
