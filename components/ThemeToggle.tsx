@@ -11,7 +11,7 @@ export default function ThemeToggle() {
     <button
       aria-label="Toggle theme"
       data-testid="theme-toggle"
-      className={`p-2 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300 ease-out text-[#666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-200 ${color}`}
+      className={`p-2 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300 ease-out text-muted-foreground hover:text-foreground ${color}`}
       onClick={toggleTheme}
     >
       <Icon size={18} />

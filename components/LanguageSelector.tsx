@@ -41,7 +41,7 @@ export default function LanguageSelector({ lang, slug }: LanguageSelectorProps) 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button
-                    className="p-2 opacity-50 hover:opacity-100 transition-opacity text-[#666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-200"
+                    className="p-2 opacity-50 hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
                     aria-label="Select language"
                     data-testid="language-selector"
                 >
