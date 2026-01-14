@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useToast, toast } from "../../hooks/use-toast";
+import { useToast, toast, resetToastState, TOAST_REMOVE_DELAY } from "../../hooks/use-toast";
 
 describe("useToast", () => {
   beforeEach(() => {
@@ -8,6 +8,7 @@ describe("useToast", () => {
   });
 
   afterEach(() => {
+    resetToastState();
     vi.restoreAllMocks();
     vi.useRealTimers();
   });
@@ -81,7 +82,7 @@ describe("useToast", () => {
 
     // Fast-forward time past TOAST_REMOVE_DELAY
     act(() => {
-      vi.advanceTimersByTime(1000001);
+      vi.advanceTimersByTime(TOAST_REMOVE_DELAY + 1);
     });
 
     expect(result.current.toasts).toHaveLength(0);
@@ -182,9 +183,9 @@ describe("useToast", () => {
       result.current.dismiss(toastId);
     });
 
-    // Advance time
+    // Advance time past TOAST_REMOVE_DELAY
     act(() => {
-      vi.advanceTimersByTime(1000001);
+      vi.advanceTimersByTime(TOAST_REMOVE_DELAY + 1);
     });
 
     // Should only be removed once
@@ -213,6 +214,7 @@ describe("toast function", () => {
   });
 
   afterEach(() => {
+    resetToastState();
     vi.restoreAllMocks();
     vi.useRealTimers();
   });
