@@ -5,6 +5,16 @@ import { getFileBySlug, isValidSlug, isValidLang, type BlogPostWithNavigation } 
 import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime } from "~/lib/i18n";
+import type ReactMarkdown from "react-markdown";
+import type { mdxComponents } from "~/components/mdxComponents";
+import type { Pluggable } from "unified";
+
+interface MarkdownComponents {
+  ReactMarkdown: typeof ReactMarkdown;
+  rehypeRaw: Pluggable;
+  remarkGfm: Pluggable;
+  mdxComponents: typeof mdxComponents;
+}
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data || !data.frontMatter) {
@@ -52,8 +62,7 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
   const { frontMatter, content, prev, next, lang } =
     loaderData as BlogPostWithNavigation & { lang: string };
   const { title, date, readingTime, tags, slug } = frontMatter;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [components, setComponents] = useState<Record<string, any> | null>(null);
+  const [components, setComponents] = useState<MarkdownComponents | null>(null);
 
   useEffect(() => {
     // Dynamically import react-markdown and dependencies only on client-side
@@ -123,27 +132,34 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             </div>
           )}
         </footer>
-        <nav className="mb-10 md:mb-16 text-sm">
+        <nav className="mb-10 md:mb-16 text-sm" aria-label="Post navigation">
           <ul className="flex flex-wrap items-center justify-between gap-4">
-            {[
-              { post: prev, rel: "prev" },
-              { post: next, rel: "next" },
-            ].map(({ post, rel }) => (
-              <li key={rel} className="min-w-0 max-w-[45%]">
-                {post && (
-                  <Link
-                    to={lang === "en" ? `/${post.slug}` : `/${lang}/${post.slug}`}
-                    rel={rel}
-                    title={post.title}
-                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {rel === "prev" && <span className="shrink-0">←</span>}
-                    <span className="truncate">{post.title}</span>
-                    {rel === "next" && <span className="shrink-0">→</span>}
-                  </Link>
-                )}
+            {prev && (
+              <li className="min-w-0 max-w-[45%]">
+                <Link
+                  to={lang === "en" ? `/${prev.slug}` : `/${lang}/${prev.slug}`}
+                  rel="prev"
+                  title={prev.title}
+                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <span className="shrink-0">←</span>
+                  <span className="truncate">{prev.title}</span>
+                </Link>
               </li>
-            ))}
+            )}
+            {next && (
+              <li className="min-w-0 max-w-[45%] ml-auto">
+                <Link
+                  to={lang === "en" ? `/${next.slug}` : `/${lang}/${next.slug}`}
+                  rel="next"
+                  title={next.title}
+                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <span className="truncate">{next.title}</span>
+                  <span className="shrink-0">→</span>
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
       </main>
