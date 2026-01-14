@@ -102,8 +102,8 @@ Això s'acosta més al que volia. Però la fixació de versions a través de com
 ```typescript
 #!/usr/bin/env bun
 import _ from 'lodash'
-import { z } from 'zod @^3.20'
-import chalk from 'chalk @^5.0.0'
+import { z } from 'zod@^3.20'
+import chalk from 'chalk@^5.0.0'
 
 console.log(chalk.green('Dependencies just work'))
 ```
@@ -157,7 +157,7 @@ Millora encara més. Igual que `#!/usr/bin/env -S uv run` de Python, pots utilit
 ```typescript
 #!/usr/bin/env -S npx -y bun
 
-import chalk from "chalk @^5.0.0"
+import chalk from "chalk@^5.0.0"
 
 console.log(chalk.green("Hello!"))
 ```
@@ -229,6 +229,8 @@ Claude executa la skill, l'script s'executa amb accés complet als paquets npm, 
 
 Aquest enfocament no és perfecte. Algunes coses a tenir en compte:
 
+**Auto-install requereix que no existeixi un directori node_modules.** La funció d'auto-instal·lació de Bun només funciona quan no es troba cap directori `node_modules` al directori de treball ni a cap directori pare.[^1] Quan existeix una carpeta `node_modules`—comú en monorepos o projectes existents—Bun canvia a la resolució de mòduls estil Node.js en lloc del seu algorisme d'auto-instal·lació. Fins i tot el flag `--install=force` no resol això completament: els especificadors de versió en imports (com `import { z } from "zod@3.0.0"`) llançaran un error `VersionSpecifierNotAllowedHere` quan `node_modules` està present. Això significa que l'enfocament funciona millor per a scripts independents fora de projectes existents. Per a skills de Claude Code emmagatzemades a `~/.claude/skills/`, això típicament no és un problema. Però si estàs escrivint scripts dins d'un directori de projecte amb `node_modules`, necessitaràs utilitzar un `package.json` tradicional o moure l'script fora de l'arbre del projecte.
+
 **Bun no és totalment compatible amb Node.js.** La majoria dels paquets npm funcionen bé, però algunes API de Node.js es comporten de manera diferent o encara no estan implementades. Si el teu script depèn d'un comportament de cas límit de Node.js—certes operacions `fs`, opcions específiques de `child_process`, addons natius—podries trobar-te amb problemes inesperats. Comprova la [documentació de compatibilitat de Bun amb Node.js](https://bun.sh/docs/runtime/nodejs-apis) abans de comprometre't amb aquest enfocament.
 
 **La latència de la primera execució encara existeix.** La primera execució descarrega Bun via npx (~100MB depenent de l'arquitectura) i instal·la les dependències. En una connexió lenta o en un entorn d'arrencada en fred, això afegeix un temps notable. Les execucions posteriors són ràpides, però aquest impacte inicial importa si la teva skill s'executa en entorns efímers que no preserven la memòria cau de Bun.
@@ -247,8 +249,11 @@ Si has utilitzat **uv** de Python i desitjaves que JavaScript tingués alguna co
 
 ## Referències
 
+[^1]: [Documentació d'Auto-Install de Bun](https://bun.sh/docs/runtime/auto-install) — "If no node_modules directory is found in the working directory or higher, Bun will abandon Node.js-style module resolution in favor of the Bun module resolution algorithm."
+
 - [Documentació de Skills de Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills)
 - [Bun](https://bun.sh) — El temps d'execució de JavaScript amb auto-instal·lació integrada
+- [Resolució de Mòduls de Bun](https://bun.sh/docs/runtime/module-resolution) — Com Bun resol mòduls
 - [Google zx](https://google.github.io/zx/) — Una eina per escriure millors scripts
 - [esm.sh](https://esm.sh) — paquets npm com a mòduls ES a través de CDN
 - [uv](https://docs.astral.sh/uv/) — Gestor de paquets de Python amb dependències d'scripts en línia (`uv run`)

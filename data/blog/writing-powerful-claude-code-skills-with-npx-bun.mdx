@@ -229,6 +229,8 @@ Claude runs the skill, the script executes with full access to npm packages, and
 
 This approach isn't perfect. A few things to consider:
 
+**Auto-install requires no node_modules directory.** Bun's auto-install feature only works when no `node_modules` directory is found in the working directory or any parent directory.[^1] When a `node_modules` folder exists—common in monorepos or existing projects—Bun switches to regular Node.js module resolution instead of its auto-install algorithm. Even the `--install=force` flag doesn't fully solve this: version specifiers in imports (like `import { z } from "zod@3.0.0"`) will throw a `VersionSpecifierNotAllowedHere` error when `node_modules` is present. This means the approach works best for standalone scripts outside of existing projects. For Claude Code skills stored in `~/.claude/skills/`, this typically isn't an issue. But if you're writing scripts inside a project directory with `node_modules`, you'll need to either use a traditional `package.json` or move the script outside the project tree.
+
 **Bun is not fully Node.js compatible.** Most npm packages work fine, but some Node.js APIs behave differently or aren't implemented yet. If your script depends on edge-case Node.js behavior—certain `fs` operations, specific `child_process` options, native addons—you might hit unexpected issues. Check [Bun's Node.js compatibility documentation](https://bun.sh/docs/runtime/nodejs-apis) before committing to this approach.
 
 **First-run latency still exists.** The first execution downloads Bun via npx (~100MB depending on architecture) and installs dependencies. On a slow connection or in a cold-start environment, this adds noticeable time. Subsequent runs are fast, but that initial hit matters if your skill runs in ephemeral environments that don't preserve Bun's cache.
@@ -247,8 +249,11 @@ If you've used Python's **uv** and wished JavaScript had something similar, this
 
 ## References
 
+[^1]: [Bun Auto-Install Documentation](https://bun.sh/docs/runtime/auto-install) — "If no node_modules directory is found in the working directory or higher, Bun will abandon Node.js-style module resolution in favor of the Bun module resolution algorithm."
+
 - [Claude Code Skills Documentation](https://docs.anthropic.com/en/docs/claude-code/skills)
 - [Bun](https://bun.sh) — The JavaScript runtime with built-in auto-install
+- [Bun Module Resolution](https://bun.sh/docs/runtime/module-resolution) — Understanding how Bun resolves modules
 - [Google zx](https://google.github.io/zx/) — A tool for writing better scripts
 - [esm.sh](https://esm.sh) — npm packages as ES modules over CDN
 - [uv](https://docs.astral.sh/uv/) — Python's package manager with inline script dependencies (`uv run`)
