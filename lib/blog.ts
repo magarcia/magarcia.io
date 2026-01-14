@@ -41,7 +41,7 @@ export interface FrontMatter {
   title: string;
   date: string;
   spoiler: string;
-  tags: string[];
+  tags?: string[];
   slug: string;
   draft?: boolean;
   indexed?: boolean;
@@ -72,8 +72,12 @@ function getFrontMatter(source: string, slug: string): BlogPost {
   if (!data.spoiler || typeof data.spoiler !== "string") {
     throw new Error("Invalid frontmatter: missing or invalid 'spoiler' field");
   }
-  if (!Array.isArray(data.tags)) {
-    throw new Error("Invalid frontmatter: missing or invalid 'tags' field");
+  // Tags are optional, but if present must be an array of strings
+  if (data.tags !== undefined && !Array.isArray(data.tags)) {
+    throw new Error("Invalid frontmatter: 'tags' field must be an array");
+  }
+  if (data.tags !== undefined && !data.tags.every((tag: unknown) => typeof tag === "string")) {
+    throw new Error("Invalid frontmatter: 'tags' field must be an array of strings");
   }
 
   return {

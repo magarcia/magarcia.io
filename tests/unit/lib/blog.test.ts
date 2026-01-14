@@ -129,7 +129,7 @@ describe("blog.ts", () => {
     it("should throw error for missing required frontmatter fields", () => {
       const invalidMarkdown = createMarkdown({
         title: "Test Post",
-        // Missing date, spoiler, tags
+        // Missing date, spoiler (tags are optional)
       });
 
       mockFs.existsSync.mockReturnValue(true);
@@ -137,6 +137,58 @@ describe("blog.ts", () => {
       mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
 
       expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("Invalid frontmatter");
+    });
+
+    it("should allow posts without tags", () => {
+      const markdown = createMarkdown({
+        title: "Test Post",
+        date: "2024-01-01",
+        spoiler: "Test spoiler",
+        // No tags field
+      });
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readFileSync.mockReturnValue(markdown);
+      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+
+      const result = getFileBySlug("blog", "test-slug", "en");
+
+      expect(result.frontMatter.title).toBe("Test Post");
+      expect(result.frontMatter.tags).toBeUndefined();
+    });
+
+    it("should throw error when tags is not an array", () => {
+      const invalidMarkdown = `---
+title: "Test Post"
+date: "2024-01-01"
+spoiler: "Test spoiler"
+tags: "not-an-array"
+---
+
+Content`;
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readFileSync.mockReturnValue(invalidMarkdown);
+      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+
+      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("'tags' field must be an array");
+    });
+
+    it("should throw error when tags array contains non-strings", () => {
+      const invalidMarkdown = `---
+title: "Test Post"
+date: "2024-01-01"
+spoiler: "Test spoiler"
+tags: ["javascript", 123, true]
+---
+
+Content`;
+
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readFileSync.mockReturnValue(invalidMarkdown);
+      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+
+      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("'tags' field must be an array of strings");
     });
 
     it("should load a post with .mdx extension for the specified language", () => {
