@@ -6,7 +6,7 @@ import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime } from "~/lib/i18n";
 import type ReactMarkdown from "react-markdown";
-import type { mdxComponents } from "~/components/mdxComponents";
+import { mdxComponents } from "~/components/mdxComponents";
 import type { Pluggable } from "unified";
 
 interface MarkdownComponents {
