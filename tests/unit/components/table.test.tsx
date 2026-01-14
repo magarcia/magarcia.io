@@ -244,4 +244,62 @@ describe("Table Components", () => {
       expect(screen.getByText("Row 2 Cell 2")).toBeInTheDocument();
     });
   });
+
+  describe("Responsive data-label functionality", () => {
+    it("sets data-label attributes on table cells based on header text", async () => {
+      const { container } = render(
+        <Table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>City</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>John</td>
+              <td>30</td>
+              <td>NYC</td>
+            </tr>
+            <tr>
+              <td>Jane</td>
+              <td>25</td>
+              <td>LA</td>
+            </tr>
+          </tbody>
+        </Table>
+      );
+
+      // Wait for requestAnimationFrame to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const cells = container.querySelectorAll("tbody td");
+      expect(cells[0]).toHaveAttribute("data-label", "Name");
+      expect(cells[1]).toHaveAttribute("data-label", "Age");
+      expect(cells[2]).toHaveAttribute("data-label", "City");
+      expect(cells[3]).toHaveAttribute("data-label", "Name");
+      expect(cells[4]).toHaveAttribute("data-label", "Age");
+      expect(cells[5]).toHaveAttribute("data-label", "City");
+    });
+
+    it("handles tables without headers gracefully", async () => {
+      const { container } = render(
+        <Table>
+          <tbody>
+            <tr>
+              <td>Cell 1</td>
+              <td>Cell 2</td>
+            </tr>
+          </tbody>
+        </Table>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const cells = container.querySelectorAll("tbody td");
+      expect(cells[0]).not.toHaveAttribute("data-label");
+      expect(cells[1]).not.toHaveAttribute("data-label");
+    });
+  });
 });

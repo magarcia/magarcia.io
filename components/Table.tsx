@@ -68,8 +68,14 @@ export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>
     const rafId = requestAnimationFrame(setDataLabels);
 
     // Use MutationObserver to handle dynamic content changes
+    // Only watch for structural changes (elements added/removed), not text or attribute changes
     const observer = new MutationObserver(setDataLabels);
-    observer.observe(table, { childList: true, subtree: true });
+    observer.observe(table, {
+      childList: true,
+      subtree: true,
+      characterData: false,
+      attributes: false,
+    });
 
     return () => {
       cancelAnimationFrame(rafId);
@@ -77,7 +83,14 @@ export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>
     };
   }, []);
 
-  return <table ref={tableRef} className="block md:table table-fixed my-6 w-full" {...props} />;
+  return (
+    <table
+      ref={tableRef}
+      role="table"
+      className="block md:table table-fixed my-6 w-full"
+      {...props}
+    />
+  );
 }
 
 export function TableRow(props: React.HTMLAttributes<HTMLTableRowElement>) {
@@ -107,6 +120,10 @@ export function TableCell(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
 
 export function TableHeaderCell(props: React.ThHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <th className="block md:table-cell relative py-3 px-4 md:px-4 font-medium text-foreground" {...props} />
+    <th
+      scope="col"
+      className="block md:table-cell relative py-3 px-4 md:px-4 font-medium text-foreground"
+      {...props}
+    />
   );
 }
