@@ -26,7 +26,7 @@ This is a static blog built with **React Router v7** that pre-renders to static 
 - Uses React Router's static prerendering (`ssr: false` in react-router.config.ts)
 - Routes are pre-rendered at build time based on `prerender()` function exports
 - RSS feed and sitemap are generated via build scripts (`scripts/generate-*.ts`)
-- `_redirects` and `_headers` files are copied to output for Netlify
+- `_redirects` and `_headers` files are copied to output for Cloudflare Pages
 
 ### Styling & Theming
 - Tailwind CSS for styling with custom global styles in `styles/`

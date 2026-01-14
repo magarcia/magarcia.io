@@ -87,4 +87,4 @@ The site is deployed to Cloudflare Pages via GitHub integration. The build comma
 3. RSS feed generation
 4. Static asset copying
 
-The `_headers` and `_redirects` files provide Netlify-compatible configuration for enhanced compatibility.
+The `_headers` and `_redirects` files configure redirects and security headers for Cloudflare Pages.
