@@ -8,6 +8,11 @@ import {
 import type { LinksFunction } from "react-router";
 
 import { themeScript } from "~/hooks/useTheme";
+import {
+  gaScript,
+  GA_MEASUREMENT_ID,
+  useGoogleAnalytics,
+} from "~/hooks/useGoogleAnalytics";
 import globalStyles from "~/styles/global.css?url";
 import highlightStyles from "~/styles/highlight.css?url";
 import { Toaster } from "~/components/ui/toaster";
@@ -44,6 +49,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           src="https://plausible.io/js/plausible.js"
           crossOrigin="anonymous"
         />
+        {/* Google Analytics (GA4) */}
+        {process.env.NODE_ENV === "production" && (
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          />
+        )}
+        <script dangerouslySetInnerHTML={{ __html: gaScript }} />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
@@ -60,6 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useGoogleAnalytics();
   return <Outlet />;
 }
 
