@@ -69,33 +69,33 @@ describe("buildEditUrl", () => {
 });
 
 describe("buildDiscussUrl", () => {
-  it("should build Twitter discussion URL for English post", () => {
+  it("should build X (Twitter) discussion URL for English post", () => {
     const url = buildDiscussUrl("my-first-post");
     const expectedUrl = encodeURIComponent(`${SITE_URL}/my-first-post`);
-    expect(url).toBe(`https://mobile.twitter.com/search?q=${expectedUrl}`);
+    expect(url).toBe(`https://x.com/search?q=${expectedUrl}`);
   });
 
-  it("should build Twitter discussion URL for English post with explicit language", () => {
+  it("should build X (Twitter) discussion URL for English post with explicit language", () => {
     const url = buildDiscussUrl("my-first-post", "en");
     const expectedUrl = encodeURIComponent(`${SITE_URL}/my-first-post`);
-    expect(url).toBe(`https://mobile.twitter.com/search?q=${expectedUrl}`);
+    expect(url).toBe(`https://x.com/search?q=${expectedUrl}`);
   });
 
-  it("should build Twitter discussion URL for Spanish post", () => {
+  it("should build X (Twitter) discussion URL for Spanish post", () => {
     const url = buildDiscussUrl("mi-primer-articulo", "es");
     const expectedUrl = encodeURIComponent(`${SITE_URL}/es/mi-primer-articulo`);
-    expect(url).toBe(`https://mobile.twitter.com/search?q=${expectedUrl}`);
+    expect(url).toBe(`https://x.com/search?q=${expectedUrl}`);
   });
 
   it("should properly encode URLs with special characters", () => {
     const url = buildDiscussUrl("my-post-2024", "en");
-    expect(url).toContain("https://mobile.twitter.com/search?q=");
+    expect(url).toContain("https://x.com/search?q=");
     expect(url).toContain(encodeURIComponent(`${SITE_URL}/my-post-2024`));
   });
 
-  it("should use mobile.twitter.com domain", () => {
+  it("should use x.com domain", () => {
     const url = buildDiscussUrl("test-post");
-    expect(url).toContain("mobile.twitter.com");
+    expect(url).toContain("x.com");
   });
 });
 

@@ -15,7 +15,7 @@ export function buildEditUrl(slug: string, lang: string = "en"): string {
 
 export function buildDiscussUrl(slug: string, lang: string = "en"): string {
   const url = buildPostUrl(slug, lang);
-  return `https://mobile.twitter.com/search?q=${encodeURIComponent(url)}`;
+  return `https://x.com/search?q=${encodeURIComponent(url)}`;
 }
 
 export function getLocalizedPath(path: string, lang: string): string {
