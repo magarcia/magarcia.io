@@ -109,17 +109,19 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
           )}
         </article>
         <footer className="mt-12 md:mt-24 text-sm text-muted-foreground">
-          <div className="flex flex-wrap gap-2 mb-10 md:mb-16" data-testid="post-tags">
-            {tags.map((tag) => (
-              <Link
-                key={tag}
-                className="hover:text-foreground transition-colors"
-                to={buildTagUrl(tag, lang)}
-              >
-                #{tag}
-              </Link>
-            ))}
-          </div>
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-10 md:mb-16" data-testid="post-tags">
+              {tags.map((tag) => (
+                <Link
+                  key={tag}
+                  className="hover:text-foreground transition-colors"
+                  to={buildTagUrl(tag, lang)}
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
         </footer>
         <nav className="mb-10 md:mb-16 text-sm">
           <ul className="flex flex-wrap items-center justify-between gap-4">
