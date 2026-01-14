@@ -140,6 +140,30 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
+/**
+ * Displays a toast notification
+ *
+ * @param props - Toast configuration options
+ * @param props.title - The title of the toast
+ * @param props.description - Optional description text
+ * @param props.action - Optional action element (button)
+ * @param props.variant - Visual variant ("default" | "destructive")
+ * @returns Object with id, dismiss, and update functions
+ *
+ * @example
+ * ```ts
+ * const { id, dismiss, update } = toast({
+ *   title: "Success",
+ *   description: "Your changes have been saved"
+ * });
+ *
+ * // Update the toast
+ * update({ title: "Updated!" });
+ *
+ * // Dismiss programmatically
+ * dismiss();
+ * ```
+ */
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -169,6 +193,31 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * React hook for managing toast notifications
+ *
+ * Provides access to the toast state and functions to display and dismiss toasts.
+ * The hook subscribes to a global toast state, so toasts can be triggered from
+ * anywhere in the application.
+ *
+ * @returns Object containing:
+ *   - toasts: Array of active toast notifications
+ *   - toast: Function to display a new toast
+ *   - dismiss: Function to dismiss toast(s)
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const { toast, toasts, dismiss } = useToast();
+ *
+ *   return (
+ *     <button onClick={() => toast({ title: "Hello!" })}>
+ *       Show Toast
+ *     </button>
+ *   );
+ * }
+ * ```
+ */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
