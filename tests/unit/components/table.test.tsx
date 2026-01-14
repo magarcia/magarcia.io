@@ -5,6 +5,7 @@ import Table, {
   TableBody,
   TableRow,
   TableCell,
+  TableHeaderCell,
 } from "@/components/Table";
 
 describe("Table Components", () => {
@@ -213,6 +214,69 @@ describe("Table Components", () => {
     });
   });
 
+  describe("TableHeaderCell", () => {
+    it("renders th element with default scope='col'", () => {
+      const { container } = render(
+        <table>
+          <thead>
+            <tr>
+              <TableHeaderCell>Header</TableHeaderCell>
+            </tr>
+          </thead>
+        </table>
+      );
+
+      const th = container.querySelector("th");
+      expect(th).toBeInTheDocument();
+      expect(th).toHaveAttribute("scope", "col");
+      expect(th).toHaveClass(
+        "block",
+        "md:table-cell",
+        "relative",
+        "py-3",
+        "px-4",
+        "md:px-4",
+        "font-medium",
+        "text-foreground"
+      );
+    });
+
+    it("allows scope attribute to be overridden", () => {
+      const { container } = render(
+        <table>
+          <tbody>
+            <tr>
+              <TableHeaderCell scope="row">Row Header</TableHeaderCell>
+              <td>Data</td>
+            </tr>
+          </tbody>
+        </table>
+      );
+
+      const th = container.querySelector("th");
+      expect(th).toBeInTheDocument();
+      expect(th).toHaveAttribute("scope", "row");
+    });
+
+    it("passes through additional props", () => {
+      const { container } = render(
+        <table>
+          <thead>
+            <tr>
+              <TableHeaderCell data-testid="custom-header" className="extra-class">
+                Header
+              </TableHeaderCell>
+            </tr>
+          </thead>
+        </table>
+      );
+
+      const th = screen.getByTestId("custom-header");
+      expect(th).toBeInTheDocument();
+      expect(th).toHaveClass("extra-class");
+    });
+  });
+
   describe("Table Components Integration", () => {
     it("renders complete table structure correctly", () => {
       render(
@@ -242,6 +306,22 @@ describe("Table Components", () => {
       expect(screen.getByText("Row 1 Cell 2")).toBeInTheDocument();
       expect(screen.getByText("Row 2 Cell 1")).toBeInTheDocument();
       expect(screen.getByText("Row 2 Cell 2")).toBeInTheDocument();
+    });
+
+    it("applies role='table' attribute for accessibility", () => {
+      render(
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>Content</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      );
+
+      const table = screen.getByRole("table");
+      expect(table).toBeInTheDocument();
+      expect(table).toHaveAttribute("role", "table");
     });
   });
 
