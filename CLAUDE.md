@@ -69,6 +69,28 @@ When writing or editing blog articles, use semantic emphasis correctly:
 
 The site uses Newsreader serif font for italics (`em`/`i` tags), providing visual contrast with the Inter sans-serif body text.
 
+**Nested code blocks:**
+
+When showing code examples that themselves contain code blocks (e.g., showing the contents of a markdown file with embedded code blocks), use **4 backticks** for the outer fence and **3 backticks** for the inner fence:
+
+````markdown
+Here's an example SKILL.md file:
+
+````markdown
+# My Skill
+
+Example usage:
+
+```bash
+./script.ts <input>
+```
+````
+````
+
+**Why:** Standard markdown parsers only close a code fence when they encounter the matching number of backticks. Using 4 backticks for the outer fence prevents the inner 3-backtick fences from prematurely closing the outer block.
+
+**Don't use:** Escaped backticks (`` \`\`\` ``) inside code blocks, as they will render literally and break the formatting.
+
 ### Blog Post Tags
 
 Tags must be **lowercase and slug-friendly** (e.g., `developer-tools`, `node-js`, `open-source`).

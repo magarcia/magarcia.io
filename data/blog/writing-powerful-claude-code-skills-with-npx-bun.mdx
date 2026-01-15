@@ -1,6 +1,7 @@
 ---
 title: "Writing Powerful Claude Code Skills with npx bun"
 date: "2026-01-07"
+updated: "2026-01-15"
 spoiler: How to write Claude Code skills that use third-party npm packages without a build step. Using npx bun gives you auto-installing dependencies, native TypeScript, and clean version pinning—the JavaScript equivalent of Python's uv run.
 tags:
   - typescript
@@ -9,6 +10,8 @@ tags:
   - ai
   - developer-tools
 ---
+
+> **Update (January 2026):** After more testing, I've found Bun's `node_modules` detection can break auto-install in unexpected situations. I now recommend Deno for this use case. The approach below still works for standalone scripts, but see [Why I Switched from Bun to Deno for Claude Code Skills](/why-i-switched-from-bun-to-deno-for-claude-code-skills) for the full breakdown.
 
 I wanted to build more complex [Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) skills. Claude Code is Anthropic's CLI for agentic coding—and skills let you extend it with custom instructions and executable scripts. Not just markdown, but scripts that use third-party libraries: parsing CSV files, manipulating spreadsheets, calling APIs with proper HTTP clients.
 
@@ -184,7 +187,7 @@ my-skill/
 
 In `SKILL.md`:
 
-```yaml
+````markdown
 ---
 name: data-processor
 description: Process and transform data files using advanced libraries
@@ -195,10 +198,10 @@ allowed-tools: [Bash, Read, Write]
 
 Run the processing script:
 
-\`\`\`bash
-npx -y bun ./scripts/process.ts <input-file>
-\`\`\`
+```bash
+./scripts/process.ts <input-file>
 ```
+````
 
 In `scripts/process.ts`:
 
