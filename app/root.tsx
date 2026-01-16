@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse, useRouteError } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse, useRouteError, useLocation } from "react-router";
 import type { LinksFunction } from "react-router";
 
 import { themeScript } from "~/hooks/useTheme";
@@ -82,6 +82,15 @@ export function HydrateFallback() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const location = useLocation();
+
+  // Detect language from URL
+  const pathname = location.pathname;
+  const lang = pathname.startsWith("/es/") || pathname === "/es"
+    ? "es"
+    : pathname.startsWith("/ca/") || pathname === "/ca"
+    ? "ca"
+    : "en";
 
   let title = "Oops!";
   let message = "Something went wrong.";
@@ -114,7 +123,7 @@ export function ErrorBoundary() {
 
   return (
     <>
-      <Header lang="en" />
+      <Header lang={lang} />
       <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-12 md:mb-24">
         <div className="text-center py-20">
           <h1 className="font-heading text-6xl md:text-8xl text-foreground mb-4">
