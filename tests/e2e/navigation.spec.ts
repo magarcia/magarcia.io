@@ -71,7 +71,7 @@ test.describe("Navigation", () => {
       await homePage.clickArticleByTitle(titles[0]);
       await page.waitForLoadState("networkidle");
 
-      // Check that navigation section exists
+      // Check that post navigation section exists
       const nav = page.getByRole("navigation", { name: "Post navigation" });
       await expect(nav).toBeVisible();
 

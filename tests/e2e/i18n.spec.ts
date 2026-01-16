@@ -74,15 +74,15 @@ test.describe("Internationalization (i18n)", () => {
     }
   });
 
-  test("should display language selector options on hover", async ({ page }) => {
+  test("should display language selector on hover", async ({ page }) => {
     await homePage.goto();
 
     await homePage.header.openLanguageMenu();
 
-    // Check all language options are visible (scoped to language selector)
-    const languageSelector = homePage.header.getLanguageSelector();
-    await expect(languageSelector.getByRole("link", { name: "EN" })).toBeVisible();
-    await expect(languageSelector.getByRole("link", { name: "ES" })).toBeVisible();
-    await expect(languageSelector.getByRole("link", { name: "CA" })).toBeVisible();
+    // Check all language options are visible within the selector
+    const selector = page.getByTestId("language-selector");
+    await expect(selector.getByRole("link", { name: "EN" })).toBeVisible();
+    await expect(selector.getByRole("link", { name: "ES" })).toBeVisible();
+    await expect(selector.getByRole("link", { name: "CA" })).toBeVisible();
   });
 });

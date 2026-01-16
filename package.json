@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build && NODE_ENV=production tsx scripts/generate-sitemap.ts && NODE_ENV=production tsx scripts/generate-rss.ts && cp _redirects build/client/_redirects && cp _headers build/client/_headers && cp public/robots.txt build/client/robots.txt",
+    "build": "react-router build && NODE_ENV=production tsx scripts/generate-og-images.ts && NODE_ENV=production tsx scripts/generate-sitemap.ts && NODE_ENV=production tsx scripts/generate-rss.ts && cp _redirects build/client/_redirects && cp _headers build/client/_headers && cp public/robots.txt build/client/robots.txt",
     "build:ci": "yarn typecheck && yarn lint && yarn test:unit && yarn build && yarn test:unit:build",
     "serve": "yarn build && npx serve build/client",
     "start": "react-router-serve ./build/client/index.html",
@@ -18,7 +18,7 @@
     "test:e2e:report": "playwright show-report",
     "test:unit": "vitest run --exclude 'tests/unit/rss-validation.test.ts' --exclude 'tests/unit/scripts/sitemap.test.ts'",
     "test:unit:watch": "vitest --exclude 'tests/unit/rss-validation.test.ts' --exclude 'tests/unit/scripts/sitemap.test.ts'",
-    "test:unit:build": "vitest run tests/unit/rss-validation.test.ts tests/unit/scripts/sitemap.test.ts"
+    "test:unit:build": "vitest run --config vitest.config.build.ts"
   },
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
@@ -44,6 +44,8 @@
     "react-router": "^7.9.5",
     "reading-time": "^1.5.0",
     "rehype-raw": "^7.0.0",
+    "satori": "^0.18.3",
+    "sharp": "^0.34.5",
     "slugify": "^1.6.5",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
@@ -64,6 +66,7 @@
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@types/rss": "^0.0.32",
+    "@types/sharp": "^0.32.0",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
     "@vitest/coverage-v8": "^4.0.15",

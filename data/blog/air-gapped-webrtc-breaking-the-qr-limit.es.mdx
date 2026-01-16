@@ -1,0 +1,751 @@
+---
+title: "Rompiendo el límite del QR: El descubrimiento de un protocolo WebRTC sin servidor"
+date: "2026-01-19"
+spoiler: Una simple petición de un usuario llevó a una sesión intensiva de diseño de protocolos asistida por IA. Reduje la señalización WebRTC de 2.500 bytes a 55 bytes—una reducción del 97,79%—cuestionando cada buena práctica. Esta es la historia de cómo nació QWBP.
+draft: true
+tags:
+  - javascript
+  - webrtc
+  - qr-code
+  - security
+---
+
+> El hombre razonable se adapta al mundo: el irrazonable persiste en intentar adaptar el mundo a sí mismo. Por tanto, todo progreso depende del hombre irrazonable.
+>
+> — George Bernard Shaw
+
+Hardcodeé contraseñas en producción. Violé las mejores prácticas de WebRTC. Diseñé un protocolo binario personalizado. Luego tiré todo a la basura cuando descubrí que el verdadero problema no era la compresión—era la física.
+
+Esta es la historia de una tarde de jueves, una mañana de viernes y un protocolo irrazonable que no debería existir.
+
+## La petición de usuario que no pude responder
+
+Enero de 2025. [**Palabreja**](https://palabreja.com), mi juego diario de palabras en español, había crecido hasta superar los 30.000 jugadores activos mensuales en España y Latinoamérica. Construido como una Progressive Web App (PWA) estática con cero backend—sin base de datos, sin cuentas de usuario—todo vivía en `localStorage`.
+
+Entonces llegó la notificación de Bluesky:
+
+> "Voy a comprar un teléfono nuevo. ¿Cómo puedo mantener mi progreso?"
+
+La mayoría de los desarrolladores responden: "Inicia sesión en tu cuenta." Yo no tenía cuentas, ni servidor, ni respuesta.
+
+"Actualmente, no hay manera."
+
+Esa respuesta me carcomía. Los jugadores que cambiaban de teléfono perderían más de 2 años de progreso en el juego. Estadísticas mantenidas cuidadosamente durante meses se desvanecerían.
+
+Me negaba a montar una base de datos para mover unos pocos kilobytes de JSON entre dos dispositivos sentados uno al lado del otro. Quería una *transferencia directa dispositivo a dispositivo con cero servidores*.
+
+## Tarde de jueves: La mentira "Serverless"
+
+Después del trabajo, abrí mi portátil. WebRTC parecía perfecto — conexiones peer-to-peer, APIs nativas del navegador, sin servidores de retransmisión.
+
+Todos los tutoriales mostraban el mismo patrón:
+
+```javascript
+const peer = new RTCPeerConnection();
+const offer = await peer.createOffer();
+await peer.setLocalDescription(offer);
+
+// ¿Enviar oferta al otro par vía... servidor WebSocket?
+socket.send(JSON.stringify(offer));
+```
+
+Ahí estaba. **La señalización requiere un servidor.**
+
+Antes de que dos navegadores se conecten peer-to-peer, intercambian mensajes del Session Description Protocol (SDP)—ofertas y respuestas que contienen información de red y parámetros de encriptación. La especificación WebRTC deja la señalización sin especificar, asumiendo que usarás WebSockets, HTTP POST u otro canal mediado por servidor.
+
+Yo no tenía servidor. No quería servidor.
+
+**Códigos QR.** Mostrar la oferta como un código QR, escanearla con el otro teléfono, mostrar la respuesta como otro código QR, escanear eso. Sin servidor. Comunicación "air-gapped" usando pantallas y cámaras.
+
+Construí un prototipo. El código QR apareció.
+
+Era **masivo**.
+
+Un código QR Versión 30+—más de 130 módulos por lado—llenaba la pantalla de mi teléfono. Denso, caótico, ilegible.
+
+Resultados del escaneo:
+- **Buena iluminación, manos firmes:** 8 segundos, 60% de éxito
+- **Habitación oscura:** 15+ segundos, fallaba la mayoría de intentos
+- **Lente rayada:** Nunca tuvo éxito
+
+Mi "sincronización instantánea" tardaba más que teclear los datos manualmente.
+
+Imprimí el SDP para entender contra qué estaba luchando:
+
+```
+v=0
+o=- 4682389562847392847 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE 0
+a=extmap-allow-mixed
+a=msid-semantic: WMS
+m=application 9 UDP/DTLS/SCTP webrtc-datachannel
+c=IN IP4 0.0.0.0
+a=ice-ufrag:eP8j
+a=ice-pwd:3K9m...
+a=ice-options:trickle
+a=fingerprint:sha-256 E7:3B:38:46:1A:5D:88:B0:...
+a=setup:actpass
+a=mid:0
+a=sctp-port:5000
+a=max-message-size:262144
+a=candidate:1 1 udp 2122260223 192.168.1.100 54321 typ host
+... (20 líneas de candidatos más)
+```
+
+**2.487 bytes.** El Session Description Protocol[^1] data de 1998, diseñado para VoIP donde los extremos negocian códecs de vídeo, tasas de muestreo de audio, restricciones de ancho de banda. Yo controlaba ambos extremos. El 90% de estos datos era ceremonia para una negociación que nunca ocurriría.
+
+[^1]: RFC 8866 - SDP: Session Description Protocol, https://datatracker.ietf.org/doc/html/rfc8866
+
+La pregunta se convirtió en: "¿Qué campos del SDP son realmente *necesarios*?"
+
+## El camino que no tomé
+
+Existe trabajo previo: **secuencias de QR animados** que muestran frames hasta que el escáner captura todas las partes[^2][^3], y **fountain codes** (TXQR[^4]) que toleran frames perdidos. Estos logran ~9 KB/s bajo condiciones ideales pero requieren mantener el pulso firme durante 10+ segundos—aceptable para firmar con wallets cripto, pero demasiada ceremonia para un uso casual.
+
+**La bifurcación en el camino**: Los QRs animados resuelven el problema de transporte—"¿cómo muevo 2.5KB a través de un código QR?". Yo necesitaba resolver el problema de significado—"¿necesito 2.5KB?".
+
+Miré librerías existentes como **sdp-compact**, que eliminan espacios en blanco y aplican compresión estándar. Pero aún así chocaban con el "Límite de Compresión Genérica"—la sobrecarga de cabeceras y codificación Base64 a menudo superaba el ahorro para cargas pequeñas.
+
+[^2]: Franklin Ta, "Serverless WebRTC using QR codes" (2014), https://franklinta.com/2014/10/19/serverless-webrtc-using-qr-codes/
+[^3]: Repositorio GitHub webrtc-via-qr, https://github.com/Qivex/webrtc-via-qr
+[^4]: TXQR: Transfer via QR with fountain codes, https://github.com/divan/txqr
+
+## El hack que funcionó
+
+Analizar la estructura SDP reveló lo que realmente se necesitaba: credenciales ICE, huella digital (fingerprint) DTLS, valor de setup y candidatos ICE. Todo lo demás—descripción de sesión, info de bundling, parámetros SCTP—podía ser hardcodeado en ambos extremos.
+
+**Glosario rápido para los no iniciados:**
+- **ICE** (Interactive Connectivity Establishment): El protocolo que averigua cómo dos dispositivos pueden alcanzarse entre redes, firewalls y NATs.
+- **Candidatos ICE**: Direcciones de red (IP + puerto) donde un dispositivo puede ser potencialmente alcanzado.
+- **DTLS** (Datagram TLS): Capa de encriptación para WebRTC—como HTTPS pero para datos en tiempo real.
+- **Huella digital (fingerprint) DTLS**: Un hash del certificado de seguridad del dispositivo, usado para verificar que estás hablando con el par correcto.
+
+**Primer insight: Hardcodear las credenciales ICE.**
+
+```
+a=ice-ufrag:eP8j
+a=ice-pwd:3K9m...
+```
+
+Estos son el "fragmento de usuario" (ufrag) y la contraseña de ICE—cadenas aleatorias que los pares intercambian para autenticar las comprobaciones de conectividad. 50 bytes de datos de alta entropía—imposible de comprimir. Pregunté: "¿Puedo hardcodear esto? ¿Qué se rompe?"
+
+Escarbar en el [RFC 5245](https://datatracker.ietf.org/doc/html/rfc5245) reveló la respuesta. Las credenciales ICE autentican las comprobaciones de conectividad entre pares, pero la *verdadera* seguridad viene de la huella digital DTLS[^5]—un hash SHA-256 del certificado TLS del dispositivo. Un atacante con credenciales ICE pero el certificado incorrecto no puede conectarse; el handshake DTLS falla.
+
+[^5]: RFC 8827 - WebRTC Security Architecture, https://datatracker.ietf.org/doc/html/rfc8827
+
+Las hardcodeé:
+
+```typescript
+const ICE_UFRAG = "palabreja";
+const ICE_PWD = "xK9...........cB0";
+```
+
+**Ahorrado: 50 bytes.**
+
+**Segundo insight: Filtrar candidatos.**
+
+Los navegadores emiten 15-30 candidatos ICE—cada interfaz de red: Wi-Fi, VPN, Docker, IPv6 link-local. La mayoría fallan o conectan lento. Pero mi primera prueba con un solo candidato falló—la interfaz VPN aparecía primero, ocultando la dirección Wi-Fi que realmente podía conectar.
+
+Elevé el límite a 3 candidatos "host" (direcciones de red local) más 1 candidato "srflx" (reflexivo del servidor). El candidato srflx es tu dirección IP pública vista desde internet, descubierta preguntando a un servidor STUN "¿cuál es mi IP?". Esto maneja el caso donde los dispositivos están en redes diferentes.
+
+**Ahorrado: 1.200+ bytes.**
+
+**Tercer insight: Protocolo binario.**
+
+Miré fijamente el JSON minificado que estaba transmitiendo. Corchetes. Comillas. Nombres de claves. La cadena `"type"` aparecía en cada mensaje—5 bytes para codificar algo que solo podía ser "offer" o "answer". El fingerprint era una cadena hexadecimal de 95 caracteres con dos puntos, pero por debajo eran solo 32 bytes de datos raw (crudos).
+
+JSON está diseñado para *interoperabilidad*—legible por humanos, autodescriptivo, universalmente parseable. Pero yo controlaba ambos extremos y escribía el codificador y el decodificador. Nada de esto necesitaba ser legible por humanos o autodescriptivo.
+
+Recordé estudiar redes de bajo nivel—cómo las cabeceras TCP empaquetan flags, números de secuencia y puertos en posiciones fijas. Sin nombres de campo. Sin delimitadores. Solo bytes en offsets conocidos. ¿Y si diseñaba un formato de paquete en lugar de un objeto JSON?
+
+Eliminar todo lo constante. Mantener solo lo dinámico:
+
+```
+┌────────┬─────────────────────┬──────────────────────────────┐
+│ Byte 0 │ Bytes 1-32          │ Bytes 33+                    │
+├────────┼─────────────────────┼──────────────────────────────┤
+│ Tipo   │ Fingerprint DTLS    │ Candidatos ICE (empaq.)      │
+│ 0=offer│ Hash SHA-256        │ "h|u|192.168.1.5|54321|..."  │
+└────────┴─────────────────────┴──────────────────────────────┘
+```
+
+Un byte para el tipo en lugar de `"type":"offer"`. 32 bytes raw para el fingerprint en lugar de 95 caracteres ASCII. Sin corchetes, sin comillas, sin nombres de campo.
+
+Pero no había terminado. Los candidatos seguían siendo cadenas: `"h|u|192.168.1.5|54321"`. Esa dirección IP sola son 13 caracteres—pero una dirección IPv4 son solo 4 bytes. ¿Por qué tres caracteres ASCII para `192` cuando `0xC0` basta?
+
+Fui más allá. Cada candidato se convirtió en una estructura binaria de diseño fijo:
+
+```
+┌─────────┬────────────────┬────────┐
+│ Flags   │ Dirección IP   │ Puerto │
+│ (1B)    │ (4B o 16B)     │ (2B)   │
+└─────────┴────────────────┴────────┘
+
+Byte de Flags (máscara de bits):
+  Bits 0-1: Familia de dirección (00=IPv4, 01=IPv6, 10=reservado*)
+  Bit 2:    Protocolo (0=UDP, 1=TCP)
+  Bit 3:    Tipo de candidato (0=host, 1=srflx)
+  Bits 4-5: Tipo TCP[^6] (si TCP): 00=passive, 01=active, 10=so
+  Bits 6-7: Reservados
+
+*El slot reservado se vuelve importante más tarde—las funciones de privacidad del navegador lo requieren.
+```
+
+[^6]: RFC 6544 - TCP Candidates with Interactive Connectivity Establishment (ICE), https://datatracker.ietf.org/doc/html/rfc6544
+
+La cadena `"h|u|192.168.1.5|54321"` (21 caracteres) se convirtió en 7 bytes. Una reducción del 66% solo en datos de candidatos—y los candidatos eran el grueso de la carga útil.
+
+La estructura completa del paquete:
+
+```
+┌─────────┬─────────────────┬─────────────────────────────────┐
+│ Campo   │ Tamaño          │ Descripción                     │
+├─────────┼─────────────────┼─────────────────────────────────┤
+│ Tipo    │ 1 byte          │ 0x00 = offer, 0x01 = answer     │
+│ FP      │ 32 bytes        │ Fingerprint DTLS (SHA-256)      │
+│ Cand 1  │ 7 bytes (IPv4)  │ Flags + IP + Puerto             │
+│         │ 19 bytes (IPv6) │                                 │
+│ Cand 2  │ 7-19 bytes      │ (repetir hasta fin de payload)  │
+│ ...     │                 │                                 │
+└─────────┴─────────────────┴─────────────────────────────────┘
+
+Payload típico: 1 + 32 + (4 × 7) = 61 bytes (4 candidatos IPv4)
+Payload máximo: 1 + 32 + (4 × 19) = 109 bytes (4 candidatos IPv6)
+```
+
+**Cuarto insight: Compresión DEFLATE.**
+
+Apliqué fflate (DEFLATE nivel 9) al payload binario:
+
+```
+Antes de compresión: 91 bytes
+Después de compresión: 44 bytes
+Después de base64: 60 bytes
+```
+
+**Resultado: 2.487 bytes → 60 bytes. 97,6% de reducción.**
+
+Los códigos QR se escaneaban rápido—menos de un segundo en mis pruebas. Había resuelto el problema de la compresión.
+
+Pero algo me molestaba. Las contraseñas hardcodeadas se sentían *mal*. Había progresado, pero esto seguía siendo un hack, no un protocolo.
+
+## Refinando el Hack
+
+Las credenciales hardcodeadas me fastidiaban. Es un sitio web JavaScript—el código fuente es legible. Cualquiera podría abrir DevTools, encontrar la contraseña ICE y... bueno, ¿qué exactamente? La encriptación *real* ocurre en el handshake DTLS, autenticado por el fingerprint. Las credenciales ICE son solo para verificación de enrutamiento. No críticas.
+
+Aun así, me molestaba. Tener el código fuente no debería darte las llaves. Entonces me di cuenta: ya hay algo único por sesión. El fingerprint DTLS—un hash SHA-256 del certificado de cada dispositivo—ya está en el código QR. ¿Y si derivara las credenciales ICE de eso?
+
+**Descubrimiento: Derivar credenciales, no hardcodearlas.**
+
+La solución: HKDF-SHA256[^7], una función de derivación de claves estándar. El insight clave: cada par deriva *sus propias* credenciales de *su propio* fingerprint—no credenciales compartidas de un secreto común.
+
+**Cómo funciona**:
+1. Par A deriva `ufrag_A` de `Fingerprint_A` usando HKDF
+2. Par B deriva `ufrag_B` de `Fingerprint_B` usando HKDF
+3. Los códigos QR intercambian ambos fingerprints
+4. Cada par puede computar localmente las credenciales esperadas del otro para validación
+5. Las comprobaciones de conectividad ICE usan formato de usuario estándar: `ufrag_remoto:ufrag_local`[^8]
+
+**Parámetros HKDF** (para implementadores):
+```typescript
+// Salt está vacío porque la fuente de entropía (certificado DTLS) ya es
+// de alta entropía y efímera—no se necesita aleatoriedad adicional
+const salt = new Uint8Array(0);
+const ufragInfo = new TextEncoder().encode("QWBP-ICE-UFRAG-v1");
+const pwdInfo = new TextEncoder().encode("QWBP-ICE-PWD-v1");
+
+// Derivar 4 bytes para ufrag, codificar como base64url (da 6 chars, min es 4)
+const ufragBytes = await hkdf(fingerprint, salt, ufragInfo, 4);
+const ufrag = base64url(ufragBytes);
+
+// Derivar 18 bytes para pwd, codificar como base64url (da 24 chars, min es 22)
+const pwdBytes = await hkdf(fingerprint, salt, pwdInfo, 18);
+const pwd = base64url(pwdBytes);
+```
+
+RFC 8839 requiere ufrag ≥4 chars, pwd ≥22 chars, usando `[A-Za-z0-9+/]`. Base64url satisface esto.
+
+Esto satisface el requisito de entropía del RFC 8839[^9]—la aleatoriedad viene del certificado DTLS efímero, no del HKDF en sí. Esto evita enviar secretos en código y garantiza unicidad por sesión siempre que cada intento de conexión genere un certificado fresco.
+
+Ahora el código fuente por sí solo no da nada. Necesitas acceso visual al código QR específico para conocer las credenciales de esa sesión. La frontera de seguridad cambió de "secreto en código" a "proximidad física requerida".
+
+[^7]: RFC 5869 - HMAC-based Extract-and-Expand Key Derivation Function (HKDF), https://datatracker.ietf.org/doc/html/rfc5869
+[^8]: RFC 8445, Section 7.2.2 - Forming Credentials, https://datatracker.ietf.org/doc/html/rfc8445#section-7.2.2
+[^9]: RFC 8839, Section 5.4 - ICE Password, https://datatracker.ietf.org/doc/html/rfc8839#section-5.4
+
+**Descubrimiento: La paradoja de la compresión.**
+
+Probar con datos reales de SDP de Chrome y Firefox reveló un resultado sorprendente. El payload binario—ya despojado de redundancia—era de alta entropía. Ejecutar DEFLATE sobre él *aumentaba* el tamaño:
+
+```
+Payload binario:    61 bytes
+Tras compresión:    83 bytes
+Tras base64:        112 bytes
+```
+
+La sobrecarga de la cabecera de compresión excedía las ganancias de entropía. Para datos binarios optimizados, **saltar la compresión por completo**.
+
+**Descubrimiento: Base64 es un impuesto.**
+
+Los códigos QR soportan binario raw (Byte mode, ISO 8859-1). La mayoría de librerías QR de JavaScript aceptan `Uint8Array` directamente. Base64 añade un 37% de sobrecarga sin beneficio.
+
+```
+Con base64:    84 bytes → QR v5
+Sin base64:    61 bytes → QR v4
+```
+
+Había estado pagando una penalización de tamaño del 37% porque asumí que los códigos QR necesitaban codificación de texto. No es así.
+
+El hack se estaba convirtiendo en un protocolo. Pero aún no había abordado el problema fundamental.
+
+## Mañana de viernes: El problema del "Viaje de Vuelta"
+
+Había optimizado la *oferta*. Pero WebRTC requiere intercambio bidireccional—el receptor debe enviar una *respuesta* de vuelta.
+
+En un entorno PWA sin servidor:
+- El Dispositivo A no puede escuchar conexiones entrantes (los navegadores son clientes, no servidores)
+- Paquetes DTLS no solicitados del Dispositivo B son descartados
+- La autenticación ICE previene conectividad sin que ambos pares conozcan las credenciales del otro
+
+**No puedes establecer una conexión WebRTC con un solo escaneo unidireccional.**
+
+Exploré alternativas:
+
+- **Bluetooth:** Web Bluetooth API no puede actuar como periférico (rol servidor). Las PWAs solo pueden ser dispositivos centrales, lo que significa que ambos teléfonos intentarían *conectar*, ninguno *escuchar*.
+- **NFC:** Web NFC no puede emular etiquetas. Ambos teléfonos intentarían *leer*, ninguno *escribir*.
+- **Transferencia de datos por audio:** Requiere permiso de micrófono. Poco fiable en entornos ruidosos. Los usuarios sospecharían con razón.
+- **Wi-Fi Direct:** No existe Web API.
+
+Cada alternativa demandaba un servidor o requería permisos que asustarían a los usuarios.
+
+**El único canal de E/S universal y amigable con permisos disponible para PWAs es el escaneo bidireccional de códigos QR.**
+
+Lo llamé el **"QR Tango"**:
+1. Dispositivo A muestra código QR
+2. Dispositivo B lo escanea, luego muestra *su* código QR
+3. Dispositivo A escanea el código QR del Dispositivo B
+4. Conexión establecida
+
+Pero esto introdujo un nuevo problema.
+
+## El Problema del "Glare" (Deslumbramiento)
+
+Si ambos usuarios pulsan "Conectar" simultáneamente, ambos teléfonos generan *ofertas*. La máquina de estados de WebRTC falla cuando recibe una oferta mientras está en el estado "have-local-offer".
+
+La solución obvia: designar un dispositivo como "emisor" y uno como "receptor". Considera la UX: La mayoría de jugadores de Palabreja tienen más de 50 años. Saben cómo escanear un código QR—eso es intuitivo. Pero explicar "¿primero pulsas Enviar, luego ellos escanean tu código, luego ellos pulsan Recibir, luego tú escaneas su código, y tiene que ser en ese orden?" Eso no es intuitivo. Es una pesadilla de soporte. Se sentía roto.
+
+Yo quería un botón: "Conectar". Ambos usuarios lo pulsan. Ambos escanean. Simplemente funciona.
+
+Pero eso reintroduce el problema técnico. Necesitaba asignación de roles. Y si los roles están codificados en el código QR, obtienes condiciones de carrera:
+- Usuario A muestra QR "Oferta"
+- Usuario B muestra QR "Oferta"
+- Ninguno puede proceder
+
+O peor—"QRs rancios":
+- Usuario A muestra QR "Oferta"
+- Usuario B lo escanea, el rol se actualiza a "Answerer" (Respondedor)
+- La pantalla se refresca con QR "Respuesta"
+- Usuario A escanea el QR *antiguo* cacheado antes de que se actualice
+
+Me seguía preguntando: ¿cómo elimino el byte de oferta/respuesta de la cabecera del protocolo? Cada enfoque llevaba al mismo problema—el protocolo necesita saber quién actúa como oferente y quién como respondedor. Parecía fundamental para la máquina de estados de WebRTC.
+
+Entonces hizo clic. Ya había resuelto un problema similar con las credenciales ICE—derivándolas de datos ya en el payload en lugar de transmitirlas separadamente. ¿Y si hacía lo mismo para la asignación de roles?
+
+Los fingerprints. Son únicos por dispositivo. Ya están en el código QR. Y crucialmente: dos fingerprints diferentes nunca son iguales. Uno siempre es mayor que el otro cuando se comparan byte a byte. Si *son* iguales, estás escaneando tu propio código QR—un error que el protocolo debería atrapar de todos modos.
+
+**El avance: Intercambio de identidad simétrico.**
+
+En lugar de codificar "Oferta" o "Respuesta", ambos códigos QR contienen solo **identidad** (fingerprint) y **ubicación** (direcciones IP)—como tarjetas de visita. Después de que ambos escaneos se completan, cada dispositivo tiene ambos fingerprints. Los roles se asignan *determinísticamente* por comparación:
+
+```typescript
+if (localFingerprint > remoteFingerprint) {
+  // ID de fingerprint mayor → Offerer (Oferente)
+  role = "OFFERER";
+} else if (localFingerprint < remoteFingerprint) {
+  // ID de fingerprint menor → Answerer (Respondedor)
+  role = "ANSWERER";
+} else {
+  // Mismo fingerprint → Error de bucle local
+  throw new Error("Cannot connect to self");
+}
+```
+
+Comparación de bytes simple. Determinista. Sin condiciones de carrera. Sin QRs rancios.
+
+El oferente sintetiza una respuesta SDP "falsa" localmente usando el fingerprint y candidatos del respondedor. Esto satisface la máquina de estados del navegador sin transmisión de datos adicional.
+
+**Resultado: Códigos QR independientes del rol.** Pulsa "Conectar", muestra tu tarjeta, escanea la suya. El orden no importa.
+
+## La Paradoja del Estado del Navegador
+
+Resolver el problema del glare introdujo un bug sutil. Para generar el código QR, ambos dispositivos deben primero reunir candidatos, lo que pone a ambos navegadores en el estado "Have Local Offer".
+
+Si el protocolo decide que eres el **Answerer**, tienes un problema: no puedes aceptar una Oferta si ya *tienes* una Oferta.
+
+La solución ingenua es destruir la conexión WebRTC y empezar de cero. **Pero no puedes.** El código QR mostrado actualmente en tu pantalla codifica puertos de red específicos (ej. puerto 54321). Si destruyes el objeto de conexión, el SO cierra esos puertos. El mapa que acabas de dar a tu compañero se convierte en un callejón sin salida.
+
+La solución es **Signaling Rollback** (Reversión de Señalización). Usamos `setLocalDescription({type: 'rollback'})` para resetear el estado de señalización a `stable` mientras mantenemos el transporte ICE subyacente—y esos preciosos puertos—vivos. Permite al software cambiar de opinión sobre quién llama a quién sin que la física de la capa de red se dé cuenta.
+
+## Reconstruyendo el SDP
+
+Ambos pares tienen ahora todo lo necesario para sintetizar un SDP completo localmente:
+
+**Del código QR**:
+- Fingerprint DTLS (32 bytes)
+- Candidatos ICE (3-4 estructuras binarias empaquetadas)
+- Identidad del dispositivo remoto
+
+**Generado localmente**:
+- Credenciales ICE (derivadas de fingerprints vía HKDF)
+- Asignación de rol (comparación de fingerprint)
+- Metadatos de sesión (timestamps, IDs)
+
+El oferente—que ya tiene una oferta local válida pendiente de la fase de recolección—usa los datos escaneados para sintetizar una **Respuesta Remota falsa**. Esto engaña al navegador para que piense que tuvo lugar una negociación estándar sin recibir realmente un paquete de respuesta SDP.
+
+El respondedor hace la inversa: realiza un **signaling rollback** (diciendo al navegador "olvida esa oferta que te acabo de hacer generar, pero *mantén los puertos de red abiertos*"), sintetiza una **Oferta Remota falsa** de los datos QR, y luego genera una Respuesta local real para completar la conexión.
+
+El navegador ve una negociación WebRTC normal—desconoce que el SDP vino de un código QR en lugar de un servidor de señalización.
+
+## La Complicación mDNS
+
+Mientras revisaba el protocolo, surgió un último obstáculo. Los navegadores modernos ocultan las direcciones IP locales detrás de hostnames mDNS por privacidad—en lugar de `192.168.1.5`, el navegador reporta algo como `b124-98a7-c3d2-f1e0.local`.
+
+El problema: El formato binario de QWBP espera IPs raw (4 bytes para IPv4, 16 para IPv6). Un hostname mDNS de 42 caracteres no cabe.
+
+La solución es sorprendentemente elegante—y cumple con los estándares. Las implementaciones de navegador WebRTC (siguiendo el borrador mDNS de IETF[^10]) ordenan que los hostnames mDNS consistan en "un UUID versión 4 como se define en RFC 4122, seguido de '.local'".
+
+Un UUID tiene 128 bits—exactamente el tamaño de una dirección IPv6. El protocolo no necesita cambiar el formato binario; solo necesita expandir el flag de versión IP de 1 bit a 2 bits, codificando tres estados:
+
+- `00` = IPv4 (4 bytes)
+- `01` = IPv6 (16 bytes)
+- `10` = UUID mDNS (16 bytes, empaquetados como bytes raw)
+
+Esto no es un workaround—es optimización de cumplimiento. Los navegadores modernos (Chrome, Safari) usan este formato exacto por privacidad[^11].
+
+[^10]: draft-ietf-mmusic-mdns-ice-candidates-03, Section 3.1.1, https://datatracker.ietf.org/doc/html/draft-ietf-mmusic-mdns-ice-candidates-03#section-3.1.1
+[^11]: RFC 4122 - A Universally Unique IDentifier (UUID) URN Namespace, https://datatracker.ietf.org/doc/html/rfc4122
+
+Sin embargo, la resolución mDNS entre dispositivos que no han intercambiado paquetes puede ser lenta o fallar por completo. Para el arranque inicial, las IPs raw son más fiables. En Android y Chrome, solicitar permiso de cámara (necesario de todos modos para escanear QR) a menudo causa que el navegador revele la IP local raw junto con el nombre mDNS. Safari en iOS es más estricto—*solo* proporciona hostnames mDNS, haciendo el empaquetado UUID esencial en lugar de opcional.
+
+El protocolo estaba funcionalmente completo. Pero, ¿era *seguro*?
+
+## Modelo de Amenaza: El Canal Óptico
+
+La seguridad de QWBP depende del **canal óptico**—la pantalla mostrando el código QR.
+
+**Contra qué protege**:
+- **Atacantes remotos**: No pueden participar sin acceso visual a ambos dispositivos.
+- **Inspección de código fuente**: Conocer la implementación no revela claves de sesión.
+- **Ataques de repetición (Replay)**: Claves efímeras (certificados DTLS generados por sesión) expiran tras la conexión.
+- **Ataques MITM**: La verificación de fingerprint DTLS[^12] previene suplantación.
+
+**Qué asume**:
+- **Proximidad física es el factor de autenticación**. Si un atacante puede fotografiar ambos códigos QR, potencialmente puede interceptar la sesión (aunque necesitaría estar en el mismo segmento de red y ganar la carrera para establecer conexión primero).
+- **Sesiones de vida corta**: Las claves son válidas solo para el intento de conexión actual (~30 segundos).
+- **Confirmación visual**: Los usuarios pueden ver con quién se conectan (misma habitación).
+
+**Opcional: Short Authentication String (SAS)**: Tras la conexión, mostrar un código corto (ej. 4 palabras o 6 dígitos) derivado de ambos fingerprints. Los usuarios confirman verbalmente que el código coincide en ambas pantallas—esto atrapa ataques MITM activos donde un atacante sustituye su propio QR. ZRTP[^13] fue pionero en este patrón para llamadas de voz; aplica igualmente a QWBP.
+
+[^12]: RFC 8122, Section 5 - Fingerprint Attribute, https://datatracker.ietf.org/doc/html/rfc8122#section-5
+[^13]: RFC 6189 - ZRTP: Media Path Key Agreement for Unicast Secure RTP, Section 4.3 (SAS), https://datatracker.ietf.org/doc/html/rfc6189#section-4.3
+
+## La Imagen Más Grande: Un Protocolo, No un Hack
+
+Entonces me golpeó. Había estado pensando demasiado pequeño.
+
+Una videollamada WebRTC completa requiere negociar códecs, resoluciones, restricciones de ancho de banda. Un SDP de vídeo típico de Chrome con audio, vídeo (VP8, VP9, H.264, AV1, H.265) y DataChannel pesa 6.255 bytes—a veces más con todas las opciones de códec. Ningún código QR puede contener eso. La Versión 40, la mayor posible, alcanza un máximo de 2.953 bytes. Un SDP de vídeo excede la *capacidad máxima posible del QR* por más de 3KB.
+
+¿Pero el SDP DataChannel que había estado comprimiendo? Eso es solo el *arranque* (bootstrap). Establece una tubería encriptada mínima entre dos dispositivos. Una vez esa tubería existe, puedes enviar cualquier cosa a través de ella—incluyendo un SDP de vídeo de 6KB.
+
+No estaba construyendo una función de sincronización de juego. Estaba construyendo un **protocolo de señalización**.
+
+**Arquitectura de dos etapas:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Capa 0: Arranque QR (QR Bootstrap)                             │
+│  ───────────────────────                                        │
+│  • 55-100 bytes payload binario                                 │
+│  • Cabe en QR Versión 4-5 (33-37 módulos)                       │
+│  • Establece DataChannel encriptado                             │
+│  • Escanea en menos de 1 segundo (en mis pruebas)               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  Capa 1: Protocolo de Aplicación                                │
+│  ─────────────────────────────                                  │
+│  • Sin restricciones de tamaño                                  │
+│  • Intercambiar SDPs completos de vídeo/audio (6KB+)            │
+│  • Stream de archivos de cualquier tamaño                       │
+│  • Correr cualquier protocolo de aplicación                     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Esta arquitectura de dos etapas—arranque pequeño llevando a capacidad completa—sigue el mismo patrón que Wi-Fi Easy Connect (DPP)[^14], que usa un código QR para arrancar aprovisionamiento IoT seguro.
+
+[^14]: Wi-Fi Alliance, "Wi-Fi Easy Connect Specification v3.0", https://www.wi-fi.org/discover-wi-fi/wi-fi-easy-connect
+
+Las implicaciones iban más allá de Palabreja:
+
+- **Videollamadas sin servidores:** Escanea un código QR, establece el canal de arranque, negocia vídeo completo a través de él. *(Sí, veo la ironía—preparar una videollamada estando cara a cara.)*
+- **Compartir archivos:** El DataChannel puede transmitir archivos de cualquier tamaño. Un QR de 55 bytes se convierte en un AirDrop sin servidor.
+- **Emparejamiento de dispositivos:** Dispositivos IoT, configuración de casa inteligente, cualquier escenario donde dos dispositivos necesiten establecer confianza y un canal seguro.
+- **Juegos multijugador:** Arrancar una red mesh entre jugadores en la misma habitación. Sin necesidad de servidor de juego para multijugador local.
+
+Un arranque de 55-100 bytes (una reducción del 99,12% desde el SDP de vídeo de 6.255 bytes) desbloquea negociación de vídeo completa, lo cual desbloquea ancho de banda ilimitado. Una videollamada 4K, iniciada escaneando un código QR con poca luz.
+
+Esto ya no era un hack. Era un protocolo que merecía un nombre.
+
+Lo llamé el **QR-WebRTC Bootstrap Protocol (QWBP)** — pronunciado "cue-web-pi" (`/kjuː wɛb piː/`) — bueno, Claude lo sugirió y me gustó.
+
+## ¿Por Qué No QRs Animados?
+
+Una pregunta justa: si los fountain codes pueden transferir fiablemente 9KB mediante QRs animados, ¿por qué encoger el protocolo?
+
+**Tres razones:**
+
+### 1. La Latencia Mata la Señalización Manual
+
+La señalización manual lucha contra los temporizadores ICE del navegador. `media.peerconnection.ice.trickle_grace_period` de Firefox (por defecto: 5000ms) puede marcar la recolección como fallida si no recibe los candidatos esperados a tiempo. QWBP esquiva esto completando la recolección ICE antes de mostrar el QR—pero los usuarios aún necesitan escanear dentro de una ventana razonable.
+
+TXQR puede transferir 9KB en ~1 segundo bajo condiciones ideales, pero el rendimiento en el mundo real se degrada:
+- Mala iluminación: 15+ segundos
+- Usuario peleando con permisos de cámara: 20+ segundos
+- Frames perdidos requiriendo reescaneo: reinicio desde cero
+
+Reduciendo el payload a 55 bytes (QR Versión 4), el tiempo de escaneo cae a **sub-500ms**—seguro dentro de las ventanas de timeout del navegador.
+
+### 2. Impuesto de Ceremonia UX
+
+Los QRs animados requieren:
+- Mantener el teléfono perfectamente quieto
+- Esperar a que se complete la secuencia
+- Operación a dos manos o soporte para teléfono
+- Entender qué significa "3 de 12 frames capturados"
+
+Los QRs estáticos requieren:
+- Apuntar cámara
+- Hecho
+
+Para usuarios motivados (transacciones cripto), la ceremonia es aceptable. Para usuarios casuales (sincronización de juego), es una pesadilla de soporte.
+
+### 3. Compresión Semántica Vence a Compresión de Transporte
+
+Los QRs animados comprimen **en la capa de transporte**—fountain codes, LZMA, codificación base32.
+
+QWBP comprime **en la capa semántica**—entender qué *significan* los candidatos ICE logra una reducción del 97,79%.
+
+| Enfoque | Técnica | Tamaño Datos | Tiempo Escaneo |
+|----------|-----------|-----------|-----------|
+| Franklin Ta (2014) | LZMA + animado | ~1000 bytes → 10 códigos QR | 10-15 sec |
+| TXQR | Fountain codes | 9KB → 30 códigos QR | 1-10 sec |
+| BBQr | Chunking + base32 | 3KB → 12 códigos QR | 5-12 sec |
+| **QWBP** | **Protocolo binario** | **55 bytes → 1 código QR** | **&lt;0.5 sec** |
+
+Cuando controlas ambos extremos, **el conocimiento del dominio es un algoritmo de compresión**.
+
+## El Protocolo Final
+
+Para el viernes por la tarde, había completado el QR-WebRTC Bootstrap Protocol (QWBP) v1.0.0.
+
+> **Qué es QWBP (y qué no es):**
+> - Arranque solo para DataChannel (DataChannel es la tubería de datos raw de WebRTC, separada de audio/vídeo)—no un reemplazo general de SDP
+> - Optimizado para dos dispositivos en proximidad física con escáner/codificador controlado
+> - "Sin servidor" en LAN; requiere servidores STUN/TURN para escenarios entre redes (explicado más tarde)
+> - No diseñado para negociación de vídeo/audio, redes mesh o entornos no confiables
+
+La estructura del paquete evolucionó desde mi prototipo del jueves. Añadí un **Byte Mágico** (`0x51` = 'Q') para identificación del protocolo—así escanear un QR de menú de restaurante falla rápido en lugar de crashear—y un campo de **Versión** para compatibilidad futura:
+
+```
+Estructura Paquete QWBP v1:
+
+┌───────────┬─────────────┬──────────────────────┬────────────────────┐
+│ Mágico(1B)│ Versión (1B)│ Fingerprint (32B)    │ Candidatos (Var)   │
+│ 0x51 'Q'  │ Versión:3b  │ SHA-256 DTLS         │ IPs empaq. binario │
+│           │ Reservado:5b│ (32 bytes raw)       │ (7B IPv4, 19B IPv6)│
+└───────────┴─────────────┴──────────────────────┴────────────────────┘
+
+Tamaño típico: 55-100 bytes → QR Versión 4-5 (33-37 módulos)
+```
+
+**Flujo de conexión:**
+1. Ambos pares generan certificado DTLS y reúnen candidatos ICE
+2. Ambos codifican identidad + ubicación → muestran código QR
+3. Par A escanea QR del Par B (orden irrelevante)
+4. Par B escanea QR del Par A
+5. Ambos comparan fingerprints → determinan roles
+6. Ambos sintetizan SDP apropiado localmente
+7. Handshake DTLS + comprobación de conectividad ICE
+8. DataChannel establecido
+
+**Recolección ICE:** A diferencia del WebRTC estándar (que usa "Trickle ICE" para enviar candidatos a medida que se descubren), QWBP espera a la recolección ICE completa antes de codificar el QR. La implementación debe esperar a `iceGatheringState: 'complete'`. Esto añade 1-2 segundos de latencia pero asegura que el QR contenga todos los candidatos necesarios para la conexión—mejor que generación rápida de QR con escaneos fallidos.
+
+**Decisiones de optimización finales:**
+
+| Decisión | Razón |
+|----------|-----------|
+| **Derivar credenciales ICE vía HKDF** | Unicidad por sesión sin sobrecarga de transmisión. |
+| **Saltar compresión** | Datos binarios de alta entropía se expanden bajo DEFLATE. |
+| **Saltar base64** | Códigos QR soportan binario raw nativamente. |
+| **3 candidatos host + 1 srflx** | Maneja VPN, tethering y escenarios entre redes. |
+| **Intercambio de identidad simétrico** | Elimina condiciones de carrera y complejidad de asignación de roles. |
+| **mDNS como UUID en slot IPv6** | Preserva formato binario mientras soporta características de privacidad del navegador. |
+
+## El Viaje de la Compresión
+
+| Etapa | Bytes | Versión QR | Tiempo Escaneo |
+|-------|-------|------------|-----------|
+| SDP WebRTC Estándar | 2.487 | v34-40 | 10+ sec |
+| Eliminar boilerplate | 820 | v20 | 6 sec |
+| Hardcodear credenciales | 770 | v20 | 6 sec |
+| Filtrar candidatos | 210 | v9 | 3 sec |
+| Formato binario | 91 | v5 | 1 sec |
+| Saltar base64 | **55-100** | **v4-5** | **&lt;0.5 sec** |
+
+**97,79% de reducción.** En mis pruebas, códigos QR Versión 4 se escaneaban en menos de un segundo a través de condiciones de iluminación variadas—una mejora significativa sobre los códigos v30+ con los que empecé.
+
+Los códigos QR usan **Nivel de Corrección de Error L** (7% recuperación). Para datos binarios mostrados en pantallas—alto contraste, sin daño físico—Nivel L minimiza el tamaño mientras permanece escaneable. Niveles más altos (M al 15%, H al 30%) empujarían códigos v4 de vuelta a v5-6, derrotando el trabajo de optimización.
+
+## Una Nota sobre "Sin Servidor"
+
+El protocolo funciona sin servidores en la misma red local—ambos dispositivos usan sus direcciones IP LAN (candidatos host) y se conectan directamente.
+
+Para escenarios entre redes (un dispositivo en Wi-Fi, otro en 5G), necesitas un **servidor STUN**[^15] para descubrir IPs públicas. STUN (Session Traversal Utilities for NAT) es simple: tu dispositivo pregunta "¿cuál es mi IP pública?" y el servidor responde. Servidores STUN públicos como `stun:stun.l.google.com:19302` son gratuitos, sin estado y no retransmiten tus datos—solo responden esa pregunta. No los despliegas ni los mantienes.
+
+[^15]: RFC 8489 - Session Traversal Utilities for NAT (STUN), https://datatracker.ietf.org/doc/html/rfc8489
+
+**El QR Tango resuelve NAT simétrico simple.** Esto fue un descubrimiento agradable. NAT (Traducción de Direcciones de Red) es cómo tu router permite a múltiples dispositivos compartir una IP pública—pero crea problemas para conexiones peer-to-peer porque los dispositivos no pueden alcanzarse directamente. NAT Simétrico[^16] es el tipo más estricto—no aceptará paquetes entrantes hasta que el dispositivo envíe uno primero. La señalización WebRTC tradicional lucha aquí porque un lado espera al otro.
+
+Pero con QWBP, ambos dispositivos tienen información de conexión completa de los códigos QR. Ambos pueden disparar paquetes simultáneamente. Cuando el Dispositivo A envía al Dispositivo B, el NAT del Dispositivo A abre un "agujero" para tráfico de retorno. El Dispositivo B hace lo mismo. Los paquetes se cruzan en vuelo, cada NAT ve tráfico saliente, y ambos permiten las respuestas a través. Esto se llama "apertura simultánea" o hole punching[^17]—y funciona porque ninguno de los dispositivos está esperando al otro.
+
+Para NAT simétrico en *ambos* lados, un **relay TURN** es aún necesario. TURN (Traversal Using Relays around NAT) es un servidor al que ambos dispositivos se conectan, que luego reenvía tráfico entre ellos—un último recurso cuando la conexión directa es imposible. Ningún par puede predecir qué puerto asignará su NAT para el otro destino—es un bloqueo que incluso la transmisión simultánea no puede resolver. Esto afecta quizás al 10% de las conexiones, mayormente en WiFi empresarial y NAT de grado operador. Una limitación reconocida.
+
+[^16]: RFC 4787 - Network Address Translation (NAT) Behavioral Requirements for Unicast UDP, https://datatracker.ietf.org/doc/html/rfc4787
+[^17]: RFC 5128 - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs), https://datatracker.ietf.org/doc/html/rfc5128
+
+## Cuando Falla
+
+QWBP maneja la mayoría de escenarios en la misma red, pero se esperan algunos fallos:
+
+**Mismo Wi-Fi pero no conecta:**
+- VPN activa en un dispositivo → prueba desactivando VPN o usa hotspot móvil
+- Firewall empresarial bloqueando tráfico entre pares → requiere relay TURN
+- Permiso de red local iOS denegado → revisa Ajustes > Privacidad > Red Local
+
+**QR escaneado pero no pasa nada:**
+- Escaneaste un QR de menú/URL → validación de byte mágico rechaza códigos no QWBP
+- Sesión expirada → el timeout de 30 segundos pasó; regenera QR y prueba de nuevo
+
+**La conexión cae inmediatamente:**
+- Falló handshake DTLS → certificados pueden haberse regenerado; reinicia ambos dispositivos
+
+**¿Glare aún posible?**
+No. La comparación de fingerprint asigna roles determinísticamente después de que ambos escaneos se completan. Si ambos dispositivos computan el mismo rol (solo posible con fingerprints idénticos = escaneándote a ti mismo), el protocolo lanza un error.
+
+## Lo Que Aprendí
+
+**Compresión semántica vence a compresión genérica.** Entender qué datos son *realmente necesarios* logra una reducción del 97%. DEFLATE en el SDP original: 60% reducción. Conocimiento del dominio: 97,79%.
+
+**Las "mejores prácticas" asumen interoperabilidad.** Las credenciales ICE existen porque las implementaciones genéricas de WebRTC no pueden confiar en el canal de señalización. Cuando controlas ambos extremos y autenticas vía escaneo QR, el modelo de amenaza cambia.
+
+**La física restringe el diseño.** Pasé la tarde del jueves optimizando la compresión antes de darme cuenta de que el viaje de vuelta—no el tamaño del payload—era el problema real. El escaneo QR bidireccional no era un workaround; era el único canal sin servidor viable.
+
+**El diálogo vence al genio solitario.** El protocolo emergió de la conversación, no del aislamiento. Más sobre esto abajo.
+
+## Qué Sigue
+
+El protocolo funciona para cualquier proyecto WebRTC que necesite señalización basada en QR. Las técnicas aplican a cualquier protocolo donde controles ambos extremos.
+
+He publicado una especificación formal, una librería TypeScript y una demo en vivo:
+
+- **[Especificación QWBP](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md)** — La referencia completa del protocolo
+- **[qwbp en npm](https://www.npmjs.com/package/qwbp)** — Librería TypeScript/JavaScript drop-in
+- **[Demo en vivo](https://magarcia.github.io/qwbp)** — Pruébalo entre dos dispositivos ahora mismo
+
+Si construyes algo con QWBP, me encantaría saberlo.
+
+## Rubber Ducking con un Robot
+
+Debo ser transparente sobre cómo se unió este protocolo: No lo diseñé solo. Lo diseñé en conversación con Claude, el asistente de IA de Anthropic.
+
+Empezó con un problema: "Tengo una PWA sin backend, y un usuario quiere sincronizar su progreso de juego a un teléfono nuevo." Compartí esto con Claude, y empezamos a explorar opciones. WebRTC parecía prometedor pero la sobrecarga de señalización parecía insuperable. En el curso de varias sesiones—tarde de jueves hasta mañana de viernes—la conversación evolucionó de "esto es imposible" a "espera, ¿y si simplemente...?"
+
+**Lo que la IA hizo bien:**
+
+- **Investigación a velocidad de conversación.** Cuando pregunté "¿puedo hardcodear credenciales ICE?", Claude sacó las secciones relevantes de RFC y explicó las implicaciones de seguridad en segundos. Cuando me pregunté si Web Bluetooth podría funcionar, Claude lo eliminó sistemáticamente citando limitaciones específicas de API de navegadores. Este tipo de buceo en RFC e investigación de compatibilidad me habría tomado horas o días.
+
+- **Proporcionó resistencia contra la que empujar.** Claude seguía insistiendo en que la distinción "offer/answer" era fundamental para WebRTC—necesitas una oferta, necesitas una respuesta, así es como funciona. Esa resistencia me forzó a articular *por qué* pensaba que podíamos hacerlo mejor, hasta que pregunté: "¿Qué pasa si inferimos los roles de algo que ya está en el QR?" Esa pregunta—mía, nacida de la frustración con la restricción—llevó a la comparación simétrica de fingerprints que eliminó las condiciones de carrera. A veces la IA es más útil cuando se equivoca.
+
+- **Validó decisiones de seguridad.** Cuando propuse derivar credenciales ICE del fingerprint DTLS, no estaba seguro de si estaba introduciendo vulnerabilidades. Claude analizó el modelo de amenaza y confirmó que la verdadera frontera de seguridad es el handshake DTLS, no la capa ICE—el cambio era seguro.
+
+- **Atrapó cosas que se me pasaron.** La "paradoja de la compresión" (DEFLATE haciendo el payload *más grande*) emergió cuando Claude corrió los números reales. Yo habría asumido que la compresión siempre ayuda.
+
+**Lo que la IA no hizo:**
+
+- **Tomar decisiones arquitectónicas.** Cada elección de diseño—el formato binario, la UX QR Tango, los límites de candidatos—vino de mí preguntando "¿qué pasa si?" y Claude ayudándome a evaluar los tradeoffs. La IA nunca dijo "aquí está el diseño". Dijo "aquí está lo que pasa si haces X".
+
+- **Reemplazar la intuición de dominio.** Saber que un payload de 55 bytes "se siente" correcto para códigos QR, o que los usuarios de más de 50 años no tolerarán secuencias de QR animados—eso vino de construir productos, no de promptear.
+
+**La evaluación honesta:**
+
+Sin IA, probablemente me habría rendido después de unas pocas horas. Este no era un problema crítico—podría haber dicho al usuario "lo siento, esto no es posible" y seguir adelante. Nadie estaba demandando una solución. Pero como cada pregunta obtenía una respuesta en segundos en lugar de horas, seguí adelante. Cada pequeño avance hacía que la siguiente pregunta valiera la pena. El impulso me llevó a través de problemas que habría abandonado.
+
+Leer RFCs, probar peculiaridades de navegadores, validar asunciones de seguridad—semanas de trabajo poco glamuroso. Con IA, lo comprimí en un día. No porque la IA sea más inteligente, sino porque es *más rápida en las partes aburridas*, y esa velocidad cambia lo que se siente que vale la pena intentar.
+
+La experiencia se sintió como pair programming con alguien que ha leído cada RFC pero no tiene opiniones. Yo conduje la arquitectura. Claude conduje la investigación. Cuando me atascaba, describía el problema en voz alta (rubber ducking), y Claude o confirmaba mi instinto o señalaba algo que se me había pasado.
+
+## Apéndice: Referencia Rápida
+
+Para la especificación completa, ver la [Especificación QWBP](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md). Aquí una referencia rápida para el formato binario.
+
+### Estructura de Paquete
+
+```
+┌───────────┬─────────────┬──────────────────────┬────────────────────┐
+│ Mágico(1B)│ Versión (1B)│ Fingerprint (32B)    │ Candidatos (Var)   │
+│ 0x51 'Q'  │ Versión:3b  │ SHA-256 DTLS         │ IPs empaq. binario │
+│           │ Reservado:5b│ (32 bytes raw)       │ (7B IPv4, 19B IPv6)│
+└───────────┴─────────────┴──────────────────────┴────────────────────┘
+```
+
+### Diseño de Byte de Flags
+
+| Bits | Campo | Valores |
+|------|-------|--------|
+| 0-1 | Familia Dirección | `00`=IPv4, `01`=IPv6, `10`=mDNS |
+| 2 | Protocolo | `0`=UDP, `1`=TCP |
+| 3 | Tipo Candidato | `0`=Host, `1`=srflx |
+| 4-5 | Tipo TCP | `00`=passive, `01`=active, `10`=so |
+| 6-7 | Reservado | Debe ser `0` |
+
+### Vector de Prueba
+
+**Paquete válido mínimo (1 candidato host IPv4):**
+```
+Hex: 51 00 [32 bytes fingerprint] 00 C0A80105 D431
+     ^  ^   ^                       ^  ^        ^
+     |  |   |                       |  |        Puerto 54321
+     |  |   |                       |  IP 192.168.1.5
+     |  |   |                       Flags: IPv4, UDP, host
+     |  |   Fingerprint DTLS (SHA-256)
+     |  Versión 0
+     Byte Mágico 'Q'
+
+Total: 1 + 1 + 32 + 1 + 4 + 2 = 41 bytes
+```
+
+**Línea de candidato decodificada:**
+```
+a=candidate:1 1 udp 2122260223 192.168.1.5 54321 typ host
+```
+
+<br/>
+
+---
+
+<br/>
+
+*Un usuario hizo una pregunta simple. Pasé una tarde y una mañana hablando con una IA sobre diseño de protocolos. Ser irrazonable resultó ser la única solución razonable.*

@@ -1,5 +1,4 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
 import type { Language } from "../helpers/test-helpers";
 
 export class Header {
@@ -14,7 +13,7 @@ export class Header {
     this.themeToggle = page.getByTestId("theme-toggle");
     this.languageSelector = page.getByTestId("language-selector");
     this.siteLogo = page.getByRole("link", { name: "magarcia" });
-    this.backLink = page.getByRole("link", { name: /back|volver|tornar/i });
+    this.backLink = page.getByRole("link", { name: /^← (back|volver|tornar)$/i });
   }
 
   async toggleTheme(): Promise<void> {
@@ -22,14 +21,10 @@ export class Header {
   }
 
   async openLanguageMenu(): Promise<void> {
-    // Use focus to reveal language options (triggers :focus-within CSS)
-    // This is more reliable than hover for automated testing
-    const enLink = this.languageSelector.getByRole("link", { name: "EN" });
-    await expect(async () => {
-      // Focus the link to trigger focus-within (works even if not visible yet)
-      await enLink.focus({ timeout: 500 });
-      await expect(enLink).toBeVisible({ timeout: 1000 });
-    }).toPass({ timeout: 5000 });
+    // Hover over the language selector to expand it
+    await this.languageSelector.hover();
+    // Wait for the nav to expand (it animates from max-w-0 to max-w-24)
+    await this.page.waitForTimeout(350);
   }
 
   async selectLanguage(lang: Language): Promise<void> {

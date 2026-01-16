@@ -23,10 +23,10 @@ cuatro puntos importantes:
 La semana pasada teníamos el entorno de desarrollo listo y también, presumiblemente, el
 entorno para distribuir builds. Pero a lo largo de la semana, noté que con
 la build distribuida, Jangouts tenía problemas con los elementos de la cuadrícula dentro de la sala
-de video chat. Después de un tiempo probando diferentes configuraciones para Webpack, encontré que
+de vídeo chat. Después de un tiempo probando diferentes configuraciones para Webpack, encontré que
 los problemas estaban relacionados principalmente con el proceso de uglify.
 
-El problema estaba relacionado con el sistema de diseño de cuadrícula de la sala de video, que está
+El problema estaba relacionado con el sistema de diseño de cuadrícula de la sala de vídeo, que está
 implementado usando [angular-gridster](http://manifestwebdesign.github.io/angular-gridster/).
 Así que, el problema puede venir del estilo de angular-gridster o del módulo JavaScript.
 Primero de todo intenté importar directamente el CSS de la librería sin cargarlo
