@@ -41,6 +41,8 @@ test.describe("Tag Page", () => {
       await blogPostPage.clickTag(firstTag);
 
       const tagPage = new TagPage(page);
+      // Wait for articles to load before counting
+      await expect(page.getByTestId("article-item").first()).toBeVisible();
       const articleCount = await tagPage.getArticleCount();
       expect(articleCount).toBeGreaterThan(0);
     }
