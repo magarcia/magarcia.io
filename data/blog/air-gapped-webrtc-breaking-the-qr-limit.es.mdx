@@ -94,7 +94,7 @@ a=candidate:1 1 udp 2122260223 192.168.1.100 54321 typ host
 ... (20 líneas de candidatos más)
 ```
 
-**2.487 bytes.** El Session Description Protocol[^1] data de 1998, diseñado para VoIP donde los extremos negocian códecs de video, tasas de muestreo de audio, restricciones de ancho de banda. Yo controlaba ambos extremos. El 90% de estos datos era ceremonia para una negociación que nunca ocurriría.
+**2.487 bytes.** El Session Description Protocol[^1] data de 1998, diseñado para VoIP donde los extremos negocian códecs de vídeo, tasas de muestreo de audio, restricciones de ancho de banda. Yo controlaba ambos extremos. El 90% de estos datos era ceremonia para una negociación que nunca ocurriría.
 
 [^1]: RFC 8866 - SDP: Session Description Protocol, https://datatracker.ietf.org/doc/html/rfc8866
 
@@ -455,9 +455,9 @@ La seguridad de QWBP depende del **canal óptico**—la pantalla mostrando el c�
 
 Entonces me golpeó. Había estado pensando demasiado pequeño.
 
-Una videollamada WebRTC completa requiere negociar códecs, resoluciones, restricciones de ancho de banda. Un SDP de video típico de Chrome con audio, video (VP8, VP9, H.264, AV1, H.265) y DataChannel pesa 6.255 bytes—a veces más con todas las opciones de códec. Ningún código QR puede contener eso. La Versión 40, la mayor posible, alcanza un máximo de 2.953 bytes. Un SDP de video excede la *capacidad máxima posible del QR* por más de 3KB.
+Una videollamada WebRTC completa requiere negociar códecs, resoluciones, restricciones de ancho de banda. Un SDP de vídeo típico de Chrome con audio, vídeo (VP8, VP9, H.264, AV1, H.265) y DataChannel pesa 6.255 bytes—a veces más con todas las opciones de códec. Ningún código QR puede contener eso. La Versión 40, la mayor posible, alcanza un máximo de 2.953 bytes. Un SDP de vídeo excede la *capacidad máxima posible del QR* por más de 3KB.
 
-¿Pero el SDP DataChannel que había estado comprimiendo? Eso es solo el *arranque* (bootstrap). Establece una tubería encriptada mínima entre dos dispositivos. Una vez esa tubería existe, puedes enviar cualquier cosa a través de ella—incluyendo un SDP de video de 6KB.
+¿Pero el SDP DataChannel que había estado comprimiendo? Eso es solo el *arranque* (bootstrap). Establece una tubería encriptada mínima entre dos dispositivos. Una vez esa tubería existe, puedes enviar cualquier cosa a través de ella—incluyendo un SDP de vídeo de 6KB.
 
 No estaba construyendo una función de sincronización de juego. Estaba construyendo un **protocolo de señalización**.
 
@@ -478,7 +478,7 @@ No estaba construyendo una función de sincronización de juego. Estaba construy
 │  Capa 1: Protocolo de Aplicación                                │
 │  ─────────────────────────────                                  │
 │  • Sin restricciones de tamaño                                  │
-│  • Intercambiar SDPs completos de video/audio (6KB+)            │
+│  • Intercambiar SDPs completos de vídeo/audio (6KB+)            │
 │  • Stream de archivos de cualquier tamaño                       │
 │  • Correr cualquier protocolo de aplicación                     │
 └─────────────────────────────────────────────────────────────────┘
@@ -490,12 +490,12 @@ Esta arquitectura de dos etapas—arranque pequeño llevando a capacidad complet
 
 Las implicaciones iban más allá de Palabreja:
 
-- **Videollamadas sin servidores:** Escanea un código QR, establece el canal de arranque, negocia video completo a través de él. *(Sí, veo la ironía—preparar una videollamada estando cara a cara.)*
+- **Videollamadas sin servidores:** Escanea un código QR, establece el canal de arranque, negocia vídeo completo a través de él. *(Sí, veo la ironía—preparar una videollamada estando cara a cara.)*
 - **Compartir archivos:** El DataChannel puede transmitir archivos de cualquier tamaño. Un QR de 55 bytes se convierte en un AirDrop sin servidor.
 - **Emparejamiento de dispositivos:** Dispositivos IoT, configuración de casa inteligente, cualquier escenario donde dos dispositivos necesiten establecer confianza y un canal seguro.
 - **Juegos multijugador:** Arrancar una red mesh entre jugadores en la misma habitación. Sin necesidad de servidor de juego para multijugador local.
 
-Un arranque de 55-100 bytes (una reducción del 99,12% desde el SDP de video de 6.255 bytes) desbloquea negociación de video completa, lo cual desbloquea ancho de banda ilimitado. Una videollamada 4K, iniciada escaneando un código QR con poca luz.
+Un arranque de 55-100 bytes (una reducción del 99,12% desde el SDP de vídeo de 6.255 bytes) desbloquea negociación de vídeo completa, lo cual desbloquea ancho de banda ilimitado. Una videollamada 4K, iniciada escaneando un código QR con poca luz.
 
 Esto ya no era un hack. Era un protocolo que merecía un nombre.
 
@@ -552,10 +552,10 @@ Cuando controlas ambos extremos, **el conocimiento del dominio es un algoritmo d
 Para el viernes por la tarde, había completado el QR-WebRTC Bootstrap Protocol (QWBP) v1.0.0.
 
 > **Qué es QWBP (y qué no es):**
-> - Arranque solo para DataChannel (DataChannel es la tubería de datos raw de WebRTC, separada de audio/video)—no un reemplazo general de SDP
+> - Arranque solo para DataChannel (DataChannel es la tubería de datos raw de WebRTC, separada de audio/vídeo)—no un reemplazo general de SDP
 > - Optimizado para dos dispositivos en proximidad física con escáner/codificador controlado
 > - "Sin servidor" en LAN; requiere servidores STUN/TURN para escenarios entre redes (explicado más tarde)
-> - No diseñado para negociación de video/audio, redes mesh o entornos no confiables
+> - No diseñado para negociación de vídeo/audio, redes mesh o entornos no confiables
 
 La estructura del paquete evolucionó desde mi prototipo del jueves. Añadí un **Byte Mágico** (`0x51` = 'Q') para identificación del protocolo—así escanear un QR de menú de restaurante falla rápido en lugar de crashear—y un campo de **Versión** para compatibilidad futura:
 

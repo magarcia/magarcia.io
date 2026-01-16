@@ -39,7 +39,7 @@ asegurando que los estilos se aplicarán solo al componente.
 Durante la migración de `chat-message`, encontré problemas. Un problema que viene
 del uso de la librería [ngEmbed](https://github.com/ritz078/ng-embed) que
 proporciona una directiva para renderizar los mensajes del usuario. Esta directiva permite a los usuarios
-usar emojis e incrustar enlaces, imágenes, videos, etc. Pero como se esperaba la
+usar emojis e incrustar enlaces, imágenes, vídeos, etc. Pero como se esperaba la
 librería no tiene soporte para Angular 2, así que intenté actualizar la directiva con
 el [Angular 2 Upgrade Adapter](https://angular.io/docs/ts/latest/guide/upgrade.html#!#how-the-upgrade-adapter-works)
 pero encontré un error extraño.
@@ -161,7 +161,7 @@ src
 
 Actualmente estoy trabajando en la migración del componente Feed. Este es uno de los
 componentes más complejos en la aplicación porque tiene muchos servicios que
-manejan los streams de video/audio.
+manejan los streams de vídeo/audio.
 
 De hecho, he movido todos los servicios y factorías a servicios de Angular 2, pero
 todavía no he habilitado el soporte para trabajar con el código de Angular 1. ¿La razón?
