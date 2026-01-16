@@ -1,0 +1,751 @@
+---
+title: "Trencant el límit del QR: El descobriment d'un protocol WebRTC sense servidor"
+date: "2026-01-12"
+spoiler: Una simple petició d'un usuari va portar a una sessió intensiva de disseny de protocols assistida per IA. Vaig reduir la senyalització WebRTC de 2.500 bytes a 55 bytes—una reducció del 97,79%—qüestionant cada bona pràctica. Aquesta és la història de com va néixer QWBP.
+draft: true
+tags:
+  - javascript
+  - webrtc
+  - qr-code
+  - security
+---
+
+> L'home raonable s'adapta al món: el desraonat persisteix a intentar adaptar el món a si mateix. Per tant, tot progrés depèn de l'home desraonat.
+>
+> — George Bernard Shaw
+
+Vaig hardcodejar contrasenyes a producció. Vaig violar les millors pràctiques de WebRTC. Vaig dissenyar un protocol binari personalitzat. Després ho vaig llençar tot a les escombraries quan vaig descobrir que el veritable problema no era la compressió—era la física.
+
+Aquesta és la història d'una tarda de dijous, un matí de divendres i un protocol desraonat que no hauria d'existir.
+
+## La petició d'usuari que no vaig poder respondre
+
+Gener de 2025. [**Palabreja**](https://palabreja.com), el meu joc diari de paraules en castellà, havia crescut fins a superar els 30.000 jugadors actius mensuals a Espanya i Llatinoamèrica. Construït com una Progressive Web App (PWA) estàtica amb zero backend—sense base de dades, sense comptes d'usuari—tot vivia a `localStorage`.
+
+Aleshores va arribar la notificació de Bluesky:
+
+> "Em compraré un telèfon nou. Com puc mantenir el meu progrés?"
+
+La majoria dels desenvolupadors responen: "Inicia sessió al teu compte." Jo no tenia comptes, ni servidor, ni resposta.
+
+"Actualment, no hi ha manera."
+
+Aquesta resposta em rosegava. Els jugadors que canviaven de telèfon perdrien més de 2 anys de progrés en el joc. Estadístiques mantingudes acuradament durant mesos s'esvairien.
+
+Em negava a muntar una base de dades per moure uns pocs kilobytes de JSON entre dos dispositius asseguts un al costat de l'altre. Volia una *transferència directa dispositiu a dispositiu amb zero servidors*.
+
+## Tarda de dijous: La mentida "Serverless"
+
+Després de la feina, vaig obrir el meu portàtil. WebRTC semblava perfecte — connexions peer-to-peer, APIs natives del navegador, sense servidors de retransmissió.
+
+Tots els tutorials mostraven el mateix patró:
+
+```javascript
+const peer = new RTCPeerConnection();
+const offer = await peer.createOffer();
+await peer.setLocalDescription(offer);
+
+// Enviar oferta a l'altre parell via... servidor WebSocket?
+socket.send(JSON.stringify(offer));
+```
+
+Aquí hi era. **La senyalització requereix un servidor.**
+
+Abans que dos navegadors es connectin peer-to-peer, intercanvien missatges del Session Description Protocol (SDP)—ofertes i respostes que contenen informació de xarxa i paràmetres d'encriptació. L'especificació WebRTC deixa la senyalització sense especificar, assumint que faràs servir WebSockets, HTTP POST o un altre canal mediat per servidor.
+
+Jo no tenia servidor. No volia servidor.
+
+**Codis QR.** Mostrar l'oferta com un codi QR, escanejar-la amb l'altre telèfon, mostrar la resposta com un altre codi QR, escanejar això. Sense servidor. Comunicació "air-gapped" fent servir pantalles i càmeres.
+
+Vaig construir un prototip. El codi QR va aparèixer.
+
+Era **massiu**.
+
+Un codi QR Versió 30+—més de 130 mòduls per costat—omplia la pantalla del meu telèfon. Dens, caòtic, illegible.
+
+Resultats de l'escaneig:
+- **Bona il·luminació, mans fermes:** 8 segons, 60% d'èxit
+- **Habitació fosca:** 15+ segons, fallava la majoria d'intents
+- **Lent ratllada:** Mai va tenir èxit
+
+La meva "sincronització instantània" trigava més que teclejar les dades manualment.
+
+Vaig imprimir l'SDP per entendre contra què estava lluitant:
+
+```
+v=0
+o=- 4682389562847392847 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE 0
+a=extmap-allow-mixed
+a=msid-semantic: WMS
+m=application 9 UDP/DTLS/SCTP webrtc-datachannel
+c=IN IP4 0.0.0.0
+a=ice-ufrag:eP8j
+a=ice-pwd:3K9m...
+a=ice-options:trickle
+a=fingerprint:sha-256 E7:3B:38:46:1A:5D:88:B0:...
+a=setup:actpass
+a=mid:0
+a=sctp-port:5000
+a=max-message-size:262144
+a=candidate:1 1 udp 2122260223 192.168.1.100 54321 typ host
+... (20 línies de candidats més)
+```
+
+**2.487 bytes.** El Session Description Protocol[^1] data de 1998, dissenyat per a VoIP on els extrems negocien còdecs de vídeo, taxes de mostreig d'àudio, restriccions d'ample de banda. Jo controlava tots dos extrems. El 90% d'aquestes dades era cerimònia per a una negociació que mai passaria.
+
+[^1]: RFC 8866 - SDP: Session Description Protocol, https://datatracker.ietf.org/doc/html/rfc8866
+
+La pregunta es va convertir en: "Quins camps de l'SDP són realment *necessaris*?"
+
+## El camí que no vaig agafar
+
+Existeix feina prèvia: **seqüències de QR animats** que mostren frames fins que l'escàner captura totes les parts[^2][^3], i **fountain codes** (TXQR[^4]) que toleren frames perduts. Aquests aconsegueixen ~9 KB/s sota condicions ideals però requereixen mantenir el pols ferm durant 10+ segons—acceptable per signar amb wallets cripto, però massa cerimònia per a un ús casual.
+
+**La bifurcació al camí**: Els QRs animats resolen el problema de transport—"com moc 2.5KB a través d'un codi QR?". Jo necessitava resoldre el problema de significat—"necessito 2.5KB?".
+
+Vaig mirar llibreries existents com **sdp-compact**, que eliminen espais en blanc i apliquen compressió estàndard. Però encara així xocaven amb el "Límit de Compressió Genèrica"—la sobrecàrrega de capçaleres i codificació Base64 sovint superava l'estalvi per a càrregues petites.
+
+[^2]: Franklin Ta, "Serverless WebRTC using QR codes" (2014), https://franklinta.com/2014/10/19/serverless-webrtc-using-qr-codes/
+[^3]: Repositori GitHub webrtc-via-qr, https://github.com/Qivex/webrtc-via-qr
+[^4]: TXQR: Transfer via QR with fountain codes, https://github.com/divan/txqr
+
+## El hack que va funcionar
+
+Analitzar l'estructura SDP va revelar el que realment es necessitava: credencials ICE, empremta digital (fingerprint) DTLS, valor de setup i candidats ICE. Tota la resta—descripció de sessió, info de bundling, paràmetres SCTP—podia ser hardcodejada en tots dos extrems.
+
+**Glossari ràpid per als no iniciats:**
+- **ICE** (Interactive Connectivity Establishment): El protocol que esbrina com dos dispositius poden aconseguir-se entre xarxes, tallafocs i NATs.
+- **Candidats ICE**: Adreces de xarxa (IP + port) on un dispositiu pot ser potencialment aconseguit.
+- **DTLS** (Datagram TLS): Capa d'encriptació per a WebRTC—com HTTPS però per a dades en temps real.
+- **Empremta digital (fingerprint) DTLS**: Un hash del certificat de seguretat del dispositiu, usat per verificar que estàs parlant amb el parell correcte.
+
+**Primer insight: Hardcodejar les credencials ICE.**
+
+```
+a=ice-ufrag:eP8j
+a=ice-pwd:3K9m...
+```
+
+Aquests són el "fragment d'usuari" (ufrag) i la contrasenya d'ICE—cadenes aleatòries que els parells intercanvien per autenticar les comprovacions de connectivitat. 50 bytes de dades d'alta entropia—impossible de comprimir. Vaig preguntar: "Puc hardcodejar això? Què es trenca?"
+
+Furgar en l'[RFC 5245](https://datatracker.ietf.org/doc/html/rfc5245) va revelar la resposta. Les credencials ICE autentiquen les comprovacions de connectivitat entre parells, però la *veritable* seguretat ve de l'empremta digital DTLS[^5]—un hash SHA-256 del certificat TLS del dispositiu. Un atacant amb credencials ICE però el certificat incorrecte no pot connectar-se; el handshake DTLS falla.
+
+[^5]: RFC 8827 - WebRTC Security Architecture, https://datatracker.ietf.org/doc/html/rfc8827
+
+Les vaig hardcodejar:
+
+```typescript
+const ICE_UFRAG = "palabreja";
+const ICE_PWD = "xK9...........cB0";
+```
+
+**Estalviat: 50 bytes.**
+
+**Segon insight: Filtrar candidats.**
+
+Els navegadors emeten 15-30 candidats ICE—cada interfície de xarxa: Wi-Fi, VPN, Docker, IPv6 link-local. La majoria fallen o connecten lent. Però la meva primera prova amb un sol candidat va fallar—la interfície VPN apareixia primer, ocultant l'adreça Wi-Fi que realment podia connectar.
+
+Vaig elevar el límit a 3 candidats "host" (adreces de xarxa local) més 1 candidat "srflx" (reflexiu del servidor). El candidat srflx és la teva adreça IP pública vista des d'internet, descoberta preguntant a un servidor STUN "quina és la meva IP?". Això gestiona el cas on els dispositius estan en xarxes diferents.
+
+**Estalviat: 1.200+ bytes.**
+
+**Tercer insight: Protocol binari.**
+
+Vaig mirar fixament el JSON minificat que estava transmetent. Claudàtors. Cometes. Noms de claus. La cadena `"type"` apareixia a cada missatge—5 bytes per codificar alguna cosa que només podia ser "offer" o "answer". El fingerprint era una cadena hexadecimal de 95 caràcters amb dos punts, però per sota eren només 32 bytes de dades raw (crues).
+
+JSON està dissenyat per a *interoperabilitat*—llegible per humans, autodescriptiu, universalment parsejable. Però jo controlava tots dos extrems i escrivia el codificador i el descodificador. Res d'això necessitava ser llegible per humans o autodescriptiu.
+
+Vaig recordar estudiar xarxes de baix nivell—com les capçaleres TCP empaqueten flags, números de seqüència i ports en posicions fixes. Sense noms de camp. Sense delimitadors. Només bytes en offsets coneguts. I si dissenyava un format de paquet en lloc d'un objecte JSON?
+
+Eliminar tot el que és constant. Mantenir només el dinàmic:
+
+```
+┌────────┬─────────────────────┬──────────────────────────────┐
+│ Byte 0 │ Bytes 1-32          │ Bytes 33+                    │
+├────────┼─────────────────────┼──────────────────────────────┤
+│ Tipus  │ Fingerprint DTLS    │ Candidats ICE (empaq.)       │
+│ 0=offer│ Hash SHA-256        │ "h|u|192.168.1.5|54321|..."  │
+└────────┴─────────────────────┴──────────────────────────────┘
+```
+
+Un byte per al tipus en lloc de `"type":"offer"`. 32 bytes raw per al fingerprint en lloc de 95 caràcters ASCII. Sense claudàtors, sense cometes, sense noms de camp.
+
+Però no havia acabat. Els candidats seguien sent cadenes: `"h|u|192.168.1.5|54321"`. Aquesta adreça IP sola són 13 caràcters—però una adreça IPv4 són només 4 bytes. Per què tres caràcters ASCII per a `192` quan `0xC0` n'hi ha prou?
+
+Vaig anar més enllà. Cada candidat es va convertir en una estructura binària de disseny fix:
+
+```
+┌─────────┬────────────────┬────────┐
+│ Flags   │ Adreça IP      │ Port   │
+│ (1B)    │ (4B o 16B)     │ (2B)   │
+└─────────┴────────────────┴────────┘
+
+Byte de Flags (màscara de bits):
+  Bits 0-1: Família d'adreça (00=IPv4, 01=IPv6, 10=reservat*)
+  Bit 2:    Protocol (0=UDP, 1=TCP)
+  Bit 3:    Tipus de candidat (0=host, 1=srflx)
+  Bits 4-5: Tipus TCP[^6] (si TCP): 00=passive, 01=active, 10=so
+  Bits 6-7: Reservats
+
+*El slot reservat es torna important més tard—les funcions de privadesa del navegador ho requereixen.
+```
+
+[^6]: RFC 6544 - TCP Candidates with Interactive Connectivity Establishment (ICE), https://datatracker.ietf.org/doc/html/rfc6544
+
+La cadena `"h|u|192.168.1.5|54321"` (21 caràcters) es va convertir en 7 bytes. Una reducció del 66% només en dades de candidats—i els candidats eren el gruix de la càrrega útil.
+
+L'estructura completa del paquet:
+
+```
+┌─────────┬─────────────────┬─────────────────────────────────┐
+│ Camp    │ Mida            │ Descripció                      │
+├─────────┼─────────────────┼─────────────────────────────────┤
+│ Tipus   │ 1 byte          │ 0x00 = offer, 0x01 = answer     │
+│ FP      │ 32 bytes        │ Fingerprint DTLS (SHA-256)      │
+│ Cand 1  │ 7 bytes (IPv4)  │ Flags + IP + Port               │
+│         │ 19 bytes (IPv6) │                                 │
+│ Cand 2  │ 7-19 bytes      │ (repetir fins a fi de payload)  │
+│ ...     │                 │                                 │
+└─────────┴─────────────────┴─────────────────────────────────┘
+
+Payload típic: 1 + 32 + (4 × 7) = 61 bytes (4 candidats IPv4)
+Payload màxim: 1 + 32 + (4 × 19) = 109 bytes (4 candidats IPv6)
+```
+
+**Quart insight: Compressió DEFLATE.**
+
+Vaig aplicar fflate (DEFLATE nivell 9) al payload binari:
+
+```
+Abans de compressió: 91 bytes
+Després de compressió: 44 bytes
+Després de base64: 60 bytes
+```
+
+**Resultat: 2.487 bytes → 60 bytes. 97,6% de reducció.**
+
+Els codis QR s'escanejaven ràpid—menys d'un segon en les meves proves. Havia resolt el problema de la compressió.
+
+Però alguna cosa em molestava. Les contrasenyes hardcodejades se sentien *malament*. Havia progressat, però això seguia sent un hack, no un protocol.
+
+## Refinant el Hack
+
+Les credencials hardcodejades em fastiguejaven. És un lloc web JavaScript—el codi font és llegible. Qualsevol podria obrir DevTools, trobar la contrasenya ICE i... bé, què exactament? L'encriptació *real* passa al handshake DTLS, autenticat pel fingerprint. Les credencials ICE són només per a verificació d'encaminament. No crítiques.
+
+Tot i així, em molestava. Tenir el codi font no t'hauria de donar les claus. Aleshores em vaig adonar: ja hi ha alguna cosa única per sessió. El fingerprint DTLS—un hash SHA-256 del certificat de cada dispositiu—ja està al codi QR. I si derivés les credencials ICE d'això?
+
+**Descobriment: Derivar credencials, no hardcodejar-les.**
+
+La solució: HKDF-SHA256[^7], una funció de derivació de claus estàndard. L'insight clau: cada parell deriva *les seves pròpies* credencials del *seu propi* fingerprint—no credencials compartides d'un secret comú.
+
+**Com funciona**:
+1. Parell A deriva `ufrag_A` de `Fingerprint_A` fent servir HKDF
+2. Parell B deriva `ufrag_B` de `Fingerprint_B` fent servir HKDF
+3. Els codis QR intercanvien tots dos fingerprints
+4. Cada parell pot computar localment les credencials esperades de l'altre per a validació
+5. Les comprovacions de connectivitat ICE fan servir format d'usuari estàndard: `ufrag_remot:ufrag_local`[^8]
+
+**Paràmetres HKDF** (per a implementadors):
+```typescript
+// Salt està buit perquè la font d'entropia (certificat DTLS) ja és
+// d'alta entropia i efímera—no es necessita aleatorietat addicional
+const salt = new Uint8Array(0);
+const ufragInfo = new TextEncoder().encode("QWBP-ICE-UFRAG-v1");
+const pwdInfo = new TextEncoder().encode("QWBP-ICE-PWD-v1");
+
+// Derivar 4 bytes per ufrag, codificar com base64url (dona 6 chars, min és 4)
+const ufragBytes = await hkdf(fingerprint, salt, ufragInfo, 4);
+const ufrag = base64url(ufragBytes);
+
+// Derivar 18 bytes per pwd, codificar com base64url (dona 24 chars, min és 22)
+const pwdBytes = await hkdf(fingerprint, salt, pwdInfo, 18);
+const pwd = base64url(pwdBytes);
+```
+
+RFC 8839 requereix ufrag ≥4 chars, pwd ≥22 chars, fent servir `[A-Za-z0-9+/]`. Base64url satisfà això.
+
+Això satisfà el requisit d'entropia de l'RFC 8839[^9]—l'aleatorietat ve del certificat DTLS efímer, no del HKDF en si. Això evita enviar secrets en codi i garanteix unicitat per sessió sempre que cada intent de connexió generi un certificat fresc.
+
+Ara el codi font per si sol no dona res. Necessites accés visual al codi QR específic per conèixer les credencials d'aquesta sessió. La frontera de seguretat va canviar de "secret en codi" a "proximitat física requerida".
+
+[^7]: RFC 5869 - HMAC-based Extract-and-Expand Key Derivation Function (HKDF), https://datatracker.ietf.org/doc/html/rfc5869
+[^8]: RFC 8445, Section 7.2.2 - Forming Credentials, https://datatracker.ietf.org/doc/html/rfc8445#section-7.2.2
+[^9]: RFC 8839, Section 5.4 - ICE Password, https://datatracker.ietf.org/doc/html/rfc8839#section-5.4
+
+**Descobriment: La paradoxa de la compressió.**
+
+Provar amb dades reals d'SDP de Chrome i Firefox va revelar un resultat sorprenent. El payload binari—ja despullat de redundància—era d'alta entropia. Executar DEFLATE sobre ell *augmentava* la mida:
+
+```
+Payload binari:     61 bytes
+Després compressió: 83 bytes
+Després base64:     112 bytes
+```
+
+La sobrecàrrega de la capçalera de compressió excedia els guanys d'entropia. Per a dades binàries optimitzades, **saltar la compressió per complet**.
+
+**Descobriment: Base64 és un impost.**
+
+Els codis QR suporten binari raw (Byte mode, ISO 8859-1). La majoria de llibreries QR de JavaScript accepten `Uint8Array` directament. Base64 afegeix un 37% de sobrecàrrega sense benefici.
+
+```
+Amb base64:    84 bytes → QR v5
+Sense base64:  61 bytes → QR v4
+```
+
+Havia estat pagant una penalització de mida del 37% perquè vaig assumir que els codis QR necessitaven codificació de text. No és així.
+
+El hack s'estava convertint en un protocol. Però encara no havia abordat el problema fonamental.
+
+## Matí de divendres: El problema del "Viatge de Tornada"
+
+Havia optimitzat l'*oferta*. Però WebRTC requereix intercanvi bidireccional—el receptor ha d'enviar una *resposta* de tornada.
+
+En un entorn PWA sense servidor:
+- El Dispositiu A no pot escoltar connexions entrants (els navegadors són clients, no servidors)
+- Paquets DTLS no sol·licitats del Dispositiu B són descartats
+- L'autenticació ICE prevé connectivitat sense que tots dos parells coneguin les credencials de l'altre
+
+**No pots establir una connexió WebRTC amb un sol escaneig unidireccional.**
+
+Vaig explorar alternatives:
+
+- **Bluetooth:** Web Bluetooth API no pot actuar com a perifèric (rol servidor). Les PWAs només poden ser dispositius centrals, la qual cosa significa que tots dos telèfons intentarien *connectar*, cap *escoltar*.
+- **NFC:** Web NFC no pot emular etiquetes. Tots dos telèfons intentarien *llegir*, cap *escriure*.
+- **Transferència de dades per àudio:** Requereix permís de micròfon. Poc fiable en entorns sorollosos. Els usuaris sospitarien amb raó.
+- **Wi-Fi Direct:** No existeix Web API.
+
+Cada alternativa demandava un servidor o requeria permisos que espantarien als usuaris.
+
+**L'únic canal d'E/S universal i amigable amb permisos disponible per a PWAs és l'escaneig bidireccional de codis QR.**
+
+Ho vaig anomenar el **"QR Tango"**:
+1. Dispositiu A mostra codi QR
+2. Dispositiu B l'escaneja, després mostra el *seu* codi QR
+3. Dispositiu A escaneja el codi QR del Dispositiu B
+4. Connexió establerta
+
+Però això va introduir un nou problema.
+
+## El Problema del "Glare" (Enlluernament)
+
+Si tots dos usuaris premen "Connectar" simultàniament, tots dos telèfons generen *ofertes*. La màquina d'estats de WebRTC falla quan rep una oferta mentre està en l'estat "have-local-offer".
+
+La solució òbvia: designar un dispositiu com a "emissor" i un com a "receptor". Considera la UX: La majoria de jugadors de Palabreja tenen més de 50 anys. Saben com escanejar un codi QR—això és intuïtiu. Però explicar "¿primer prems Enviar, després ells escanegen el teu codi, després ells premen Rebre, després tu escaneges el seu codi, i ha de ser en aquest ordre?" Això no és intuïtiu. És un malson de suport. Se sentia trencat.
+
+Jo volia un botó: "Connectar". Tots dos usuaris el premen. Tots dos escanegen. Simplement funciona.
+
+Però això reintrodueix el problema tècnic. Necessitava assignació de rols. I si els rols estan codificats en el codi QR, obtens condicions de carrera:
+- Usuari A mostra QR "Oferta"
+- Usuari B mostra QR "Oferta"
+- Cap pot procedir
+
+O pitjor—"QRs rancis":
+- Usuari A mostra QR "Oferta"
+- Usuari B l'escaneja, el rol s'actualitza a "Answerer" (Respondedor)
+- La pantalla es refresca amb QR "Resposta"
+- Usuari A escaneja el QR *antic* cachejat abans que s'actualitzi
+
+Em seguia preguntant: com elimino el byte d'oferta/resposta de la capçalera del protocol? Cada enfocament portava al mateix problema—el protocol necessita saber qui actua com a oferent i qui com a respondedor. Semblava fonamental per a la màquina d'estats de WebRTC.
+
+Aleshores va fer clic. Ja havia resolt un problema similar amb les credencials ICE—derivant-les de dades ja en el payload en lloc de transmetre-les separadament. I si feia el mateix per a l'assignació de rols?
+
+Els fingerprints. Són únics per dispositiu. Ja estan al codi QR. I crucialment: dos fingerprints diferents mai són iguals. Un sempre és major que l'altre quan es comparen byte a byte. Si *són* iguals, estàs escanejant el teu propi codi QR—un error que el protocol hauria d'atrapar de totes maneres.
+
+**L'avanç: Intercanvi d'identitat simètric.**
+
+En lloc de codificar "Oferta" o "Resposta", tots dos codis QR contenen només **identitat** (fingerprint) i **ubicació** (adreces IP)—com targetes de visita. Després que tots dos escanejos es completen, cada dispositiu té tots dos fingerprints. Els rols s'assignen *determinísticament* per comparació:
+
+```typescript
+if (localFingerprint > remoteFingerprint) {
+  // ID de fingerprint major → Offerer (Oferent)
+  role = "OFFERER";
+} else if (localFingerprint < remoteFingerprint) {
+  // ID de fingerprint menor → Answerer (Respondedor)
+  role = "ANSWERER";
+} else {
+  // Mateix fingerprint → Error de bucle local
+  throw new Error("Cannot connect to self");
+}
+```
+
+Comparació de bytes simple. Determinista. Sense condicions de carrera. Sense QRs rancis.
+
+L'oferent sintetitza una resposta SDP "falsa" localment fent servir el fingerprint i candidats del respondedor. Això satisfà la màquina d'estats del navegador sense transmissió de dades addicional.
+
+**Resultat: Codis QR independents del rol.** Prem "Connectar", mostra la teva targeta, escaneja la seva. L'ordre no importa.
+
+## La Paradoxa de l'Estat del Navegador
+
+Resoldre el problema del glare va introduir un bug subtil. Per generar el codi QR, tots dos dispositius han de primer reunir candidats, la qual cosa posa tots dos navegadors en l'estat "Have Local Offer".
+
+Si el protocol decideix que ets l'**Answerer**, tens un problema: no pots acceptar una Oferta si ja *tens* una Oferta.
+
+La solució ingènua és destruir la connexió WebRTC i començar de zero. **Però no pots.** El codi QR mostrat actualment a la teva pantalla codifica ports de xarxa específics (ex. port 54321). Si destrueixes l'objecte de connexió, el SO tanca aquests ports. El mapa que acabes de donar al teu company es converteix en un carreró sense sortida.
+
+La solució és **Signaling Rollback** (Reversió de Senyalització). Usem `setLocalDescription({type: 'rollback'})` per resetejar l'estat de senyalització a `stable` mentre mantenim el transport ICE subjacent—i aquests preciosos ports—vius. Permet al programari canviar d'opinió sobre qui truca a qui sense que la física de la capa de xarxa se n'adoni.
+
+## Reconstruint l'SDP
+
+Tots dos parells tenen ara tot el necessari per sintetitzar un SDP complet localment:
+
+**Del codi QR**:
+- Fingerprint DTLS (32 bytes)
+- Candidats ICE (3-4 estructures binàries empaquetades)
+- Identitat del dispositiu remot
+
+**Generat localment**:
+- Credencials ICE (derivades de fingerprints via HKDF)
+- Assignació de rol (comparació de fingerprint)
+- Metadades de sessió (timestamps, IDs)
+
+L'oferent—que ja té una oferta local vàlida pendent de la fase de recollida—fa servir les dades escanejades per sintetitzar una **Resposta Remota falsa**. Això enganya al navegador perquè pensi que va tenir lloc una negociació estàndard sense rebre realment un paquet de resposta SDP.
+
+El respondedor fa la inversa: realitza un **signaling rollback** (dient al navegador "oblida aquesta oferta que t'acabo de fer generar, però *mantén els ports de xarxa oberts*"), sintetitza una **Oferta Remota falsa** de les dades QR, i després genera una Resposta local real per completar la connexió.
+
+El navegador veu una negociació WebRTC normal—desconeix que l'SDP va venir d'un codi QR en lloc d'un servidor de senyalització.
+
+## La Complicació mDNS
+
+Mentre revisava el protocol, va sorgir un últim obstacle. Els navegadors moderns oculten les adreces IP locals darrere de hostnames mDNS per privadesa—en lloc de `192.168.1.5`, el navegador reporta alguna cosa com `b124-98a7-c3d2-f1e0.local`.
+
+El problema: El format binari de QWBP espera IPs raw (4 bytes per a IPv4, 16 per a IPv6). Un hostname mDNS de 42 caràcters no cap.
+
+La solució és sorprenentment elegant—i compleix amb els estàndards. Les implementacions de navegador WebRTC (seguint l'esborrany mDNS d'IETF[^10]) ordenen que els hostnames mDNS consisteixin en "un UUID versió 4 com es defineix en RFC 4122, seguit de '.local'".
+
+Un UUID té 128 bits—exactament la mida d'una adreça IPv6. El protocol no necessita canviar el format binari; només necessita expandir el flag de versió IP d'1 bit a 2 bits, codificant tres estats:
+
+- `00` = IPv4 (4 bytes)
+- `01` = IPv6 (16 bytes)
+- `10` = UUID mDNS (16 bytes, empaquetats com a bytes raw)
+
+Això no és un workaround—és optimització de compliment. Els navegadors moderns (Chrome, Safari) fan servir aquest format exacte per privadesa[^11].
+
+[^10]: draft-ietf-mmusic-mdns-ice-candidates-03, Section 3.1.1, https://datatracker.ietf.org/doc/html/draft-ietf-mmusic-mdns-ice-candidates-03#section-3.1.1
+[^11]: RFC 4122 - A Universally Unique IDentifier (UUID) URN Namespace, https://datatracker.ietf.org/doc/html/rfc4122
+
+No obstant això, la resolució mDNS entre dispositius que no han intercanviat paquets pot ser lenta o fallar per complet. Per a l'arrencada inicial, les IPs raw són més fiables. En Android i Chrome, sol·licitar permís de càmera (necessari de totes maneres per escanejar QR) sovint causa que el navegador reveli la IP local raw juntament amb el nom mDNS. Safari en iOS és més estricte—*només* proporciona hostnames mDNS, fent l'empaquetat UUID essencial en lloc d'opcional.
+
+El protocol estava funcionalment complet. Però, era *segur*?
+
+## Model d'Amenaça: El Canal Òptic
+
+La seguretat de QWBP depèn del **canal òptic**—la pantalla mostrant el codi QR.
+
+**Contra què protegeix**:
+- **Atacants remots**: No poden participar sense accés visual a tots dos dispositius.
+- **Inspecció de codi font**: Conèixer la implementació no revela claus de sessió.
+- **Atacs de repetició (Replay)**: Claus efímeres (certificats DTLS generats per sessió) expiren després de la connexió.
+- **Atacs MITM**: La verificació de fingerprint DTLS[^12] prevé suplantació.
+
+**Què assumeix**:
+- **Proximitat física és el factor d'autenticació**. Si un atacant pot fotografiar tots dos codis QR, potencialment pot interceptar la sessió (encara que necessitaria estar al mateix segment de xarxa i guanyar la carrera per establir connexió primer).
+- **Sessions de vida curta**: Les claus són vàlides només per a l'intent de connexió actual (~30 segons).
+- **Confirmació visual**: Els usuaris poden veure amb qui es connecten (mateixa habitació).
+
+**Opcional: Short Authentication String (SAS)**: Després de la connexió, mostrar un codi curt (ex. 4 paraules o 6 dígits) derivat de tots dos fingerprints. Els usuaris confirmen verbalment que el codi coincideix en totes dues pantalles—això atrapa atacs MITM actius on un atacant substitueix el seu propi QR. ZRTP[^13] va ser pioner en aquest patró per a trucades de veu; aplica igualment a QWBP.
+
+[^12]: RFC 8122, Section 5 - Fingerprint Attribute, https://datatracker.ietf.org/doc/html/rfc8122#section-5
+[^13]: RFC 6189 - ZRTP: Media Path Key Agreement for Unicast Secure RTP, Section 4.3 (SAS), https://datatracker.ietf.org/doc/html/rfc6189#section-4.3
+
+## La Imatge Més Gran: Un Protocol, No un Hack
+
+Aleshores em va colpejar. Havia estat pensant massa petit.
+
+Una videotrucada WebRTC completa requereix negociar còdecs, resolucions, restriccions d'ample de banda. Un SDP de vídeo típic de Chrome amb àudio, vídeo (VP8, VP9, H.264, AV1, H.265) i DataChannel pesa 6.255 bytes—a vegades més amb totes les opcions de còdec. Cap codi QR pot contenir això. La Versió 40, la major possible, arriba a un màxim de 2.953 bytes. Un SDP de vídeo excedeix la *capacitat màxima possible del QR* per més de 3KB.
+
+Però l'SDP DataChannel que havia estat comprimint? Això és només l'*arrencada* (bootstrap). Estableix una canonada encriptada mínima entre dos dispositius. Un cop aquesta canonada existeix, pots enviar qualsevol cosa a través d'ella—incloent-hi un SDP de vídeo de 6KB.
+
+No estava construint una funció de sincronització de joc. Estava construint un **protocol de senyalització**.
+
+**Arquitectura de dues etapes:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Capa 0: Arrencada QR (QR Bootstrap)                            │
+│  ───────────────────────                                        │
+│  • 55-100 bytes payload binari                                  │
+│  • Cap en QR Versió 4-5 (33-37 mòduls)                          │
+│  • Estableix DataChannel encriptat                              │
+│  • Escaneja en menys d'1 segon (en les meves proves)            │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  Capa 1: Protocol d'Aplicació                                   │
+│  ─────────────────────────────                                  │
+│  • Sense restriccions de mida                                   │
+│  • Intercanviar SDPs complets de vídeo/àudio (6KB+)             │
+│  • Stream d'arxius de qualsevol mida                            │
+│  • Córrer qualsevol protocol d'aplicació                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Aquesta arquitectura de dues etapes—arrencada petita portant a capacitat completa—segueix el mateix patró que Wi-Fi Easy Connect (DPP)[^14], que usa un codi QR per arrencar aprovisionament IoT segur.
+
+[^14]: Wi-Fi Alliance, "Wi-Fi Easy Connect Specification v3.0", https://www.wi-fi.org/discover-wi-fi/wi-fi-easy-connect
+
+Les implicacions anaven més enllà de Palabreja:
+
+- **Videotrucades sense servidors:** Escaneja un codi QR, estableix el canal d'arrencada, negocia vídeo complet a través d'ell. *(Sí, veig la ironia—preparar una videotrucada estant cara a cara.)*
+- **Compartir arxius:** El DataChannel pot transmetre arxius de qualsevol mida. Un QR de 55 bytes es converteix en un AirDrop sense servidor.
+- **Emparellament de dispositius:** Dispositius IoT, configuració de casa intel·ligent, qualsevol escenari on dos dispositius necessitin establir confiança i un canal segur.
+- **Jocs multijugador:** Arrencar una xarxa mesh entre jugadors a la mateixa habitació. Sense necessitat de servidor de joc per a multijugador local.
+
+Una arrencada de 55-100 bytes (una reducció del 99,12% des de l'SDP de vídeo de 6.255 bytes) desbloqueja negociació de vídeo completa, la qual cosa desbloqueja ample de banda il·limitat. Una videotrucada 4K, iniciada escanejant un codi QR amb poca llum.
+
+Això ja no era un hack. Era un protocol que mereixia un nom.
+
+Ho vaig anomenar el **QR-WebRTC Bootstrap Protocol (QWBP)** — pronunciat "cue-web-pi" (`/kjuː wɛb piː/`) — bé, Claude ho va suggerir i em va agradar.
+
+## Per Què No QRs Animats?
+
+Una pregunta justa: si els fountain codes poden transferir fiablemenet 9KB mitjançant QRs animats, per què encongir el protocol?
+
+**Tres raons:**
+
+### 1. La Latència Mata la Senyalització Manual
+
+La senyalització manual lluita contra els temporitzadors ICE del navegador. `media.peerconnection.ice.trickle_grace_period` de Firefox (per defecte: 5000ms) pot marcar la recollida com fallida si no rep els candidats esperats a temps. QWBP esquiva això completant la recollida ICE abans de mostrar el QR—però els usuaris encara necessiten escanejar dins d'una finestra raonable.
+
+TXQR pot transferir 9KB en ~1 segon sota condicions ideals, però el rendiment en el món real es degrada:
+- Mala il·luminació: 15+ segons
+- Usuari barallant-se amb permisos de càmera: 20+ segons
+- Frames perduts requerint reescaneig: reinici des de zero
+
+Reduint el payload a 55 bytes (QR Versió 4), el temps d'escaneig cau a **sub-500ms**—segur dins de les finestres de timeout del navegador.
+
+### 2. Impost de Cerimònia UX
+
+Els QRs animats requereixen:
+- Mantenir el telèfon perfectament quiet
+- Esperar que es completi la seqüència
+- Operació a dues mans o suport per a telèfon
+- Entendre què significa "3 de 12 frames capturats"
+
+Els QRs estàtics requereixen:
+- Apuntar càmera
+- Fet
+
+Per a usuaris motivats (transaccions cripto), la cerimònia és acceptable. Per a usuaris casuals (sincronització de joc), és un malson de suport.
+
+### 3. Compressió Semàntica Venç a Compressió de Transport
+
+Els QRs animats comprimeixen **a la capa de transport**—fountain codes, LZMA, codificació base32.
+
+QWBP comprimeix **a la capa semàntica**—entendre què *signifiquen* els candidats ICE aconsegueix una reducció del 97,79%.
+
+| Enfocament | Tècnica | Mida Dades | Temps Escaneig |
+|----------|-----------|-----------|-----------|
+| Franklin Ta (2014) | LZMA + animat | ~1000 bytes → 10 codis QR | 10-15 sec |
+| TXQR | Fountain codes | 9KB → 30 codis QR | 1-10 sec |
+| BBQr | Chunking + base32 | 3KB → 12 codis QR | 5-12 sec |
+| **QWBP** | **Protocol binari** | **55 bytes → 1 codi QR** | **&lt;0.5 sec** |
+
+Quan controles tots dos extrems, **el coneixement del domini és un algorisme de compressió**.
+
+## El Protocol Final
+
+Per al divendres a la tarda, havia completat el QR-WebRTC Bootstrap Protocol (QWBP) v1.0.0.
+
+> **Què és QWBP (i què no és):**
+> - Arrencada només per a DataChannel (DataChannel és la canonada de dades raw de WebRTC, separada d'àudio/vídeo)—no un reemplaçament general d'SDP
+> - Optimitzat per a dos dispositius en proximitat física amb escàner/codificador controlat
+> - "Sense servidor" en LAN; requereix servidors STUN/TURN per a escenaris entre xarxes (explicat més tard)
+> - No dissenyat per a negociació de vídeo/àudio, xarxes mesh o entorns no confiables
+
+L'estructura del paquet va evolucionar des del meu prototip del dijous. Vaig afegir un **Byte Màgic** (`0x51` = 'Q') per a identificació del protocol—així escanejar un QR de menú de restaurant falla ràpid en lloc de crashejar—i un camp de **Versió** per a compatibilitat futura:
+
+```
+Estructura Paquet QWBP v1:
+
+┌───────────┬─────────────┬──────────────────────┬────────────────────┐
+│ Màgic(1B) │ Versió (1B) │ Fingerprint (32B)    │ Candidats (Var)    │
+│ 0x51 'Q'  │ Versió:3b   │ SHA-256 DTLS         │ IPs empaq. binari  │
+│           │ Reservat:5b │ (32 bytes raw)       │ (7B IPv4, 19B IPv6)│
+└───────────┴─────────────┴──────────────────────┴────────────────────┘
+
+Mida típica: 55-100 bytes → QR Versió 4-5 (33-37 mòduls)
+```
+
+**Flux de connexió:**
+1. Tots dos parells generen certificat DTLS i reuneixen candidats ICE
+2. Tots dos codifiquen identitat + ubicació → mostren codi QR
+3. Parell A escaneja QR del Parell B (ordre irrellevant)
+4. Parell B escaneja QR del Parell A
+5. Tots dos comparen fingerprints → determinen rols
+6. Tots dos sintetitzen SDP apropiat localment
+7. Handshake DTLS + comprovació de connectivitat ICE
+8. DataChannel establert
+
+**Recollida ICE:** A diferència del WebRTC estàndard (que usa "Trickle ICE" per enviar candidats a mesura que es descobreixen), QWBP espera a la recollida ICE completa abans de codificar el QR. La implementació ha d'esperar a `iceGatheringState: 'complete'`. Això afegeix 1-2 segons de latència però assegura que el QR contingui tots els candidats necessaris per a la connexió—millor que generació ràpida de QR amb escanejos fallits.
+
+**Decisions d'optimització finals:**
+
+| Decisió | Raó |
+|----------|-----------|
+| **Derivar credencials ICE via HKDF** | Unicitat per sessió sense sobrecàrrega de transmissió. |
+| **Saltar compressió** | Dades binàries d'alta entropia s'expandeixen sota DEFLATE. |
+| **Saltar base64** | Codis QR suporten binari raw nativament. |
+| **3 candidats host + 1 srflx** | Gestiona VPN, tethering i escenaris entre xarxes. |
+| **Intercanvi d'identitat simètric** | Elimina condicions de carrera i complexitat d'assignació de rols. |
+| **mDNS com a UUID en slot IPv6** | Preserva format binari mentre suporta característiques de privadesa del navegador. |
+
+## El Viatge de la Compressió
+
+| Etapa | Bytes | Versió QR | Temps Escaneig |
+|-------|-------|------------|-----------|
+| SDP WebRTC Estàndard | 2.487 | v34-40 | 10+ sec |
+| Eliminar boilerplate | 820 | v20 | 6 sec |
+| Hardcodejar credencials | 770 | v20 | 6 sec |
+| Filtrar candidats | 210 | v9 | 3 sec |
+| Format binari | 91 | v5 | 1 sec |
+| Saltar base64 | **55-100** | **v4-5** | **&lt;0.5 sec** |
+
+**97,79% de reducció.** En les meves proves, codis QR Versió 4 s'escanejaven en menys d'un segon a través de condicions d'il·luminació variades—una millora significativa sobre els codis v30+ amb els quals vaig començar.
+
+Els codis QR fan servir **Nivell de Correcció d'Error L** (7% recuperació). Per a dades binàries mostrades en pantalles—alt contrast, sense dany físic—Nivell L minimitza la mida mentre roman escanejable. Nivells més alts (M al 15%, H al 30%) empenyerien codis v4 de tornada a v5-6, derrotant la feina d'optimització.
+
+## Una Nota sobre "Sense Servidor"
+
+El protocol funciona sense servidors a la mateixa xarxa local—tots dos dispositius usen les seves adreces IP LAN (candidats host) i es connecten directament.
+
+Per a escenaris entre xarxes (un dispositiu en Wi-Fi, un altre en 5G), necessites un **servidor STUN**[^15] per descobrir IPs públiques. STUN (Session Traversal Utilities for NAT) és simple: el teu dispositiu pregunta "quina és la meva IP pública?" i el servidor respon. Servidors STUN públics com `stun:stun.l.google.com:19302` són gratuïts, sense estat i no retransmeten les teves dades—només responen aquesta pregunta. No els desplegues ni els mantens.
+
+[^15]: RFC 8489 - Session Traversal Utilities for NAT (STUN), https://datatracker.ietf.org/doc/html/rfc8489
+
+**El QR Tango resol NAT simètric simple.** Això va ser un descobriment agradable. NAT (Traducció d'Adreces de Xarxa) és com el teu router permet a múltiples dispositius compartir una IP pública—però crea problemes per a connexions peer-to-peer perquè els dispositius no poden aconseguir-se directament. NAT Simètric[^16] és el tipus més estricte—no acceptarà paquets entrants fins que el dispositiu n'enviï un primer. La senyalització WebRTC tradicional lluita aquí perquè un costat espera l'altre.
+
+Però amb QWBP, tots dos dispositius tenen informació de connexió completa dels codis QR. Tots dos poden disparar paquets simultàniament. Quan el Dispositiu A envia al Dispositiu B, el NAT del Dispositiu A obre un "forat" per a trànsit de retorn. El Dispositiu B fa el mateix. Els paquets es creuen en vol, cada NAT veu trànsit sortint, i tots dos permeten les respostes a través. Això es diu "obertura simultània" o hole punching[^17]—i funciona perquè cap dels dispositius està esperant l'altre.
+
+Per a NAT simètric en *tots dos* costats, un **relay TURN** és encara necessari. TURN (Traversal Using Relays around NAT) és un servidor al qual tots dos dispositius es connecten, que després reenvia trànsit entre ells—un últim recurs quan la connexió directa és impossible. Cap parell pot predir quin port assignarà el seu NAT per a l'altre destí—és un bloqueig que fins i tot la transmissió simultània no pot resoldre. Això afecta potser el 10% de les connexions, majorment en WiFi empresarial i NAT de grau operador. Una limitació reconeguda.
+
+[^16]: RFC 4787 - Network Address Translation (NAT) Behavioral Requirements for Unicast UDP, https://datatracker.ietf.org/doc/html/rfc4787
+[^17]: RFC 5128 - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs), https://datatracker.ietf.org/doc/html/rfc5128
+
+## Quan Falla
+
+QWBP gestiona la majoria d'escenaris en la mateixa xarxa, però s'esperen algunes fallades:
+
+**Mateix Wi-Fi però no connecta:**
+- VPN activa en un dispositiu → prova desactivant VPN o usa hotspot mòbil
+- Firewall empresarial bloquejant trànsit entre parells → requereix relay TURN
+- Permís de xarxa local iOS denegat → revisa Ajustos > Privadesa > Xarxa Local
+
+**QR escanejat però no passa res:**
+- Has escanejat un QR de menú/URL → validació de byte màgic rebutja codis no QWBP
+- Sessió expirada → el timeout de 30 segons va passar; regenera QR i prova de nou
+
+**La connexió cau immediatament:**
+- Va fallar handshake DTLS → certificats poden haver-se regenerat; reinicia tots dos dispositius
+
+**Glare encara possible?**
+No. La comparació de fingerprint assigna rols determinísticament després que tots dos escanejos es completin. Si tots dos dispositius computen el mateix rol (només possible amb fingerprints idèntics = escanejant-te a tu mateix), el protocol llança un error.
+
+## El Que Vaig Aprendre
+
+**Compressió semàntica venç a compressió genèrica.** Entendre quines dades són *realment necessàries* aconsegueix una reducció del 97%. DEFLATE a l'SDP original: 60% reducció. Coneixement del domini: 97,79%.
+
+**Les "millors pràctiques" assumeixen interoperabilitat.** Les credencials ICE existeixen perquè les implementacions genèriques de WebRTC no poden confiar en el canal de senyalització. Quan controles tots dos extrems i autentiques via escaneig QR, el model d'amenaça canvia.
+
+**La física restringeix el disseny.** Vaig passar la tarda del dijous optimitzant la compressió abans d'adonar-me que el viatge de tornada—no la mida del payload—era el problema real. L'escaneig QR bidireccional no era un workaround; era l'únic canal sense servidor viable.
+
+**El diàleg venç al geni solitari.** El protocol va emergir de la conversa, no de l'aïllament. Més sobre això a baix.
+
+## Què Segueix
+
+El protocol funciona per a qualsevol projecte WebRTC que necessiti senyalització basada en QR. Les tècniques apliquen a qualsevol protocol on controlis tots dos extrems.
+
+He publicat una especificació formal, una llibreria TypeScript i una demo en viu:
+
+- **[Especificació QWBP](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md)** — La referència completa del protocol
+- **[qwbp a npm](https://www.npmjs.com/package/qwbp)** — Llibreria TypeScript/JavaScript drop-in
+- **[Demo en viu](https://magarcia.github.io/qwbp)** — Prova-ho entre dos dispositius ara mateix
+
+Si construeixes alguna cosa amb QWBP, m'encantaria saber-ho.
+
+## Rubber Ducking amb un Robot
+
+He de ser transparent sobre com es va unir aquest protocol: No el vaig dissenyar sol. El vaig dissenyar en conversa amb Claude, l'assistent d'IA d'Anthropic.
+
+Va començar amb un problema: "Tinc una PWA sense backend, i un usuari vol sincronitzar el seu progrés de joc a un telèfon nou." Vaig compartir això amb Claude, i vam començar a explorar opcions. WebRTC semblava prometedor però la sobrecàrrega de senyalització semblava insuperable. En el curs de diverses sessions—tarda de dijous fins a matí de divendres—la conversa va evolucionar de "això és impossible" a "espera, i si simplement...?"
+
+**El que la IA va fer bé:**
+
+- **Investigació a velocitat de conversa.** Quan vaig preguntar "puc hardcodejar credencials ICE?", Claude va treure les seccions rellevants d'RFC i va explicar les implicacions de seguretat en segons. Quan em vaig preguntar si Web Bluetooth podria funcionar, Claude el va eliminar sistemàticament citant limitacions específiques d'API de navegadors. Aquest tipus de busseig en RFC i investigació de compatibilitat m'hauria pres hores o dies.
+
+- **Va proporcionar resistència contra la qual empènyer.** Claude seguia insistint que la distinció "offer/answer" era fonamental per a WebRTC—necessites una oferta, necessites una resposta, així és com funciona. Aquesta resistència em va forçar a articular *per què* pensava que podíem fer-ho millor, fins que vaig preguntar: "Què passa si inferim els rols d'alguna cosa que ja està al QR?" Aquesta pregunta—meva, nascuda de la frustració amb la restricció—va portar a la comparació simètrica de fingerprints que va eliminar les condicions de carrera. A vegades la IA és més útil quan s'equivoca.
+
+- **Va validar decisions de seguretat.** Quan vaig proposar derivar credencials ICE del fingerprint DTLS, no estava segur de si estava introduint vulnerabilitats. Claude va analitzar el model d'amenaça i va confirmar que la veritable frontera de seguretat és el handshake DTLS, no la capa ICE—el canvi era segur.
+
+- **Va atrapar coses que se'm van passar.** La "paradoxa de la compressió" (DEFLATE fent el payload *més gran*) va emergir quan Claude va córrer els números reals. Jo hauria assumit que la compressió sempre ajuda.
+
+**El que la IA no va fer:**
+
+- **Prendre decisions arquitectòniques.** Cada elecció de disseny—el format binari, la UX QR Tango, els límits de candidats—va venir de mi preguntant "què passa si?" i Claude ajudant-me a avaluar els tradeoffs. La IA mai va dir "aquí està el disseny". Va dir "aquí està el que passa si fas X".
+
+- **Reemplaçar la intuïció de domini.** Saber que un payload de 55 bytes "se sent" correcte per a codis QR, o que els usuaris de més de 50 anys no toleraran seqüències de QR animats—això va venir de construir productes, no de promptejar.
+
+**L'avaluació honesta:**
+
+Sense IA, probablement m'hauria rendit després d'unes poques hores. Aquest no era un problema crític—podria haver dit a l'usuari "ho sento, això no és possible" i seguir endavant. Ningú estava demandant una solució. Però com que cada pregunta obtenia una resposta en segons en lloc d'hores, vaig seguir endavant. Cada petit avanç feia que la següent pregunta valgués la pena. L'impuls em va portar a través de problemes que hauria abandonat.
+
+Llegir RFCs, provar peculiaritats de navegadors, validar assumpcions de seguretat—setmanes de feina poc glamurosa. Amb IA, ho vaig comprimir en un dia. No perquè la IA sigui més intel·ligent, sinó perquè és *més ràpida en les parts avorrides*, i aquesta velocitat canvia el que se sent que val la pena intentar.
+
+L'experiència es va sentir com pair programming amb algú que ha llegit cada RFC però no té opinions. Jo vaig conduir l'arquitectura. Claude va conduir la investigació. Quan m'encallava, descrivia el problema en veu alta (rubber ducking), i Claude o confirmava el meu instint o assenyalava alguna cosa que se m'havia passat.
+
+## Apèndix: Referència Ràpida
+
+Per a l'especificació completa, veure l'[Especificació QWBP](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md). Aquí una referència ràpida per al format binari.
+
+### Estructura de Paquet
+
+```
+┌───────────┬─────────────┬──────────────────────┬────────────────────┐
+│ Màgic(1B) │ Versió (1B) │ Fingerprint (32B)    │ Candidats (Var)    │
+│ 0x51 'Q'  │ Versió:3b   │ SHA-256 DTLS         │ IPs empaq. binari  │
+│           │ Reservat:5b │ (32 bytes raw)       │ (7B IPv4, 19B IPv6)│
+└───────────┴─────────────┴──────────────────────┴────────────────────┘
+```
+
+### Disseny de Byte de Flags
+
+| Bits | Camp | Valors |
+|------|-------|--------|
+| 0-1 | Família Adreça | `00`=IPv4, `01`=IPv6, `10`=mDNS |
+| 2 | Protocol | `0`=UDP, `1`=TCP |
+| 3 | Tipus Candidat | `0`=Host, `1`=srflx |
+| 4-5 | Tipus TCP | `00`=passive, `01`=active, `10`=so |
+| 6-7 | Reservat | Ha de ser `0` |
+
+### Vector de Prova
+
+**Paquet vàlid mínim (1 candidat host IPv4):**
+```
+Hex: 51 00 [32 bytes fingerprint] 00 C0A80105 D431
+     ^  ^   ^                       ^  ^        ^
+     |  |   |                       |  |        Port 54321
+     |  |   |                       |  IP 192.168.1.5
+     |  |   |                       Flags: IPv4, UDP, host
+     |  |   Fingerprint DTLS (SHA-256)
+     |  Versió 0
+     Byte Màgic 'Q'
+
+Total: 1 + 1 + 32 + 1 + 4 + 2 = 41 bytes
+```
+
+**Línia de candidat descodificada:**
+```
+a=candidate:1 1 udp 2122260223 192.168.1.5 54321 typ host
+```
+
+<br/>
+
+---
+
+<br/>
+
+*Un usuari va fer una pregunta simple. Vaig passar una tarda i un matí parlant amb una IA sobre disseny de protocols. Ser desraonat va resultar ser l'única solució raonable.*
