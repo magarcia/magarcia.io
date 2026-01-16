@@ -1,0 +1,119 @@
+---
+title: "Per què he canviat de Bun a Deno per a les Skills de Claude Code"
+date: "2026-01-15"
+spoiler: "L'autoinstal·lació de Bun es trenca quan existeix qualsevol directori node_modules en les rutes pares—un problema per a skills portables. L'especificador npm: de Deno funciona a tot arreu, des de directoris de projecte fins a monorepos, sense sorpreses."
+tags:
+  - typescript
+  - deno
+  - bun
+  - ai
+  - developer-tools
+---
+
+La setmana passada vaig escriure sobre [utilitzar npx bun per escriure skills de Claude Code](/ca/writing-powerful-claude-code-skills-with-npx-bun) amb dependències de tercers. L'enfocament funcionava per a casos simples—scripts autocontinguts amb paquets que s'autoinstal·len, sense pas de compilació. Però després d'utilitzar-lo en entorns reals, vaig descobrir un problema significatiu.
+
+L'autoinstal·lació de Bun només funciona quan no existeix un directori `node_modules` en el directori de treball o en qualsevol directori pare. Quan `node_modules` està present en qualsevol lloc superior de l'arbre, Bun canvia a la resolució de mòduls estàndard de Node.js. Els especificadors de versió en les importacions—la característica principal que feia útil l'enfocament—llancen errors `VersionSpecifierNotAllowedHere`:
+
+```bash
+$ cd ~/my-project  # té node_modules/
+$ cat skill.ts
+#!/usr/bin/env -S npx -y bun
+import chalk from "chalk@^5.0.0"
+console.log(chalk.green("Hello"))
+
+$ ./skill.ts
+error: VersionSpecifierNotAllowedHere
+  import chalk from "chalk@^5.0.0"
+                    ^
+```
+
+Això es trenca en escenaris pràctics. Executar una skill des de dins d'un directori de projecte? Trencat. Treballar en un monorepo on algun avantpassat té `node_modules`? Trencat. El teu directori home casualment té un `node_modules` antic d'un experiment oblidat? Trencat.
+
+Per a skills de Claude Code portables que podrien executar-se des de qualsevol lloc, això és una trampa. L'script funciona quan el proves a `~/.claude/skills/`, després falla misteriosament quan Claude l'invoca des d'un directori diferent. El missatge d'error enfosqueix el problema—diagnosticar-lo requereix entendre la lògica de resolució interna de Bun.
+
+El crèdit per la solució és per a [J Edward Wynia](https://www.threads.net/@jwynia/post/DTgiB62DaxN), qui em va assenyalar cap a Deno en resposta a aquell article. Vaig oblidar per què em vaig saltar Deno inicialment—probablement perquè la sintaxi de Bun semblava més neta—però el suggeriment era correcte.
+
+## Per què Deno Resol Això
+
+L'especificador `npm:` de Deno funciona independentment de si existeix `node_modules`. Les dependències sempre van a la memòria cau global de Deno a `~/.cache/deno`. Els directoris `node_modules` locals no afecten la resolució. Comportament consistent a tot arreu.
+
+El mateix truc de distribució amb `npx` funciona. Igual que `npx -y bun`, pots utilitzar `npx -y deno` per executar Deno sense instal·lar-lo globalment. Qualsevol entorn amb npm pot executar scripts de Deno.
+
+Una advertència: si Deno ja està instal·lat al teu sistema, `npx -y deno` encara descarrega una còpia separada a la memòria cau de npm (~40MB, comparable al cost de primera descàrrega de ~100MB de Bun). Per a sistemes amb Deno preinstal·lat, utilitza `deno run` directament. L'enfocament `npx` apunta a la portabilitat—scripts que funcionen en qualsevol màquina amb npm, independentment del que estigui preinstal·lat.
+
+## L'Enfocament Deno
+
+Així és com es veu una skill basada en Deno:
+
+```typescript
+#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+
+import { parse } from "npm:csv-parse@^5.0/sync"
+import chalk from "npm:chalk@^5.0.0"
+import { z } from "npm:zod@^3.23"
+
+const inputPath = Deno.args[0]
+const content = await Deno.readTextFile(inputPath)
+
+const rows = parse(content, { columns: true })
+console.log(chalk.green(`Parsed ${rows.length} rows`))
+```
+
+El prefix `npm:` és més verbós que les importacions directes de Bun, però clarifica l'origen dels paquets. TypeScript funciona nativament. La fixació de versions viu a la ruta d'importació, igual que amb Bun. No es requereix `deno.json` ni mapa d'importació—les dependències es resolen directament des dels especificadors.
+
+Deno requereix banderes de permisos—`--allow-read`, `--allow-write`, `--allow-net`, etc. Més verbós que Bun, però declares exactament el que fa l'script. Per a skills que s'executen a través de Claude Code, els permisos explícits documenten a què pot accedir l'script. Per a entorns de confiança, `--allow-all` (o `-A`) se salta la cerimònia.
+
+## Compromisos
+
+| Aspecte | Bun | Deno |
+|--------|-----|------|
+| Sintaxi d'importació | `import x from "pkg@1.0"` | `import x from "npm:pkg@1.0"` |
+| Segur amb node_modules | No | Sí |
+| Rendiment brut | ~20-30% més ràpid | Lleugerament més lent |
+| TypeScript | Natiu | Natiu |
+| Model de permisos | Permissiu per defecte | Requereix banderes explícites |
+
+Bun és més ràpid. Temps d'inici, rendiment en execució, servei HTTP—Bun supera consistentment Deno als benchmarks. Si estàs construint una API de producció o una eina CLI crítica per al rendiment, això importa.
+
+Per a les skills de Claude Code, no importa.
+
+## Per Què el Rendiment No Importa Aquí
+
+El temps de pensament de l'agent empetiteix el temps d'execució de l'script. Claude triga de dos a cinc segons a decidir què fer a continuació. Una skill que s'executa en 50 mil·lisegons enfront de 80 mil·lisegons és efectivament el mateix—ambdós són instantanis comparats amb el bucle de decisió de l'agent.
+
+La fiabilitat importa més. Una skill que funciona des de qualsevol directori és més valuosa que una skill que és un 30% més ràpida però es trenca en monorepos.
+
+## Exemple Pràctic per a Skills
+
+L'estructura segueix el mateix patró de l'[article original](/ca/writing-powerful-claude-code-skills-with-npx-bun)—un `SKILL.md` apuntant a scripts executables. Els únics canvis són el shebang i les APIs específiques de Deno:
+
+```typescript
+#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+
+import { parse } from "npm:csv-parse@^5.0/sync"
+import * as XLSX from "npm:xlsx@^0.20"
+
+const inputPath = Deno.args[0]
+const content = await Deno.readTextFile(inputPath)
+
+const rows = parse(content, { columns: true })
+console.log(JSON.stringify(rows, null, 2))
+```
+
+Claude executa la skill, l'script accedeix als paquets npm, i tot funciona independentment del directori.
+
+## Conclusió
+
+El prefix `npm:` és més verbós. Les banderes de permisos afegeixen cerimònia. La sintaxi d'importació de Bun és més neta i ràpida. Però la fiabilitat de Deno a través de diferents estructures de directoris el converteix en la millor opció per a les skills de Claude Code.
+
+No has de depurar per què una skill funciona en un directori i falla en un altre. No has de documentar "això només funciona fora de projectes amb node_modules". L'script simplement funciona.
+
+Si Bun afegeix una bandera per forçar l'autoinstal·lació independentment de la presència de `node_modules`, ho reconsideraria. Fins aleshores, la consistència de Deno guanya.
+
+## Referències
+
+- [Escrivint Potents Skills de Claude Code amb npx bun](/ca/writing-powerful-claude-code-skills-with-npx-bun) — L'exploració original d'aquest enfocament
+- [Deno — Un runtime modern per a JavaScript i TypeScript](https://deno.land)
+- [Compatibilitat npm de Deno](https://docs.deno.com/runtime/fundamentals/node/#using-npm-packages) — Com funciona l'especificador `npm:`
+- [Documentació d'Autoinstal·lació de Bun](https://bun.sh/docs/runtime/auto-install) — Entenent quan s'activa l'autoinstal·lació
+- [Documentació de Skills de Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills)

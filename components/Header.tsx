@@ -15,7 +15,11 @@ const backTranslations: Record<string, string> = {
   ca: "TORNAR",
 };
 
-export default function Header({ main = false, lang = "en", slug }: HeaderProps) {
+export default function Header({
+  main = false,
+  lang = "en",
+  slug,
+}: HeaderProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -30,7 +34,7 @@ export default function Header({ main = false, lang = "en", slug }: HeaderProps)
       <div className="flex place-content-between items-center">
         {main ? (
           <Link to={homeUrl} aria-label="magarcia - Go to homepage">
-            <h1 className="text-2xl tracking-wide text-foreground dark:text-gray-200 font-normal relative inline-block px-2 py-1">
+            <h1 className="text-2xl tracking-wide text-foreground font-normal relative inline-block px-2 py-1">
               <span className="relative z-10 font-semibold">magarcia</span>
               <span
                 className="absolute inset-0 pointer-events-none header-highlight"
@@ -46,7 +50,7 @@ export default function Header({ main = false, lang = "en", slug }: HeaderProps)
             ← {backText}
           </Link>
         )}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center">
           <LanguageSelector lang={lang} slug={slug} />
           {mounted && <ThemeToggle />}
         </div>

@@ -7,50 +7,96 @@ const locales: Record<string, Locale> = {
   ca: ca,
 };
 
+const readingTimeTranslations: Record<string, (min: number) => string> = {
+  en: (min) => `${min} min read`,
+  es: (min) => `${min} min de lectura`,
+  ca: (min) => `${min} min de lectura`,
+};
+
+const tagPageTitleTranslations: Record<string, (n: number, t: string) => string> = {
+  en: (n, t) => `${n} post${n === 1 ? "" : "s"} tagged with "${t}"`,
+  es: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetado${n === 1 ? "" : "s"} con "${t}"`,
+  ca: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetat${n === 1 ? "" : "s"} amb "${t}"`,
+};
+
+const sectionTitles: Record<string, Record<string, string>> = {
+  about: { en: "About", es: "Sobre mí", ca: "Sobre mi" },
+  projects: { en: "Projects", es: "Proyectos", ca: "Projectes" },
+  writing: { en: "Writing", es: "Escritura", ca: "Escriptura" },
+};
+
+/**
+ * Formats a date string according to the specified language locale.
+ *
+ * @param dateString - ISO 8601 date string (e.g., "2024-01-15")
+ * @param lang - Language code ("en", "es", "ca"). Defaults to "en"
+ * @returns Formatted date string (e.g., "15 January 2024" for English)
+ *
+ * @example
+ * formatDate("2024-01-15", "en") // "15 January 2024"
+ * formatDate("2024-01-15", "es") // "15 enero 2024"
+ */
 export function formatDate(dateString: string, lang: string = "en"): string {
   const locale = locales[lang] || locales.en;
   return format(parseISO(dateString), "d MMMM yyyy", { locale });
 }
 
+/**
+ * Formats reading time in minutes with appropriate localized text.
+ * Automatically rounds up fractional minutes.
+ *
+ * @param minutes - Reading time in minutes (can be fractional)
+ * @param lang - Language code ("en", "es", "ca"). Defaults to "en"
+ * @returns Formatted reading time string
+ *
+ * @example
+ * formatReadingTime(5, "en")   // "5 min read"
+ * formatReadingTime(3.7, "es") // "4 min de lectura"
+ */
 export function formatReadingTime(
   minutes: number,
   lang: string = "en"
 ): string {
   const roundedMinutes = Math.ceil(minutes);
-
-  const translations: Record<string, (min: number) => string> = {
-    en: (min) => `${min} min read`,
-    es: (min) => `${min} min de lectura`,
-    ca: (min) => `${min} min de lectura`,
-  };
-
-  const formatter = translations[lang] || translations.en;
+  const formatter = readingTimeTranslations[lang] || readingTimeTranslations.en;
   return formatter(roundedMinutes);
 }
 
+/**
+ * Formats a tag page title with post count and tag name, handling pluralization.
+ *
+ * @param count - Number of posts
+ * @param tag - Tag name/slug
+ * @param lang - Language code ("en", "es", "ca"). Defaults to "en"
+ * @returns Formatted title with proper pluralization
+ *
+ * @example
+ * formatTagPageTitle(1, "react", "en")  // '1 post tagged with "react"'
+ * formatTagPageTitle(5, "react", "es")  // '5 posts etiquetados con "react"'
+ */
 export function formatTagPageTitle(
   count: number,
   tag: string,
   lang: string = "en"
 ): string {
-  const translations: Record<string, (n: number, t: string) => string> = {
-    en: (n, t) => `${n} post${n === 1 ? "" : "s"} tagged with "${t}"`,
-    es: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetado${n === 1 ? "" : "s"} con "${t}"`,
-    ca: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetat${n === 1 ? "" : "s"} amb "${t}"`,
-  };
-
-  const formatter = translations[lang] || translations.en;
+  const formatter = tagPageTitleTranslations[lang] || tagPageTitleTranslations.en;
   return formatter(count, tag);
 }
 
+/**
+ * Gets the localized title for a site section.
+ *
+ * @param section - Section identifier ("about", "projects", or "writing")
+ * @param lang - Language code ("en", "es", "ca"). Defaults to "en"
+ * @returns Localized section title
+ *
+ * @example
+ * getSectionTitle("about", "en") // "About"
+ * getSectionTitle("about", "es") // "Sobre mí"
+ */
 export function getSectionTitle(
   section: "about" | "projects" | "writing",
   lang: string = "en"
 ): string {
-  const titles: Record<string, Record<string, string>> = {
-    about: { en: "About", es: "Sobre mí", ca: "Sobre mi" },
-    projects: { en: "Projects", es: "Proyectos", ca: "Projectes" },
-    writing: { en: "Writing", es: "Escritura", ca: "Escriptura" },
-  };
-  return titles[section]?.[lang] || titles[section]?.en || section;
+  return sectionTitles[section]?.[lang] || sectionTitles[section]?.en || section;
 }

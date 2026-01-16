@@ -5,6 +5,7 @@ import Table, {
   TableBody,
   TableRow,
   TableCell,
+  TableHeaderCell,
 } from "@/components/Table";
 
 describe("Table Components", () => {
@@ -213,6 +214,69 @@ describe("Table Components", () => {
     });
   });
 
+  describe("TableHeaderCell", () => {
+    it("renders th element with default scope='col'", () => {
+      const { container } = render(
+        <table>
+          <thead>
+            <tr>
+              <TableHeaderCell>Header</TableHeaderCell>
+            </tr>
+          </thead>
+        </table>
+      );
+
+      const th = container.querySelector("th");
+      expect(th).toBeInTheDocument();
+      expect(th).toHaveAttribute("scope", "col");
+      expect(th).toHaveClass(
+        "block",
+        "md:table-cell",
+        "relative",
+        "py-3",
+        "px-4",
+        "md:px-4",
+        "font-medium",
+        "text-foreground"
+      );
+    });
+
+    it("allows scope attribute to be overridden", () => {
+      const { container } = render(
+        <table>
+          <tbody>
+            <tr>
+              <TableHeaderCell scope="row">Row Header</TableHeaderCell>
+              <td>Data</td>
+            </tr>
+          </tbody>
+        </table>
+      );
+
+      const th = container.querySelector("th");
+      expect(th).toBeInTheDocument();
+      expect(th).toHaveAttribute("scope", "row");
+    });
+
+    it("passes through additional props", () => {
+      const { container } = render(
+        <table>
+          <thead>
+            <tr>
+              <TableHeaderCell data-testid="custom-header" className="extra-class">
+                Header
+              </TableHeaderCell>
+            </tr>
+          </thead>
+        </table>
+      );
+
+      const th = screen.getByTestId("custom-header");
+      expect(th).toBeInTheDocument();
+      expect(th).toHaveClass("extra-class");
+    });
+  });
+
   describe("Table Components Integration", () => {
     it("renders complete table structure correctly", () => {
       render(
@@ -242,6 +306,80 @@ describe("Table Components", () => {
       expect(screen.getByText("Row 1 Cell 2")).toBeInTheDocument();
       expect(screen.getByText("Row 2 Cell 1")).toBeInTheDocument();
       expect(screen.getByText("Row 2 Cell 2")).toBeInTheDocument();
+    });
+
+    it("applies role='table' attribute for accessibility", () => {
+      render(
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>Content</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      );
+
+      const table = screen.getByRole("table");
+      expect(table).toBeInTheDocument();
+      expect(table).toHaveAttribute("role", "table");
+    });
+  });
+
+  describe("Responsive data-label functionality", () => {
+    it("sets data-label attributes on table cells based on header text", async () => {
+      const { container } = render(
+        <Table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>City</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>John</td>
+              <td>30</td>
+              <td>NYC</td>
+            </tr>
+            <tr>
+              <td>Jane</td>
+              <td>25</td>
+              <td>LA</td>
+            </tr>
+          </tbody>
+        </Table>
+      );
+
+      // Wait for requestAnimationFrame to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const cells = container.querySelectorAll("tbody td");
+      expect(cells[0]).toHaveAttribute("data-label", "Name");
+      expect(cells[1]).toHaveAttribute("data-label", "Age");
+      expect(cells[2]).toHaveAttribute("data-label", "City");
+      expect(cells[3]).toHaveAttribute("data-label", "Name");
+      expect(cells[4]).toHaveAttribute("data-label", "Age");
+      expect(cells[5]).toHaveAttribute("data-label", "City");
+    });
+
+    it("handles tables without headers gracefully", async () => {
+      const { container } = render(
+        <Table>
+          <tbody>
+            <tr>
+              <td>Cell 1</td>
+              <td>Cell 2</td>
+            </tr>
+          </tbody>
+        </Table>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const cells = container.querySelectorAll("tbody td");
+      expect(cells[0]).not.toHaveAttribute("data-label");
+      expect(cells[1]).not.toHaveAttribute("data-label");
     });
   });
 });

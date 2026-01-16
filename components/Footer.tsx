@@ -8,6 +8,7 @@ export default function Footer() {
             href="https://bsky.app/profile/mgarcia.bsky.social"
             target="_blank"
             rel="me noopener noreferrer"
+            aria-label="Visit Martin Garcia on Bluesky (opens in new tab)"
           >
             bluesky
           </a>
@@ -17,6 +18,7 @@ export default function Footer() {
             href="https://github.com/magarcia"
             target="_blank"
             rel="me noopener noreferrer"
+            aria-label="Visit Martin Garcia on GitHub (opens in new tab)"
           >
             github
           </a>
@@ -26,6 +28,7 @@ export default function Footer() {
             href="https://www.linkedin.com/in/martingarciamonterde/"
             target="_blank"
             rel="me noopener noreferrer"
+            aria-label="Visit Martin Garcia on LinkedIn (opens in new tab)"
           >
             linkedin
           </a>
@@ -35,8 +38,7 @@ export default function Footer() {
           <a
             className="hover:text-foreground transition-colors inline-block py-2 md:py-0"
             href="/rss.xml"
-            target="_blank"
-            rel="noopener noreferrer"
+            aria-label="Subscribe to RSS feed"
           >
             rss
           </a>

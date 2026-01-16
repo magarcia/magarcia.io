@@ -21,8 +21,9 @@ describe("ThemeToggle", () => {
       });
 
       render(<ThemeToggle />);
-      expect(screen.getByTestId("sun-icon")).toBeInTheDocument();
-      expect(screen.queryByTestId("moon-icon")).not.toBeInTheDocument();
+      const button = screen.getByRole("button");
+      // Sun icon has a circle element, moon icon does not
+      expect(button.querySelector("circle")).toBeInTheDocument();
     });
 
     it("shows moon icon when theme is light (to switch to dark)", () => {
@@ -33,8 +34,10 @@ describe("ThemeToggle", () => {
       });
 
       render(<ThemeToggle />);
-      expect(screen.getByTestId("moon-icon")).toBeInTheDocument();
-      expect(screen.queryByTestId("sun-icon")).not.toBeInTheDocument();
+      const button = screen.getByRole("button");
+      // Moon icon has no circle element, only a path
+      expect(button.querySelector("circle")).not.toBeInTheDocument();
+      expect(button.querySelector("svg path")).toBeInTheDocument();
     });
   });
 

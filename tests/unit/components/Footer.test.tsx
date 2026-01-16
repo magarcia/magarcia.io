@@ -65,6 +65,36 @@ describe("Footer", () => {
     });
   });
 
+  describe("Accessibility", () => {
+    it("Bluesky link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const blueskyLink = screen.getByRole("link", { name: /bluesky/i });
+      expect(blueskyLink).toHaveAttribute("aria-label", "Visit Martin Garcia on Bluesky (opens in new tab)");
+    });
+
+    it("GitHub link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const githubLink = screen.getByRole("link", { name: /github/i });
+      expect(githubLink).toHaveAttribute("aria-label", "Visit Martin Garcia on GitHub (opens in new tab)");
+    });
+
+    it("LinkedIn link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const linkedinLink = screen.getByRole("link", { name: /linkedin/i });
+      expect(linkedinLink).toHaveAttribute("aria-label", "Visit Martin Garcia on LinkedIn (opens in new tab)");
+    });
+
+    it("RSS link has descriptive aria-label", () => {
+      render(<Footer />);
+
+      const rssLink = screen.getByRole("link", { name: /rss/i });
+      expect(rssLink).toHaveAttribute("aria-label", "Subscribe to RSS feed");
+    });
+  });
+
   describe("RSS Link", () => {
     it("renders RSS link with correct href", () => {
       render(<Footer />);
@@ -74,18 +104,11 @@ describe("Footer", () => {
       expect(rssLink).toHaveAttribute("href", "/rss.xml");
     });
 
-    it("RSS link opens in new tab", () => {
+    it("RSS link opens in same tab (internal resource)", () => {
       render(<Footer />);
 
       const rssLink = screen.getByRole("link", { name: /rss/i });
-      expect(rssLink).toHaveAttribute("target", "_blank");
-    });
-
-    it("RSS link has security attributes", () => {
-      render(<Footer />);
-
-      const rssLink = screen.getByRole("link", { name: /rss/i });
-      expect(rssLink).toHaveAttribute("rel", "noopener noreferrer");
+      expect(rssLink).not.toHaveAttribute("target");
     });
   });
 

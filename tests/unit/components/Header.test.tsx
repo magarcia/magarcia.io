@@ -143,7 +143,8 @@ describe("Header", () => {
     it("renders controls container with flex layout", () => {
       const { container } = render(<Header />);
 
-      const controlsContainer = container.querySelector(".flex.items-center.gap-4");
+      // The controls container (LanguageSelector + ThemeToggle wrapper) uses flex layout
+      const controlsContainer = container.querySelector("header .flex.items-center:not(.place-content-between)");
       expect(controlsContainer).toBeInTheDocument();
     });
 
