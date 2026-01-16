@@ -1,9 +1,10 @@
 import { useTheme } from "~/hooks/useTheme";
-import { Moon, Sun } from "react-feather";
+import { SunIcon } from "./ui/sun";
+import { MoonIcon } from "./ui/moon";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
-  const Icon = theme === "dark" ? Sun : Moon;
+  const Icon = theme === "dark" ? SunIcon : MoonIcon;
   const color =
     theme === "dark" ? "hover:text-yellow-300" : "hover:text-purple-500";
 

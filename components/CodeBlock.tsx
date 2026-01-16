@@ -1,6 +1,10 @@
 import { Copy } from "lucide-react";
-import Highlight, { defaultProps } from "prism-react-renderer";
+import HighlightImport, { defaultProps } from "prism-react-renderer";
 import { toast } from "@/hooks/use-toast";
+
+// Handle ESM/CJS interop - prism-react-renderer may export { default } in Node.js SSR
+const Highlight =
+  (HighlightImport as unknown as { default?: typeof HighlightImport }).default ?? HighlightImport;
 import {
   Tooltip,
   TooltipContent,

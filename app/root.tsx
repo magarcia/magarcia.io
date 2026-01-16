@@ -1,10 +1,4 @@
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { LinksFunction } from "react-router";
 
 import { themeScript } from "~/hooks/useTheme";
@@ -60,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className="text-[#1A1A1A] transition-colors duration-300 ease-in-out bg-white dark:bg-gray-900 dark:text-gray-200 motion-reduce:transition-none"
+        className="text-foreground transition-colors duration-300 ease-in-out bg-white dark:bg-gray-900 dark:text-gray-200 motion-reduce:transition-none"
         suppressHydrationWarning
       >
         {children}
