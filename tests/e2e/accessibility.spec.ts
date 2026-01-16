@@ -109,21 +109,18 @@ test.describe("Keyboard Navigation", () => {
     const homePage = new HomePage(page);
     await homePage.goto();
 
-    // Tab to the language selector
+    // Get the language selector
     const languageSelector = homePage.header.getLanguageSelector();
 
-    // Focus and open with Enter
+    // Focus the selector - this should expand the language links via focus-within
     await languageSelector.focus();
-    await page.keyboard.press("Enter");
+    // Wait for the expansion animation
+    await page.waitForTimeout(350);
 
-    // Wait for menu to be visible
-    await page.waitForSelector('[role="menu"]', { state: "visible" });
-
-    // Menu items should be visible
-    await expect(page.getByRole("menuitem", { name: "English" })).toBeVisible();
-
-    // Close with Escape
-    await page.keyboard.press("Escape");
+    // Language links should be visible when focused
+    await expect(languageSelector.getByRole("link", { name: "EN" })).toBeVisible();
+    await expect(languageSelector.getByRole("link", { name: "ES" })).toBeVisible();
+    await expect(languageSelector.getByRole("link", { name: "CA" })).toBeVisible();
   });
 
   test("theme toggle should be keyboard accessible", async ({ page }) => {

@@ -13,7 +13,7 @@ export class Header {
     this.themeToggle = page.getByTestId("theme-toggle");
     this.languageSelector = page.getByTestId("language-selector");
     this.siteLogo = page.getByRole("link", { name: "magarcia" });
-    this.backLink = page.getByRole("link", { name: /back|volver|tornar/i });
+    this.backLink = page.getByRole("link", { name: /^← (back|volver|tornar)$/i });
   }
 
   async toggleTheme(): Promise<void> {
@@ -21,19 +21,22 @@ export class Header {
   }
 
   async openLanguageMenu(): Promise<void> {
-    await this.languageSelector.click();
+    // Hover over the language selector to expand it
+    await this.languageSelector.hover();
+    // Wait for the nav to expand (it animates from max-w-0 to max-w-24)
+    await this.page.waitForTimeout(350);
   }
 
   async selectLanguage(lang: Language): Promise<void> {
     await this.openLanguageMenu();
-    // Wait for menu to be fully visible
-    await this.page.waitForSelector('[role="menu"]', { state: "visible" });
     const langLabels: Record<Language, string> = {
-      en: "English",
-      es: "Español",
-      ca: "Català",
+      en: "EN",
+      es: "ES",
+      ca: "CA",
     };
-    await this.page.getByRole("menuitem", { name: langLabels[lang] }).click();
+    await this.languageSelector
+      .getByRole("link", { name: langLabels[lang] })
+      .click();
   }
 
   async clickLogo(): Promise<void> {
