@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse, useRouteError, useLocation } from "react-router";
 import type { LinksFunction } from "react-router";
 
 import { themeScript } from "~/hooks/useTheme";
@@ -10,6 +10,7 @@ import {
 import globalStyles from "~/styles/global.css?url";
 import highlightStyles from "~/styles/highlight.css?url";
 import { Toaster } from "~/components/ui/toaster";
+import Header from "~/components/Header";
 
 export const links: LinksFunction = () => [
   {
@@ -76,5 +77,66 @@ export function HydrateFallback() {
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-lg">Loading...</div>
     </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  const location = useLocation();
+
+  // Detect language from URL
+  const pathname = location.pathname;
+  const lang = pathname.startsWith("/es/") || pathname === "/es"
+    ? "es"
+    : pathname.startsWith("/ca/") || pathname === "/ca"
+    ? "ca"
+    : "en";
+
+  let title = "Oops!";
+  let message = "Something went wrong.";
+  let statusCode = 500;
+
+  if (isRouteErrorResponse(error)) {
+    statusCode = error.status;
+
+    if (error.status === 404) {
+      title = "Page Not Found";
+      message = "Sorry, the page you're looking for doesn't exist.";
+    } else if (error.status === 500) {
+      title = "Server Error";
+      message = "Something went wrong on our end.";
+    } else {
+      title = `${error.status} - ${error.statusText}`;
+      message = error.data || "An error occurred.";
+    }
+  } else if (error instanceof Error) {
+    // React Router throws "No result found for routeId" errors when a loader
+    // throws a 404 Response in static mode - treat these as 404s
+    if (error.message.includes("No result found for routeId")) {
+      statusCode = 404;
+      title = "Page Not Found";
+      message = "Sorry, the page you're looking for doesn't exist.";
+    } else {
+      message = error.message;
+    }
+  }
+
+  return (
+    <>
+      <Header lang={lang} />
+      <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-12 md:mb-24">
+        <div className="text-center py-20">
+          <h1 className="font-heading text-6xl md:text-8xl text-foreground mb-4">
+            {statusCode}
+          </h1>
+          <h2 className="text-2xl md:text-3xl font-normal text-foreground mb-6">
+            {title}
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            {message}
+          </p>
+        </div>
+      </main>
+    </>
   );
 }

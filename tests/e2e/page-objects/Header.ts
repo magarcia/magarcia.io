@@ -1,4 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import type { Language } from "../helpers/test-helpers";
 
 export class Header {
@@ -21,19 +22,26 @@ export class Header {
   }
 
   async openLanguageMenu(): Promise<void> {
-    await this.languageSelector.click();
+    // Use focus to reveal language options (triggers :focus-within CSS)
+    // This is more reliable than hover for automated testing
+    const enLink = this.languageSelector.getByRole("link", { name: "EN" });
+    await expect(async () => {
+      // Focus the link to trigger focus-within (works even if not visible yet)
+      await enLink.focus({ timeout: 500 });
+      await expect(enLink).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 5000 });
   }
 
   async selectLanguage(lang: Language): Promise<void> {
     await this.openLanguageMenu();
-    // Wait for menu to be fully visible
-    await this.page.waitForSelector('[role="menu"]', { state: "visible" });
     const langLabels: Record<Language, string> = {
-      en: "English",
-      es: "Español",
-      ca: "Català",
+      en: "EN",
+      es: "ES",
+      ca: "CA",
     };
-    await this.page.getByRole("menuitem", { name: langLabels[lang] }).click();
+    await this.languageSelector
+      .getByRole("link", { name: langLabels[lang] })
+      .click();
   }
 
   async clickLogo(): Promise<void> {
