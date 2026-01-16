@@ -50,7 +50,7 @@ export default function CodeBlock({
   return (
     <div
       {...props}
-      className="group relative my-8 -mx-8 md:-mx-16 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded"
+      className="group relative my-8 -mx-8 md:-mx-16 overflow-hidden bg-code-bg rounded"
     >
       <TooltipProvider>
         <Tooltip>

@@ -118,6 +118,34 @@
   .token.inserted {
     color: green;
   }
+
+  /* Light mode overrides for better contrast */
+  :root:not(.dark) .token.punctuation {
+    color: #6b6b6b;
+  }
+
+  :root:not(.dark) .token.function {
+    color: #795e00;
+  }
+
+  :root:not(.dark) .token.property,
+  :root:not(.dark) .token.constant,
+  :root:not(.dark) .token.symbol {
+    color: #9a6700;
+  }
+
+  :root:not(.dark) .token.number {
+    color: #4a7a3d;
+  }
+
+  :root:not(.dark) .token.operator {
+    color: #5c5c5c;
+  }
+
+  :root:not(.dark) .token.attr-name {
+    color: #2a6fa8;
+  }
+
   /* TypeScript */
   .language-jsx
     .token:not(.keyword)

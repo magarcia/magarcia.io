@@ -23,6 +23,23 @@ export const links: LinksFunction = () => [
     crossOrigin: "anonymous",
   },
   {
+    rel: "preconnect",
+    href: "https://s2.svgbox.net",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "preload",
+    href: "https://s2.svgbox.net/pen-brushes.svg?ic=brush-1&color=rgba(255,225,0,0.7)",
+    as: "image",
+    type: "image/svg+xml",
+  },
+  {
+    rel: "preload",
+    href: "https://s2.svgbox.net/pen-brushes.svg?ic=brush-1&color=rgba(168,85,247,0.7)",
+    as: "image",
+    type: "image/svg+xml",
+  },
+  {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap",
   },
@@ -55,7 +72,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className="text-foreground transition-colors duration-300 ease-in-out bg-white dark:bg-gray-900 dark:text-gray-200 motion-reduce:transition-none"
+        className="text-foreground transition-colors duration-300 ease-in-out bg-background motion-reduce:transition-none"
         suppressHydrationWarning
       >
         {children}

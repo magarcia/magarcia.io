@@ -4,65 +4,69 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 180 3% 96%;        /* #f5f6f6 - iA Writer warm off-white */
+    --foreground: 0 0% 26%;          /* #424242 - iA Writer dark gray */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 180 3% 96%;
+    --card-foreground: 0 0% 26%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 180 3% 96%;
+    --popover-foreground: 0 0% 26%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 26%;
+    --primary-foreground: 180 3% 96%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 180 3% 92%;         /* slightly darker than bg */
+    --secondary-foreground: 0 0% 26%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 180 3% 92%;
+    --muted-foreground: 0 0% 46%;    /* lighter gray for muted text */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 180 3% 92%;
+    --accent-foreground: 0 0% 26%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 180 3% 88%;            /* subtle border */
+    --input: 180 3% 88%;
+    --ring: 0 0% 26%;
 
     --radius: 0.5rem;
+
+    --code-bg: 210 3% 92%;           /* #ebeced - code block bg, slightly darker */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 200 5% 12%;        /* #1d1f20 - iA Writer very dark gray */
+    --foreground: 135 4% 78%;        /* #c5c9c6 - iA Writer light gray */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 200 5% 12%;
+    --card-foreground: 135 4% 78%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 200 5% 12%;
+    --popover-foreground: 135 4% 78%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 135 4% 78%;
+    --primary-foreground: 200 5% 12%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 200 5% 16%;         /* slightly lighter than bg */
+    --secondary-foreground: 135 4% 78%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 200 5% 16%;
+    --muted-foreground: 135 4% 58%;  /* dimmer gray for muted */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 200 5% 16%;
+    --accent-foreground: 135 4% 78%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 200 5% 20%;            /* subtle border */
+    --input: 200 5% 20%;
+    --ring: 135 4% 78%;
+
+    --code-bg: 180 5% 14%;           /* #222424 - iA Writer code block bg */
   }
 }
 
@@ -71,13 +75,10 @@
     @apply border-border;
   }
   html {
-    @apply bg-white;
-  }
-  html.dark {
-    @apply bg-gray-900;
+    @apply bg-background;
   }
   body {
-    @apply bg-white dark:bg-gray-900 text-foreground font-serif;
+    @apply bg-background text-foreground font-serif;
   }
   em,
   i {
@@ -149,29 +150,19 @@ mark {
   );
 }
 
-/* Header title highlight - marker effect */
+/* Header title highlight - SVG brush marker effect */
 .header-highlight {
-  top: 0.35em;
-  left: -0.1em;
-  right: -0.1em;
-  bottom: 0.15em;
-  border-radius: 0.8em 0.3em;
-  transform: rotate(-0.5deg) skewX(-1deg);
-  background: linear-gradient(
-    to right,
-    rgba(255, 225, 0, 0.1),
-    rgba(255, 225, 0, 0.7) 4%,
-    rgba(255, 225, 0, 0.3)
-  );
+  top: 0;
+  left: -6px;
+  right: -6px;
+  bottom: 0;
+  background-image: url("https://s2.svgbox.net/pen-brushes.svg?ic=brush-1&color=rgba(255,225,0,0.7)");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
 .dark .header-highlight {
-  background: linear-gradient(
-    to right,
-    rgba(168, 85, 247, 0.1),
-    rgba(168, 85, 247, 0.7) 4%,
-    rgba(168, 85, 247, 0.3)
-  );
+  background-image: url("https://s2.svgbox.net/pen-brushes.svg?ic=brush-1&color=rgba(168,85,247,0.7)");
 }
 
 /* Typography hierarchy */
@@ -236,7 +227,7 @@ h6 {
 }
 
 .prose code {
-  @apply font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-[15px] text-foreground;
+  @apply font-mono bg-code-bg px-1.5 py-0.5 rounded text-[15px] text-foreground;
 }
 
 .prose h1,
@@ -247,11 +238,11 @@ h6 {
 }
 
 .prose pre {
-  @apply bg-gray-100 dark:bg-gray-800;
+  @apply bg-code-bg;
 }
 
 .prose blockquote {
-  @apply border-l-2 italic border-border bg-gray-50 dark:bg-gray-800 py-2 px-6 my-6 text-muted-foreground;
+  @apply border-l-2 italic border-border bg-secondary py-2 px-6 my-6 text-muted-foreground;
 }
 
 .prose ul,
@@ -343,7 +334,7 @@ h6 {
   }
 
   .prose tr {
-    @apply block mb-4 border border-border rounded-md p-3 bg-gray-50 dark:bg-gray-900;
+    @apply block mb-4 border border-border rounded-md p-3 bg-secondary;
   }
 
   .prose td {
