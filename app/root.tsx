@@ -91,17 +91,25 @@ export function ErrorBoundary() {
     statusCode = error.status;
 
     if (error.status === 404) {
-      title = "404 - Page Not Found";
+      title = "Page Not Found";
       message = "Sorry, the page you're looking for doesn't exist.";
     } else if (error.status === 500) {
-      title = "500 - Server Error";
+      title = "Server Error";
       message = "Something went wrong on our end.";
     } else {
       title = `${error.status} - ${error.statusText}`;
       message = error.data || "An error occurred.";
     }
   } else if (error instanceof Error) {
-    message = error.message;
+    // React Router throws "No result found for routeId" errors when a loader
+    // throws a 404 Response in static mode - treat these as 404s
+    if (error.message.includes("No result found for routeId")) {
+      statusCode = 404;
+      title = "Page Not Found";
+      message = "Sorry, the page you're looking for doesn't exist.";
+    } else {
+      message = error.message;
+    }
   }
 
   return (
@@ -115,15 +123,9 @@ export function ErrorBoundary() {
           <h2 className="text-2xl md:text-3xl font-normal text-foreground mb-6">
             {title}
           </h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-muted-foreground">
             {message}
           </p>
-          <Link
-            to="/"
-            className="inline-block px-6 py-3 bg-foreground text-background hover:bg-muted-foreground transition-colors rounded"
-          >
-            Go back home
-          </Link>
         </div>
       </main>
     </>
