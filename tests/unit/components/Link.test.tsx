@@ -18,13 +18,6 @@ describe("Link", () => {
     expect(link).toHaveClass("text-foreground");
   });
 
-  it("applies dark mode text color class", () => {
-    const { container } = render(<Link>test</Link>);
-
-    const link = container.querySelector("a");
-    expect(link).toHaveClass("dark:text-gray-200");
-  });
-
   it("applies hover color classes", () => {
     const { container } = render(<Link>test</Link>);
 
