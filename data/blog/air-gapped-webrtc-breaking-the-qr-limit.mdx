@@ -156,7 +156,7 @@ I raised the limit to 3 "host" candidates (local network addresses) plus 1 "srfl
 
 I stared at the minified JSON I was transmitting. Brackets. Quotes. Key names. The string `"type"` appeared in every message—5 bytes to encode something that could only ever be "offer" or "answer". The fingerprint was a 95-character hex string with colons, but underneath it was just 32 bytes of raw data.
 
-JSON is designed for *interoperability*—human-readable, self-describing, universally parseable. But I controlled both endpoints and wrote encoder and decoder. Nothing about this needed to be human-readable or self-describing.
+JSON is designed for *interoperability*—human-readable, self-describing, universally parseable. But I controlled both endpoints and wrote encoder and decoder. Nothing needed to be human-readable or self-describing.
 
 I remembered studying low-level networking—how TCP headers pack flags, sequence numbers, and ports into fixed positions. No field names. No delimiters. Just bytes at known offsets. What if I designed a packet format instead of a JSON object?
 
@@ -490,7 +490,7 @@ This two-stage architecture—small bootstrap leading to full capability—follo
 
 The implications went beyond Palabreja:
 
-- **Video calls without servers:** Scan a QR code, establish the bootstrap channel, negotiate full video through it. *(Yes, I see the irony—setting up a video call while standing face-to-face.)*
+- **Video calls without servers:** Scan a QR code, establish the bootstrap channel, negotiate full video through it. *(The irony of setting up a video call face-to-face is not lost on me.)*
 - **File sharing:** The DataChannel can stream files of any size. A 55-byte QR becomes a serverless AirDrop.
 - **Device pairing:** IoT devices, smart home setup, any scenario where two devices need to establish trust and a secure channel.
 - **Multiplayer games:** Bootstrap a mesh network between players in the same room. No game server needed for local multiplayer.
@@ -499,7 +499,7 @@ A 55-100 byte bootstrap (a 99.12% reduction from the 6,255-byte video SDP) unloc
 
 This wasn't a hack anymore. It was a protocol worth naming.
 
-I called it the **QR-WebRTC Bootstrap Protocol (QWBP)** — pronounced "cue-web-pee" (`/kjuː wɛb piː/`) — well, Claude suggested it and I liked it.
+I called it the **QR-WebRTC Bootstrap Protocol (QWBP)** — pronounced "cue-web-pee" (`/kjuː wɛb piː/`). Claude suggested the name; I liked it.
 
 ## Why Not Animated QRs?
 
