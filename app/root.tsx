@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, Link, isRouteErrorResponse, useRouteError } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse, useRouteError } from "react-router";
 import type { LinksFunction } from "react-router";
 
 import { themeScript } from "~/hooks/useTheme";
