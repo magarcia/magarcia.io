@@ -43,7 +43,7 @@ describe("mdxComponents", () => {
           className: "language-typescript",
           children: "const x: string = 'test';",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
@@ -54,7 +54,7 @@ describe("mdxComponents", () => {
           className: "language-typescript",
           children: "const x = 1;",
         },
-      };
+      } as React.ReactNode;
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("mdxComponents", () => {
         props: {
           children: "plain text",
         },
-      };
+      } as React.ReactNode;
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe("mdxComponents", () => {
           className: "language-javascript",
           children: "line1\nline2\nline3",
         },
-      };
+      } as React.ReactNode;
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("pre")).toBeInTheDocument();
@@ -99,7 +99,7 @@ describe("mdxComponents", () => {
           className: "language-typescript:1,3,5",
           children: "code",
         },
-      };
+      } as React.ReactNode;
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
@@ -111,7 +111,7 @@ describe("mdxComponents", () => {
           className: "language-javascript:3-5",
           children: "line1\nline2\nline3\nline4\nline5",
         },
-      };
+      } as React.ReactNode;
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("[data-language='javascript']")).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe("mdxComponents", () => {
           className: "language-python:1,3-5,7",
           children: "line1\nline2\nline3\nline4\nline5\nline6\nline7",
         },
-      };
+      } as React.ReactNode;
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("[data-language='python']")).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe("mdxComponents", () => {
           className: "language-javascript:abc",
           children: "console.log('test');",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
@@ -150,7 +150,7 @@ describe("mdxComponents", () => {
           className: "language-javascript:5-3",
           children: "line1\nline2\nline3\nline4\nline5",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
@@ -161,7 +161,7 @@ describe("mdxComponents", () => {
           className: "language-javascript:",
           children: "console.log('test');",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
@@ -172,7 +172,7 @@ describe("mdxComponents", () => {
           className: "language-javascript:999",
           children: "console.log('test');",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
@@ -183,7 +183,7 @@ describe("mdxComponents", () => {
           className: null,
           children: "console.log('test');",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
@@ -194,7 +194,7 @@ describe("mdxComponents", () => {
           className: undefined,
           children: "console.log('test');",
         },
-      };
+      } as React.ReactNode;
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });

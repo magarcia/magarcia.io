@@ -10,15 +10,26 @@ import List from "./List";
 import Table, { TableHead, TableBody, TableRow, TableCell, TableHeaderCell } from "./Table";
 
 // Component wrappers for react-markdown
-const H1 = (props: any) => <Heading level={1} {...props} />;
-const H2 = (props: any) => <Heading level={2} {...props} />;
-const H3 = (props: any) => <Heading level={3} {...props} />;
-const H4 = (props: any) => <Heading level={4} {...props} />;
-const OrderedList = (props: any) => <List ordered={true} {...props} />;
+const H1 = (props: React.ComponentPropsWithoutRef<'h1'>) => <Heading level={1} {...(props as Parameters<typeof Heading>[0])} />;
+const H2 = (props: React.ComponentPropsWithoutRef<'h2'>) => <Heading level={2} {...(props as Parameters<typeof Heading>[0])} />;
+const H3 = (props: React.ComponentPropsWithoutRef<'h3'>) => <Heading level={3} {...(props as Parameters<typeof Heading>[0])} />;
+const H4 = (props: React.ComponentPropsWithoutRef<'h4'>) => <Heading level={4} {...(props as Parameters<typeof Heading>[0])} />;
+const OrderedList = (props: React.ComponentPropsWithoutRef<'ol'>) => <List ordered={true} {...props} />;
 
-const Pre = ({ children, ...props }: any) => {
+interface CodeChildProps {
+  props?: {
+    className?: string;
+    children?: React.ReactNode;
+  };
+}
+
+interface PreProps extends React.ComponentPropsWithoutRef<'pre'> {
+  children?: React.ReactNode;
+}
+
+const Pre = ({ children, ...props }: PreProps) => {
   // Extract language and code from the pre > code structure
-  const childProps = children?.props || {};
+  const childProps = (children as CodeChildProps)?.props || {};
   const className = childProps.className || "";
   const language = className.replace("language-", "") || "text";
   const code = childProps.children || children;
@@ -44,7 +55,7 @@ const Pre = ({ children, ...props }: any) => {
       className={className}
       {...props}
     >
-      {code}
+      {[String(code)]}
     </CodeBlock>
   );
 };
