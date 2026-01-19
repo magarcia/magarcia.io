@@ -10,10 +10,13 @@ import List from "./List";
 import Table, { TableHead, TableBody, TableRow, TableCell, TableHeaderCell } from "./Table";
 
 // Component wrappers for react-markdown
-const H1 = (props: React.ComponentPropsWithoutRef<'h1'>) => <Heading level={1} {...props} />;
-const H2 = (props: React.ComponentPropsWithoutRef<'h2'>) => <Heading level={2} {...props} />;
-const H3 = (props: React.ComponentPropsWithoutRef<'h3'>) => <Heading level={3} {...props} />;
-const H4 = (props: React.ComponentPropsWithoutRef<'h4'>) => <Heading level={4} {...props} />;
+// Note: We need to ensure children is present for HeadingProps, which requires it
+type HeadingWrapperProps = React.ComponentPropsWithoutRef<'h1'> & { children: React.ReactNode };
+
+const H1 = (props: HeadingWrapperProps) => <Heading level={1} {...props} />;
+const H2 = (props: HeadingWrapperProps) => <Heading level={2} {...props} />;
+const H3 = (props: HeadingWrapperProps) => <Heading level={3} {...props} />;
+const H4 = (props: HeadingWrapperProps) => <Heading level={4} {...props} />;
 const OrderedList = (props: React.ComponentPropsWithoutRef<'ol'>) => <List ordered={true} {...props} />;
 
 interface PreProps extends React.ComponentPropsWithoutRef<'pre'> {
