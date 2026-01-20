@@ -20,7 +20,7 @@
     --secondary-foreground: 0 0% 26%;
 
     --muted: 180 3% 92%;
-    --muted-foreground: 0 0% 46%;    /* lighter gray for muted text */
+    --muted-foreground: 0 0% 43%;    /* lighter gray for muted text (4.5:1 contrast) */
 
     --accent: 180 3% 92%;
     --accent-foreground: 0 0% 26%;
