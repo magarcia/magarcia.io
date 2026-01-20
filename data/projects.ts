@@ -24,12 +24,12 @@ export const projects: Project[] = [
     },
   },
   {
-    name: "python-x256",
-    url: "https://github.com/magarcia/python-x256",
+    name: "QWBP",
+    url: "https://github.com/magarcia/qwbp",
     description: {
-      en: "Find the nearest xterm 256 color index for an RGB value",
-      es: "Encuentra el índice de color xterm 256 más cercano para un valor RGB",
-      ca: "Troba l'índex de color xterm 256 més proper per a un valor RGB",
+      en: "QR-WebRTC Bootstrap Protocol - Serverless WebRTC signaling via QR codes",
+      es: "Protocolo de arranque QR-WebRTC - Señalización WebRTC sin servidor mediante códigos QR",
+      ca: "Protocol d'arrencada QR-WebRTC - Senyalització WebRTC sense servidor mitjançant codis QR",
     },
   },
 ];
