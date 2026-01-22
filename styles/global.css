@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 180 3% 96%;        /* #f5f6f6 - iA Writer warm off-white */
-    --foreground: 0 0% 26%;          /* #424242 - iA Writer dark gray */
+    --background: 180 3% 96%; /* #f5f6f6 - iA Writer warm off-white */
+    --foreground: 0 0% 26%; /* #424242 - iA Writer dark gray */
 
     --card: 180 3% 96%;
     --card-foreground: 0 0% 26%;
@@ -16,11 +16,11 @@
     --primary: 0 0% 26%;
     --primary-foreground: 180 3% 96%;
 
-    --secondary: 180 3% 92%;         /* slightly darker than bg */
+    --secondary: 180 3% 92%; /* slightly darker than bg */
     --secondary-foreground: 0 0% 26%;
 
     --muted: 180 3% 92%;
-    --muted-foreground: 0 0% 43%;    /* lighter gray for muted text (4.5:1 contrast) */
+    --muted-foreground: 0 0% 43%; /* lighter gray for muted text (4.5:1 contrast) */
 
     --accent: 180 3% 92%;
     --accent-foreground: 0 0% 26%;
@@ -28,18 +28,18 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 180 3% 88%;            /* subtle border */
+    --border: 180 3% 88%; /* subtle border */
     --input: 180 3% 88%;
     --ring: 0 0% 26%;
 
     --radius: 0.5rem;
 
-    --code-bg: 210 3% 92%;           /* #ebeced - code block bg, slightly darker */
+    --code-bg: 210 3% 92%; /* #ebeced - code block bg, slightly darker */
   }
 
   .dark {
-    --background: 200 5% 12%;        /* #1d1f20 - iA Writer very dark gray */
-    --foreground: 135 4% 78%;        /* #c5c9c6 - iA Writer light gray */
+    --background: 200 5% 12%; /* #1d1f20 - iA Writer very dark gray */
+    --foreground: 135 4% 78%; /* #c5c9c6 - iA Writer light gray */
 
     --card: 200 5% 12%;
     --card-foreground: 135 4% 78%;
@@ -50,11 +50,11 @@
     --primary: 135 4% 78%;
     --primary-foreground: 200 5% 12%;
 
-    --secondary: 200 5% 16%;         /* slightly lighter than bg */
+    --secondary: 200 5% 16%; /* slightly lighter than bg */
     --secondary-foreground: 135 4% 78%;
 
     --muted: 200 5% 16%;
-    --muted-foreground: 135 4% 58%;  /* dimmer gray for muted */
+    --muted-foreground: 135 4% 58%; /* dimmer gray for muted */
 
     --accent: 200 5% 16%;
     --accent-foreground: 135 4% 78%;
@@ -62,11 +62,11 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 200 5% 20%;            /* subtle border */
+    --border: 200 5% 20%; /* subtle border */
     --input: 200 5% 20%;
     --ring: 135 4% 78%;
 
-    --code-bg: 180 5% 14%;           /* #222424 - iA Writer code block bg */
+    --code-bg: 180 5% 14%; /* #222424 - iA Writer code block bg */
   }
 }
 

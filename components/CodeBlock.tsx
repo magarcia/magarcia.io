@@ -4,7 +4,8 @@ import { toast } from "@/hooks/use-toast";
 
 // Handle ESM/CJS interop - prism-react-renderer may export { default } in Node.js SSR
 const Highlight =
-  (HighlightImport as unknown as { default?: typeof HighlightImport }).default ?? HighlightImport;
+  (HighlightImport as unknown as { default?: typeof HighlightImport })
+    .default ?? HighlightImport;
 import {
   Tooltip,
   TooltipContent,
@@ -72,7 +73,11 @@ export default function CodeBlock({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <div className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-ring" tabIndex={0} aria-label="Scrollable code block, use arrow keys to scroll">
+      <div
+        className="overflow-x-auto px-4 md:px-8 codeblock-scroll focus:outline-none focus:ring-2 focus:ring-ring"
+        tabIndex={0}
+        aria-label="Scrollable code block, use arrow keys to scroll"
+      >
         <Highlight {...defaultProps} code={code} language={lang as any}>
           {({ tokens, getLineProps, getTokenProps }) => (
             <pre className={`language-${lang} font-mono`}>

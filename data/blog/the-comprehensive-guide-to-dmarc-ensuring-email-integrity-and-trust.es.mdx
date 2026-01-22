@@ -1,88 +1,163 @@
 ---
-title: "Una Guía Completa sobre DMARC: Asegurando la Integridad y Confianza del Correo Electrónico"
+title:
+  "Una Guía Completa sobre DMARC: Asegurando la Integridad y Confianza del
+  Correo Electrónico"
 date: "2023-09-11"
-spoiler: Al construir un proyecto digital, asegurar que tus correos electrónicos lleguen de manera segura y sean confiables es primordial. ¿Pero cómo navegas el laberinto de la seguridad del correo electrónico? Entra DMARC. Junto con sus compañeros, SPF y DKIM, profundizamos en establecer la integridad del correo electrónico y combatir amenazas como la suplantación de identidad y el phishing.
+spoiler:
+  Al construir un proyecto digital, asegurar que tus correos electrónicos
+  lleguen de manera segura y sean confiables es primordial. ¿Pero cómo navegas
+  el laberinto de la seguridad del correo electrónico? Entra DMARC. Junto con
+  sus compañeros, SPF y DKIM, profundizamos en establecer la integridad del
+  correo electrónico y combatir amenazas como la suplantación de identidad y el
+  phishing.
 tags:
   - security
 ---
 
-En los primeros días de desarrollar [Voices.ink](https://voices.ink/), un proyecto colaborativo con [@Ester Martí](https://github.com/estermv) que transcribe sin esfuerzo notas de voz en tu cuenta de Notion, enfrenté una duda común. ¿Cómo podía asegurar que nuestros correos electrónicos transaccionales no terminaran perdidos en el vacío de las carpetas de spam o peor, fueran utilizados como arma para phishing? Mi investigación para un entorno de correo electrónico seguro y confiable me llevó a DMARC.
+En los primeros días de desarrollar [Voices.ink](https://voices.ink/), un
+proyecto colaborativo con [@Ester Martí](https://github.com/estermv) que
+transcribe sin esfuerzo notas de voz en tu cuenta de Notion, enfrenté una duda
+común. ¿Cómo podía asegurar que nuestros correos electrónicos transaccionales no
+terminaran perdidos en el vacío de las carpetas de spam o peor, fueran
+utilizados como arma para phishing? Mi investigación para un entorno de correo
+electrónico seguro y confiable me llevó a DMARC.
 
-En una era donde el correo electrónico forma la columna vertebral de la comunicación profesional, sus vulnerabilidades de seguridad son sorprendentes. Los atacantes cibernéticos y las entidades fraudulentas están constantemente al acecho, utilizando técnicas sofisticadas para engañar a través de la suplantación de identidad y el phishing. A medida que el fraude por correo electrónico aumenta, la necesidad de una solución robusta se vuelve imperativa. Entra DMARC — un protocolo avanzado de correo electrónico que promete restaurar la confianza en nuestras bandejas de entrada.
+En una era donde el correo electrónico forma la columna vertebral de la
+comunicación profesional, sus vulnerabilidades de seguridad son sorprendentes.
+Los atacantes cibernéticos y las entidades fraudulentas están constantemente al
+acecho, utilizando técnicas sofisticadas para engañar a través de la
+suplantación de identidad y el phishing. A medida que el fraude por correo
+electrónico aumenta, la necesidad de una solución robusta se vuelve imperativa.
+Entra DMARC — un protocolo avanzado de correo electrónico que promete restaurar
+la confianza en nuestras bandejas de entrada.
 
 ### **¿Por Qué Necesitamos DMARC?**
 
-Las vulnerabilidades inherentes del correo electrónico lo hacen susceptible a la suplantación de dominio, donde los atacantes envían correos electrónicos fingiendo ser de fuentes confiables. Mientras que soluciones como SPF (Sender Policy Framework) y DKIM (DomainKeys Identified Mail) se introdujeron para contrarrestar estas amenazas, no eran infalibles. DMARC (Domain-based Message Authentication, Reporting & Conformance) llena este vacío construyendo sobre y aprovechando las fortalezas tanto de SPF como de DKIM.
+Las vulnerabilidades inherentes del correo electrónico lo hacen susceptible a la
+suplantación de dominio, donde los atacantes envían correos electrónicos
+fingiendo ser de fuentes confiables. Mientras que soluciones como SPF (Sender
+Policy Framework) y DKIM (DomainKeys Identified Mail) se introdujeron para
+contrarrestar estas amenazas, no eran infalibles. DMARC (Domain-based Message
+Authentication, Reporting & Conformance) llena este vacío construyendo sobre y
+aprovechando las fortalezas tanto de SPF como de DKIM.
 
 ### **Entendiendo la Importancia de DMARC**
 
 DMARC sirve tres propósitos principales:
 
-1. **Autenticación**: Asegurar que un correo electrónico que dice ser de un dominio específico genuinamente se origina de ese dominio.
-2. **Reporte**: Permitir a los destinatarios del dominio reportar al remitente sobre los resultados de la evaluación DMARC, ofreciendo así información sobre problemas potenciales.
-3. **Aplicación de Políticas**: Otorgar a los propietarios de dominios el poder de especificar cómo deben manejarse los correos electrónicos no autenticados.
+1. **Autenticación**: Asegurar que un correo electrónico que dice ser de un
+   dominio específico genuinamente se origina de ese dominio.
+2. **Reporte**: Permitir a los destinatarios del dominio reportar al remitente
+   sobre los resultados de la evaluación DMARC, ofreciendo así información sobre
+   problemas potenciales.
+3. **Aplicación de Políticas**: Otorgar a los propietarios de dominios el poder
+   de especificar cómo deben manejarse los correos electrónicos no autenticados.
 
 ![Diagrama de Cómo Funciona DMARC](https://media.emailonacid.com/wp-content/uploads/2022/09/How-DMARC-Policy-Works.png)
 _Crédito: Emailonacid (Cómo funciona la política DMARC)_
 
 ### **Los Bloques de Construcción de DMARC: SPF y DKIM**
 
-**SPF** verifica que el servidor de envío del correo electrónico tiene la autorización del propietario del dominio. Utiliza un registro TXT específico en el DNS, como:
+**SPF** verifica que el servidor de envío del correo electrónico tiene la
+autorización del propietario del dominio. Utiliza un registro TXT específico en
+el DNS, como:
 
 `v=spf1 ip4:192.0.2.0/24 ip4:198.51.100.123 a:mail.example.com -all`
 
-Este registro esencialmente dice, "Solo el rango de IP 192.0.2.0 a 192.0.2.255 y 198.51.100.123 están autorizados para enviar correos electrónicos para mi dominio."
+Este registro esencialmente dice, "Solo el rango de IP 192.0.2.0 a 192.0.2.255 y
+198.51.100.123 están autorizados para enviar correos electrónicos para mi
+dominio."
 
 **Explicación**:
 
-- `v=spf1`: Esto indica la versión de SPF que se está utilizando, que es la versión 1 de SPF.
-- `ip4:192.0.2.0/24`: Autoriza el rango de IP 192.0.2.0 a 192.0.2.255 para enviar correos electrónicos para el dominio.
+- `v=spf1`: Esto indica la versión de SPF que se está utilizando, que es la
+  versión 1 de SPF.
+- `ip4:192.0.2.0/24`: Autoriza el rango de IP 192.0.2.0 a 192.0.2.255 para
+  enviar correos electrónicos para el dominio.
 - `ip4:198.51.100.123`: Autoriza la dirección IP específica 198.51.100.123.
-- `a:mail.example.com`: Autoriza la dirección IP resuelta del nombre de dominio mail.example.com.
-- `-all`: Especifica que no se permite a otros hosts enviar correos electrónicos. (El '-' es un fallo duro, lo que significa que los correos electrónicos de otras fuentes deben ser rechazados. `~all` sería un fallo suave, sugiriendo que deberían ser aceptados pero marcados.)
+- `a:mail.example.com`: Autoriza la dirección IP resuelta del nombre de dominio
+  mail.example.com.
+- `-all`: Especifica que no se permite a otros hosts enviar correos
+  electrónicos. (El '-' es un fallo duro, lo que significa que los correos
+  electrónicos de otras fuentes deben ser rechazados. `~all` sería un fallo
+  suave, sugiriendo que deberían ser aceptados pero marcados.)
 
-**DKIM**, por otro lado, asegura la integridad del correo electrónico utilizando firmas criptográficas. Un registro DNS TXT típico de DKIM podría verse como:
+**DKIM**, por otro lado, asegura la integridad del correo electrónico utilizando
+firmas criptográficas. Un registro DNS TXT típico de DKIM podría verse como:
 
 `v=DKIM1; p=MIGfMA0GCSqG...`
 
-Este registro contiene la clave pública utilizada por los servidores receptores para descifrar la firma DKIM del correo electrónico y verificar su autenticidad.
+Este registro contiene la clave pública utilizada por los servidores receptores
+para descifrar la firma DKIM del correo electrónico y verificar su autenticidad.
 
-El nombre del registro típicamente incluye un prefijo selector, permitiendo al dominio tener múltiples claves DKIM. Al enviar un correo electrónico, el servidor mencionará qué selector está utilizando, guiando al servidor receptor al registro DNS correcto.
+El nombre del registro típicamente incluye un prefijo selector, permitiendo al
+dominio tener múltiples claves DKIM. Al enviar un correo electrónico, el
+servidor mencionará qué selector está utilizando, guiando al servidor receptor
+al registro DNS correcto.
 
 **Explicación**:
 
 - `v=DKIM1`: Esto significa la versión de DKIM que se está utilizando.
-- `p=`: Esta es la clave pública que los servidores receptores utilizan para descifrar la firma DKIM en el encabezado del correo electrónico. La clave real sería una cadena larga (truncada en el ejemplo).
+- `p=`: Esta es la clave pública que los servidores receptores utilizan para
+  descifrar la firma DKIM en el encabezado del correo electrónico. La clave real
+  sería una cadena larga (truncada en el ejemplo).
 
 ### **DMARC en Acción**
 
-Cuando se implementa DMARC, los propietarios de dominios publican una política DMARC en sus registros DNS TXT (usando el nombre `_dmarc`), tal como:
+Cuando se implementa DMARC, los propietarios de dominios publican una política
+DMARC en sus registros DNS TXT (usando el nombre `_dmarc`), tal como:
 
 `v=DMARC1; p=reject; rua=mailto:reports@example.com; ruf=mailto:forensic@example.com; pct=100; aspf=r; adkim=r`
 
-Este registro se traduce a: "Si un correo electrónico falla la autenticación DMARC, recházalo. Y envía reportes agregados de DMARC a [reports@example.com](mailto:reports@example.com)."
+Este registro se traduce a: "Si un correo electrónico falla la autenticación
+DMARC, recházalo. Y envía reportes agregados de DMARC a
+[reports@example.com](mailto:reports@example.com)."
 
 **Explicación**:
 
 - `v=DMARC1`: Indica la versión de DMARC.
-- `p=reject`: Política a aplicar a los correos electrónicos que fallan DMARC. Otros valores pueden ser `none` o `quarantine`.
-- `rua=mailto:reports@example.com`: Dirección donde deben enviarse los reportes agregados de DMARC.
-- `ruf=mailto:forensic@example.com`: Dirección donde deben enviarse los reportes forenses (detallados) de DMARC.
-- `pct=100`: Porcentaje de correos electrónicos a los que se debe aplicar la política DMARC.
-- `aspf=r`: Modo de alineación SPF. 'r' significa relajado (predeterminado), mientras que 's' significa estricto.
-- `adkim=r`: Modo de alineación DKIM. 'r' es para relajado, y 's' es para estricto.
+- `p=reject`: Política a aplicar a los correos electrónicos que fallan DMARC.
+  Otros valores pueden ser `none` o `quarantine`.
+- `rua=mailto:reports@example.com`: Dirección donde deben enviarse los reportes
+  agregados de DMARC.
+- `ruf=mailto:forensic@example.com`: Dirección donde deben enviarse los reportes
+  forenses (detallados) de DMARC.
+- `pct=100`: Porcentaje de correos electrónicos a los que se debe aplicar la
+  política DMARC.
+- `aspf=r`: Modo de alineación SPF. 'r' significa relajado (predeterminado),
+  mientras que 's' significa estricto.
+- `adkim=r`: Modo de alineación DKIM. 'r' es para relajado, y 's' es para
+  estricto.
 
-Una vez que se recibe un correo electrónico, el servidor receptor lo valida contra SPF y DKIM. Para que DMARC pase, al menos uno de estos, SPF o DKIM, debe ser válido y estar alineado con el dominio reclamado. Los correos electrónicos que fallan esta comprobación se tratan de acuerdo con la política DMARC — pueden ser rechazados, puestos en cuarentena o dejados pasar sin acción.
+Una vez que se recibe un correo electrónico, el servidor receptor lo valida
+contra SPF y DKIM. Para que DMARC pase, al menos uno de estos, SPF o DKIM, debe
+ser válido y estar alineado con el dominio reclamado. Los correos electrónicos
+que fallan esta comprobación se tratan de acuerdo con la política DMARC — pueden
+ser rechazados, puestos en cuarentena o dejados pasar sin acción.
 
 ### **La Conclusión**
 
-Con el aumento de ataques de phishing sofisticados y la importancia primordial de la confianza en la comunicación digital, DMARC es más que solo un protocolo avanzado de seguridad de correo electrónico. Es un faro de confianza, asegurando que los correos electrónicos genuinos vean la luz del día mientras que los maliciosos acechan en las sombras. Para organizaciones e individuos por igual, entender e implementar DMARC es un paso hacia un paisaje de comunicación digital más seguro y confiable.
+Con el aumento de ataques de phishing sofisticados y la importancia primordial
+de la confianza en la comunicación digital, DMARC es más que solo un protocolo
+avanzado de seguridad de correo electrónico. Es un faro de confianza, asegurando
+que los correos electrónicos genuinos vean la luz del día mientras que los
+maliciosos acechan en las sombras. Para organizaciones e individuos por igual,
+entender e implementar DMARC es un paso hacia un paisaje de comunicación digital
+más seguro y confiable.
 
-Así que, la próxima vez que estés mirando tus medidas de seguridad de correo electrónico, recuerda que DMARC no es solo una opción — es una necesidad.
+Así que, la próxima vez que estés mirando tus medidas de seguridad de correo
+electrónico, recuerda que DMARC no es solo una opción — es una necesidad.
 
 ### **Recursos y Herramientas Adicionales**
 
-Para aquellos que deseen profundizar en DMARC y sus complejidades, aquí hay algunos recursos y herramientas valiosos:
+Para aquellos que deseen profundizar en DMARC y sus complejidades, aquí hay
+algunos recursos y herramientas valiosos:
 
-- **Guía DMARC**: Una guía completa por la Global Cyber Alliance que cubre los matices de DMARC en detalle. [Mírala aquí](https://www.globalcyberalliance.org/dmarc/).
-- **Verificador de Configuración DMARC**: Una herramienta invaluable proporcionada por la Global Cyber Alliance. No solo verifica si tu DMARC está configurado correctamente, sino que también ofrece consejos sobre rectificaciones si es necesario. [Prueba la herramienta aquí](https://dmarcguide.globalcyberalliance.org/#/).
+- **Guía DMARC**: Una guía completa por la Global Cyber Alliance que cubre los
+  matices de DMARC en detalle.
+  [Mírala aquí](https://www.globalcyberalliance.org/dmarc/).
+- **Verificador de Configuración DMARC**: Una herramienta invaluable
+  proporcionada por la Global Cyber Alliance. No solo verifica si tu DMARC está
+  configurado correctamente, sino que también ofrece consejos sobre
+  rectificaciones si es necesario.
+  [Prueba la herramienta aquí](https://dmarcguide.globalcyberalliance.org/#/).

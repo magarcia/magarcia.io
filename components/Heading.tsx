@@ -10,7 +10,11 @@ interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
 
 const sizes = ["text-3xl", "text-2xl", "text-xl", "text-lg"];
 
-export default function Heading({ level = 2, children, ...props }: HeadingProps) {
+export default function Heading({
+  level = 2,
+  children,
+  ...props
+}: HeadingProps) {
   const Tag = `h${level}` as HeadingTag;
   const size = sizes[Math.min(level, 4) - 1];
   const id = slugify(children?.toString().toLowerCase() || "");
@@ -27,7 +31,11 @@ export default function Heading({ level = 2, children, ...props }: HeadingProps)
         aria-label="Link to this section"
         className="anchor opacity-0 inline-block cursor-pointer transition-opacity duration-500 ease-in-out motion-reduce:transition-none hover:opacity-100 -ml-7 mr-2"
       >
-        <Hash size={anchorSize} className="text-muted-foreground" aria-hidden="true" />
+        <Hash
+          size={anchorSize}
+          className="text-muted-foreground"
+          aria-hidden="true"
+        />
       </a>
       {children}
     </Tag>

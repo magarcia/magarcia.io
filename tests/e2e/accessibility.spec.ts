@@ -27,14 +27,14 @@ test.describe("Accessibility", () => {
 
     // Filter for critical violations only (serious ones are logged but won't fail)
     const criticalViolations = results.violations.filter(
-      (v) => v.impact === "critical"
+      (v) => v.impact === "critical",
     );
 
     // Log any violations for awareness
     if (results.violations.length > 0) {
       console.log(
         "Accessibility violations found:",
-        results.violations.map((v) => `${v.id} (${v.impact}): ${v.help}`)
+        results.violations.map((v) => `${v.id} (${v.impact}): ${v.help}`),
       );
     }
 
@@ -118,9 +118,15 @@ test.describe("Keyboard Navigation", () => {
     await page.waitForTimeout(350);
 
     // Language links should be visible when focused
-    await expect(languageSelector.getByRole("link", { name: "EN" })).toBeVisible();
-    await expect(languageSelector.getByRole("link", { name: "ES" })).toBeVisible();
-    await expect(languageSelector.getByRole("link", { name: "CA" })).toBeVisible();
+    await expect(
+      languageSelector.getByRole("link", { name: "EN" }),
+    ).toBeVisible();
+    await expect(
+      languageSelector.getByRole("link", { name: "ES" }),
+    ).toBeVisible();
+    await expect(
+      languageSelector.getByRole("link", { name: "CA" }),
+    ).toBeVisible();
   });
 
   test("theme toggle should be keyboard accessible", async ({ page }) => {
@@ -149,7 +155,7 @@ test.describe("Keyboard Navigation", () => {
       await page.keyboard.press("Tab");
       const focusedElement = page.locator(":focus");
       const tagName = await focusedElement.evaluate((el) =>
-        el.tagName.toLowerCase()
+        el.tagName.toLowerCase(),
       );
       const href = await focusedElement.getAttribute("href");
 

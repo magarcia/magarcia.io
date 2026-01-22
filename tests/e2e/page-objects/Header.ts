@@ -13,7 +13,9 @@ export class Header {
     this.themeToggle = page.getByTestId("theme-toggle");
     this.languageSelector = page.getByTestId("language-selector");
     this.siteLogo = page.getByRole("link", { name: "magarcia" });
-    this.backLink = page.getByRole("link", { name: /^← (back|volver|tornar)$/i });
+    this.backLink = page.getByRole("link", {
+      name: /^← (back|volver|tornar)$/i,
+    });
   }
 
   async toggleTheme(): Promise<void> {

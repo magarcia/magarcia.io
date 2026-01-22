@@ -1,6 +1,6 @@
 ---
 title: $watch with Angular 2
-date: '2016-07-04'
+date: "2016-07-04"
 spoiler: How to migrate the $watch feature from AngularJS to Angular2
 indexed: false
 tags:
@@ -42,23 +42,24 @@ attribute? The solution is the **set** syntax from ES6.
 > The **set** syntax binds an object property to a function to be called when
 > there is an attempt to set that property.
 
-_From [MDN](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/set)_
+_From
+[MDN](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/set)_
 
 So we can bind the input for a component to a function that does the same as the
 `$watch` function.
 
 ```typescript
-import { Component, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: 'example-component'
+  selector: "example-component",
 })
 export class ExampleComponent {
   public internalVal = null;
 
   constructor() {}
 
-  @Input('externalVal')
+  @Input("externalVal")
   set updateInternalVal(externalVal) {
     this.internalVal = externalVal;
   }

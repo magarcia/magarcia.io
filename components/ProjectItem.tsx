@@ -22,9 +22,7 @@ export default function ProjectItem({
         </span>
         <span className="flex-1 border-b border-dotted border-border group-hover:border-solid transition-all" />
       </div>
-      <p className="text-muted-foreground text-sm mt-1">
-        {description}
-      </p>
+      <p className="text-muted-foreground text-sm mt-1">{description}</p>
     </a>
   );
 }

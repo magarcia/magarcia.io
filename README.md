@@ -6,11 +6,14 @@ A personal blog by Martin Garcia. Thoughts, words, and experiments about code.
 
 - **Framework**: [React Router v7](https://reactrouter.com/)
 - **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/)
-- **Content**: Markdown with [gray-matter](https://github.com/jonschlinkert/gray-matter)
+- **Content**: Markdown with
+  [gray-matter](https://github.com/jonschlinkert/gray-matter)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **UI Components**: [Radix UI](https://www.radix-ui.com/)
-- **Syntax Highlighting**: [Prism React Renderer](https://github.com/FormidableLabs/prism-react-renderer)
-- **Testing**: [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)
+- **Syntax Highlighting**:
+  [Prism React Renderer](https://github.com/FormidableLabs/prism-react-renderer)
+- **Testing**: [Vitest](https://vitest.dev/) +
+  [Playwright](https://playwright.dev/)
 - **Package Manager**: [Yarn 4.1.1](https://yarnpkg.com/)
 
 ## Features
@@ -67,7 +70,8 @@ The site will be available at `http://localhost:5173`
 
 ## Content Management
 
-Blog posts are stored as Markdown files in `data/blog/` with frontmatter for metadata:
+Blog posts are stored as Markdown files in `data/blog/` with frontmatter for
+metadata:
 
 - `slug` - URL path for the post
 - `title` - Post title
@@ -76,15 +80,18 @@ Blog posts are stored as Markdown files in `data/blog/` with frontmatter for met
 - `draft` - Boolean for draft status
 - `summary` - Short description
 
-Multi-language variants use file extensions: `.mdx` (English), `.es.mdx` (Spanish), `.ca.mdx` (Catalan).
+Multi-language variants use file extensions: `.mdx` (English), `.es.mdx`
+(Spanish), `.ca.mdx` (Catalan).
 
 ## Deployment
 
-The site is deployed to Cloudflare Pages via GitHub integration. The build command runs:
+The site is deployed to Cloudflare Pages via GitHub integration. The build
+command runs:
 
 1. React Router build (static prerendering)
 2. Sitemap generation
 3. RSS feed generation
 4. Static asset copying
 
-The `_headers` and `_redirects` files configure redirects and security headers for Cloudflare Pages.
+The `_headers` and `_redirects` files configure redirects and security headers
+for Cloudflare Pages.

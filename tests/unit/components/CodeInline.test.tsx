@@ -36,7 +36,7 @@ describe("CodeInline", () => {
     const { container } = render(
       <CodeInline data-testid="inline-code" id="test-id">
         code
-      </CodeInline>
+      </CodeInline>,
     );
 
     const code = container.querySelector("code");
@@ -56,7 +56,7 @@ describe("CodeInline", () => {
     render(
       <CodeInline>
         <span>nested</span> content
-      </CodeInline>
+      </CodeInline>,
     );
 
     expect(screen.getByText("nested")).toBeInTheDocument();

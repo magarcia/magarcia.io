@@ -7,17 +7,14 @@ export async function clearLocalStorage(page: Page): Promise<void> {
 export async function setLocalStorageItem(
   page: Page,
   key: string,
-  value: string
+  value: string,
 ): Promise<void> {
-  await page.evaluate(
-    ([k, v]) => localStorage.setItem(k, v),
-    [key, value]
-  );
+  await page.evaluate(([k, v]) => localStorage.setItem(k, v), [key, value]);
 }
 
 export async function getLocalStorageItem(
   page: Page,
-  key: string
+  key: string,
 ): Promise<string | null> {
   return page.evaluate((k) => localStorage.getItem(k), key);
 }

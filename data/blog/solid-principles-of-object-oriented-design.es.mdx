@@ -1,44 +1,52 @@
 ---
 title: SOLID - Principios del Diseño Orientado a Objetos
-date: '2019-12-07'
-spoiler: Los Principios SOLID son una herramienta valiosa para escribir buen software orientado a objetos. Este artículo intenta arrojar algo de luz sobre el tema con explicaciones simples y ejemplos para cada principio usando TypeScript.
+date: "2019-12-07"
+spoiler:
+  Los Principios SOLID son una herramienta valiosa para escribir buen software
+  orientado a objetos. Este artículo intenta arrojar algo de luz sobre el tema
+  con explicaciones simples y ejemplos para cada principio usando TypeScript.
 tags:
   - typescript
   - patterns
 ---
 
-> Este artículo está basado en el trabajo realizado por [Samuel Oloruntoba](https://twitter.com/KayandraJT) en su artículo
-> [S.O.L.I.D: The First 5 Principles of Object Oriented Design](https://scotch.io/bar-talk/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) pero usando
-> TypeScript en lugar de PHP para los ejemplos.
+> Este artículo está basado en el trabajo realizado por
+> [Samuel Oloruntoba](https://twitter.com/KayandraJT) en su artículo
+> [S.O.L.I.D: The First 5 Principles of Object Oriented Design](https://scotch.io/bar-talk/s-o-l-i-d-the-first-five-principles-of-object-oriented-design)
+> pero usando TypeScript en lugar de PHP para los ejemplos.
 
 **SOLID** es un acrónimo para los primeros cinco principios del artículo
 [_Principles of Object-Oriented Design_](http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod)
 por Robert C. Martin.
 
-Aplicar estos principios ayuda a desarrollar código mantenible y extensible. También
-ayudan a detectar code smells, refactorizar código fácilmente, y practicar un buen desarrollo
-ágil.
+Aplicar estos principios ayuda a desarrollar código mantenible y extensible.
+También ayudan a detectar code smells, refactorizar código fácilmente, y
+practicar un buen desarrollo ágil.
 
-- **S** significa **SRP** - Principio de Responsabilidad Única (Single Responsibility Principle)
+- **S** significa **SRP** - Principio de Responsabilidad Única (Single
+  Responsibility Principle)
 - **O** significa **OCP** - Principio Abierto-Cerrado (Open-Closed Principle)
-- **L** significa **LSP** - Principio de Sustitución de Liskov (Liskov Substitution Principle)
-- **I** significa **ISP** - Principio de Segregación de Interfaz (Interface Segregation Principle)
-- **D** significa **DIP** - Principio de Inversión de Dependencia (Dependency Inversion Principle)
+- **L** significa **LSP** - Principio de Sustitución de Liskov (Liskov
+  Substitution Principle)
+- **I** significa **ISP** - Principio de Segregación de Interfaz (Interface
+  Segregation Principle)
+- **D** significa **DIP** - Principio de Inversión de Dependencia (Dependency
+  Inversion Principle)
 
 ## SRP - Principio de Responsabilidad Única
 
 > Una entidad de software (clases, módulos, funciones, etc.) debe tener una, y
 > solo una, razón para cambiar.
 
-Este principio significa que una entidad debe hacer solo una cosa. Así que responsabilidad
-única denota algún **trabajo en aislamiento**. Por lo tanto si tenemos una
-entidad de software que realiza algunos cálculos la única razón para cambiarla es
-si estos cálculos necesitan cambiar.
+Este principio significa que una entidad debe hacer solo una cosa. Así que
+responsabilidad única denota algún **trabajo en aislamiento**. Por lo tanto si
+tenemos una entidad de software que realiza algunos cálculos la única razón para
+cambiarla es si estos cálculos necesitan cambiar.
 
-Para entender mejor el principio, podemos hacer un ejemplo. Digamos
-que tenemos que implementar una aplicación que dadas algunas formas calcula la
-suma del área de estas formas e imprime la salida. Así que, empecemos creando
-nuestras clases de formas:
+Para entender mejor el principio, podemos hacer un ejemplo. Digamos que tenemos
+que implementar una aplicación que dadas algunas formas calcula la suma del área
+de estas formas e imprime la salida. Así que, empecemos creando nuestras clases
+de formas:
 
 ```typescript
 class Circle {
@@ -58,8 +66,8 @@ class Square {
 }
 ```
 
-Ahora creamos una clase `AreaCalculator` que va a tener la lógica para sumar
-el área de nuestras formas.
+Ahora creamos una clase `AreaCalculator` que va a tener la lógica para sumar el
+área de nuestras formas.
 
 ```typescript
 class AreaCalculator {
@@ -90,12 +98,12 @@ console.log(areas.output());
 ```
 
 Pero esta implementación tiene un problema. En este ejemplo, `AreaCalculator`
-maneja la lógica para calcular la suma de las áreas **y** para mostrar los datos.
-¿Qué pasa si el usuario quiere la salida en JSON?
+maneja la lógica para calcular la suma de las áreas **y** para mostrar los
+datos. ¿Qué pasa si el usuario quiere la salida en JSON?
 
-Aquí es cuando el _Principio de Responsabilidad Única_ entra en juego. `AreaCalculator`
-solo debería cambiar si cambiamos cómo calculamos la suma de las áreas, no cuando
-queremos una salida o representación diferente.
+Aquí es cuando el _Principio de Responsabilidad Única_ entra en juego.
+`AreaCalculator` solo debería cambiar si cambiamos cómo calculamos la suma de
+las áreas, no cuando queremos una salida o representación diferente.
 
 Podemos arreglar esto implementando una clase cuya única responsabilidad es
 mostrar los datos.
@@ -116,14 +124,15 @@ cambiar la salida, afectará solo a `Outputter`.
 
 ## OCP - Principio Abierto-Cerrado
 
-> Las entidades de software (clases, módulos, funciones, etc.) deben estar abiertas para
-> extensión, pero cerradas para modificación.
+> Las entidades de software (clases, módulos, funciones, etc.) deben estar
+> abiertas para extensión, pero cerradas para modificación.
 
-Una propiedad deseable que nuestras entidades de software es ser fácil de extender su
-funcionalidad sin la necesidad de cambiar la entidad en sí misma.
+Una propiedad deseable que nuestras entidades de software es ser fácil de
+extender su funcionalidad sin la necesidad de cambiar la entidad en sí misma.
 
-Usando el ejemplo anterior, ahora queremos introducir una nueva forma elegante: el
-_Triángulo_. Pero primero, echa un vistazo más de cerca a la parte de suma de nuestra clase `AreaCalculator`.
+Usando el ejemplo anterior, ahora queremos introducir una nueva forma elegante:
+el _Triángulo_. Pero primero, echa un vistazo más de cerca a la parte de suma de
+nuestra clase `AreaCalculator`.
 
 ```typescript
 class AreaCalculator {
@@ -150,12 +159,12 @@ class AreaCalculator {
 ```
 
 Aquí estamos violando el _Principio Abierto/Cerrado_, porque para añadir soporte
-para triángulos tenemos que modificar `AreaCalculator` añadiendo un nuevo bloque `else if`
-para manejar el cálculo de la nueva área.
+para triángulos tenemos que modificar `AreaCalculator` añadiendo un nuevo bloque
+`else if` para manejar el cálculo de la nueva área.
 
 Para arreglar esto podemos mover el código que calcula el área a las formas
-correspondientes, y hacer que esas formas implementen una interfaz que describa mejor qué
-puede hacer una forma.
+correspondientes, y hacer que esas formas implementen una interfaz que describa
+mejor qué puede hacer una forma.
 
 ```typescript
 interface Shape {
@@ -175,8 +184,9 @@ class Circle implements Shape {
 }
 ```
 
-Ahora el `AreaCalculator` se parece al código de abajo, que nos permite crear nuevo
-tipo de formas y funcionará siempre que esta nueva forma implemente la interfaz `Shape`.
+Ahora el `AreaCalculator` se parece al código de abajo, que nos permite crear
+nuevo tipo de formas y funcionará siempre que esta nueva forma implemente la
+interfaz `Shape`.
 
 ```typescript
 class AreaCalculator {
@@ -202,13 +212,14 @@ class AreaCalculator {
 
 > La clase derivada debe ser sustituible por su clase base.
 
-Lo que este principio significa es que los objetos en un programa deben ser reemplazables
-con instancias de sus subtipos sin alterar la corrección de ese
-programa. Así que si pasas una subclase de una abstracción necesitas asegurarte de que
-no alteras ningún comportamiento o semántica de estado de la abstracción padre.
+Lo que este principio significa es que los objetos en un programa deben ser
+reemplazables con instancias de sus subtipos sin alterar la corrección de ese
+programa. Así que si pasas una subclase de una abstracción necesitas asegurarte
+de que no alteras ningún comportamiento o semántica de estado de la abstracción
+padre.
 
-Continuando con la clase `AreaCalculator`, ahora queremos crear una
-clase `VolumeCalculator` que extienda `AreaCalculator`:
+Continuando con la clase `AreaCalculator`, ahora queremos crear una clase
+`VolumeCalculator` que extienda `AreaCalculator`:
 
 ```typescript
 class VolumeCalculator extends AreaCalculator {
@@ -225,8 +236,8 @@ class VolumeCalculator extends AreaCalculator {
 }
 ```
 
-Para entender mejor este ejemplo hagamos una versión más detallada de la
-clase `Outputter`.
+Para entender mejor este ejemplo hagamos una versión más detallada de la clase
+`Outputter`.
 
 ```typescript
 class Outputer {
@@ -255,21 +266,21 @@ Con esta implementación, si intentamos ejecutar un código como este:
 const areas = new AreaCalculator(shapes2D);
 const volumes = new VolumeCalculator(shapes3D);
 
-console.log('Areas - ', new Ouputter(areas).text());
-console.log('Volúmenes - ', new Ouputter(volumes).text());
+console.log("Areas - ", new Ouputter(areas).text());
+console.log("Volúmenes - ", new Ouputter(volumes).text());
 ```
 
-El programa no va a fallar pero la salida no será consistente ya que una
-salida será algo como `Areas - Suma de las formas proporcionadas: 42`, y la
-otra `Volúmenes - Suma de las formas proporcionadas: 13, 15, 14`. Esto no es lo que esperamos
-de nuestro programa.
+El programa no va a fallar pero la salida no será consistente ya que una salida
+será algo como `Areas - Suma de las formas proporcionadas: 42`, y la otra
+`Volúmenes - Suma de las formas proporcionadas: 13, 15, 14`. Esto no es lo que
+esperamos de nuestro programa.
 
 Esto sucede porque la violación del _Principio de Sustitución de Liskov_, el
-método `sum` de la clase `VolumeCalculator` es un array de números mientras que el
-`AreaCalculator` es solo un número.
+método `sum` de la clase `VolumeCalculator` es un array de números mientras que
+el `AreaCalculator` es solo un número.
 
-Para arreglar esto tenemos que reimplementar el método sum de `VolumeCalculator` para
-devolver un número en lugar de un array.
+Para arreglar esto tenemos que reimplementar el método sum de `VolumeCalculator`
+para devolver un número en lugar de un array.
 
 ```typescript
 class VolumeCalculator extends AreaCalculator {
@@ -288,11 +299,11 @@ class VolumeCalculator extends AreaCalculator {
 
 > Haz interfaces de grano fino que sean específicas del cliente.
 
-En este caso, queremos mantener las interfaces lo más pequeñas posible, para que los clientes no sean
-forzados a implementar métodos que realmente no necesitan.
+En este caso, queremos mantener las interfaces lo más pequeñas posible, para que
+los clientes no sean forzados a implementar métodos que realmente no necesitan.
 
-Así que, volviendo a nuestra interfaz de forma, ahora que podemos calcular volúmenes nuestra
-interfaz se ve similar a esto:
+Así que, volviendo a nuestra interfaz de forma, ahora que podemos calcular
+volúmenes nuestra interfaz se ve similar a esto:
 
 ```typescript
 interface Shape {
@@ -301,11 +312,13 @@ interface Shape {
 }
 ```
 
-Pero sabemos que no todas nuestras formas tienen un volumen, `Square` es una forma 2D pero
-debido a la interfaz, estamos forzados a implementar un método `volume`.
+Pero sabemos que no todas nuestras formas tienen un volumen, `Square` es una
+forma 2D pero debido a la interfaz, estamos forzados a implementar un método
+`volume`.
 
-Aplicando el _Principio de Segregación de Interfaz_ dividimos la interfaz `Shape`
-en dos interfaces diferentes, una para definir formas 2D y otra para formas 3D.
+Aplicando el _Principio de Segregación de Interfaz_ dividimos la interfaz
+`Shape` en dos interfaces diferentes, una para definir formas 2D y otra para
+formas 3D.
 
 ```typescript
 interface Shape2D {
@@ -331,11 +344,12 @@ class Cuboid implements Shape2D, Shape3D {
 
 > Depende de abstracciones, no de concreciones.
 
-Lo que este principio viene a decir es que los módulos de alto nivel no deben depender
-de módulos de bajo nivel, sino que deben depender de abstracciones.
+Lo que este principio viene a decir es que los módulos de alto nivel no deben
+depender de módulos de bajo nivel, sino que deben depender de abstracciones.
 
-Este principio permite el desacoplamiento, un ejemplo que parece la mejor manera de
-explicar este principio. Veamos una nueva clase para guardar nuestras formas `ShapeManager`:
+Este principio permite el desacoplamiento, un ejemplo que parece la mejor manera
+de explicar este principio. Veamos una nueva clase para guardar nuestras formas
+`ShapeManager`:
 
 ```typescript
 class ShapeManager {
@@ -349,14 +363,15 @@ class ShapeManager {
 }
 ```
 
-En este caso, `ShapeManager` es un módulo de alto nivel mientras que `MySQL` es un módulo de bajo
-nivel, pero esto es una violación del `Principio de Inversión de Dependencia` ya que estamos
-forzados a depender de `MySQL`.
+En este caso, `ShapeManager` es un módulo de alto nivel mientras que `MySQL` es
+un módulo de bajo nivel, pero esto es una violación del
+`Principio de Inversión de Dependencia` ya que estamos forzados a depender de
+`MySQL`.
 
-Si queremos cambiar nuestra base de datos en el futuro tendríamos que editar la clase `ShapeManager`
-y así viola el _Principio Abierto-Cerrado_. En este caso no debería importarnos
-qué tipo de base de datos estamos usando, así que para depender de abstracciones en este
-caso haremos uso de una interfaz:
+Si queremos cambiar nuestra base de datos en el futuro tendríamos que editar la
+clase `ShapeManager` y así viola el _Principio Abierto-Cerrado_. En este caso no
+debería importarnos qué tipo de base de datos estamos usando, así que para
+depender de abstracciones en este caso haremos uso de una interfaz:
 
 ```typescript
 interface Database {
@@ -384,8 +399,8 @@ Y ahora nuestros módulos de alto y bajo nivel dependen de abstracciones.
 
 ## Conclusión
 
-Al empezar a escribir programación Orientada a Objetos los principios **SOLID** pueden
-ser difíciles de entender y, si se entienden, ver dónde y cuándo
-aplicarlos no es trivial. Pero son un ejemplo de una de las cosas más importantes
-en el desarrollo de software, la práctica y la experiencia te harán aplicar
-estos principios de una manera muy natural e intuitiva.
+Al empezar a escribir programación Orientada a Objetos los principios **SOLID**
+pueden ser difíciles de entender y, si se entienden, ver dónde y cuándo
+aplicarlos no es trivial. Pero son un ejemplo de una de las cosas más
+importantes en el desarrollo de software, la práctica y la experiencia te harán
+aplicar estos principios de una manera muy natural e intuitiva.

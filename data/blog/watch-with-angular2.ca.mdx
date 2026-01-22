@@ -1,6 +1,6 @@
 ---
 title: $watch amb Angular 2
-date: '2016-07-04'
+date: "2016-07-04"
 spoiler: Com migrar la característica $watch d'AngularJS a Angular2
 indexed: false
 tags:
@@ -8,10 +8,10 @@ tags:
   - open-source
 ---
 
-En el meu [post anterior](/2016/07/03/events-in-angular2/), vaig estar parlant sobre com
-implementar esdeveniments d'Angular 1 en Angular 2. Però en el fragment de codi que
-utilitzo com a exemple podem trobar una altra cosa que no existeix en Angular 2:
-`$watch`.
+En el meu [post anterior](/2016/07/03/events-in-angular2/), vaig estar parlant
+sobre com implementar esdeveniments d'Angular 1 en Angular 2. Però en el
+fragment de codi que utilitzo com a exemple podem trobar una altra cosa que no
+existeix en Angular 2: `$watch`.
 
 Començo definint el problema. Podem tenir una directiva o component d'Angular 1
 com aquest:
@@ -35,30 +35,31 @@ module.directive('exampleDirective', function () {
 });
 ```
 
-Si volem migrar aquest codi a Angular 2 trobem un problema: el nou Angular
-no té `scope`, així que no té `$watch`. Com podem observar un atribut de directiva?
-La solució és la sintaxi **set** d'ES6.
+Si volem migrar aquest codi a Angular 2 trobem un problema: el nou Angular no té
+`scope`, així que no té `$watch`. Com podem observar un atribut de directiva? La
+solució és la sintaxi **set** d'ES6.
 
-> La sintaxi **set** vincula una propietat d'objecte a una funció per ser cridada quan
-> hi ha un intent d'establir aquesta propietat.
+> La sintaxi **set** vincula una propietat d'objecte a una funció per ser
+> cridada quan hi ha un intent d'establir aquesta propietat.
 
-_De [MDN](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/set)_
+_De
+[MDN](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/set)_
 
-Així que podem vincular l'entrada per a un component a una funció que fa el mateix que la
-funció `$watch`.
+Així que podem vincular l'entrada per a un component a una funció que fa el
+mateix que la funció `$watch`.
 
 ```typescript
-import { Component, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: 'example-component'
+  selector: "example-component",
 })
 export class ExampleComponent {
   public internalVal = null;
 
   constructor() {}
 
-  @Input('externalVal')
+  @Input("externalVal")
   set updateInternalVal(externalVal) {
     this.internalVal = externalVal;
   }

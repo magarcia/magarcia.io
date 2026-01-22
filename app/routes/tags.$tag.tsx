@@ -1,7 +1,13 @@
 import { Link as LinkIcon } from "react-feather";
 import { Link } from "react-router";
 import type { Route } from "./+types/tags.$tag";
-import { getPostsByTagSlug, getTagBySlug, isValidSlug, isValidLang, type FrontMatter } from "~/lib/blog";
+import {
+  getPostsByTagSlug,
+  getTagBySlug,
+  isValidSlug,
+  isValidLang,
+  type FrontMatter,
+} from "~/lib/blog";
 import Header from "~/components/Header";
 import { formatDate, formatReadingTime, formatTagPageTitle } from "~/lib/i18n";
 
@@ -15,9 +21,15 @@ export function meta({ data }: Route.MetaArgs) {
 
   return [
     { title: `${title} — magarcia` },
-    { name: "description", content: `Posts tagged with "${tag}" on magarcia.io` },
+    {
+      name: "description",
+      content: `Posts tagged with "${tag}" on magarcia.io`,
+    },
     { property: "og:title", content: title },
-    { property: "og:description", content: `Posts tagged with "${tag}" on magarcia.io` },
+    {
+      property: "og:description",
+      content: `Posts tagged with "${tag}" on magarcia.io`,
+    },
   ];
 }
 
@@ -28,7 +40,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const pathname = new URL(request.url).pathname;
-  const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
+  const lang = pathname.startsWith("/es/")
+    ? "es"
+    : pathname.startsWith("/ca/")
+      ? "ca"
+      : "en";
 
   if (!isValidLang(lang)) {
     throw new Response("Tag Not Found", { status: 404 });
@@ -57,7 +73,10 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
     <>
       <Header lang={lang} />
       <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-12 md:mb-24">
-        <h2 className="text-2xl font-normal text-foreground mb-8 md:mb-12" data-testid="tag-heading">
+        <h2
+          className="text-2xl font-normal text-foreground mb-8 md:mb-12"
+          data-testid="tag-heading"
+        >
           {title}
         </h2>
 
@@ -65,7 +84,11 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
           {posts.map(({ title, slug, readingTime, date }: FrontMatter) => (
             <div key={slug} className="my-6 md:my-8" data-testid="article-item">
               <h3 className="font-medium text-lg text-foreground">
-                <Link to={`/${slug}`} title={title} className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors">
+                <Link
+                  to={`/${slug}`}
+                  title={title}
+                  className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors"
+                >
                   <LinkIcon
                     size={18}
                     className="inline-block text-muted-foreground -ml-7 mr-2"
@@ -74,10 +97,8 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
                 </Link>
               </h3>
               <small className="text-sm text-muted-foreground">
-                <time dateTime={date}>
-                  {formatDate(date, lang)}
-                </time>{" "}
-                — {formatReadingTime(readingTime.minutes, lang)}
+                <time dateTime={date}>{formatDate(date, lang)}</time> —{" "}
+                {formatReadingTime(readingTime.minutes, lang)}
               </small>
             </div>
           ))}

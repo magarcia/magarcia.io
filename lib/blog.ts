@@ -13,8 +13,10 @@ export function isValidSlug(slug: string): boolean {
   return VALID_SLUG_PATTERN.test(slug) && slug.length <= 200;
 }
 
-export function isValidLang(lang: string): lang is typeof VALID_LANG_CODES[number] {
-  return VALID_LANG_CODES.includes(lang as typeof VALID_LANG_CODES[number]);
+export function isValidLang(
+  lang: string,
+): lang is (typeof VALID_LANG_CODES)[number] {
+  return VALID_LANG_CODES.includes(lang as (typeof VALID_LANG_CODES)[number]);
 }
 
 export function validateSlug(slug: string): void {
@@ -77,8 +79,13 @@ function getFrontMatter(source: string, slug: string): BlogPost {
   if (data.tags !== undefined && !Array.isArray(data.tags)) {
     throw new Error("Invalid frontmatter: 'tags' field must be an array");
   }
-  if (data.tags !== undefined && !data.tags.every((tag: unknown) => typeof tag === "string")) {
-    throw new Error("Invalid frontmatter: 'tags' field must be an array of strings");
+  if (
+    data.tags !== undefined &&
+    !data.tags.every((tag: unknown) => typeof tag === "string")
+  ) {
+    throw new Error(
+      "Invalid frontmatter: 'tags' field must be an array of strings",
+    );
   }
 
   return {
@@ -96,7 +103,7 @@ function getFrontMatter(source: string, slug: string): BlogPost {
 export function getFileBySlug(
   type: string,
   slug: string,
-  lang: string = "en"
+  lang: string = "en",
 ): BlogPostWithNavigation {
   validateSlug(slug);
   validateLang(lang);
@@ -132,7 +139,10 @@ export function getFileBySlug(
   };
 }
 
-export function getAllFilesFrontMatter(type: string, lang: string = "en"): FrontMatter[] {
+export function getAllFilesFrontMatter(
+  type: string,
+  lang: string = "en",
+): FrontMatter[] {
   const dirPath = path.join(root, "data", type);
   const files = fs
     .readdirSync(dirPath)
@@ -170,7 +180,10 @@ export function getAllFilesFrontMatter(type: string, lang: string = "en"): Front
         return allFiles;
       }
 
-      if (isFutureDate(frontMatter.date) && process.env.NODE_ENV === "production") {
+      if (
+        isFutureDate(frontMatter.date) &&
+        process.env.NODE_ENV === "production"
+      ) {
         return allFiles;
       }
 
@@ -190,7 +203,9 @@ export function getAllFiles(type: string, lang: string = "en"): BlogPost[] {
   const files = fs
     .readdirSync(dirPath)
     .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""));
+    .map((f) =>
+      f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""),
+    );
 
   const uniqueSlugs = Array.from(new Set(files));
 
@@ -202,7 +217,10 @@ export function getAllFiles(type: string, lang: string = "en"): BlogPost[] {
         return allFiles;
       }
 
-      if (isFutureDate(frontMatter.date) && process.env.NODE_ENV === "production") {
+      if (
+        isFutureDate(frontMatter.date) &&
+        process.env.NODE_ENV === "production"
+      ) {
         return allFiles;
       }
 
@@ -241,21 +259,25 @@ export function getTagBySlug(type: string, tagSlug: string): string | null {
   return tags.find((tag) => slugifyTag(tag) === tagSlug) ?? null;
 }
 
-export function getPostsByTagSlug(type: string, tagSlug: string, lang: string = "en"): FrontMatter[] {
+export function getPostsByTagSlug(
+  type: string,
+  tagSlug: string,
+  lang: string = "en",
+): FrontMatter[] {
   const originalTag = getTagBySlug(type, tagSlug);
   if (!originalTag) return [];
 
   const posts = getAllFilesFrontMatter(type, lang);
-  return posts.filter(
-    (post) => post.tags && post.tags.includes(originalTag)
-  );
+  return posts.filter((post) => post.tags && post.tags.includes(originalTag));
 }
 
-export function getPostsByTag(type: string, tag: string, lang: string = "en"): FrontMatter[] {
+export function getPostsByTag(
+  type: string,
+  tag: string,
+  lang: string = "en",
+): FrontMatter[] {
   const posts = getAllFilesFrontMatter(type, lang);
-  return posts.filter(
-    (post) => post.tags && post.tags.includes(tag)
-  );
+  return posts.filter((post) => post.tags && post.tags.includes(tag));
 }
 
 export function getAllSlugs(type: string): string[] {
@@ -263,7 +285,9 @@ export function getAllSlugs(type: string): string[] {
   const files = fs
     .readdirSync(dirPath)
     .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""));
+    .map((f) =>
+      f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""),
+    );
 
   return Array.from(new Set(files));
 }

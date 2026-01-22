@@ -20,7 +20,7 @@ describe("Blockquote", () => {
       <Blockquote>
         <p>Paragraph in quote</p>
         <span>Span in quote</span>
-      </Blockquote>
+      </Blockquote>,
     );
     expect(screen.getByText("Paragraph in quote")).toBeInTheDocument();
     expect(screen.getByText("Span in quote")).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe("Blockquote", () => {
     render(
       <Blockquote data-testid="custom-blockquote" id="test-id">
         Test quote
-      </Blockquote>
+      </Blockquote>,
     );
     const element = screen.getByTestId("custom-blockquote");
     expect(element).toHaveAttribute("id", "test-id");
@@ -42,7 +42,7 @@ describe("Caption", () => {
     render(
       <table>
         <Caption>Table caption</Caption>
-      </table>
+      </table>,
     );
     const element = screen.getByText("Table caption");
     expect(element.tagName).toBe("CAPTION");
@@ -54,7 +54,7 @@ describe("Caption", () => {
         <Caption>
           Caption with <strong>bold</strong> text
         </Caption>
-      </table>
+      </table>,
     );
     expect(screen.getByText("bold")).toBeInTheDocument();
   });
@@ -65,7 +65,7 @@ describe("Caption", () => {
         <Caption data-testid="custom-caption" id="test-id">
           Table caption
         </Caption>
-      </table>
+      </table>,
     );
     const element = screen.getByTestId("custom-caption");
     expect(element).toHaveAttribute("id", "test-id");
@@ -88,7 +88,7 @@ describe("CodeInline", () => {
     render(
       <CodeInline data-testid="custom-code" data-language="javascript">
         code
-      </CodeInline>
+      </CodeInline>,
     );
     const element = screen.getByTestId("custom-code");
     expect(element).toHaveAttribute("data-language", "javascript");
@@ -116,9 +116,13 @@ describe("Link", () => {
 
   it("supports external link attributes", () => {
     render(
-      <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+      <Link
+        href="https://example.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         External Link
-      </Link>
+      </Link>,
     );
     const element = screen.getByRole("link");
     expect(element).toHaveAttribute("target", "_blank");
@@ -129,7 +133,7 @@ describe("Link", () => {
     render(
       <Link href="/test">
         Link with <strong>bold</strong> text
-      </Link>
+      </Link>,
     );
     expect(screen.getByText("bold")).toBeInTheDocument();
   });
@@ -146,7 +150,7 @@ describe("Paragraph", () => {
     render(
       <Paragraph>
         Text with <strong>bold</strong> and <em>italic</em>
-      </Paragraph>
+      </Paragraph>,
     );
     expect(screen.getByText("bold")).toBeInTheDocument();
     expect(screen.getByText("italic")).toBeInTheDocument();
@@ -156,7 +160,7 @@ describe("Paragraph", () => {
     render(
       <Paragraph data-testid="custom-paragraph" id="test-id">
         Test paragraph
-      </Paragraph>
+      </Paragraph>,
     );
     const element = screen.getByTestId("custom-paragraph");
     expect(element).toHaveAttribute("id", "test-id");
@@ -174,7 +178,7 @@ describe("Strong", () => {
     render(
       <Strong>
         Bold with <span>nested span</span>
-      </Strong>
+      </Strong>,
     );
     expect(screen.getByText("nested span")).toBeInTheDocument();
   });
@@ -183,7 +187,7 @@ describe("Strong", () => {
     render(
       <Strong data-testid="custom-strong" id="test-id">
         Bold text
-      </Strong>
+      </Strong>,
     );
     const element = screen.getByTestId("custom-strong");
     expect(element).toHaveAttribute("id", "test-id");
@@ -196,7 +200,7 @@ describe("List", () => {
       render(
         <List>
           <li>Item 1</li>
-        </List>
+        </List>,
       );
       const item = screen.getByText("Item 1");
       expect(item.parentElement?.tagName).toBe("UL");
@@ -208,7 +212,7 @@ describe("List", () => {
           <li>Item 1</li>
           <li>Item 2</li>
           <li>Item 3</li>
-        </List>
+        </List>,
       );
       expect(screen.getByText("Item 1")).toBeInTheDocument();
       expect(screen.getByText("Item 2")).toBeInTheDocument();
@@ -221,7 +225,7 @@ describe("List", () => {
       render(
         <List ordered>
           <li>Item 1</li>
-        </List>
+        </List>,
       );
       const item = screen.getByText("Item 1");
       expect(item.parentElement?.tagName).toBe("OL");
@@ -234,7 +238,7 @@ describe("List", () => {
         <li>
           Item with <strong>bold</strong>
         </li>
-      </List>
+      </List>,
     );
     expect(screen.getByText("bold")).toBeInTheDocument();
   });
@@ -243,7 +247,7 @@ describe("List", () => {
     render(
       <List data-testid="custom-list" id="test-id">
         <li>Item 1</li>
-      </List>
+      </List>,
     );
     const element = screen.getByTestId("custom-list");
     expect(element).toHaveAttribute("id", "test-id");

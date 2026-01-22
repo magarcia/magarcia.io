@@ -40,7 +40,9 @@ describe("ArticleListItem", () => {
     render(<ArticleListItem {...mockArticle} />);
 
     // Initially, should render plain spoiler text
-    expect(screen.getByText(/This is a \*\*test\*\* spoiler/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/This is a \*\*test\*\* spoiler/),
+    ).toBeInTheDocument();
   });
 
   it("renders spoiler text with markdown after dynamic import", async () => {
@@ -53,7 +55,7 @@ describe("ArticleListItem", () => {
         const strongElements = article.querySelectorAll("strong");
         expect(strongElements.length).toBeGreaterThan(0);
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
@@ -116,6 +118,8 @@ describe("ArticleListItem", () => {
 
     render(<ArticleListItem {...article} />);
 
-    expect(screen.getByText("Plain text spoiler without formatting.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Plain text spoiler without formatting."),
+    ).toBeInTheDocument();
   });
 });

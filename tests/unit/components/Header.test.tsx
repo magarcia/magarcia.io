@@ -132,26 +132,25 @@ describe("Header", () => {
       const { container } = render(<Header />);
 
       const header = container.querySelector("header");
-      expect(header).toHaveClass(
-        "max-w-[75ch]",
-        "mx-auto",
-        "relative",
-        "z-50"
-      );
+      expect(header).toHaveClass("max-w-[75ch]", "mx-auto", "relative", "z-50");
     });
 
     it("renders controls container with flex layout", () => {
       const { container } = render(<Header />);
 
       // The controls container (LanguageSelector + ThemeToggle wrapper) uses flex layout
-      const controlsContainer = container.querySelector("header .flex.items-center:not(.place-content-between)");
+      const controlsContainer = container.querySelector(
+        "header .flex.items-center:not(.place-content-between)",
+      );
       expect(controlsContainer).toBeInTheDocument();
     });
 
     it("has horizontal layout with content spread between left and right", () => {
       const { container } = render(<Header />);
 
-      const flexContainer = container.querySelector(".flex.place-content-between");
+      const flexContainer = container.querySelector(
+        ".flex.place-content-between",
+      );
       expect(flexContainer).toBeInTheDocument();
     });
   });

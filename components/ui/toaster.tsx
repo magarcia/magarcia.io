@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Toast,
   ToastClose,
@@ -7,18 +7,18 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "@/components/ui/toast"
+} from "@/components/ui/toast";
 
 export function Toaster() {
-  const [mounted, setMounted] = useState(false)
-  const { toasts } = useToast()
+  const [mounted, setMounted] = useState(false);
+  const { toasts } = useToast();
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
@@ -35,9 +35,9 @@ export function Toaster() {
             {action}
             <ToastClose />
           </Toast>
-        )
+        );
       })}
       <ToastViewport />
     </ToastProvider>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 ---
 title: Moving big parts to Angular 2
-date: '2016-06-12'
+date: "2016-06-12"
 spoiler: Migrating the most important components and directives to Angualar2
 indexed: false
 tags:
@@ -15,10 +15,10 @@ because it's possible to run Jangouts and use it. And on the other hand, if I
 can't finish the migration, the application will be still usable allowing others
 to continue the work. But I hope this last scenario won't be real.
 
-With the hybrid approach applied, this week I have been working on migrating some
-components to Angular 2. I started migrating the Chat component, more complex
-than the Footer previously migrated, but not enough to be frustrating in these
-early stages.
+With the hybrid approach applied, this week I have been working on migrating
+some components to Angular 2. I started migrating the Chat component, more
+complex than the Footer previously migrated, but not enough to be frustrating in
+these early stages.
 
 ## Migrating subcomponents
 
@@ -26,31 +26,32 @@ The Chat component of Jangouts has three subcomponents, a part of the main
 component:
 
 - **`chat-message`**: That handles the render the message sent by the user.
-- **`log-entry`**: That handles the notifications sent by the system (like "_The user
-  X has joined_").
+- **`log-entry`**: That handles the notifications sent by the system (like "_The
+  user X has joined_").
 - **`chat-form`**: That handles the input of messages.
 
 These subcomponents are really simple, each one has a component class without
 much code and a template. But the key of this migration has been that the styles
 were moved from the main `scss` file to independent files for each subcomponent.
-This takes profit of [Angular 2 View Encapsulation](https://angular.io/docs/ts/latest/guide/component-styles.html#!#view-encapsulation),
+This takes profit of
+[Angular 2 View Encapsulation](https://angular.io/docs/ts/latest/guide/component-styles.html#!#view-encapsulation),
 ensuring that the styles will be only applied to the component.
 
-During the `chat-message` migration, I found trouble. A problem that comes
-from the sue of [ngEmbed](https://github.com/ritz078/ng-embed) library that
-provides a directive to render the user messages. This directive allows users
-to use emojis and embed links, images, videos, etc. But as expected the
-library hasn't support for Angular 2, so I tried to upgrade the directive with
-the [Angular 2 Upgrade Adapter](https://angular.io/docs/ts/latest/guide/upgrade.html#!#how-the-upgrade-adapter-works)
+During the `chat-message` migration, I found trouble. A problem that comes from
+the sue of [ngEmbed](https://github.com/ritz078/ng-embed) library that provides
+a directive to render the user messages. This directive allows users to use
+emojis and embed links, images, videos, etc. But as expected the library hasn't
+support for Angular 2, so I tried to upgrade the directive with the
+[Angular 2 Upgrade Adapter](https://angular.io/docs/ts/latest/guide/upgrade.html#!#how-the-upgrade-adapter-works)
 but I found a strange error.
 
 After some investigation, I found that ngEmbed use a function as `templateUrl`
 attribute (which is allowed in Angular 1), but in the version of Angular 2 that
 I'm currently using with the project, the upgrade adapter don't support this
-kind of `templateUrl`. I saw in the master branch of Angular 2 that the code
-has been updated to support this functionality, but now neither version
-incorporates the change. So after discussing with my mentors, we decide to disable
-this functionality in Jangouts and keep moving with the migration.
+kind of `templateUrl`. I saw in the master branch of Angular 2 that the code has
+been updated to support this functionality, but now neither version incorporates
+the change. So after discussing with my mentors, we decide to disable this
+functionality in Jangouts and keep moving with the migration.
 
 I wish to have time to reenable it in the future.
 
@@ -85,8 +86,9 @@ of the Angular 1 application was downgrade the main chat component.
 ## Applying the correct application structure
 
 The changes applied this week wasn't only in the code, I also update the
-application structure following the recommendations of the [style guide](https://angular.io/styleguide#!#application-structure_).
-Previous to the migration the application has the following structure:
+application structure following the recommendations of the
+[style guide](https://angular.io/styleguide#!#application-structure_). Previous
+to the migration the application has the following structure:
 
 ```
 src
@@ -165,6 +167,6 @@ handles the video/audio streams.
 
 Actually, I've moved all the services and factories to Angular 2 services, but I
 still not enabled the support for work with the Angular 1 code. The reason? I
-want to make a full test suite that tests these services deeply before to continue
-with the migration of the rest of the component and make the integration with
-the rest of the application.
+want to make a full test suite that tests these services deeply before to
+continue with the migration of the rest of the component and make the
+integration with the rest of the application.

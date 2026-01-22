@@ -1,7 +1,11 @@
 ---
 title: "Breaking the QR Limit: The Discovery of a Serverless WebRTC Protocol"
 date: "2026-01-19"
-spoiler: A user's simple request led to an intensive AI-assisted protocol design session. I shrunk WebRTC signaling from 2,500 bytes to 55 bytes—a 97.79% reduction—by questioning every best practice. This is the story of how QWBP was born.
+spoiler:
+  A user's simple request led to an intensive AI-assisted protocol design
+  session. I shrunk WebRTC signaling from 2,500 bytes to 55 bytes—a 97.79%
+  reduction—by questioning every best practice. This is the story of how QWBP
+  was born.
 tags:
   - javascript
   - webrtc
@@ -9,33 +13,46 @@ tags:
   - security
 ---
 
-> The reasonable man adapts himself to the world: the unreasonable one persists in trying to adapt the world to himself. Therefore all progress depends on the unreasonable man.
+> The reasonable man adapts himself to the world: the unreasonable one persists
+> in trying to adapt the world to himself. Therefore all progress depends on the
+> unreasonable man.
 >
 > — George Bernard Shaw
 
-I hardcoded passwords into production. I violated WebRTC best practices. I designed a custom binary protocol. Then I threw it all away when I discovered the real problem wasn't compression—it was physics.
+I hardcoded passwords into production. I violated WebRTC best practices. I
+designed a custom binary protocol. Then I threw it all away when I discovered
+the real problem wasn't compression—it was physics.
 
-This is the story of a Thursday evening, a Friday morning, and an unreasonable protocol that shouldn't exist.
+This is the story of a Thursday evening, a Friday morning, and an unreasonable
+protocol that shouldn't exist.
 
 ## The User Request I Couldn't Answer
 
-January 2025. [**Palabreja**](https://palabreja.com), my daily Spanish word game, had grown over 30K monthly active players across Spain and Latin America. Built as a static Progressive Web App with zero backend—no database, no user accounts—everything lived in `localStorage`.
+January 2025. [**Palabreja**](https://palabreja.com), my daily Spanish word
+game, had grown over 30K monthly active players across Spain and Latin America.
+Built as a static Progressive Web App with zero backend—no database, no user
+accounts—everything lived in `localStorage`.
 
 Then came the Bluesky notification:
 
 > "I'm buying a new phone. How can I keep my progress?"
 
-Most developers answer: "Log into your account." I had no accounts, no server, no answer.
+Most developers answer: "Log into your account." I had no accounts, no server,
+no answer.
 
 "Currently, there is no way."
 
-That response gnawed at me. Players who upgraded phones would lose 2+ years of game progress. Statistics carefully maintained over months would vanish.
+That response gnawed at me. Players who upgraded phones would lose 2+ years of
+game progress. Statistics carefully maintained over months would vanish.
 
-I refused to spin up a database to move a few kilobytes of JSON between two devices sitting next to each other. I wanted *direct device-to-device transfer with zero servers*.
+I refused to spin up a database to move a few kilobytes of JSON between two
+devices sitting next to each other. I wanted _direct device-to-device transfer
+with zero servers_.
 
 ## Thursday Evening: The "Serverless" Lie
 
-After work, I opened my laptop. WebRTC seemed perfect — peer-to-peer connections, browser-native APIs, no relay servers.
+After work, I opened my laptop. WebRTC seemed perfect — peer-to-peer
+connections, browser-native APIs, no relay servers.
 
 Every tutorial showed the same pattern:
 
@@ -50,19 +67,26 @@ socket.send(JSON.stringify(offer));
 
 There it was. **Signaling requires a server.**
 
-Before two browsers connect peer-to-peer, they exchange Session Description Protocol (SDP) messages—offers and answers containing network information and encryption parameters. The WebRTC spec leaves signaling unspecified, assuming you'll use WebSockets, HTTP POST, or another server-mediated channel.
+Before two browsers connect peer-to-peer, they exchange Session Description
+Protocol (SDP) messages—offers and answers containing network information and
+encryption parameters. The WebRTC spec leaves signaling unspecified, assuming
+you'll use WebSockets, HTTP POST, or another server-mediated channel.
 
 I had no server. I wanted no server.
 
-**QR codes.** Display the offer as a QR code, scan it with the other phone, display the answer as another QR code, scan that. No server. Air-gapped communication using screens and cameras.
+**QR codes.** Display the offer as a QR code, scan it with the other phone,
+display the answer as another QR code, scan that. No server. Air-gapped
+communication using screens and cameras.
 
 I built a prototype. The QR code appeared.
 
 It was **massive**.
 
-A Version 30+ QR code—over 130 modules per side—filled my phone screen. Dense, chaotic, unreadable.
+A Version 30+ QR code—over 130 modules per side—filled my phone screen. Dense,
+chaotic, unreadable.
 
 Scanning results:
+
 - **Good lighting, steady hands:** 8 seconds, 60% success
 - **Dim room:** 15+ seconds, failed most attempts
 - **Scratched lens:** Never succeeded
@@ -93,33 +117,58 @@ a=candidate:1 1 udp 2122260223 192.168.1.100 54321 typ host
 ... (20 more candidate lines)
 ```
 
-**2,487 bytes.** Session Description Protocol[^1] dates to 1998, designed for VoIP where endpoints negotiate video codecs, audio sampling rates, bandwidth constraints. I controlled both endpoints. 90% of this data was ceremony for a negotiation that would never happen.
+**2,487 bytes.** Session Description Protocol[^1] dates to 1998, designed for
+VoIP where endpoints negotiate video codecs, audio sampling rates, bandwidth
+constraints. I controlled both endpoints. 90% of this data was ceremony for a
+negotiation that would never happen.
 
-[^1]: RFC 8866 - SDP: Session Description Protocol, https://datatracker.ietf.org/doc/html/rfc8866
+[^1]:
+    RFC 8866 - SDP: Session Description Protocol,
+    https://datatracker.ietf.org/doc/html/rfc8866
 
-The question became: "Which SDP fields are actually *required*?"
+The question became: "Which SDP fields are actually _required_?"
 
 ## The Path I Didn't Take
 
-Prior work exists: **animated QR sequences** that flash frames until the scanner captures all parts[^2][^3], and **fountain codes** (TXQR[^4]) that tolerate missed frames. These achieve ~9 KB/s under ideal conditions but require holding steady for 10+ seconds—acceptable for crypto wallet signing, but too ceremonial for casual use.
+Prior work exists: **animated QR sequences** that flash frames until the scanner
+captures all parts[^2][^3], and **fountain codes** (TXQR[^4]) that tolerate
+missed frames. These achieve ~9 KB/s under ideal conditions but require holding
+steady for 10+ seconds—acceptable for crypto wallet signing, but too ceremonial
+for casual use.
 
-**The fork in the road**: Animated QRs solve the transport problem—"how do I move 2.5KB through a QR code?" I needed to solve the meaning problem—"do I need 2.5KB?"
+**The fork in the road**: Animated QRs solve the transport problem—"how do I
+move 2.5KB through a QR code?" I needed to solve the meaning problem—"do I need
+2.5KB?"
 
-I looked at existing libraries like **sdp-compact**, which strip whitespace and apply standard compression. But they still hit the "Generic Compression Limit"—the overhead of headers and Base64 encoding often outweighed the savings for small payloads.
+I looked at existing libraries like **sdp-compact**, which strip whitespace and
+apply standard compression. But they still hit the "Generic Compression
+Limit"—the overhead of headers and Base64 encoding often outweighed the savings
+for small payloads.
 
-[^2]: Franklin Ta, "Serverless WebRTC using QR codes" (2014), https://franklinta.com/2014/10/19/serverless-webrtc-using-qr-codes/
+[^2]:
+    Franklin Ta, "Serverless WebRTC using QR codes" (2014),
+    https://franklinta.com/2014/10/19/serverless-webrtc-using-qr-codes/
+
 [^3]: webrtc-via-qr GitHub repository, https://github.com/Qivex/webrtc-via-qr
+
 [^4]: TXQR: Transfer via QR with fountain codes, https://github.com/divan/txqr
 
 ## The Hack That Worked
 
-Analyzing the SDP structure revealed what was actually needed: ICE credentials, DTLS fingerprint, setup value, and ICE candidates. Everything else—session description, bundling info, SCTP parameters—could be hardcoded on both ends.
+Analyzing the SDP structure revealed what was actually needed: ICE credentials,
+DTLS fingerprint, setup value, and ICE candidates. Everything else—session
+description, bundling info, SCTP parameters—could be hardcoded on both ends.
 
 **Quick glossary for the uninitiated:**
-- **ICE** (Interactive Connectivity Establishment): The protocol that figures out how two devices can reach each other across networks, firewalls, and NATs
-- **ICE candidates**: Network addresses (IP + port) where a device can potentially be reached
-- **DTLS** (Datagram TLS): Encryption layer for WebRTC—like HTTPS but for real-time data
-- **DTLS fingerprint**: A hash of the device's security certificate, used to verify you're talking to the right peer
+
+- **ICE** (Interactive Connectivity Establishment): The protocol that figures
+  out how two devices can reach each other across networks, firewalls, and NATs
+- **ICE candidates**: Network addresses (IP + port) where a device can
+  potentially be reached
+- **DTLS** (Datagram TLS): Encryption layer for WebRTC—like HTTPS but for
+  real-time data
+- **DTLS fingerprint**: A hash of the device's security certificate, used to
+  verify you're talking to the right peer
 
 **First insight: Hardcode the ICE credentials.**
 
@@ -128,11 +177,19 @@ a=ice-ufrag:eP8j
 a=ice-pwd:3K9m...
 ```
 
-These are the ICE "username fragment" (ufrag) and password—random strings that peers exchange to authenticate connectivity checks. 50 bytes of high-entropy data—impossible to compress. I asked: "Can I hardcode these? What breaks?"
+These are the ICE "username fragment" (ufrag) and password—random strings that
+peers exchange to authenticate connectivity checks. 50 bytes of high-entropy
+data—impossible to compress. I asked: "Can I hardcode these? What breaks?"
 
-Digging into [RFC 5245](https://datatracker.ietf.org/doc/html/rfc5245) revealed the answer. ICE credentials authenticate connectivity checks between peers, but the *real* security comes from the DTLS fingerprint[^5]—a SHA-256 hash of the device's TLS certificate. An attacker with ICE credentials but the wrong certificate cannot connect; the DTLS handshake fails.
+Digging into [RFC 5245](https://datatracker.ietf.org/doc/html/rfc5245) revealed
+the answer. ICE credentials authenticate connectivity checks between peers, but
+the _real_ security comes from the DTLS fingerprint[^5]—a SHA-256 hash of the
+device's TLS certificate. An attacker with ICE credentials but the wrong
+certificate cannot connect; the DTLS handshake fails.
 
-[^5]: RFC 8827 - WebRTC Security Architecture, https://datatracker.ietf.org/doc/html/rfc8827
+[^5]:
+    RFC 8827 - WebRTC Security Architecture,
+    https://datatracker.ietf.org/doc/html/rfc8827
 
 I hardcoded them:
 
@@ -145,19 +202,33 @@ const ICE_PWD = "xK9...........cB0";
 
 **Second insight: Filter candidates.**
 
-Browsers emit 15-30 ICE candidates—every network interface: Wi-Fi, VPN, Docker, link-local IPv6. Most fail or connect slowly. But my first test with a single candidate failed—the VPN interface appeared first, hiding the Wi-Fi address that could actually connect.
+Browsers emit 15-30 ICE candidates—every network interface: Wi-Fi, VPN, Docker,
+link-local IPv6. Most fail or connect slowly. But my first test with a single
+candidate failed—the VPN interface appeared first, hiding the Wi-Fi address that
+could actually connect.
 
-I raised the limit to 3 "host" candidates (local network addresses) plus 1 "srflx" (server-reflexive) candidate. The srflx candidate is your public IP address as seen from the internet, discovered by asking a STUN server "what's my IP?" This handles the case where devices are on different networks.
+I raised the limit to 3 "host" candidates (local network addresses) plus 1
+"srflx" (server-reflexive) candidate. The srflx candidate is your public IP
+address as seen from the internet, discovered by asking a STUN server "what's my
+IP?" This handles the case where devices are on different networks.
 
 **Saved: 1,200+ bytes.**
 
 **Third insight: Binary protocol.**
 
-I stared at the minified JSON I was transmitting. Brackets. Quotes. Key names. The string `"type"` appeared in every message—5 bytes to encode something that could only ever be "offer" or "answer". The fingerprint was a 95-character hex string with colons, but underneath it was just 32 bytes of raw data.
+I stared at the minified JSON I was transmitting. Brackets. Quotes. Key names.
+The string `"type"` appeared in every message—5 bytes to encode something that
+could only ever be "offer" or "answer". The fingerprint was a 95-character hex
+string with colons, but underneath it was just 32 bytes of raw data.
 
-JSON is designed for *interoperability*—human-readable, self-describing, universally parseable. But I controlled both endpoints and wrote encoder and decoder. Nothing needed to be human-readable or self-describing.
+JSON is designed for _interoperability_—human-readable, self-describing,
+universally parseable. But I controlled both endpoints and wrote encoder and
+decoder. Nothing needed to be human-readable or self-describing.
 
-I remembered studying low-level networking—how TCP headers pack flags, sequence numbers, and ports into fixed positions. No field names. No delimiters. Just bytes at known offsets. What if I designed a packet format instead of a JSON object?
+I remembered studying low-level networking—how TCP headers pack flags, sequence
+numbers, and ports into fixed positions. No field names. No delimiters. Just
+bytes at known offsets. What if I designed a packet format instead of a JSON
+object?
 
 Strip everything constant. Keep only what's dynamic:
 
@@ -170,9 +241,12 @@ Strip everything constant. Keep only what's dynamic:
 └────────┴─────────────────────┴──────────────────────────────┘
 ```
 
-One byte for type instead of `"type":"offer"`. 32 raw bytes for the fingerprint instead of 95 ASCII characters. No brackets, no quotes, no field names.
+One byte for type instead of `"type":"offer"`. 32 raw bytes for the fingerprint
+instead of 95 ASCII characters. No brackets, no quotes, no field names.
 
-But I wasn't done. The candidates were still strings: `"h|u|192.168.1.5|54321"`. That IP address alone is 13 characters—but an IPv4 address is just 4 bytes. Why three ASCII characters for `192` when `0xC0` suffices?
+But I wasn't done. The candidates were still strings: `"h|u|192.168.1.5|54321"`.
+That IP address alone is 13 characters—but an IPv4 address is just 4 bytes. Why
+three ASCII characters for `192` when `0xC0` suffices?
 
 I pushed further. Each candidate became a fixed-layout binary structure:
 
@@ -192,9 +266,12 @@ Flags byte (bitmask):
 *The reserved slot becomes important later—browser privacy features require it.
 ```
 
-[^6]: RFC 6544 - TCP Candidates with Interactive Connectivity Establishment (ICE), https://datatracker.ietf.org/doc/html/rfc6544
+[^6]:
+    RFC 6544 - TCP Candidates with Interactive Connectivity Establishment (ICE),
+    https://datatracker.ietf.org/doc/html/rfc6544
 
-The string `"h|u|192.168.1.5|54321"` (21 characters) became 7 bytes. A 66% reduction on candidate data alone—and candidates were the bulk of the payload.
+The string `"h|u|192.168.1.5|54321"` (21 characters) became 7 bytes. A 66%
+reduction on candidate data alone—and candidates were the bulk of the payload.
 
 The full packet structure:
 
@@ -226,28 +303,42 @@ After base64:       60 bytes
 
 **Result: 2,487 bytes → 60 bytes. 97.6% reduction.**
 
-The QR codes scanned quickly—under a second in my tests. I had solved the compression problem.
+The QR codes scanned quickly—under a second in my tests. I had solved the
+compression problem.
 
-But something bothered me. Hardcoded passwords felt *wrong*. I'd made progress, but this was still a hack, not a protocol.
+But something bothered me. Hardcoded passwords felt _wrong_. I'd made progress,
+but this was still a hack, not a protocol.
 
 ## Refining the Hack
 
-The hardcoded credentials nagged at me. It's a JavaScript website—the source code is readable. Anyone could open DevTools, find the ICE password, and... well, what exactly? The *real* encryption happens in the DTLS handshake, authenticated by the fingerprint. ICE credentials are just for routing verification. Not critical.
+The hardcoded credentials nagged at me. It's a JavaScript website—the source
+code is readable. Anyone could open DevTools, find the ICE password, and...
+well, what exactly? The _real_ encryption happens in the DTLS handshake,
+authenticated by the fingerprint. ICE credentials are just for routing
+verification. Not critical.
 
-Still, it bothered me. Having the source code shouldn't give you the keys. Then I realized: there's already something unique per session. The DTLS fingerprint—a SHA-256 hash of each device's certificate—is already in the QR code. What if I derived the ICE credentials from that?
+Still, it bothered me. Having the source code shouldn't give you the keys. Then
+I realized: there's already something unique per session. The DTLS fingerprint—a
+SHA-256 hash of each device's certificate—is already in the QR code. What if I
+derived the ICE credentials from that?
 
 **Discovery: Derive credentials, don't hardcode them.**
 
-The solution: HKDF-SHA256[^7], a standard key derivation function. The key insight: each peer derives *its own* credentials from *its own* fingerprint—not shared credentials from a common secret.
+The solution: HKDF-SHA256[^7], a standard key derivation function. The key
+insight: each peer derives _its own_ credentials from _its own_ fingerprint—not
+shared credentials from a common secret.
 
 **How it works**:
+
 1. Peer A derives `ufrag_A` from `Fingerprint_A` using HKDF
 2. Peer B derives `ufrag_B` from `Fingerprint_B` using HKDF
 3. QR codes exchange both fingerprints
 4. Each peer can locally compute the other's expected credentials for validation
-5. ICE connectivity checks use standard username format: `ufrag_remote:ufrag_local`[^8]
+5. ICE connectivity checks use standard username format:
+   `ufrag_remote:ufrag_local`[^8]
 
 **HKDF parameters** (for implementers):
+
 ```typescript
 // Salt is empty because the entropy source (DTLS certificate) is already
 // high-entropy and ephemeral—no additional randomness needed
@@ -264,19 +355,35 @@ const pwdBytes = await hkdf(fingerprint, salt, pwdInfo, 18);
 const pwd = base64url(pwdBytes);
 ```
 
-RFC 8839 requires ufrag ≥4 chars, pwd ≥22 chars, using `[A-Za-z0-9+/]`. Base64url satisfies this.
+RFC 8839 requires ufrag ≥4 chars, pwd ≥22 chars, using `[A-Za-z0-9+/]`.
+Base64url satisfies this.
 
-This satisfies RFC 8839's entropy requirement[^9]—the randomness comes from the ephemeral DTLS certificate, not from HKDF itself. This avoids shipping secrets in code and guarantees per-session uniqueness as long as each connection attempt generates a fresh certificate.
+This satisfies RFC 8839's entropy requirement[^9]—the randomness comes from the
+ephemeral DTLS certificate, not from HKDF itself. This avoids shipping secrets
+in code and guarantees per-session uniqueness as long as each connection attempt
+generates a fresh certificate.
 
-Now the source code alone yields nothing. You need visual access to the specific QR code to know that session's credentials. The security boundary shifted from "secret in code" to "physical proximity required."
+Now the source code alone yields nothing. You need visual access to the specific
+QR code to know that session's credentials. The security boundary shifted from
+"secret in code" to "physical proximity required."
 
-[^7]: RFC 5869 - HMAC-based Extract-and-Expand Key Derivation Function (HKDF), https://datatracker.ietf.org/doc/html/rfc5869
-[^8]: RFC 8445, Section 7.2.2 - Forming Credentials, https://datatracker.ietf.org/doc/html/rfc8445#section-7.2.2
-[^9]: RFC 8839, Section 5.4 - ICE Password, https://datatracker.ietf.org/doc/html/rfc8839#section-5.4
+[^7]:
+    RFC 5869 - HMAC-based Extract-and-Expand Key Derivation Function (HKDF),
+    https://datatracker.ietf.org/doc/html/rfc5869
+
+[^8]:
+    RFC 8445, Section 7.2.2 - Forming Credentials,
+    https://datatracker.ietf.org/doc/html/rfc8445#section-7.2.2
+
+[^9]:
+    RFC 8839, Section 5.4 - ICE Password,
+    https://datatracker.ietf.org/doc/html/rfc8839#section-5.4
 
 **Discovery: The compression paradox.**
 
-Testing with real Chrome and Firefox SDP data revealed a surprising result. The binary payload—already stripped of redundancy—was high-entropy. Running DEFLATE on it *increased* the size:
+Testing with real Chrome and Firefox SDP data revealed a surprising result. The
+binary payload—already stripped of redundancy—was high-entropy. Running DEFLATE
+on it _increased_ the size:
 
 ```
 Binary payload:     61 bytes
@@ -284,46 +391,61 @@ After compression:  83 bytes
 After base64:       112 bytes
 ```
 
-Compression header overhead exceeded entropy gains. For optimized binary data, **skip compression entirely**.
+Compression header overhead exceeded entropy gains. For optimized binary data,
+**skip compression entirely**.
 
 **Discovery: Base64 is a tax.**
 
-QR codes support raw binary (Byte mode, ISO 8859-1). Most JavaScript QR libraries accept `Uint8Array` directly. Base64 adds 37% overhead for no benefit.
+QR codes support raw binary (Byte mode, ISO 8859-1). Most JavaScript QR
+libraries accept `Uint8Array` directly. Base64 adds 37% overhead for no benefit.
 
 ```
 With base64:    84 bytes → QR v5
 Without base64: 61 bytes → QR v4
 ```
 
-I had been paying a 37% size penalty because I assumed QR codes needed text encoding. They don't.
+I had been paying a 37% size penalty because I assumed QR codes needed text
+encoding. They don't.
 
-The hack was becoming a protocol. But I still hadn't addressed the fundamental problem.
+The hack was becoming a protocol. But I still hadn't addressed the fundamental
+problem.
 
 ## Friday Morning: The "Return Trip" Problem
 
-I had optimized the *offer*. But WebRTC requires bidirectional exchange—the receiver must send an *answer* back.
+I had optimized the _offer_. But WebRTC requires bidirectional exchange—the
+receiver must send an _answer_ back.
 
 In a serverless PWA environment:
-- Device A cannot listen for incoming connections (browsers are clients, not servers)
+
+- Device A cannot listen for incoming connections (browsers are clients, not
+  servers)
 - Unsolicited DTLS packets from Device B are dropped
-- ICE authentication prevents connectivity without both peers knowing each other's credentials
+- ICE authentication prevents connectivity without both peers knowing each
+  other's credentials
 
 **You cannot establish a WebRTC connection with a single unidirectional scan.**
 
 I explored alternatives:
 
-- **Bluetooth:** Web Bluetooth API cannot act as a peripheral (server role). PWAs can only be central devices, meaning both phones would try to *connect*, neither would *listen*.
-- **NFC:** Web NFC cannot emulate tags. Both phones would try to *read*, neither would *write*.
-- **Audio data transfer:** Requires microphone permission. Unreliable in noisy environments. Users would rightfully be suspicious.
+- **Bluetooth:** Web Bluetooth API cannot act as a peripheral (server role).
+  PWAs can only be central devices, meaning both phones would try to _connect_,
+  neither would _listen_.
+- **NFC:** Web NFC cannot emulate tags. Both phones would try to _read_, neither
+  would _write_.
+- **Audio data transfer:** Requires microphone permission. Unreliable in noisy
+  environments. Users would rightfully be suspicious.
 - **Wi-Fi Direct:** No Web API exists.
 
-Every alternative either demanded a server or required permissions that would spook users.
+Every alternative either demanded a server or required permissions that would
+spook users.
 
-**The only universal, permission-friendly I/O channel available to PWAs is bidirectional QR code scanning.**
+**The only universal, permission-friendly I/O channel available to PWAs is
+bidirectional QR code scanning.**
 
 I called it the **"QR Tango"**:
+
 1. Device A displays QR code
-2. Device B scans it, then displays *its* QR code
+2. Device B scans it, then displays _its_ QR code
 3. Device A scans Device B's QR code
 4. Connection establishes
 
@@ -331,32 +453,53 @@ But this introduced a new problem.
 
 ## The Glare Problem
 
-If both users press "Connect" simultaneously, both phones generate *offers*. WebRTC's state machine crashes when it receives an offer while in the "have-local-offer" state.
+If both users press "Connect" simultaneously, both phones generate _offers_.
+WebRTC's state machine crashes when it receives an offer while in the
+"have-local-offer" state.
 
-The obvious solution: designate one device as "sender" and one as "receiver." Consider the UX: Most Palabreja players are 50+ years old. They know how to scan a QR code—that's intuitive. But explaining "first you press Send, then they scan your code, then they press Receive, then you scan their code, and it has to be in that order"? That's not intuitive. That's a support nightmare. It felt broken.
+The obvious solution: designate one device as "sender" and one as "receiver."
+Consider the UX: Most Palabreja players are 50+ years old. They know how to scan
+a QR code—that's intuitive. But explaining "first you press Send, then they scan
+your code, then they press Receive, then you scan their code, and it has to be
+in that order"? That's not intuitive. That's a support nightmare. It felt
+broken.
 
 I wanted one button: "Connect." Both users press it. Both scan. It just works.
 
-But that reintroduces the technical problem. I needed role assignment. And if roles are encoded in the QR code, you get race conditions:
+But that reintroduces the technical problem. I needed role assignment. And if
+roles are encoded in the QR code, you get race conditions:
+
 - User A displays "Offer" QR
 - User B displays "Offer" QR
 - Neither can proceed
 
 Or worse—"stale QRs":
+
 - User A displays "Offer" QR
 - User B scans it, role updates to "Answerer"
 - Screen refreshes with "Answer" QR
-- User A scans the *old* cached QR before it updates
+- User A scans the _old_ cached QR before it updates
 
-I kept asking: how do I remove the offer/answer byte from the protocol header? Every approach led to the same problem—the protocol needs to know who acts as offerer and who acts as answerer. It seemed fundamental to WebRTC's state machine.
+I kept asking: how do I remove the offer/answer byte from the protocol header?
+Every approach led to the same problem—the protocol needs to know who acts as
+offerer and who acts as answerer. It seemed fundamental to WebRTC's state
+machine.
 
-Then it clicked. I'd already solved a similar problem with ICE credentials—deriving them from data already in the payload instead of transmitting them separately. What if I did the same for role assignment?
+Then it clicked. I'd already solved a similar problem with ICE
+credentials—deriving them from data already in the payload instead of
+transmitting them separately. What if I did the same for role assignment?
 
-The fingerprints. They're unique per device. They're already in the QR code. And crucially: two different fingerprints are never equal. One is always higher than the other when compared byte-by-byte. If they *are* equal, you're scanning your own QR code—an error the protocol should catch anyway.
+The fingerprints. They're unique per device. They're already in the QR code. And
+crucially: two different fingerprints are never equal. One is always higher than
+the other when compared byte-by-byte. If they _are_ equal, you're scanning your
+own QR code—an error the protocol should catch anyway.
 
 **The breakthrough: Symmetric identity exchange.**
 
-Instead of encoding "Offer" or "Answer," both QR codes contain only **identity** (fingerprint) and **location** (IP addresses)—like business cards. After both scans complete, each device has both fingerprints. Roles are assigned *deterministically* by comparison:
+Instead of encoding "Offer" or "Answer," both QR codes contain only **identity**
+(fingerprint) and **location** (IP addresses)—like business cards. After both
+scans complete, each device has both fingerprints. Roles are assigned
+_deterministically_ by comparison:
 
 ```typescript
 if (localFingerprint > remoteFingerprint) {
@@ -373,90 +516,155 @@ if (localFingerprint > remoteFingerprint) {
 
 Simple byte comparison. Deterministic. No race conditions. No stale QRs.
 
-The offerer synthesizes a "fake" SDP answer locally using the answerer's fingerprint and candidates. This satisfies the browser's state machine without additional data transmission.
+The offerer synthesizes a "fake" SDP answer locally using the answerer's
+fingerprint and candidates. This satisfies the browser's state machine without
+additional data transmission.
 
-**Result: Role-independent QR codes.** Press "Connect," display your card, scan theirs. Order doesn't matter.
+**Result: Role-independent QR codes.** Press "Connect," display your card, scan
+theirs. Order doesn't matter.
 
 ## The Browser State Paradox
 
-Solving the glare problem introduced a subtle bug. To generate the QR code, both devices must first gather candidates, which puts both browsers into the "Have Local Offer" state.
+Solving the glare problem introduced a subtle bug. To generate the QR code, both
+devices must first gather candidates, which puts both browsers into the "Have
+Local Offer" state.
 
-If the protocol decides you are the **Answerer**, you have a problem: you can't accept an Offer if you already *have* an Offer.
+If the protocol decides you are the **Answerer**, you have a problem: you can't
+accept an Offer if you already _have_ an Offer.
 
-The naive solution is to destroy the WebRTC connection and start fresh. **But you can't.** The QR code currently displayed on your screen encodes specific network ports (e.g., port 54321). If you destroy the connection object, the OS closes those ports. The map you just gave your partner becomes a dead end.
+The naive solution is to destroy the WebRTC connection and start fresh. **But
+you can't.** The QR code currently displayed on your screen encodes specific
+network ports (e.g., port 54321). If you destroy the connection object, the OS
+closes those ports. The map you just gave your partner becomes a dead end.
 
-The solution is **Signaling Rollback**. We use `setLocalDescription({type: 'rollback'})` to reset the signaling state to `stable` while keeping the underlying ICE transport—and those precious ports—alive. It allows the software to change its mind about who is calling whom without the physics of the network layer noticing.
+The solution is **Signaling Rollback**. We use
+`setLocalDescription({type: 'rollback'})` to reset the signaling state to
+`stable` while keeping the underlying ICE transport—and those precious
+ports—alive. It allows the software to change its mind about who is calling whom
+without the physics of the network layer noticing.
 
 ## Reconstructing the SDP
 
 Both peers now have everything needed to synthesize a complete SDP locally:
 
 **From the QR code**:
+
 - DTLS fingerprint (32 bytes)
 - ICE candidates (3-4 packed binary structures)
 - Remote device identity
 
 **Generated locally**:
+
 - ICE credentials (derived from fingerprints via HKDF)
 - Role assignment (fingerprint comparison)
 - Session metadata (timestamps, IDs)
 
-The offerer—who already has a valid local offer pending from the gathering phase—uses the scanned data to synthesize a **fake Remote Answer**. This tricks the browser into thinking a standard negotiation took place without actually receiving an SDP answer packet.
+The offerer—who already has a valid local offer pending from the gathering
+phase—uses the scanned data to synthesize a **fake Remote Answer**. This tricks
+the browser into thinking a standard negotiation took place without actually
+receiving an SDP answer packet.
 
-The answerer does the inverse: it performs a **signaling rollback** (telling the browser "forget that offer I just made you generate, but *keep the network ports open*"), synthesizes a **fake Remote Offer** from the QR data, and then generates a real local Answer to complete the connection.
+The answerer does the inverse: it performs a **signaling rollback** (telling the
+browser "forget that offer I just made you generate, but _keep the network ports
+open_"), synthesizes a **fake Remote Offer** from the QR data, and then
+generates a real local Answer to complete the connection.
 
-The browser sees a normal WebRTC negotiation—it's unaware the SDP came from a QR code rather than a signaling server.
+The browser sees a normal WebRTC negotiation—it's unaware the SDP came from a QR
+code rather than a signaling server.
 
 ## The mDNS Complication
 
-While reviewing the protocol, one last obstacle emerged. Modern browsers hide local IP addresses behind mDNS hostnames for privacy—instead of `192.168.1.5`, the browser reports something like `b124-98a7-c3d2-f1e0.local`.
+While reviewing the protocol, one last obstacle emerged. Modern browsers hide
+local IP addresses behind mDNS hostnames for privacy—instead of `192.168.1.5`,
+the browser reports something like `b124-98a7-c3d2-f1e0.local`.
 
-The problem: QWBP's binary format expects raw IPs (4 bytes for IPv4, 16 for IPv6). A 42-character mDNS hostname doesn't fit.
+The problem: QWBP's binary format expects raw IPs (4 bytes for IPv4, 16 for
+IPv6). A 42-character mDNS hostname doesn't fit.
 
-The solution is surprisingly elegant—and standards-compliant. WebRTC browser implementations (following the IETF mDNS draft[^10]) mandate that mDNS hostnames consist of "a version 4 UUID as defined in RFC 4122, followed by '.local'".
+The solution is surprisingly elegant—and standards-compliant. WebRTC browser
+implementations (following the IETF mDNS draft[^10]) mandate that mDNS hostnames
+consist of "a version 4 UUID as defined in RFC 4122, followed by '.local'".
 
-A UUID is 128 bits—exactly the size of an IPv6 address. The protocol doesn't need to change the binary format; it just needs to expand the IP version flag from 1 bit to 2 bits, encoding three states:
+A UUID is 128 bits—exactly the size of an IPv6 address. The protocol doesn't
+need to change the binary format; it just needs to expand the IP version flag
+from 1 bit to 2 bits, encoding three states:
 
 - `00` = IPv4 (4 bytes)
 - `01` = IPv6 (16 bytes)
 - `10` = mDNS UUID (16 bytes, packed as raw bytes)
 
-This isn't a workaround—it's compliance optimization. Modern browsers (Chrome, Safari) use this exact format for privacy[^11].
+This isn't a workaround—it's compliance optimization. Modern browsers (Chrome,
+Safari) use this exact format for privacy[^11].
 
-[^10]: draft-ietf-mmusic-mdns-ice-candidates-03, Section 3.1.1, https://datatracker.ietf.org/doc/html/draft-ietf-mmusic-mdns-ice-candidates-03#section-3.1.1
-[^11]: RFC 4122 - A Universally Unique IDentifier (UUID) URN Namespace, https://datatracker.ietf.org/doc/html/rfc4122
+[^10]:
+    draft-ietf-mmusic-mdns-ice-candidates-03, Section 3.1.1,
+    https://datatracker.ietf.org/doc/html/draft-ietf-mmusic-mdns-ice-candidates-03#section-3.1.1
 
-However, mDNS resolution between devices that haven't exchanged packets can be slow or fail entirely. For the initial bootstrap, raw IPs are more reliable. On Android and Chrome, requesting camera permission (needed anyway for QR scanning) often causes the browser to reveal the raw local IP alongside the mDNS name. Safari on iOS is stricter—it *only* provides mDNS hostnames, making the UUID packing essential rather than optional.
+[^11]:
+    RFC 4122 - A Universally Unique IDentifier (UUID) URN Namespace,
+    https://datatracker.ietf.org/doc/html/rfc4122
 
-The protocol was functionally complete. But was it *secure*?
+However, mDNS resolution between devices that haven't exchanged packets can be
+slow or fail entirely. For the initial bootstrap, raw IPs are more reliable. On
+Android and Chrome, requesting camera permission (needed anyway for QR scanning)
+often causes the browser to reveal the raw local IP alongside the mDNS name.
+Safari on iOS is stricter—it _only_ provides mDNS hostnames, making the UUID
+packing essential rather than optional.
+
+The protocol was functionally complete. But was it _secure_?
 
 ## Threat Model: The Optical Channel
 
-QWBP's security relies on the **optical channel**—the screen displaying the QR code.
+QWBP's security relies on the **optical channel**—the screen displaying the QR
+code.
 
 **What it protects against**:
+
 - **Remote attackers**: Cannot participate without visual access to both devices
-- **Source code inspection**: Knowing the implementation doesn't reveal session keys
-- **Replay attacks**: Ephemeral keys (DTLS certificates generated per-session) expire after connection
+- **Source code inspection**: Knowing the implementation doesn't reveal session
+  keys
+- **Replay attacks**: Ephemeral keys (DTLS certificates generated per-session)
+  expire after connection
 - **MITM attacks**: DTLS fingerprint verification[^12] prevents impersonation
 
 **What it assumes**:
-- **Physical proximity is the authentication factor**. If an attacker can photograph both QR codes, they can potentially intercept the session (though they'd need to be on the same network segment and win the race to establish connection first).
-- **Short-lived sessions**: Keys are valid only for the current connection attempt (~30 seconds).
+
+- **Physical proximity is the authentication factor**. If an attacker can
+  photograph both QR codes, they can potentially intercept the session (though
+  they'd need to be on the same network segment and win the race to establish
+  connection first).
+- **Short-lived sessions**: Keys are valid only for the current connection
+  attempt (~30 seconds).
 - **Visual confirmation**: Users can see who they're connecting to (same room).
 
-**Optional: Short Authentication String (SAS)**: After connection, display a short code (e.g., 4 words or 6 digits) derived from both fingerprints. Users verbally confirm the code matches on both screens—this catches active MITM attacks where an attacker substitutes their own QR. ZRTP[^13] pioneered this pattern for voice calls; it applies equally to QWBP.
+**Optional: Short Authentication String (SAS)**: After connection, display a
+short code (e.g., 4 words or 6 digits) derived from both fingerprints. Users
+verbally confirm the code matches on both screens—this catches active MITM
+attacks where an attacker substitutes their own QR. ZRTP[^13] pioneered this
+pattern for voice calls; it applies equally to QWBP.
 
-[^12]: RFC 8122, Section 5 - Fingerprint Attribute, https://datatracker.ietf.org/doc/html/rfc8122#section-5
-[^13]: RFC 6189 - ZRTP: Media Path Key Agreement for Unicast Secure RTP, Section 4.3 (SAS), https://datatracker.ietf.org/doc/html/rfc6189#section-4.3
+[^12]:
+    RFC 8122, Section 5 - Fingerprint Attribute,
+    https://datatracker.ietf.org/doc/html/rfc8122#section-5
+
+[^13]:
+    RFC 6189 - ZRTP: Media Path Key Agreement for Unicast Secure RTP, Section
+    4.3 (SAS), https://datatracker.ietf.org/doc/html/rfc6189#section-4.3
 
 ## The Bigger Picture: A Protocol, Not a Hack
 
 Then it hit me. I'd been thinking too small.
 
-A full WebRTC video call requires negotiating codecs, resolutions, bandwidth constraints. A typical Chrome video SDP with audio, video (VP8, VP9, H.264, AV1, H.265), and DataChannel weighs in at 6,255 bytes—sometimes more with all the codec options. No QR code can hold that. Version 40, the largest possible, maxes out at 2,953 bytes. A video SDP exceeds the *maximum possible QR capacity* by over 3KB.
+A full WebRTC video call requires negotiating codecs, resolutions, bandwidth
+constraints. A typical Chrome video SDP with audio, video (VP8, VP9, H.264, AV1,
+H.265), and DataChannel weighs in at 6,255 bytes—sometimes more with all the
+codec options. No QR code can hold that. Version 40, the largest possible, maxes
+out at 2,953 bytes. A video SDP exceeds the _maximum possible QR capacity_ by
+over 3KB.
 
-But the DataChannel SDP I'd been compressing? That's just the *bootstrap*. It establishes a minimal encrypted pipe between two devices. Once that pipe exists, you can send anything through it—including a 6KB video SDP.
+But the DataChannel SDP I'd been compressing? That's just the _bootstrap_. It
+establishes a minimal encrypted pipe between two devices. Once that pipe exists,
+you can send anything through it—including a 6KB video SDP.
 
 I wasn't building a game sync feature. I was building a **signaling protocol**.
 
@@ -483,80 +691,115 @@ I wasn't building a game sync feature. I was building a **signaling protocol**.
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-This two-stage architecture—small bootstrap leading to full capability—follows the same pattern as Wi-Fi Easy Connect (DPP)[^14], which uses a QR code to bootstrap secure IoT provisioning.
+This two-stage architecture—small bootstrap leading to full capability—follows
+the same pattern as Wi-Fi Easy Connect (DPP)[^14], which uses a QR code to
+bootstrap secure IoT provisioning.
 
-[^14]: Wi-Fi Alliance, "Wi-Fi Easy Connect Specification v3.0", https://www.wi-fi.org/discover-wi-fi/wi-fi-easy-connect
+[^14]:
+    Wi-Fi Alliance, "Wi-Fi Easy Connect Specification v3.0",
+    https://www.wi-fi.org/discover-wi-fi/wi-fi-easy-connect
 
 The implications went beyond Palabreja:
 
-- **Video calls without servers:** Scan a QR code, establish the bootstrap channel, negotiate full video through it. *(The irony of setting up a video call face-to-face is not lost on me.)*
-- **File sharing:** The DataChannel can stream files of any size. A 55-byte QR becomes a serverless AirDrop.
-- **Device pairing:** IoT devices, smart home setup, any scenario where two devices need to establish trust and a secure channel.
-- **Multiplayer games:** Bootstrap a mesh network between players in the same room. No game server needed for local multiplayer.
+- **Video calls without servers:** Scan a QR code, establish the bootstrap
+  channel, negotiate full video through it. _(The irony of setting up a video
+  call face-to-face is not lost on me.)_
+- **File sharing:** The DataChannel can stream files of any size. A 55-byte QR
+  becomes a serverless AirDrop.
+- **Device pairing:** IoT devices, smart home setup, any scenario where two
+  devices need to establish trust and a secure channel.
+- **Multiplayer games:** Bootstrap a mesh network between players in the same
+  room. No game server needed for local multiplayer.
 
-A 55-100 byte bootstrap (a 99.12% reduction from the 6,255-byte video SDP) unlocks full video negotiation, which unlocks unlimited bandwidth. A 4K video call, initiated by scanning a QR code in dim lighting.
+A 55-100 byte bootstrap (a 99.12% reduction from the 6,255-byte video SDP)
+unlocks full video negotiation, which unlocks unlimited bandwidth. A 4K video
+call, initiated by scanning a QR code in dim lighting.
 
 This wasn't a hack anymore. It was a protocol worth naming.
 
-I called it the **QR-WebRTC Bootstrap Protocol (QWBP)** — pronounced "cue-web-pee" (`/kjuː wɛb piː/`). Claude suggested the name; I liked it.
+I called it the **QR-WebRTC Bootstrap Protocol (QWBP)** — pronounced
+"cue-web-pee" (`/kjuː wɛb piː/`). Claude suggested the name; I liked it.
 
 ## Why Not Animated QRs?
 
-A fair question: if fountain codes can reliably transfer 9KB through animated QRs, why shrink the protocol?
+A fair question: if fountain codes can reliably transfer 9KB through animated
+QRs, why shrink the protocol?
 
 **Three reasons:**
 
 ### 1. Latency Kills Manual Signaling
 
-Manual signaling fights browser ICE timers. Firefox's `media.peerconnection.ice.trickle_grace_period` (default: 5000ms) can mark gathering failed if it doesn't receive expected candidates in time. QWBP sidesteps this by completing ICE gathering before displaying the QR—but users still need to scan within a reasonable window.
+Manual signaling fights browser ICE timers. Firefox's
+`media.peerconnection.ice.trickle_grace_period` (default: 5000ms) can mark
+gathering failed if it doesn't receive expected candidates in time. QWBP
+sidesteps this by completing ICE gathering before displaying the QR—but users
+still need to scan within a reasonable window.
 
-TXQR can transfer 9KB in ~1 second under ideal conditions, but real-world performance degrades:
+TXQR can transfer 9KB in ~1 second under ideal conditions, but real-world
+performance degrades:
+
 - Poor lighting: 15+ seconds
 - User fumbling with camera permissions: 20+ seconds
 - Missed frames requiring rescan: restart from zero
 
-By reducing payload to 55 bytes (Version 4 QR), scan time drops to **sub-500ms**—safely inside browser timeout windows.
+By reducing payload to 55 bytes (Version 4 QR), scan time drops to
+**sub-500ms**—safely inside browser timeout windows.
 
 ### 2. UX Ceremony Tax
 
 Animated QRs require:
+
 - Holding phone perfectly still
 - Waiting for sequence completion
 - Two-handed operation or phone stand
 - Understanding what "3 of 12 frames captured" means
 
 Static QRs require:
+
 - Point camera
 - Done
 
-For motivated users (crypto transactions), ceremony is acceptable. For casual users (game sync), it's a support nightmare.
+For motivated users (crypto transactions), ceremony is acceptable. For casual
+users (game sync), it's a support nightmare.
 
 ### 3. Semantic Compression Beats Transport Compression
 
-Animated QRs compress **at the transport layer**—fountain codes, LZMA, base32 encoding.
+Animated QRs compress **at the transport layer**—fountain codes, LZMA, base32
+encoding.
 
-QWBP compresses **at the semantic layer**—understanding what ICE candidates *mean* achieves 97.79% reduction.
+QWBP compresses **at the semantic layer**—understanding what ICE candidates
+_mean_ achieves 97.79% reduction.
 
-| Approach | Technique | Data Size | Scan Time |
-|----------|-----------|-----------|-----------|
-| Franklin Ta (2014) | LZMA + animated | ~1000 bytes → 10 QR codes | 10-15 sec |
-| TXQR | Fountain codes | 9KB → 30 QR codes | 1-10 sec |
-| BBQr | Chunking + base32 | 3KB → 12 QR codes | 5-12 sec |
-| **QWBP** | **Binary protocol** | **55 bytes → 1 QR code** | **&lt;0.5 sec** |
+| Approach           | Technique           | Data Size                 | Scan Time       |
+| ------------------ | ------------------- | ------------------------- | --------------- |
+| Franklin Ta (2014) | LZMA + animated     | ~1000 bytes → 10 QR codes | 10-15 sec       |
+| TXQR               | Fountain codes      | 9KB → 30 QR codes         | 1-10 sec        |
+| BBQr               | Chunking + base32   | 3KB → 12 QR codes         | 5-12 sec        |
+| **QWBP**           | **Binary protocol** | **55 bytes → 1 QR code**  | **&lt;0.5 sec** |
 
-When you control both endpoints, **domain knowledge is a compression algorithm**.
+When you control both endpoints, **domain knowledge is a compression
+algorithm**.
 
 ## The Final Protocol
 
-By Friday afternoon, I had completed the QR-WebRTC Bootstrap Protocol (QWBP) v1.0.0.
+By Friday afternoon, I had completed the QR-WebRTC Bootstrap Protocol (QWBP)
+v1.0.0.
 
 > **What QWBP is (and isn't):**
-> - DataChannel-only bootstrap (DataChannel is WebRTC's raw data pipe, separate from audio/video)—not a general SDP replacement
-> - Optimized for two devices in physical proximity with controlled scanner/encoder
-> - "Serverless" on LAN; requires STUN/TURN servers for cross-network scenarios (explained later)
-> - Not designed for video/audio negotiation, mesh networks, or untrusted environments
+>
+> - DataChannel-only bootstrap (DataChannel is WebRTC's raw data pipe, separate
+>   from audio/video)—not a general SDP replacement
+> - Optimized for two devices in physical proximity with controlled
+>   scanner/encoder
+> - "Serverless" on LAN; requires STUN/TURN servers for cross-network scenarios
+>   (explained later)
+> - Not designed for video/audio negotiation, mesh networks, or untrusted
+>   environments
 
-The packet structure evolved from my Thursday prototype. I added a **Magic Byte** (`0x51` = 'Q') for protocol identification—so scanning a restaurant menu QR fails fast instead of crashing—and a **Version** field for future compatibility:
+The packet structure evolved from my Thursday prototype. I added a **Magic
+Byte** (`0x51` = 'Q') for protocol identification—so scanning a restaurant menu
+QR fails fast instead of crashing—and a **Version** field for future
+compatibility:
 
 ```
 QWBP v1 Packet Structure:
@@ -571,6 +814,7 @@ Typical size: 55-100 bytes → QR Version 4-5 (33-37 modules)
 ```
 
 **Connection flow:**
+
 1. Both peers generate DTLS certificate and gather ICE candidates
 2. Both encode identity + location → display QR code
 3. Peer A scans Peer B's QR (order irrelevant)
@@ -580,125 +824,221 @@ Typical size: 55-100 bytes → QR Version 4-5 (33-37 modules)
 7. DTLS handshake + ICE connectivity check
 8. DataChannel established
 
-**ICE Gathering:** Unlike standard WebRTC (which uses "Trickle ICE" to send candidates as they're discovered), QWBP waits for complete ICE gathering before encoding the QR. Implementation must wait for `iceGatheringState: 'complete'`. This adds 1-2 seconds of latency but ensures the QR contains all candidates needed for connection—better than fast QR generation with failed scans.
+**ICE Gathering:** Unlike standard WebRTC (which uses "Trickle ICE" to send
+candidates as they're discovered), QWBP waits for complete ICE gathering before
+encoding the QR. Implementation must wait for `iceGatheringState: 'complete'`.
+This adds 1-2 seconds of latency but ensures the QR contains all candidates
+needed for connection—better than fast QR generation with failed scans.
 
 **Final optimization decisions:**
 
-| Decision | Rationale |
-|----------|-----------|
-| **Derive ICE credentials via HKDF** | Per-session uniqueness without transmission overhead. |
-| **Skip compression** | High-entropy binary data expands under DEFLATE. |
-| **Skip base64** | QR codes support raw binary natively. |
-| **3 host + 1 srflx candidates** | Handles VPN, tethering, and cross-network scenarios. |
-| **Symmetric identity exchange** | Eliminates race conditions and role assignment complexity. |
-| **mDNS as UUID in IPv6 slot** | Preserves binary format while supporting browser privacy features. |
+| Decision                            | Rationale                                                          |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| **Derive ICE credentials via HKDF** | Per-session uniqueness without transmission overhead.              |
+| **Skip compression**                | High-entropy binary data expands under DEFLATE.                    |
+| **Skip base64**                     | QR codes support raw binary natively.                              |
+| **3 host + 1 srflx candidates**     | Handles VPN, tethering, and cross-network scenarios.               |
+| **Symmetric identity exchange**     | Eliminates race conditions and role assignment complexity.         |
+| **mDNS as UUID in IPv6 slot**       | Preserves binary format while supporting browser privacy features. |
 
 ## The Compression Journey
 
-| Stage | Bytes | QR Version | Scan Time |
-|-------|-------|------------|-----------|
-| Standard WebRTC SDP | 2,487 | v34-40 | 10+ sec |
-| Remove boilerplate | 820 | v20 | 6 sec |
-| Hardcode credentials | 770 | v20 | 6 sec |
-| Filter candidates | 210 | v9 | 3 sec |
-| Binary format | 91 | v5 | 1 sec |
-| Skip base64 | **55-100** | **v4-5** | **&lt;0.5 sec** |
+| Stage                | Bytes      | QR Version | Scan Time       |
+| -------------------- | ---------- | ---------- | --------------- |
+| Standard WebRTC SDP  | 2,487      | v34-40     | 10+ sec         |
+| Remove boilerplate   | 820        | v20        | 6 sec           |
+| Hardcode credentials | 770        | v20        | 6 sec           |
+| Filter candidates    | 210        | v9         | 3 sec           |
+| Binary format        | 91         | v5         | 1 sec           |
+| Skip base64          | **55-100** | **v4-5**   | **&lt;0.5 sec** |
 
-**97.79% reduction.** In my testing, Version 4 QR codes scanned in under a second across varied lighting conditions—a significant improvement over the v30+ codes I started with.
+**97.79% reduction.** In my testing, Version 4 QR codes scanned in under a
+second across varied lighting conditions—a significant improvement over the v30+
+codes I started with.
 
-The QR codes use **Error Correction Level L** (7% recovery). For binary data displayed on screens—high contrast, no physical damage—Level L minimizes size while remaining scannable. Higher levels (M at 15%, H at 30%) would push v4 codes back to v5-6, defeating the optimization work.
+The QR codes use **Error Correction Level L** (7% recovery). For binary data
+displayed on screens—high contrast, no physical damage—Level L minimizes size
+while remaining scannable. Higher levels (M at 15%, H at 30%) would push v4
+codes back to v5-6, defeating the optimization work.
 
 ## A Note on "Serverless"
 
-The protocol works without servers on the same local network—both devices use their LAN IP addresses (host candidates) and connect directly.
+The protocol works without servers on the same local network—both devices use
+their LAN IP addresses (host candidates) and connect directly.
 
-For cross-network scenarios (one device on Wi-Fi, another on 5G), you need a **STUN server**[^15] to discover public IPs. STUN (Session Traversal Utilities for NAT) is simple: your device asks "what's my public IP?" and the server responds. Public STUN servers like `stun:stun.l.google.com:19302` are free, stateless, and don't relay your data—they just answer that one question. You don't deploy or maintain them.
+For cross-network scenarios (one device on Wi-Fi, another on 5G), you need a
+**STUN server**[^15] to discover public IPs. STUN (Session Traversal Utilities
+for NAT) is simple: your device asks "what's my public IP?" and the server
+responds. Public STUN servers like `stun:stun.l.google.com:19302` are free,
+stateless, and don't relay your data—they just answer that one question. You
+don't deploy or maintain them.
 
-[^15]: RFC 8489 - Session Traversal Utilities for NAT (STUN), https://datatracker.ietf.org/doc/html/rfc8489
+[^15]:
+    RFC 8489 - Session Traversal Utilities for NAT (STUN),
+    https://datatracker.ietf.org/doc/html/rfc8489
 
-**The QR Tango solves single symmetric NAT.** This was a pleasant discovery. NAT (Network Address Translation) is how your router lets multiple devices share one public IP—but it creates problems for peer-to-peer connections because devices can't directly reach each other. Symmetric NAT[^16] is the strictest type—it won't accept incoming packets until the device sends one first. Traditional WebRTC signaling struggles here because one side waits for the other.
+**The QR Tango solves single symmetric NAT.** This was a pleasant discovery. NAT
+(Network Address Translation) is how your router lets multiple devices share one
+public IP—but it creates problems for peer-to-peer connections because devices
+can't directly reach each other. Symmetric NAT[^16] is the strictest type—it
+won't accept incoming packets until the device sends one first. Traditional
+WebRTC signaling struggles here because one side waits for the other.
 
-But with QWBP, both devices have complete connection information from the QR codes. Both can fire packets simultaneously. When Device A sends to Device B, Device A's NAT opens a "hole" for return traffic. Device B does the same. The packets cross in flight, each NAT sees outgoing traffic, and both allow the responses through. This is called "simultaneous open" or hole punching[^17]—and it works because neither device is waiting for the other.
+But with QWBP, both devices have complete connection information from the QR
+codes. Both can fire packets simultaneously. When Device A sends to Device B,
+Device A's NAT opens a "hole" for return traffic. Device B does the same. The
+packets cross in flight, each NAT sees outgoing traffic, and both allow the
+responses through. This is called "simultaneous open" or hole punching[^17]—and
+it works because neither device is waiting for the other.
 
-For symmetric NAT on *both* sides, a **TURN relay** is still needed. TURN (Traversal Using Relays around NAT) is a server that both devices connect to, which then forwards traffic between them—a last resort when direct connection is impossible. Neither peer can predict what port their NAT will assign for the other destination—it's a deadlock that even simultaneous transmission can't solve. This affects maybe 10% of connections, mostly on enterprise WiFi and carrier-grade NAT. An acknowledged limitation.
+For symmetric NAT on _both_ sides, a **TURN relay** is still needed. TURN
+(Traversal Using Relays around NAT) is a server that both devices connect to,
+which then forwards traffic between them—a last resort when direct connection is
+impossible. Neither peer can predict what port their NAT will assign for the
+other destination—it's a deadlock that even simultaneous transmission can't
+solve. This affects maybe 10% of connections, mostly on enterprise WiFi and
+carrier-grade NAT. An acknowledged limitation.
 
-[^16]: RFC 4787 - Network Address Translation (NAT) Behavioral Requirements for Unicast UDP, https://datatracker.ietf.org/doc/html/rfc4787
-[^17]: RFC 5128 - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs), https://datatracker.ietf.org/doc/html/rfc5128
+[^16]:
+    RFC 4787 - Network Address Translation (NAT) Behavioral Requirements for
+    Unicast UDP, https://datatracker.ietf.org/doc/html/rfc4787
+
+[^17]:
+    RFC 5128 - State of Peer-to-Peer (P2P) Communication across Network Address
+    Translators (NATs), https://datatracker.ietf.org/doc/html/rfc5128
 
 ## When It Fails
 
 QWBP handles most same-network scenarios, but some failures are expected:
 
 **Same Wi-Fi but won't connect:**
+
 - VPN active on one device → try disabling VPN or use mobile hotspot
 - Enterprise firewall blocking peer traffic → TURN relay required
 - iOS local network permission denied → check Settings > Privacy > Local Network
 
 **QR scanned but nothing happens:**
+
 - Scanned a menu/URL QR → magic byte validation rejects non-QWBP codes
 - Session expired → the 30-second timeout passed; regenerate QR and try again
 
 **Connection drops immediately:**
-- DTLS handshake failed → certificates may have regenerated; restart both devices
 
-**Glare still possible?**
-No. Fingerprint comparison deterministically assigns roles after both scans complete. If both devices compute the same role (only possible with identical fingerprints = scanning yourself), the protocol throws an error.
+- DTLS handshake failed → certificates may have regenerated; restart both
+  devices
+
+**Glare still possible?** No. Fingerprint comparison deterministically assigns
+roles after both scans complete. If both devices compute the same role (only
+possible with identical fingerprints = scanning yourself), the protocol throws
+an error.
 
 ## What I Learned
 
-**Semantic compression beats generic compression.** Understanding what data is *actually needed* achieves 97% reduction. DEFLATE on the original SDP: 60% reduction. Domain knowledge: 97.79%.
+**Semantic compression beats generic compression.** Understanding what data is
+_actually needed_ achieves 97% reduction. DEFLATE on the original SDP: 60%
+reduction. Domain knowledge: 97.79%.
 
-**"Best practices" assume interoperability.** ICE credentials exist because generic WebRTC implementations can't trust the signaling channel. When you control both endpoints and authenticate via QR scan, the threat model changes.
+**"Best practices" assume interoperability.** ICE credentials exist because
+generic WebRTC implementations can't trust the signaling channel. When you
+control both endpoints and authenticate via QR scan, the threat model changes.
 
-**Physics constrains design.** I spent Thursday evening optimizing compression before realizing the return trip—not payload size—was the real problem. Bidirectional QR scanning wasn't a workaround; it was the only viable serverless channel.
+**Physics constrains design.** I spent Thursday evening optimizing compression
+before realizing the return trip—not payload size—was the real problem.
+Bidirectional QR scanning wasn't a workaround; it was the only viable serverless
+channel.
 
-**Dialogue beats solitary genius.** The protocol emerged from conversation, not isolation. More on this below.
+**Dialogue beats solitary genius.** The protocol emerged from conversation, not
+isolation. More on this below.
 
 ## What's Next
 
-The protocol works for any WebRTC project needing QR-based signaling. The techniques apply to any protocol where you control both endpoints.
+The protocol works for any WebRTC project needing QR-based signaling. The
+techniques apply to any protocol where you control both endpoints.
 
 I've published a formal specification, a TypeScript library, and a live demo:
 
-- **[QWBP Specification](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md)** — The complete protocol reference
-- **[qwbp on npm](https://www.npmjs.com/package/qwbp)** — Drop-in TypeScript/JavaScript library
-- **[Live Demo](https://magarcia.github.io/qwbp)** — Try it between two devices right now
+- **[QWBP Specification](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md)**
+  — The complete protocol reference
+- **[qwbp on npm](https://www.npmjs.com/package/qwbp)** — Drop-in
+  TypeScript/JavaScript library
+- **[Live Demo](https://magarcia.github.io/qwbp)** — Try it between two devices
+  right now
 
 If you build something with QWBP, I'd love to hear about it.
 
 ## Rubber Ducking with a Robot
 
-I should be transparent about how this protocol came together: I didn't design it alone. I designed it in conversation with Claude, Anthropic's AI assistant.
+I should be transparent about how this protocol came together: I didn't design
+it alone. I designed it in conversation with Claude, Anthropic's AI assistant.
 
-It started with a problem: "I have a PWA with no backend, and a user wants to sync their game progress to a new phone." I shared this with Claude, and we started exploring options. WebRTC looked promising but the signaling overhead seemed insurmountable. Over the course of several sessions—Thursday evening into Friday morning—the conversation evolved from "this is impossible" to "wait, what if we just..."
+It started with a problem: "I have a PWA with no backend, and a user wants to
+sync their game progress to a new phone." I shared this with Claude, and we
+started exploring options. WebRTC looked promising but the signaling overhead
+seemed insurmountable. Over the course of several sessions—Thursday evening into
+Friday morning—the conversation evolved from "this is impossible" to "wait, what
+if we just..."
 
 **What AI did well:**
 
-- **Research at conversation speed.** When I asked "can I hardcode ICE credentials?", Claude pulled the relevant RFC sections and explained the security implications in seconds. When I wondered if Web Bluetooth could work, Claude systematically eliminated it by citing specific browser API limitations. This kind of RFC-diving and compatibility research would have taken me hours or days.
+- **Research at conversation speed.** When I asked "can I hardcode ICE
+  credentials?", Claude pulled the relevant RFC sections and explained the
+  security implications in seconds. When I wondered if Web Bluetooth could work,
+  Claude systematically eliminated it by citing specific browser API
+  limitations. This kind of RFC-diving and compatibility research would have
+  taken me hours or days.
 
-- **Provided resistance to push against.** Claude kept insisting the "offer/answer" distinction was fundamental to WebRTC—you need an offer, you need an answer, that's how it works. That resistance forced me to articulate *why* I thought we could do better, until I asked: "What if we infer the roles from something already in the QR?" That question—mine, born from frustration with the constraint—led to the symmetric fingerprint comparison that eliminated race conditions. Sometimes AI is most useful when it's wrong.
+- **Provided resistance to push against.** Claude kept insisting the
+  "offer/answer" distinction was fundamental to WebRTC—you need an offer, you
+  need an answer, that's how it works. That resistance forced me to articulate
+  _why_ I thought we could do better, until I asked: "What if we infer the roles
+  from something already in the QR?" That question—mine, born from frustration
+  with the constraint—led to the symmetric fingerprint comparison that
+  eliminated race conditions. Sometimes AI is most useful when it's wrong.
 
-- **Validated security decisions.** When I proposed deriving ICE credentials from the DTLS fingerprint, I wasn't sure if I was introducing vulnerabilities. Claude analyzed the threat model and confirmed the real security boundary is the DTLS handshake, not the ICE layer—the change was safe.
+- **Validated security decisions.** When I proposed deriving ICE credentials
+  from the DTLS fingerprint, I wasn't sure if I was introducing vulnerabilities.
+  Claude analyzed the threat model and confirmed the real security boundary is
+  the DTLS handshake, not the ICE layer—the change was safe.
 
-- **Caught things I missed.** The "compression paradox" (DEFLATE making the payload *larger*) emerged when Claude ran the actual numbers. I would have assumed compression always helps.
+- **Caught things I missed.** The "compression paradox" (DEFLATE making the
+  payload _larger_) emerged when Claude ran the actual numbers. I would have
+  assumed compression always helps.
 
 **What AI didn't do:**
 
-- **Make architectural decisions.** Every design choice—the binary format, the QR Tango UX, the candidate limits—came from me asking "what if?" and Claude helping me evaluate the tradeoffs. The AI never said "here's the design." It said "here's what happens if you do X."
+- **Make architectural decisions.** Every design choice—the binary format, the
+  QR Tango UX, the candidate limits—came from me asking "what if?" and Claude
+  helping me evaluate the tradeoffs. The AI never said "here's the design." It
+  said "here's what happens if you do X."
 
-- **Replace domain intuition.** Knowing that a 55-byte payload "feels" right for QR codes, or that users over 50 won't tolerate animated QR sequences—that came from building products, not from prompting.
+- **Replace domain intuition.** Knowing that a 55-byte payload "feels" right for
+  QR codes, or that users over 50 won't tolerate animated QR sequences—that came
+  from building products, not from prompting.
 
 **The honest assessment:**
 
-Without AI, I probably would have given up after a few hours. This wasn't a critical problem—I could have told the user "sorry, this is not possible" and moved on. No one was demanding a solution. But because each question got an answer in seconds instead of hours, I kept going. Each small breakthrough made the next question worth asking. The momentum carried me through problems I would have abandoned.
+Without AI, I probably would have given up after a few hours. This wasn't a
+critical problem—I could have told the user "sorry, this is not possible" and
+moved on. No one was demanding a solution. But because each question got an
+answer in seconds instead of hours, I kept going. Each small breakthrough made
+the next question worth asking. The momentum carried me through problems I would
+have abandoned.
 
-Reading RFCs, testing browser quirks, validating security assumptions—weeks of unglamorous work. With AI, I compressed it into a day. Not because AI is smarter, but because it's *faster at the boring parts*, and that speed changes what feels worth attempting.
+Reading RFCs, testing browser quirks, validating security assumptions—weeks of
+unglamorous work. With AI, I compressed it into a day. Not because AI is
+smarter, but because it's _faster at the boring parts_, and that speed changes
+what feels worth attempting.
 
-The experience felt like pair programming with someone who has read every RFC but has no opinions. I drove the architecture. Claude drove the research. When I got stuck, I'd describe the problem out loud (rubber ducking), and Claude would either confirm my instinct or point out something I'd missed.
+The experience felt like pair programming with someone who has read every RFC
+but has no opinions. I drove the architecture. Claude drove the research. When I
+got stuck, I'd describe the problem out loud (rubber ducking), and Claude would
+either confirm my instinct or point out something I'd missed.
 
 ## Appendix: Quick Reference
 
-For the complete specification, see the [QWBP Specification](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md). Here's a quick reference for the binary format.
+For the complete specification, see the
+[QWBP Specification](https://github.com/magarcia/qwbp/blob/main/SPECIFICATION.md).
+Here's a quick reference for the binary format.
 
 ### Packet Structure
 
@@ -712,17 +1052,18 @@ For the complete specification, see the [QWBP Specification](https://github.com/
 
 ### Flags Byte Layout
 
-| Bits | Field | Values |
-|------|-------|--------|
-| 0-1 | Address Family | `00`=IPv4, `01`=IPv6, `10`=mDNS |
-| 2 | Protocol | `0`=UDP, `1`=TCP |
-| 3 | Candidate Type | `0`=Host, `1`=srflx |
-| 4-5 | TCP Type | `00`=passive, `01`=active, `10`=so |
-| 6-7 | Reserved | Must be `0` |
+| Bits | Field          | Values                             |
+| ---- | -------------- | ---------------------------------- |
+| 0-1  | Address Family | `00`=IPv4, `01`=IPv6, `10`=mDNS    |
+| 2    | Protocol       | `0`=UDP, `1`=TCP                   |
+| 3    | Candidate Type | `0`=Host, `1`=srflx                |
+| 4-5  | TCP Type       | `00`=passive, `01`=active, `10`=so |
+| 6-7  | Reserved       | Must be `0`                        |
 
 ### Test Vector
 
 **Minimal valid packet (1 IPv4 host candidate):**
+
 ```
 Hex: 51 00 [32 bytes fingerprint] 00 C0A80105 D431
      ^  ^   ^                       ^  ^        ^
@@ -737,14 +1078,17 @@ Total: 1 + 1 + 32 + 1 + 4 + 2 = 41 bytes
 ```
 
 **Decoded candidate line:**
+
 ```
 a=candidate:1 1 udp 2122260223 192.168.1.5 54321 typ host
 ```
 
-<br/>
+<br />
 
 ---
 
-<br/>
+<br />
 
-*A user asked a simple question. I spent an evening and a morning talking to an AI about protocol design. Being unreasonable turned out to be the only reasonable solution.*
+_A user asked a simple question. I spent an evening and a morning talking to an
+AI about protocol design. Being unreasonable turned out to be the only
+reasonable solution._

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 
-export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>) {
+export default function Table(
+  props: React.TableHTMLAttributes<HTMLTableElement>,
+) {
   const tableRef = useRef<HTMLTableElement>(null);
 
   useEffect(() => {
@@ -10,25 +12,36 @@ export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>
     const setDataLabels = () => {
       // Try to get headers from thead first (standard markdown table structure)
       // Use a more specific selector that works even when hidden
-      let headers = Array.from(table.querySelectorAll("thead th")) as HTMLTableCellElement[];
-      
+      let headers = Array.from(
+        table.querySelectorAll("thead th"),
+      ) as HTMLTableCellElement[];
+
       // If no thead headers, check first row of tbody for th elements
       // (some markdown parsers might put headers in tbody)
       if (headers.length === 0) {
         const firstRow = table.querySelector("tbody tr:first-child");
         if (firstRow) {
-          headers = Array.from(firstRow.querySelectorAll("th")) as HTMLTableCellElement[];
+          headers = Array.from(
+            firstRow.querySelectorAll("th"),
+          ) as HTMLTableCellElement[];
         }
       }
 
       // If still no headers found, try querying all th elements in the table
       if (headers.length === 0) {
-        headers = Array.from(table.querySelectorAll("th")) as HTMLTableCellElement[];
+        headers = Array.from(
+          table.querySelectorAll("th"),
+        ) as HTMLTableCellElement[];
         // If we found headers but they're in tbody, use the first row's headers
         if (headers.length > 0) {
           const firstRowWithHeaders = headers[0]?.closest("tr");
-          if (firstRowWithHeaders && firstRowWithHeaders.parentElement?.tagName === "TBODY") {
-            headers = Array.from(firstRowWithHeaders.querySelectorAll("th")) as HTMLTableCellElement[];
+          if (
+            firstRowWithHeaders &&
+            firstRowWithHeaders.parentElement?.tagName === "TBODY"
+          ) {
+            headers = Array.from(
+              firstRowWithHeaders.querySelectorAll("th"),
+            ) as HTMLTableCellElement[];
           }
         }
       }
@@ -55,7 +68,7 @@ export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>
         const cells = Array.from(row.querySelectorAll("td"));
         // Skip rows that don't have td elements (they might be header rows)
         if (cells.length === 0) return;
-        
+
         cells.forEach((cell, index) => {
           if (index < headerTexts.length && headerTexts[index]) {
             cell.setAttribute("data-label", headerTexts[index]);
@@ -95,11 +108,16 @@ export default function Table(props: React.TableHTMLAttributes<HTMLTableElement>
 
 export function TableRow(props: React.HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className="block md:table-row border-b border-border last:border-b-0 mb-4 md:mb-0" {...props} />
+    <tr
+      className="block md:table-row border-b border-border last:border-b-0 mb-4 md:mb-0"
+      {...props}
+    />
   );
 }
 
-export function TableHead(props: React.HTMLAttributes<HTMLTableSectionElement>) {
+export function TableHead(
+  props: React.HTMLAttributes<HTMLTableSectionElement>,
+) {
   return (
     <thead
       className="sr-only md:not-sr-only md:table-header-group font-medium border-b border-border"
@@ -108,17 +126,24 @@ export function TableHead(props: React.HTMLAttributes<HTMLTableSectionElement>) 
   );
 }
 
-export function TableBody(props: React.HTMLAttributes<HTMLTableSectionElement>) {
+export function TableBody(
+  props: React.HTMLAttributes<HTMLTableSectionElement>,
+) {
   return <tbody className="block md:table-row-group" {...props} />;
 }
 
 export function TableCell(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <td className="block md:table-cell relative py-3 px-4 md:px-4 text-foreground" {...props} />
+    <td
+      className="block md:table-cell relative py-3 px-4 md:px-4 text-foreground"
+      {...props}
+    />
   );
 }
 
-export function TableHeaderCell(props: React.ThHTMLAttributes<HTMLTableCellElement>) {
+export function TableHeaderCell(
+  props: React.ThHTMLAttributes<HTMLTableCellElement>,
+) {
   return (
     <th
       scope="col"

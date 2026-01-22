@@ -92,7 +92,7 @@ describe("Heading", () => {
       render(
         <Heading level={2} data-custom="test-value">
           Test Heading
-        </Heading>
+        </Heading>,
       );
       const heading = screen.getByRole("heading", { level: 2 });
       expect(heading).toHaveAttribute("data-custom", "test-value");
@@ -102,7 +102,7 @@ describe("Heading", () => {
       render(
         <Heading level={2} aria-label="Custom label">
           Test Heading
-        </Heading>
+        </Heading>,
       );
       const heading = screen.getByRole("heading", { level: 2 });
       expect(heading).toHaveAttribute("aria-label", "Custom label");

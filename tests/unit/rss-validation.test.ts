@@ -66,7 +66,7 @@ describe("RSS Feed Validation", () => {
   beforeAll(() => {
     if (!fs.existsSync(RSS_PATH)) {
       throw new Error(
-        `RSS file not found at ${RSS_PATH}. Run 'yarn build' first.`
+        `RSS file not found at ${RSS_PATH}. Run 'yarn build' first.`,
       );
     }
     rssContent = fs.readFileSync(RSS_PATH, "utf-8");
@@ -144,11 +144,11 @@ describe("RSS Feed Validation", () => {
         const email = extractEmailFromEditor(editor);
         expect(
           email,
-          `managingEditor should start with email, got: "${editor}"`
+          `managingEditor should start with email, got: "${editor}"`,
         ).not.toBeNull();
         expect(
           isValidEmail(email!),
-          `managingEditor should contain valid email, got: "${email}" from "${editor}"`
+          `managingEditor should contain valid email, got: "${email}" from "${editor}"`,
         ).toBe(true);
       }
     });
@@ -174,7 +174,7 @@ describe("RSS Feed Validation", () => {
           item.description !== undefined && item.description !== "";
         expect(
           hasTitle || hasDescription,
-          `Item ${index} must have title or description`
+          `Item ${index} must have title or description`,
         ).toBe(true);
       });
     });
@@ -200,7 +200,7 @@ describe("RSS Feed Validation", () => {
         const hasDcCreator = item["dc:creator"] !== undefined;
         expect(
           hasAuthor || hasDcCreator,
-          `Item ${index} should have author or dc:creator`
+          `Item ${index} should have author or dc:creator`,
         ).toBe(true);
       });
     });
@@ -225,7 +225,7 @@ describe("RSS Feed Validation", () => {
         if (item.link) {
           expect(
             isValidUrl(item.link),
-            `Item ${index} link should be valid URL: ${item.link}`
+            `Item ${index} link should be valid URL: ${item.link}`,
           ).toBe(true);
         }
       });
@@ -239,7 +239,7 @@ describe("RSS Feed Validation", () => {
         if (guid) {
           expect(
             isValidUrl(guid),
-            `Item ${index} guid should be valid URL: ${guid}`
+            `Item ${index} guid should be valid URL: ${guid}`,
           ).toBe(true);
         }
       });
@@ -259,7 +259,7 @@ describe("RSS Feed Validation", () => {
         if (item.pubDate) {
           expect(
             isValidRfc822Date(item.pubDate),
-            `Item ${index} pubDate should be RFC 822 format: ${item.pubDate}`
+            `Item ${index} pubDate should be RFC 822 format: ${item.pubDate}`,
           ).toBe(true);
         }
       });
@@ -269,7 +269,7 @@ describe("RSS Feed Validation", () => {
   describe("Namespace Validation", () => {
     it("should declare content namespace", () => {
       expect(rssContent).toContain(
-        'xmlns:content="http://purl.org/rss/1.0/modules/content/"'
+        'xmlns:content="http://purl.org/rss/1.0/modules/content/"',
       );
     });
 
@@ -294,11 +294,13 @@ describe("RSS Feed Validation", () => {
       items.forEach((item, index) => {
         const content = item["content:encoded"];
         if (content) {
-          expect(content.length, `Item ${index} content should not be empty`).toBeGreaterThan(0);
           expect(
-            content,
-            `Item ${index} content should contain HTML`
-          ).toMatch(/<\/?[a-z][\s\S]*>/i);
+            content.length,
+            `Item ${index} content should not be empty`,
+          ).toBeGreaterThan(0);
+          expect(content, `Item ${index} content should contain HTML`).toMatch(
+            /<\/?[a-z][\s\S]*>/i,
+          );
         }
       });
     });
@@ -315,7 +317,7 @@ describe("RSS Feed Validation", () => {
           const matches = [...content.matchAll(relativeUrlRegex)];
           expect(
             matches.length,
-            `Item ${index} (${item.title}) has relative URLs: ${matches.map((m) => m[1] + "/" + m[2]).join(", ")}`
+            `Item ${index} (${item.title}) has relative URLs: ${matches.map((m) => m[1] + "/" + m[2]).join(", ")}`,
           ).toBe(0);
         }
       });
@@ -346,14 +348,14 @@ describe("RSS Feed Validation", () => {
 
         expect(
           found,
-          `RSS should include post: ${post.slug} (${expectedUrl})`
+          `RSS should include post: ${post.slug} (${expectedUrl})`,
         ).toBe(true);
       });
     });
 
     it("should exclude future-dated posts", () => {
       const futurePosts = getAllFilesFrontMatter("blog").filter(
-        (post) => !isPublished(post)
+        (post) => !isPublished(post),
       );
       const items = getItems();
 
@@ -363,7 +365,7 @@ describe("RSS Feed Validation", () => {
 
         expect(
           found,
-          `RSS should NOT include future post: ${post.slug} (${expectedUrl})`
+          `RSS should NOT include future post: ${post.slug} (${expectedUrl})`,
         ).toBe(false);
       });
     });

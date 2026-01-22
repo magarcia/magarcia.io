@@ -1,20 +1,23 @@
 ---
 title: AngularBeers amb Miško Hevery
-date: '2016-06-26'
-spoiler: Properes característiques que faran d'Angular 2 una opció poderosa en un futur proper.
+date: "2016-06-26"
+spoiler:
+  Properes característiques que faran d'Angular 2 una opció poderosa en un futur
+  proper.
 indexed: false
 tags:
   - angular
 ---
 
-Dimarts passat vaig gaudir d'una xerrada de [Miško Hevery](http://misko.hevery.com/about/)
-sobre Angular2 gràcies als nois d'[AngularBeers](http://www.meetup.com/AngularJS-Beers/).
-Va ser una xerrada sobre el que ve amb Angular 2 i el punt clau amb el qual
-ens hem de quedar és que Angluar deixa el concepte de framework frontend per
-convertir-se en una plataforma completa.
+Dimarts passat vaig gaudir d'una xerrada de
+[Miško Hevery](http://misko.hevery.com/about/) sobre Angular2 gràcies als nois
+d'[AngularBeers](http://www.meetup.com/AngularJS-Beers/). Va ser una xerrada
+sobre el que ve amb Angular 2 i el punt clau amb el qual ens hem de quedar és
+que Angluar deixa el concepte de framework frontend per convertir-se en una
+plataforma completa.
 
-![miskohevery](/images/angularbeers-with-misko-hevery.jpg)
-_Sara (una bona companya i millor amiga), Miško i jo_
+![miskohevery](/images/angularbeers-with-misko-hevery.jpg) _Sara (una bona
+companya i millor amiga), Miško i jo_
 
 Però, a part d'això, m'agradaria remarcar un parell de coses que faran d'
 Angular 2 una opció poderosa en un futur proper.
@@ -23,28 +26,31 @@ Angular 2 una opció poderosa en un futur proper.
 
 Què significa això? Les plantilles han estat un dels llocs on es cometen errors
 des d'Angular 1. Fins i tot si introduïm TypeScript o eines de lint, no podríem
-ser capaços de detectar errors a les plantilles fins que s'avaluen en temps d'execució.
-Fins ara Angular 1.X compila les plantilles cada vegada que s'han de renderitzar.
+ser capaços de detectar errors a les plantilles fins que s'avaluen en temps
+d'execució. Fins ara Angular 1.X compila les plantilles cada vegada que s'han de
+renderitzar.
 
-Amb Angular 2 (sense compilació offline) les plantilles es compilen només una vegada.
-Però amb la compilació offline les plantilles es compilen en temps de construcció a
-JavaScript pel que mai es compilaran al navegador. Els beneficis que obtenim
-aquí és que ens permet verificar estàticament els tipus de les nostres plantilles amb
-TypeScript, la qual cosa és increïble, a més de saltar-se la compilació en temps d'execució
-i una mida de llibreria més petita.
+Amb Angular 2 (sense compilació offline) les plantilles es compilen només una
+vegada. Però amb la compilació offline les plantilles es compilen en temps de
+construcció a JavaScript pel que mai es compilaran al navegador. Els beneficis
+que obtenim aquí és que ens permet verificar estàticament els tipus de les
+nostres plantilles amb TypeScript, la qual cosa és increïble, a més de saltar-se
+la compilació en temps d'execució i una mida de llibreria més petita.
 
 ## Angular Universal
 
 > Suport JavaScript Universal (isomòrfic) per a Angular 2.
 
-Amb Angular Universal, podem executar Angular 2 al costat del servidor i això ens dóna
-alguns avantatges:
+Amb Angular Universal, podem executar Angular 2 al costat del servidor i això
+ens dóna alguns avantatges:
 
-1. **Millor Rendiment Percebut:** Els usuaris veuran instantàniament una vista renderitzada
-   al servidor el que millora enormement el rendiment percebut i l'experiència general
-   de l'usuari.
-1. **Optimitzat per a Motors de Cerca:** El pre-renderitzat al costat del servidor és una forma fiable d'
-   assegurar que tots els motors de cerca puguin accedir al teu contingut.
-1. **Vista Prèvia del Lloc:** Assegura que Facebook, Twitter i totes les altres aplicacions de xarxes socials
-   mostrin correctament una imatge de vista prèvia de la teva aplicació. (Vaig lidiar amb aquest problema abans
-   i és *un mal de cap*)
+1. **Millor Rendiment Percebut:** Els usuaris veuran instantàniament una vista
+   renderitzada al servidor el que millora enormement el rendiment percebut i
+   l'experiència general de l'usuari.
+1. **Optimitzat per a Motors de Cerca:** El pre-renderitzat al costat del
+   servidor és una forma fiable d' assegurar que tots els motors de cerca puguin
+   accedir al teu contingut.
+1. **Vista Prèvia del Lloc:** Assegura que Facebook, Twitter i totes les altres
+   aplicacions de xarxes socials mostrin correctament una imatge de vista prèvia
+   de la teva aplicació. (Vaig lidiar amb aquest problema abans i és _un mal de
+   cap_)

@@ -13,10 +13,15 @@ const readingTimeTranslations: Record<string, (min: number) => string> = {
   ca: (min) => `${min} min de lectura`,
 };
 
-const tagPageTitleTranslations: Record<string, (n: number, t: string) => string> = {
+const tagPageTitleTranslations: Record<
+  string,
+  (n: number, t: string) => string
+> = {
   en: (n, t) => `${n} post${n === 1 ? "" : "s"} tagged with "${t}"`,
-  es: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetado${n === 1 ? "" : "s"} con "${t}"`,
-  ca: (n, t) => `${n} post${n === 1 ? "" : "s"} etiquetat${n === 1 ? "" : "s"} amb "${t}"`,
+  es: (n, t) =>
+    `${n} post${n === 1 ? "" : "s"} etiquetado${n === 1 ? "" : "s"} con "${t}"`,
+  ca: (n, t) =>
+    `${n} post${n === 1 ? "" : "s"} etiquetat${n === 1 ? "" : "s"} amb "${t}"`,
 };
 
 const sectionTitles: Record<string, Record<string, string>> = {
@@ -55,7 +60,7 @@ export function formatDate(dateString: string, lang: string = "en"): string {
  */
 export function formatReadingTime(
   minutes: number,
-  lang: string = "en"
+  lang: string = "en",
 ): string {
   const roundedMinutes = Math.ceil(minutes);
   const formatter = readingTimeTranslations[lang] || readingTimeTranslations.en;
@@ -77,9 +82,10 @@ export function formatReadingTime(
 export function formatTagPageTitle(
   count: number,
   tag: string,
-  lang: string = "en"
+  lang: string = "en",
 ): string {
-  const formatter = tagPageTitleTranslations[lang] || tagPageTitleTranslations.en;
+  const formatter =
+    tagPageTitleTranslations[lang] || tagPageTitleTranslations.en;
   return formatter(count, tag);
 }
 
@@ -96,7 +102,9 @@ export function formatTagPageTitle(
  */
 export function getSectionTitle(
   section: "about" | "projects" | "writing",
-  lang: string = "en"
+  lang: string = "en",
 ): string {
-  return sectionTitles[section]?.[lang] || sectionTitles[section]?.en || section;
+  return (
+    sectionTitles[section]?.[lang] || sectionTitles[section]?.en || section
+  );
 }

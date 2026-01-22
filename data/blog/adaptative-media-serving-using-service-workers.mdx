@@ -1,7 +1,10 @@
 ---
 title: Adaptive Media Serving using Service Workers
-date: '2019-06-17'
-spoiler: Everyone has experienced how visiting a web site over a slow network connection usually takes ages to load. We are going to explore how to load different media content using the Network Information API.
+date: "2019-06-17"
+spoiler:
+  Everyone has experienced how visiting a web site over a slow network
+  connection usually takes ages to load. We are going to explore how to load
+  different media content using the Network Information API.
 tags:
   - javascript
   - service-workers
@@ -22,13 +25,14 @@ network connection that in the best case is a 3G connection.
 
 > [In 2018, 52.2% of all global web pages were served to mobile phones.](https://www.statista.com/statistics/241462/global-mobile-phone-website-traffic-share/)
 
-So, taking care of performance is important and one of the most resource-consuming
-is media delivery. We are going to show how to adapt the media
-delivery based on the network connection using the
+So, taking care of performance is important and one of the most
+resource-consuming is media delivery. We are going to show how to adapt the
+media delivery based on the network connection using the
 [Network Information API](http://wicg.github.io/netinfo/). This is an improved
-version of an experiment I did with my coworker [@Eduardo Aquiles](https://twitter.com/eduaquiles)
-as a React component, similar to what [Max Böck](https://mxb.dev/) explains in
-his article about [connection-aware components](https://mxb.dev/blog/connection-aware-components/)
+version of an experiment I did with my coworker
+[@Eduardo Aquiles](https://twitter.com/eduaquiles) as a React component, similar
+to what [Max Böck](https://mxb.dev/) explains in his article about
+[connection-aware components](https://mxb.dev/blog/connection-aware-components/)
 but in this case, using service workers.
 
 ## The Network Information API
@@ -39,56 +43,75 @@ to JavaScript with information about the device connection.
 The interface consists of a different set of attributes that gives us multiple
 information about the network. The most relevant for us in this article are:
 
-- **type:** The [connection type](http://wicg.github.io/netinfo/#dfn-connection-type)
-  that the user agent is using. (e.g. ‘wifi’, ‘cellular’, ‘ethernet’, etc.)
-- **effectiveType** The [effective connection type](http://wicg.github.io/netinfo/#dfn-effective-connection-type)
-  that is determined using a combination of recently observed [rtt](http://wicg.github.io/netinfo/#dom-networkinformation-rtt) and [downlink](http://wicg.github.io/netinfo/#dom-networkinformation-downlink) values. (_[see table](#effectivetype-values)_)
+- **type:** The
+  [connection type](http://wicg.github.io/netinfo/#dfn-connection-type) that the
+  user agent is using. (e.g. ‘wifi’, ‘cellular’, ‘ethernet’, etc.)
+- **effectiveType** The
+  [effective connection type](http://wicg.github.io/netinfo/#dfn-effective-connection-type)
+  that is determined using a combination of recently observed
+  [rtt](http://wicg.github.io/netinfo/#dom-networkinformation-rtt) and
+  [downlink](http://wicg.github.io/netinfo/#dom-networkinformation-downlink)
+  values. (_[see table](#effectivetype-values)_)
 - **saveData** Indicates when the user requested a reduced data usage.
 
 ### effectiveType values
 
 <table>
-   <thead>
-      <tr>
-         <th>ECT</th>
-         <th>Minimum RTT (ms)</th>
-         <th>Maximum downlink (Kbps)</th>
-         <th>Explanation</th>
-      </tr>
-   </thead>
-   <tbody>
-      <tr>
-         <td data-column="ECT">slow‑2g</td>
-         <td data-column="RTT">2000</td>
-         <td data-column="Downlink">50</td>
-         <td data-column="Explanation">The network is suited for small transfers only such as text-only pages.</td>
-      </tr>
-      <tr>
-         <td data-column="ECT">2g</td>
-         <td data-column="RTT">1400</td>
-         <td data-column="Downlink">70</td>
-         <td data-column="Explanation">The network is suited for transfers of small images.</td>
-      </tr>
-      <tr>
-         <td  data-column="ECT">3g</td>
-         <td data-column="RTT">270</td>
-         <td data-column="Downlink">700</td>
-         <td data-column="Explanation">The network is suited for transfers of large assets such as high resolution images, audio, and SD video.</td>
-      </tr>
-      <tr>
-         <td  data-column="ECT">4g</td>
-         <td data-column="RTT">0</td>
-         <td data-column="Downlink">∞</td>
-         <td data-column="Explanation">The network is suited for HD video, real-time video, etc.</td>
-      </tr>
-   </tbody>
-   <caption align="bottom">Table of <a href="http://wicg.github.io/netinfo/#dfn-effective-connection-type">effective connection types (ECT)</a></caption>
+  <thead>
+    <tr>
+      <th>ECT</th>
+      <th>Minimum RTT (ms)</th>
+      <th>Maximum downlink (Kbps)</th>
+      <th>Explanation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-column="ECT">slow‑2g</td>
+      <td data-column="RTT">2000</td>
+      <td data-column="Downlink">50</td>
+      <td data-column="Explanation">
+        The network is suited for small transfers only such as text-only pages.
+      </td>
+    </tr>
+    <tr>
+      <td data-column="ECT">2g</td>
+      <td data-column="RTT">1400</td>
+      <td data-column="Downlink">70</td>
+      <td data-column="Explanation">
+        The network is suited for transfers of small images.
+      </td>
+    </tr>
+    <tr>
+      <td data-column="ECT">3g</td>
+      <td data-column="RTT">270</td>
+      <td data-column="Downlink">700</td>
+      <td data-column="Explanation">
+        The network is suited for transfers of large assets such as high
+        resolution images, audio, and SD video.
+      </td>
+    </tr>
+    <tr>
+      <td data-column="ECT">4g</td>
+      <td data-column="RTT">0</td>
+      <td data-column="Downlink">∞</td>
+      <td data-column="Explanation">
+        The network is suited for HD video, real-time video, etc.
+      </td>
+    </tr>
+  </tbody>
+  <caption align="bottom">
+    Table of{" "}
+    <a href="http://wicg.github.io/netinfo/#dfn-effective-connection-type">
+      effective connection types (ECT)
+    </a>
+  </caption>
 </table>
 
 ### Browser support
 
-The API does not have a full browser support yet but is [supported by the most
-popular mobile browsers](https://caniuse.com/#feat=netinfo)
+The API does not have a full browser support yet but is
+[supported by the most popular mobile browsers](https://caniuse.com/#feat=netinfo)
 which are the ones where this technique will have more impact.
 
 ![Browser support for Network Information API](/images/caniuse.png)
@@ -111,22 +134,25 @@ easily reachable using the next snippet:
 
 ```javascript
 function getMediaQuality() {
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
 
   if (!connection) {
-    return 'medium';
+    return "medium";
   }
 
   switch (connection.effectiveType) {
-    case 'slow-2g':
-    case '2g':
-      return 'low';
-    case '3g':
-      return 'medium';
-    case '4g':
-      return 'high';
+    case "slow-2g":
+    case "2g":
+      return "low";
+    case "3g":
+      return "medium";
+    case "4g":
+      return "high";
     default:
-      return 'low';
+      return "low";
   }
 }
 ```
@@ -141,9 +167,9 @@ tags as it follows:
 ```
 
 ```javascript
-const images = document.querySelectorAll('img');
-images.forEach(img => {
-  img.src = img.src.replace('low', getMediaQuality());
+const images = document.querySelectorAll("img");
+images.forEach((img) => {
+  img.src = img.src.replace("low", getMediaQuality());
 });
 ```
 
@@ -172,26 +198,29 @@ appropriate quality for the image.
 First, we need to register our service worker:
 
 ```javascript
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(
-      function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/sw.js").then(
+      function (registration) {
+        console.log(
+          "ServiceWorker registration successful with scope: ",
+          registration.scope,
+        );
       },
-      function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      }
+      function (err) {
+        console.log("ServiceWorker registration failed: ", err);
+      },
     );
   });
 }
 ```
 
 Next, we add a listener for the fetch event, which for all the images requested
-from the site will append the right quality parameter using the `getMediaQuality`
-function created in the previous section.
+from the site will append the right quality parameter using the
+`getMediaQuality` function created in the previous section.
 
 ```javascript
-self.addEventListener('fetch', function(event) {
+self.addEventListener("fetch", function (event) {
   if (/\.jpg$|.png$|.webp$/.test(event.request.url)) {
     const url = event.request.url + `?quality=${getMediaQuality()}`;
     event.respondWith(fetch(url));

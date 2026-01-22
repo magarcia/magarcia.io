@@ -1,5 +1,7 @@
 ---
-description: CI version of random code improvement - no user interaction, applies all >90% confidence fixes automatically
+description:
+  CI version of random code improvement - no user interaction, applies all >90%
+  confidence fixes automatically
 allowed-tools:
   - Bash(find app/*)
   - Bash(find components/*)
@@ -23,7 +25,8 @@ allowed-tools:
 
 # CI Random Code Improvement
 
-Pick random files from the blog codebase, review for improvements, and automatically fix issues with >90% confidence.
+Pick random files from the blog codebase, review for improvements, and
+automatically fix issues with >90% confidence.
 
 **CI MODE**: No user interaction. Apply all high-confidence fixes automatically.
 
@@ -47,9 +50,11 @@ For each file in the pool above:
 2. Scan for obvious improvement opportunities
 3. Rate "review potential" (low/medium/high)
 
-Select the file with **highest review potential**. If all files seem clean, re-run the find commands above to get a new batch (max 3 attempts).
+Select the file with **highest review potential**. If all files seem clean,
+re-run the find commands above to get a new batch (max 3 attempts).
 
 If still nothing after 3 attempts:
+
 - Output exactly: `NO_IMPROVEMENTS_FOUND`
 - Stop execution
 
@@ -59,7 +64,8 @@ Based on the selected file:
 
 - **Self-contained**: Simple utility/standalone component → single file
 - **Has dependencies**: Imports local hooks/helpers → include those
-- **Part of larger component**: Multiple related files → full component directory
+- **Part of larger component**: Multiple related files → full component
+  directory
 
 Read all files in scope.
 
@@ -83,7 +89,8 @@ Analyze across ALL categories equally:
 
 - Check if `*.test.ts(x)` exists for the component in `tests/unit/`
 - Review for missing edge cases, untested branches, async behavior
-- If no tests: identify key behaviors worth testing (props, errors, interactions)
+- If no tests: identify key behaviors worth testing (props, errors,
+  interactions)
 
 ### Step 4: Issue Assessment
 
@@ -111,8 +118,7 @@ Output all findings using this format:
 ```markdown
 ## CI Random Improvement Report
 
-**File(s)**: [paths]
-**Scope**: [self-contained / dependencies / full component]
+**File(s)**: [paths] **Scope**: [self-contained / dependencies / full component]
 
 ### Will Fix (>90% confidence)
 
@@ -179,12 +185,14 @@ Output final summary and write PR metadata file for the GitHub Action.
 ```
 
 **Title format:**
+
 - Use conventional commit format: `<type>(<scope>): <description>`
 - `type`: refactor, fix, a11y, perf, test, chore
 - `scope`: main component/file name (e.g., `CodeBlock`, `useTheme`)
 - `description`: concise summary of improvements (max 50 chars)
 
 **Body format:**
+
 - Summary: bullet points of each improvement made
 - Modified Files: list each file with brief description of changes
 - Verification: lint/types/tests status
@@ -215,7 +223,8 @@ Output final summary and write PR metadata file for the GitHub Action.
 - ...
 ```
 
-**Note: Do NOT perform git operations. The GitHub Action handles commits and PR creation.**
+**Note: Do NOT perform git operations. The GitHub Action handles commits and PR
+creation.**
 
 ## Confidence Guidelines
 

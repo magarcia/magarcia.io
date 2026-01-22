@@ -1,5 +1,8 @@
 ---
-description: Selects random files from blog codebase, performs comprehensive code review (readability, React/TS patterns, a11y, UX, performance, testing), and applies fixes with >90% confidence using TDD when practical
+description:
+  Selects random files from blog codebase, performs comprehensive code review
+  (readability, React/TS patterns, a11y, UX, performance, testing), and applies
+  fixes with >90% confidence using TDD when practical
 allowed-tools:
   - Bash(find app/*)
   - Bash(find components/*)
@@ -31,7 +34,8 @@ allowed-tools:
 
 # Random Code Improvement
 
-Pick random files from the blog codebase, review for improvements, and optionally fix issues with >90% confidence.
+Pick random files from the blog codebase, review for improvements, and
+optionally fix issues with >90% confidence.
 
 ## Random File Pool (Pre-selected)
 
@@ -53,7 +57,9 @@ For each file in the pool above:
 2. Scan for obvious improvement opportunities
 3. Rate "review potential" (low/medium/high)
 
-Select the file with **highest review potential**. If all files seem clean, re-run the find commands above to get a new batch (max 3 attempts). If still nothing after 3 attempts, report files are healthy and end.
+Select the file with **highest review potential**. If all files seem clean,
+re-run the find commands above to get a new batch (max 3 attempts). If still
+nothing after 3 attempts, report files are healthy and end.
 
 ### Step 2: Determine Review Scope
 
@@ -61,7 +67,8 @@ Based on the selected file:
 
 - **Self-contained**: Simple utility/standalone component → single file
 - **Has dependencies**: Imports local hooks/helpers → include those
-- **Part of larger component**: Multiple related files → full component directory
+- **Part of larger component**: Multiple related files → full component
+  directory
 
 Read all files in scope.
 
@@ -85,7 +92,8 @@ Analyze across ALL categories equally:
 
 - Check if `*.test.ts(x)` exists for the component in `tests/unit/`
 - Review for missing edge cases, untested branches, async behavior
-- If no tests: identify key behaviors worth testing (props, errors, interactions)
+- If no tests: identify key behaviors worth testing (props, errors,
+  interactions)
 
 ### Step 4: Issue Assessment
 
@@ -113,8 +121,7 @@ Present ALL findings in one report using this format:
 ```markdown
 ## Random Improvement Report
 
-**File(s)**: [paths]
-**Scope**: [self-contained / dependencies / full component]
+**File(s)**: [paths] **Scope**: [self-contained / dependencies / full component]
 
 ### Will Fix (>90% confidence)
 

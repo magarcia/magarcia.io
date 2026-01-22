@@ -1,7 +1,12 @@
 ---
 title: "Enable environment variables in your configs with env-interpolation"
 date: "2025-09-29"
-spoiler: I shipped [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), a tiny TS helper that interpolates `${VAR}` and `${VAR:default}` inside config values. It walks strings in objects/arrays and never touches keys, so shapes stay stable and predictable—very config-oriented.
+spoiler:
+  I shipped
+  [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), a tiny
+  TS helper that interpolates `${VAR}` and `${VAR:default}` inside config
+  values. It walks strings in objects/arrays and never touches keys, so shapes
+  stay stable and predictable—very config-oriented.
 tags:
   - typescript
   - node-js
@@ -9,9 +14,14 @@ tags:
   - open-source
 ---
 
-I shipped **env-interpolation**, a tiny TS helper that interpolates `${VAR}` and `${VAR:default}` inside **config values**. It walks strings in objects/arrays and **never touches keys**, so shapes stay stable and predictable—very config-oriented.
+I shipped **env-interpolation**, a tiny TS helper that interpolates `${VAR}` and
+`${VAR:default}` inside **config values**. It walks strings in objects/arrays
+and **never touches keys**, so shapes stay stable and predictable—very
+config-oriented.
 
-Born out of **mcp-tool-selector**, where I needed layered config without leaking secrets or littering `process.env` calls. It turned into a sharp little utility, so I published it.
+Born out of **mcp-tool-selector**, where I needed layered config without leaking
+secrets or littering `process.env` calls. It turned into a sharp little utility,
+so I published it.
 
 ## At a glance
 
@@ -19,7 +29,9 @@ Born out of **mcp-tool-selector**, where I needed layered config without leaking
 - Supports defaults and multi-pass resolution
 - Zero deps, TS-first, Node 18+, ESM/CJS
 
-**Docs & API:** read the [GitHub repo](https://github.com/magarcia/env-interpolation) and the [npm package page](https://www.npmjs.com/package/env-interpolation).
+**Docs & API:** read the
+[GitHub repo](https://github.com/magarcia/env-interpolation) and the
+[npm package page](https://www.npmjs.com/package/env-interpolation).
 
 ## Quick taste: load JSON → interpolate
 
@@ -55,6 +67,11 @@ const resolved = interpolate(input, {
 console.log(resolved);
 ```
 
-This is my second AI engineered project (the first one was [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), built with multiple AI agents (Claude, Copilot, Gemini & Codex). If your configs span files, environments, and tools, this should remove a few papercuts.
+This is my second AI engineered project (the first one was
+[mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), built with
+multiple AI agents (Claude, Copilot, Gemini & Codex). If your configs span
+files, environments, and tools, this should remove a few papercuts.
 
-**Related:** For secure secret storage without plaintext files, check out [cross-keychain](/cross-platform-secret-storage-with-cross-keychain), which stores credentials in your OS's native credential manager.
+**Related:** For secure secret storage without plaintext files, check out
+[cross-keychain](/cross-platform-secret-storage-with-cross-keychain), which
+stores credentials in your OS's native credential manager.

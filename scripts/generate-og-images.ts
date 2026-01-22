@@ -11,19 +11,22 @@ const OUTPUT_DIR = "./build/client/og";
 
 async function loadGoogleFont(
   family: string,
-  weight: number
+  weight: number,
 ): Promise<ArrayBuffer> {
   const url = `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, "+")}:wght@${weight}&display=swap`;
 
   // Use older user-agent to get TTF instead of WOFF2 (Satori only supports TTF/OTF)
   const css = await fetch(url, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0",
     },
   }).then((res) => res.text());
 
   // Match TTF or WOFF URL
-  const fontUrl = css.match(/src: url\(([^)]+)\) format\(['"](?:truetype|woff)['"]\)/)?.[1];
+  const fontUrl = css.match(
+    /src: url\(([^)]+)\) format\(['"](?:truetype|woff)['"]\)/,
+  )?.[1];
 
   if (!fontUrl) {
     throw new Error(`Could not find font URL for ${family}`);
@@ -164,7 +167,7 @@ function OgTemplate({ title, date, author }: OgTemplateProps) {
 
 async function generateOgImage(
   slug: string,
-  fonts: { name: string; data: ArrayBuffer; weight: number }[]
+  fonts: { name: string; data: ArrayBuffer; weight: number }[],
 ): Promise<void> {
   const post = getFileBySlug("blog", slug, "en");
   const { frontMatter } = post;

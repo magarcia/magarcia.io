@@ -4,7 +4,9 @@ import type { BlogPostWithNavigation } from "~/lib/blog";
 
 vi.mock("~/lib/blog", () => ({
   getFileBySlug: vi.fn(),
-  isValidSlug: vi.fn((slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug)),
+  isValidSlug: vi.fn((slug: string) =>
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug),
+  ),
   isValidLang: vi.fn((lang: string) => ["en", "es", "ca"].includes(lang)),
 }));
 
@@ -116,7 +118,7 @@ describe("$slug route loader", () => {
       const params = { slug: "non-existent" };
 
       await expect(
-        loader({ request, params, context: {} } as any)
+        loader({ request, params, context: {} } as any),
       ).rejects.toMatchObject({
         status: 404,
       });
@@ -130,7 +132,7 @@ describe("$slug route loader", () => {
       const params = { slug: "broken-post" };
 
       await expect(
-        loader({ request, params, context: {} } as any)
+        loader({ request, params, context: {} } as any),
       ).rejects.toMatchObject({
         status: 404,
       });

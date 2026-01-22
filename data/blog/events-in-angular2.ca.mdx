@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Esdeveniments en Angular2
-date: '2016-07-03'
+date: "2016-07-03"
 spoiler: Sobre com migrar esdeveniments d'AngularJS a Angular2.
 indexed: false
 tags:
@@ -10,8 +10,8 @@ tags:
 ---
 
 Durant la migració del component feed, vaig trobar algunes línies que no sabia
-com codificar en Angular 2. El següent codi és un extracte del codi
-del que estic parlant:
+com codificar en Angular 2. El següent codi és un extracte del codi del que
+estic parlant:
 
 ```typescript
 if (!feed.isLocalScreen) {
@@ -19,25 +19,29 @@ if (!feed.isLocalScreen) {
   // no es mostrarà de nou
   var mutedWarningTimeout = now();
 
-  scope.$on('muted.byRequest', function() {
+  scope.$on("muted.byRequest", function () {
     mutedWarningTimeout = secondsFromNow(3);
     MuteNotifier.muted();
   });
 
-  scope.$on('muted.byUser', function() {
+  scope.$on("muted.byUser", function () {
     // Restablir el temps d'espera d'advertència
     mutedWarningTimeout = now();
   });
 
-  scope.$on('muted.Join', function() {
+  scope.$on("muted.Join", function () {
     mutedWarningTimeout = now();
     MuteNotifier.joinedMuted();
   });
 
-  scope.$watch('vm.feed.isVoiceDetected()', function(newVal) {
+  scope.$watch("vm.feed.isVoiceDetected()", function (newVal) {
     // Mostrar advertència només si està silenciat (comprovar false, undefined significa
     // encara connectant) i s'ha assolit el temps d'espera
-    if (newVal && feed.getAudioEnabled() === false && now() > mutedWarningTimeout) {
+    if (
+      newVal &&
+      feed.getAudioEnabled() === false &&
+      now() > mutedWarningTimeout
+    ) {
       MuteNotifier.speaking();
       mutedWarningTimeout = secondsFromNow(60);
     }
@@ -47,26 +51,28 @@ if (!feed.isLocalScreen) {
 
 Com pots veure en el fragment, si la condició és veritable llavors la directiva
 escolta esdeveniments de tipus `muted.byRequest`, `muted.byUser` i `muted.Join`.
-El codi que involucra aquests esdeveniments és fàcil, sense cap tipus de complexitat (per
-ara ignorem el `$watch`).
+El codi que involucra aquests esdeveniments és fàcil, sense cap tipus de
+complexitat (per ara ignorem el `$watch`).
 
-Però, espera un minut, he llegit la documentació d'Angular 2 com cent
-vegades i no recordo res sobre "esdeveniments" amb estil Angular 1.X. Això és
-perquè no existeix. Angular 2 no té una forma de fer esdeveniments com en Angular 1,
-així que he de trobar una solució. Després de buscar una solució, vaig trobar [aquesta entrada](http://blog.lacolaco.net/post/event-broadcasting-in-angular-2/)
+Però, espera un minut, he llegit la documentació d'Angular 2 com cent vegades i
+no recordo res sobre "esdeveniments" amb estil Angular 1.X. Això és perquè no
+existeix. Angular 2 no té una forma de fer esdeveniments com en Angular 1, així
+que he de trobar una solució. Després de buscar una solució, vaig trobar
+[aquesta entrada](http://blog.lacolaco.net/post/event-broadcasting-in-angular-2/)
 al blog de laco.
 
 ## Broadcaster
 
-Bàsicament, la idea és fer un servei que implementi el `$broadcast` i
-`$on` un mètode com teníem en `$rootScope`. Per fer això utilitzem Observables, molt
-importants en Angular 2, i per a aquest cas, utilitzem un [Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/subjects.md).
+Bàsicament, la idea és fer un servei que implementi el `$broadcast` i `$on` un
+mètode com teníem en `$rootScope`. Per fer això utilitzem Observables, molt
+importants en Angular 2, i per a aquest cas, utilitzem un
+[Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/subjects.md).
 
 ```typescript
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/filter";
+import "rxjs/add/operator/map";
 
 interface BroadcastEvent {
   key: any;
@@ -87,8 +93,8 @@ export class Broadcaster {
   on<T>(key: any): Observable<T> {
     return this._eventBus
       .asObservable()
-      .filter(event => event.key === key)
-      .map(event => <T>event.data);
+      .filter((event) => event.key === key)
+      .map((event) => <T>event.data);
   }
 }
 ```
@@ -119,10 +125,12 @@ export class ChildComponent {
 
 ## Com vaig resoldre el problema?
 
-No ho vaig fer. Aquests esdeveniments són només per mostrar a l'usuari finestres emergents d'informació sobre quan
-està silenciat, així que no és una característica crítica. Per ara aquests esdeveniments es disparen i
-escolten en diferents components, i alguns d'ells encara implementats en Angular 1.4.
+No ho vaig fer. Aquests esdeveniments són només per mostrar a l'usuari finestres
+emergents d'informació sobre quan està silenciat, així que no és una
+característica crítica. Per ara aquests esdeveniments es disparen i escolten en
+diferents components, i alguns d'ells encara implementats en Angular 1.4.
 
-Aquesta és una solució que vull compartir amb tu, però no estic segur de si aquesta serà
-la forma que utilitzaré per resoldre el problema. Perquè aquests esdeveniments probablement no seran
-necessaris quan reimplementi el `MuteNotifier`.
+Aquesta és una solució que vull compartir amb tu, però no estic segur de si
+aquesta serà la forma que utilitzaré per resoldre el problema. Perquè aquests
+esdeveniments probablement no seran necessaris quan reimplementi el
+`MuteNotifier`.

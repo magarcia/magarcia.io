@@ -1,4 +1,13 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse, useRouteError, useLocation } from "react-router";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  isRouteErrorResponse,
+  useRouteError,
+  useLocation,
+} from "react-router";
 import type { LinksFunction } from "react-router";
 
 import { themeScript } from "~/hooks/useTheme";
@@ -103,11 +112,12 @@ export function ErrorBoundary() {
 
   // Detect language from URL
   const pathname = location.pathname;
-  const lang = pathname.startsWith("/es/") || pathname === "/es"
-    ? "es"
-    : pathname.startsWith("/ca/") || pathname === "/ca"
-    ? "ca"
-    : "en";
+  const lang =
+    pathname.startsWith("/es/") || pathname === "/es"
+      ? "es"
+      : pathname.startsWith("/ca/") || pathname === "/ca"
+        ? "ca"
+        : "en";
 
   let title = "Oops!";
   let message = "Something went wrong.";
@@ -149,9 +159,7 @@ export function ErrorBoundary() {
           <h2 className="text-2xl md:text-3xl font-normal text-foreground mb-6">
             {title}
           </h2>
-          <p className="text-lg text-muted-foreground">
-            {message}
-          </p>
+          <p className="text-lg text-muted-foreground">{message}</p>
         </div>
       </main>
     </>

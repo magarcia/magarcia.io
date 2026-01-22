@@ -36,11 +36,17 @@ const markdown = new MarkdownIt();
       // Handle /path with regular quotes
       .replace(/(src|href)="\/([^"]+)"/g, `$1="${baseUrl}/$2"`)
       // Handle /path with HTML-encoded quotes
-      .replace(/(src|href)=&quot;\/([^&]+)&quot;/g, `$1=&quot;${baseUrl}/$2&quot;`)
+      .replace(
+        /(src|href)=&quot;\/([^&]+)&quot;/g,
+        `$1=&quot;${baseUrl}/$2&quot;`,
+      )
       // Handle ./path with regular quotes (resolve to current post URL)
       .replace(/(src|href)="\.\/([^"]+)"/g, `$1="${url}/$2"`)
       // Handle ./path with HTML-encoded quotes
-      .replace(/(src|href)=&quot;\.\/([^&]+)&quot;/g, `$1=&quot;${url}/$2&quot;`);
+      .replace(
+        /(src|href)=&quot;\.\/([^&]+)&quot;/g,
+        `$1=&quot;${url}/$2&quot;`,
+      );
     feed.item({
       title: post.frontMatter.title,
       guid: url,

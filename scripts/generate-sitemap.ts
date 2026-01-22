@@ -6,7 +6,10 @@ import { slugifyTag } from "../lib/urls";
 
 function buildEntry(
   url: string,
-  { changefreq = "daily", priority = 0.5 }: { changefreq?: string; priority?: number } = {}
+  {
+    changefreq = "daily",
+    priority = 0.5,
+  }: { changefreq?: string; priority?: number } = {},
 ) {
   return `
     <url>
@@ -33,12 +36,14 @@ function buildEntry(
                 buildEntry(`${baseUrl}/${slug}`, {
                   changefreq: "monthly",
                   priority: 0.7,
-                })
+                }),
               )
               .join("")}
             ${tags
               .map((tag) =>
-                buildEntry(`${baseUrl}/tags/${slugifyTag(tag)}`, { priority: 0.3 })
+                buildEntry(`${baseUrl}/tags/${slugifyTag(tag)}`, {
+                  priority: 0.3,
+                }),
               )
               .join("")}
         </urlset>

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Events in Angular2
-date: '2016-07-03'
+date: "2016-07-03"
 spoiler: About how to migrate events from AngularJS to Angular2.
 indexed: false
 tags:
@@ -19,25 +19,29 @@ if (!feed.isLocalScreen) {
   // will not be displayed again
   var mutedWarningTimeout = now();
 
-  scope.$on('muted.byRequest', function() {
+  scope.$on("muted.byRequest", function () {
     mutedWarningTimeout = secondsFromNow(3);
     MuteNotifier.muted();
   });
 
-  scope.$on('muted.byUser', function() {
+  scope.$on("muted.byUser", function () {
     // Reset the warning timeout
     mutedWarningTimeout = now();
   });
 
-  scope.$on('muted.Join', function() {
+  scope.$on("muted.Join", function () {
     mutedWarningTimeout = now();
     MuteNotifier.joinedMuted();
   });
 
-  scope.$watch('vm.feed.isVoiceDetected()', function(newVal) {
+  scope.$watch("vm.feed.isVoiceDetected()", function (newVal) {
     // Display warning only if muted (check for false, undefined means
     // still connecting) and the timeout has been reached
-    if (newVal && feed.getAudioEnabled() === false && now() > mutedWarningTimeout) {
+    if (
+      newVal &&
+      feed.getAudioEnabled() === false &&
+      now() > mutedWarningTimeout
+    ) {
       MuteNotifier.speaking();
       mutedWarningTimeout = secondsFromNow(60);
     }
@@ -52,21 +56,23 @@ now we ignore the `$watch`).
 
 But, wait a minute, I have read the documentation of Angular 2 like a hundred
 times and I don't remember nothing about "events" with Angular 1.X style. That's
-because it not exist. Angular 2 don't have a way to make events like in Angular 1,
-so I have to find a solution. After a search for a solution, I found [this entry](http://blog.lacolaco.net/post/event-broadcasting-in-angular-2/)
-in laco's blog.
+because it not exist. Angular 2 don't have a way to make events like in Angular
+1, so I have to find a solution. After a search for a solution, I found
+[this entry](http://blog.lacolaco.net/post/event-broadcasting-in-angular-2/) in
+laco's blog.
 
 ## Broadcaster
 
 Basically, the idea is to make a service that implements the `$broadcast` and
 `$on` a method as we had in `$rootScope`. To do this we use Observables, very
-importants in Angular 2, and for this case, we use a [Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/subjects.md).
+importants in Angular 2, and for this case, we use a
+[Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/subjects.md).
 
 ```typescript
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/filter";
+import "rxjs/add/operator/map";
 
 interface BroadcastEvent {
   key: any;
@@ -87,8 +93,8 @@ export class Broadcaster {
   on<T>(key: any): Observable<T> {
     return this._eventBus
       .asObservable()
-      .filter(event => event.key === key)
-      .map(event => <T>event.data);
+      .filter((event) => event.key === key)
+      .map((event) => <T>event.data);
   }
 }
 ```
@@ -124,5 +130,5 @@ he is muted, so it's not a critical feature. By now these events are fired and
 listen in different components, and some of it still implemented in Angular 1.4.
 
 This is a solution I want to share with you, but I'm not sure if this will be
-the way that I will use to solve the problem. Because these events probably won't
-be necessary when I reimplement the `MuteNotifier`.
+the way that I will use to solve the problem. Because these events probably
+won't be necessary when I reimplement the `MuteNotifier`.

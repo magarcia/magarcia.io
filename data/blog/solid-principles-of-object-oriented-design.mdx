@@ -1,25 +1,27 @@
 ---
 title: SOLID - Principles of Object-Oriented Design
-date: '2019-12-07'
-spoiler: SOLID Principles are a valuable tool to write good object-oriented
-  software. This article tries to put some light on the subject with simple
-  explanations and examples for each principle using TypeScript.
+date: "2019-12-07"
+spoiler:
+  SOLID Principles are a valuable tool to write good object-oriented software.
+  This article tries to put some light on the subject with simple explanations
+  and examples for each principle using TypeScript.
 tags:
   - typescript
   - patterns
 ---
 
-> This article is based on the work done by [Samuel Oloruntoba](https://twitter.com/KayandraJT) in his article
-> [S.O.L.I.D: The First 5 Principles of Object Oriented Design](https://scotch.io/bar-talk/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) but using
-> TypeScript instead of PHP for the examples.
+> This article is based on the work done by
+> [Samuel Oloruntoba](https://twitter.com/KayandraJT) in his article
+> [S.O.L.I.D: The First 5 Principles of Object Oriented Design](https://scotch.io/bar-talk/s-o-l-i-d-the-first-five-principles-of-object-oriented-design)
+> but using TypeScript instead of PHP for the examples.
 
 **SOLID** is an acronym for the first five principles of the article
 [_Principles of Object-Oriented Design_](http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod)
 by Robert C. Martin.
 
-Applying these principles helps to develop maintainable and extensible code. They
-also help to catch code smells, refactor code easily, and practice a good agile
-development.
+Applying these principles helps to develop maintainable and extensible code.
+They also help to catch code smells, refactor code easily, and practice a good
+agile development.
 
 - **S** stands for **SRP** - Single Responsibility Principle
 - **O** stands for **OCP** - Open-Closed Principle
@@ -38,9 +40,9 @@ software entity that performs some calculations the only reason to change it is
 if these calculations need to change.
 
 In order to understand better the principle, we can do an example. Let's say
-that we have to implement an application that given some shapes it calculates the
-sum of the area of these shapes and prints the output. So, let's start creating
-our shapes classes:
+that we have to implement an application that given some shapes it calculates
+the sum of the area of these shapes and prints the output. So, let's start
+creating our shapes classes:
 
 ```typescript
 class Circle {
@@ -91,9 +93,9 @@ const areas = new AreaCalculator(shapes);
 console.log(areas.output());
 ```
 
-But this implementation has a problem. In this example, `AreaCalculator`
-handles the logic to calculate the sum of the areas **and** to output the data.
-What if the user wants the output in JSON?
+But this implementation has a problem. In this example, `AreaCalculator` handles
+the logic to calculate the sum of the areas **and** to output the data. What if
+the user wants the output in JSON?
 
 Here is when _Single Responsibility Principle_ comes into play. `AreaCalculator`
 should only change if we change how we calculate the sum of the areas, not when
@@ -125,8 +127,8 @@ A desirable property that our software entities is to be easy to extend his
 functionality without the need to change the entity itself.
 
 Using the previous example, now we want to introduce a new fancy shape: the
-_Triangle_. But first, take a closer look at the sum part of our `AreaCalculator`
-class.
+_Triangle_. But first, take a closer look at the sum part of our
+`AreaCalculator` class.
 
 ```typescript
 class AreaCalculator {
@@ -152,13 +154,13 @@ class AreaCalculator {
 }
 ```
 
-Here we are violating the _Open/Close Principle_, because in order to add support
-for triangles we have to modify `AreaCalculator` adding a new `else if` block in
-order to handle the calculation of the new area.
+Here we are violating the _Open/Close Principle_, because in order to add
+support for triangles we have to modify `AreaCalculator` adding a new `else if`
+block in order to handle the calculation of the new area.
 
 To fix this we can move the code that calculates the area to the corresponding
-shapes, and make that shapes implement an interface that describes better what
-a shape can do.
+shapes, and make that shapes implement an interface that describes better what a
+shape can do.
 
 ```typescript
 interface Shape {
@@ -179,8 +181,8 @@ class Circle implements Shape {
 ```
 
 Now the `AreaCalculator` looks like the code below, that allows us to create new
-kind of shapes and it will work always that this new shape implements the `Shape`
-interface.
+kind of shapes and it will work always that this new shape implements the
+`Shape` interface.
 
 ```typescript
 class AreaCalculator {
@@ -259,8 +261,8 @@ With this implementation, if we try to run a code like this:
 const areas = new AreaCalculator(shapes2D);
 const volumes = new VolumeCalculator(shapes3D);
 
-console.log('Areas - ', new Ouputter(areas).text());
-console.log('Volumes - ', new Ouputter(volumes).text());
+console.log("Areas - ", new Ouputter(areas).text());
+console.log("Volumes - ", new Ouputter(volumes).text());
 ```
 
 The program is not gonna fail but the output will not be consistent since one
@@ -292,8 +294,8 @@ class VolumeCalculator extends AreaCalculator {
 
 > Make fine grained interfaces that are client specific.
 
-In this case, we want to keep interfaces as small as possible, so clients are not
-forced to implement methods that they don't actually need.
+In this case, we want to keep interfaces as small as possible, so clients are
+not forced to implement methods that they don't actually need.
 
 {/* REVIEW: This explanation could be more detailed */}
 
@@ -311,7 +313,8 @@ But we know that not all our shapes have a volume, `Square` is a 2D shape but
 because of the interface, we are forced to implement a `volume` method.
 
 Applying the _Interface Segregation Principle_ we split the `Shape` interface
-into two different interfaces, one to define 2D shapes and another for 3D shapes.
+into two different interfaces, one to define 2D shapes and another for 3D
+shapes.
 
 ```typescript
 interface Shape2D {
@@ -361,10 +364,10 @@ In this case, `ShapeManager` is a high-level module while `MySQL` is a low-level
 module, but this is a violation of the `Dependency Inversion Principle` since we
 are forced to depend on `MySQL`.
 
-If we want to change our database in the future we would have to edit the `ShapeManager`
-class and thus violates _Open-Close Principle_. In this case we should not care
-about which kind of database are we using, so to depend on abstractions on this
-case we will make use of an interface:
+If we want to change our database in the future we would have to edit the
+`ShapeManager` class and thus violates _Open-Close Principle_. In this case we
+should not care about which kind of database are we using, so to depend on
+abstractions on this case we will make use of an interface:
 
 ```typescript
 interface Database {

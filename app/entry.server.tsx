@@ -12,7 +12,7 @@ export default function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   entryContext: EntryContext,
-  _loadContext: AppLoadContext
+  _loadContext: AppLoadContext,
 ) {
   // Handle Chrome DevTools requests silently
   const url = new URL(request.url);
@@ -21,7 +21,7 @@ export default function handleRequest(
       new Response(null, {
         status: 404,
         headers: responseHeaders,
-      })
+      }),
     );
   }
 
@@ -58,7 +58,7 @@ export default function handleRequest(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
-            })
+            }),
           );
 
           pipe(body);
@@ -72,7 +72,7 @@ export default function handleRequest(
             console.error(error);
           }
         },
-      }
+      },
     );
 
     setTimeout(abort, ABORT_DELAY);

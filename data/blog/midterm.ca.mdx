@@ -1,6 +1,6 @@
 ---
 title: Meitat de període
-date: '2016-06-29'
+date: "2016-06-29"
 spoiler: Una retrospectiva sobre la feina feta durant el Google Summer of Code.
 indexed: false
 tags:
@@ -8,19 +8,20 @@ tags:
   - open-source
 ---
 
-La meitat del període de GSoC acaba de passar. Crec que és hora de fer una revisió sobre la feina feta
-des que vaig començar el projecte. Després d'aquestes setmanes treballant en Jangouts i utilitzant-lo
-regularment per a reunions de seguiment puc dir que m'encanta com si fos meu.
-És realment gratificant treballar en un projecte com aquest, no massa gran però amb una
-comunitat creixent darrere. Avui dia Jangouts està en una etapa primerenca, almenys això
-és el que crec, però amb molt potencial.
+La meitat del període de GSoC acaba de passar. Crec que és hora de fer una
+revisió sobre la feina feta des que vaig començar el projecte. Després
+d'aquestes setmanes treballant en Jangouts i utilitzant-lo regularment per a
+reunions de seguiment puc dir que m'encanta com si fos meu. És realment
+gratificant treballar en un projecte com aquest, no massa gran però amb una
+comunitat creixent darrere. Avui dia Jangouts està en una etapa primerenca,
+almenys això és el que crec, però amb molt potencial.
 
 ## Feina feta
 
-No he complert amb els temps definits inicialment per mi mateix, però estic realment
-a prop i la pitjor part va passar. Fins ara Jangouts va ser migrat a Typescript
-amb un nou procés de construcció/desenvolupament i és una aplicació híbrida amb
-Angular 1.x i Angular 2.
+No he complert amb els temps definits inicialment per mi mateix, però estic
+realment a prop i la pitjor part va passar. Fins ara Jangouts va ser migrat a
+Typescript amb un nou procés de construcció/desenvolupament i és una aplicació
+híbrida amb Angular 1.x i Angular 2.
 
 Jangouts està compost de diferents components:
 
@@ -36,28 +37,33 @@ Jangouts està compost de diferents components:
 - `videochat`
 - `signin`
 
-El procés de migració per a cada component implica una conversió d'Angular 1 a
-2 i una col·lecció de tests amb una cobertura el més propera possible al 100%. El
+El procés de migració per a cada component implica una conversió d'Angular 1 a 2
+i una col·lecció de tests amb una cobertura el més propera possible al 100%. El
 component més complex de migrar des del meu punt de vista són `feed` i `room`
-perquè són el component a càrrec del renderitzat de vídeo i la comunicació
-amb el backend de Janus. Probablement el router serà problemàtic, però perquè amb el nou
-router d'Angular 2 hauria de ser una reescriptura completa.
+perquè són el component a càrrec del renderitzat de vídeo i la comunicació amb
+el backend de Janus. Probablement el router serà problemàtic, però perquè amb el
+nou router d'Angular 2 hauria de ser una reescriptura completa.
 
 ## Mentors
 
-Tot el que puc dir sobre @ancorgs i @imobach és bo. Fem reunions diàries
-(quan és possible) donant-me feedback sobre el que estic fent, però amb suficient
+Tot el que puc dir sobre @ancorgs i @imobach és bo. Fem reunions diàries (quan
+és possible) donant-me feedback sobre el que estic fent, però amb suficient
 llibertat per prendre les meves pròpies decisions (sempre que doni raons).
 
 ## Propers passos
 
-Per a les properes setmanes, continuaré migrant components fins que pugui treure Angular
-1 del projecte. Quan la migració acabi, Jangouts serà un projecte Angular 2
-amb una suite de tests bastant completa, així que es pot considerar que la meva feina de GSoC estarà
-acabada, però això no és suficient per a mi. Crec que moltes coses es poden fer
-millor:
+Per a les properes setmanes, continuaré migrant components fins que pugui treure
+Angular 1 del projecte. Quan la migració acabi, Jangouts serà un projecte
+Angular 2 amb una suite de tests bastant completa, així que es pot considerar
+que la meva feina de GSoC estarà acabada, però això no és suficient per a mi.
+Crec que moltes coses es poden fer millor:
 
-1. Reestructurar el projecte movent alguna lògica que ara està dins de components a serveis.
-2. Treure més profit dels Observables (probablement utilitzant [@ngrx/store](https://github.com/ngrx/store))
-3. Millorar la UI i la UX mòbil (conceptes de [progressive web apps](https://developers.google.com/web/progressive-web-apps/) seran útils aquí).
-4. Millorar la comunicació i la comunitat (una pàgina web del projecte, millors documents de contribució, etc)
+1. Reestructurar el projecte movent alguna lògica que ara està dins de
+   components a serveis.
+2. Treure més profit dels Observables (probablement utilitzant
+   [@ngrx/store](https://github.com/ngrx/store))
+3. Millorar la UI i la UX mòbil (conceptes de
+   [progressive web apps](https://developers.google.com/web/progressive-web-apps/)
+   seran útils aquí).
+4. Millorar la comunicació i la comunitat (una pàgina web del projecte, millors
+   documents de contribució, etc)

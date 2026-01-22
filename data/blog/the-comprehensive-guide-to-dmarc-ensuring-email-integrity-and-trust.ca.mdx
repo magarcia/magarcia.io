@@ -1,88 +1,165 @@
 ---
-title: "Una Guia Completa sobre DMARC: Assegurant la Integritat i Confiança del Correu Electrònic"
+title:
+  "Una Guia Completa sobre DMARC: Assegurant la Integritat i Confiança del
+  Correu Electrònic"
 date: "2023-09-11"
-spoiler: En construir un projecte digital, assegurar que els teus correus electrònics arribin de manera segura i siguin de confiança és primordial. Però com navegues el laberint de la seguretat del correu electrònic? Entra DMARC. Juntament amb els seus companys, SPF i DKIM, aprofundim en establir la integritat del correu electrònic i combatre amenaces com la suplantació d'identitat i el phishing.
+spoiler:
+  En construir un projecte digital, assegurar que els teus correus electrònics
+  arribin de manera segura i siguin de confiança és primordial. Però com
+  navegues el laberint de la seguretat del correu electrònic? Entra DMARC.
+  Juntament amb els seus companys, SPF i DKIM, aprofundim en establir la
+  integritat del correu electrònic i combatre amenaces com la suplantació
+  d'identitat i el phishing.
 tags:
   - security
 ---
 
-En els primers dies de desenvolupar [Voices.ink](https://voices.ink/), un projecte col·laboratiu amb [@Ester Martí](https://github.com/estermv) que transcriu sense esforç notes de veu al teu compte de Notion, vaig enfrontar un dubte comú. Com podia assegurar que els nostres correus electrònics transaccionals no acabessin perduts en el buit de les carpetes d'spam o pitjor, fossin utilitzats com a arma per a phishing? La meva investigació per a un entorn de correu electrònic segur i de confiança em va portar a DMARC.
+En els primers dies de desenvolupar [Voices.ink](https://voices.ink/), un
+projecte col·laboratiu amb [@Ester Martí](https://github.com/estermv) que
+transcriu sense esforç notes de veu al teu compte de Notion, vaig enfrontar un
+dubte comú. Com podia assegurar que els nostres correus electrònics
+transaccionals no acabessin perduts en el buit de les carpetes d'spam o pitjor,
+fossin utilitzats com a arma per a phishing? La meva investigació per a un
+entorn de correu electrònic segur i de confiança em va portar a DMARC.
 
-En una era on el correu electrònic forma la columna vertebral de la comunicació professional, les seves vulnerabilitats de seguretat són sorprenents. Els atacants cibernètics i les entitats fraudulentes estan constantment a l'aguait, utilitzant tècniques sofisticades per enganyar a través de la suplantació d'identitat i el phishing. A mesura que el frau per correu electrònic augmenta, la necessitat d'una solució robusta esdevé imperativa. Entra DMARC — un protocol avançat de correu electrònic que promet restaurar la confiança a les nostres safates d'entrada.
+En una era on el correu electrònic forma la columna vertebral de la comunicació
+professional, les seves vulnerabilitats de seguretat són sorprenents. Els
+atacants cibernètics i les entitats fraudulentes estan constantment a l'aguait,
+utilitzant tècniques sofisticades per enganyar a través de la suplantació
+d'identitat i el phishing. A mesura que el frau per correu electrònic augmenta,
+la necessitat d'una solució robusta esdevé imperativa. Entra DMARC — un protocol
+avançat de correu electrònic que promet restaurar la confiança a les nostres
+safates d'entrada.
 
 ### **Per Què Necessitem DMARC?**
 
-Les vulnerabilitats inherents del correu electrònic el fan susceptible a la suplantació de domini, on els atacants envien correus electrònics fingint ser de fonts de confiança. Mentre que solucions com SPF (Sender Policy Framework) i DKIM (DomainKeys Identified Mail) es van introduir per contrarestar aquestes amenaces, no eren infal·libles. DMARC (Domain-based Message Authentication, Reporting & Conformance) omple aquest buit construint sobre i aprofitant les fortaleses tant de SPF com de DKIM.
+Les vulnerabilitats inherents del correu electrònic el fan susceptible a la
+suplantació de domini, on els atacants envien correus electrònics fingint ser de
+fonts de confiança. Mentre que solucions com SPF (Sender Policy Framework) i
+DKIM (DomainKeys Identified Mail) es van introduir per contrarestar aquestes
+amenaces, no eren infal·libles. DMARC (Domain-based Message Authentication,
+Reporting & Conformance) omple aquest buit construint sobre i aprofitant les
+fortaleses tant de SPF com de DKIM.
 
 ### **Entenent la Importància de DMARC**
 
 DMARC serveix tres propòsits principals:
 
-1. **Autenticació**: Assegurar que un correu electrònic que diu ser d'un domini específic genuïnament s'origina d'aquest domini.
-2. **Report**: Permetre als destinataris del domini reportar al remitent sobre els resultats de l'avaluació DMARC, oferint així informació sobre problemes potencials.
-3. **Aplicació de Polítiques**: Atorgar als propietaris de dominis el poder d'especificar com s'han de gestionar els correus electrònics no autenticats.
+1. **Autenticació**: Assegurar que un correu electrònic que diu ser d'un domini
+   específic genuïnament s'origina d'aquest domini.
+2. **Report**: Permetre als destinataris del domini reportar al remitent sobre
+   els resultats de l'avaluació DMARC, oferint així informació sobre problemes
+   potencials.
+3. **Aplicació de Polítiques**: Atorgar als propietaris de dominis el poder
+   d'especificar com s'han de gestionar els correus electrònics no autenticats.
 
 ![Diagrama de Com Funciona DMARC](https://media.emailonacid.com/wp-content/uploads/2022/09/How-DMARC-Policy-Works.png)
 _Crèdit: Emailonacid (Com funciona la política DMARC)_
 
 ### **Els Blocs de Construcció de DMARC: SPF i DKIM**
 
-**SPF** verifica que el servidor d'enviament del correu electrònic té l'autorització del propietari del domini. Utilitza un registre TXT específic al DNS, com:
+**SPF** verifica que el servidor d'enviament del correu electrònic té
+l'autorització del propietari del domini. Utilitza un registre TXT específic al
+DNS, com:
 
 `v=spf1 ip4:192.0.2.0/24 ip4:198.51.100.123 a:mail.example.com -all`
 
-Aquest registre essencialment diu, "Només el rang d'IP 192.0.2.0 a 192.0.2.255 i 198.51.100.123 estan autoritzats per enviar correus electrònics per al meu domini."
+Aquest registre essencialment diu, "Només el rang d'IP 192.0.2.0 a 192.0.2.255 i
+198.51.100.123 estan autoritzats per enviar correus electrònics per al meu
+domini."
 
 **Explicació**:
 
-- `v=spf1`: Això indica la versió de SPF que s'està utilitzant, que és la versió 1 de SPF.
-- `ip4:192.0.2.0/24`: Autoritza el rang d'IP 192.0.2.0 a 192.0.2.255 per enviar correus electrònics per al domini.
+- `v=spf1`: Això indica la versió de SPF que s'està utilitzant, que és la versió
+  1 de SPF.
+- `ip4:192.0.2.0/24`: Autoritza el rang d'IP 192.0.2.0 a 192.0.2.255 per enviar
+  correus electrònics per al domini.
 - `ip4:198.51.100.123`: Autoritza l'adreça IP específica 198.51.100.123.
-- `a:mail.example.com`: Autoritza l'adreça IP resolta del nom de domini mail.example.com.
-- `-all`: Especifica que no es permet a altres hosts enviar correus electrònics. (El '-' és una fallada dura, la qual cosa significa que els correus electrònics d'altres fonts han de ser rebutjats. `~all` seria una fallada suau, suggerint que haurien de ser acceptats però marcats.)
+- `a:mail.example.com`: Autoritza l'adreça IP resolta del nom de domini
+  mail.example.com.
+- `-all`: Especifica que no es permet a altres hosts enviar correus electrònics.
+  (El '-' és una fallada dura, la qual cosa significa que els correus
+  electrònics d'altres fonts han de ser rebutjats. `~all` seria una fallada
+  suau, suggerint que haurien de ser acceptats però marcats.)
 
-**DKIM**, d'altra banda, assegura la integritat del correu electrònic utilitzant signatures criptogràfiques. Un registre DNS TXT típic de DKIM podria veure's com:
+**DKIM**, d'altra banda, assegura la integritat del correu electrònic utilitzant
+signatures criptogràfiques. Un registre DNS TXT típic de DKIM podria veure's
+com:
 
 `v=DKIM1; p=MIGfMA0GCSqG...`
 
-Aquest registre conté la clau pública utilitzada pels servidors receptors per desxifrar la signatura DKIM del correu electrònic i verificar la seva autenticitat.
+Aquest registre conté la clau pública utilitzada pels servidors receptors per
+desxifrar la signatura DKIM del correu electrònic i verificar la seva
+autenticitat.
 
-El nom del registre típicament inclou un prefix selector, permetent al domini tenir múltiples claus DKIM. En enviar un correu electrònic, el servidor mencionarà quin selector està utilitzant, guiant al servidor receptor al registre DNS correcte.
+El nom del registre típicament inclou un prefix selector, permetent al domini
+tenir múltiples claus DKIM. En enviar un correu electrònic, el servidor
+mencionarà quin selector està utilitzant, guiant al servidor receptor al
+registre DNS correcte.
 
 **Explicació**:
 
 - `v=DKIM1`: Això significa la versió de DKIM que s'està utilitzant.
-- `p=`: Aquesta és la clau pública que els servidors receptors utilitzen per desxifrar la signatura DKIM a la capçalera del correu electrònic. La clau real seria una cadena llarga (truncada a l'exemple).
+- `p=`: Aquesta és la clau pública que els servidors receptors utilitzen per
+  desxifrar la signatura DKIM a la capçalera del correu electrònic. La clau real
+  seria una cadena llarga (truncada a l'exemple).
 
 ### **DMARC en Acció**
 
-Quan s'implementa DMARC, els propietaris de dominis publiquen una política DMARC en els seus registres DNS TXT (utilitzant el nom `_dmarc`), tal com:
+Quan s'implementa DMARC, els propietaris de dominis publiquen una política DMARC
+en els seus registres DNS TXT (utilitzant el nom `_dmarc`), tal com:
 
 `v=DMARC1; p=reject; rua=mailto:reports@example.com; ruf=mailto:forensic@example.com; pct=100; aspf=r; adkim=r`
 
-Aquest registre es tradueix a: "Si un correu electrònic falla l'autenticació DMARC, rebutja'l. I envia reports agregats de DMARC a [reports@example.com](mailto:reports@example.com)."
+Aquest registre es tradueix a: "Si un correu electrònic falla l'autenticació
+DMARC, rebutja'l. I envia reports agregats de DMARC a
+[reports@example.com](mailto:reports@example.com)."
 
 **Explicació**:
 
 - `v=DMARC1`: Indica la versió de DMARC.
-- `p=reject`: Política a aplicar als correus electrònics que fallen DMARC. Altres valors poden ser `none` o `quarantine`.
-- `rua=mailto:reports@example.com`: Adreça on s'han d'enviar els reports agregats de DMARC.
-- `ruf=mailto:forensic@example.com`: Adreça on s'han d'enviar els reports forenses (detallats) de DMARC.
-- `pct=100`: Percentatge de correus electrònics als quals s'ha d'aplicar la política DMARC.
-- `aspf=r`: Mode d'alineació SPF. 'r' significa relaxat (predeterminat), mentre que 's' significa estricte.
-- `adkim=r`: Mode d'alineació DKIM. 'r' és per a relaxat, i 's' és per a estricte.
+- `p=reject`: Política a aplicar als correus electrònics que fallen DMARC.
+  Altres valors poden ser `none` o `quarantine`.
+- `rua=mailto:reports@example.com`: Adreça on s'han d'enviar els reports
+  agregats de DMARC.
+- `ruf=mailto:forensic@example.com`: Adreça on s'han d'enviar els reports
+  forenses (detallats) de DMARC.
+- `pct=100`: Percentatge de correus electrònics als quals s'ha d'aplicar la
+  política DMARC.
+- `aspf=r`: Mode d'alineació SPF. 'r' significa relaxat (predeterminat), mentre
+  que 's' significa estricte.
+- `adkim=r`: Mode d'alineació DKIM. 'r' és per a relaxat, i 's' és per a
+  estricte.
 
-Una vegada que es rep un correu electrònic, el servidor receptor el valida contra SPF i DKIM. Perquè DMARC passi, almenys un d'aquests, SPF o DKIM, ha de ser vàlid i estar alineat amb el domini reclamat. Els correus electrònics que fallen aquesta comprovació es tracten d'acord amb la política DMARC — poden ser rebutjats, posats en quarantena o deixats passar sense acció.
+Una vegada que es rep un correu electrònic, el servidor receptor el valida
+contra SPF i DKIM. Perquè DMARC passi, almenys un d'aquests, SPF o DKIM, ha de
+ser vàlid i estar alineat amb el domini reclamat. Els correus electrònics que
+fallen aquesta comprovació es tracten d'acord amb la política DMARC — poden ser
+rebutjats, posats en quarantena o deixats passar sense acció.
 
 ### **La Conclusió**
 
-Amb l'augment d'atacs de phishing sofisticats i la importància primordial de la confiança en la comunicació digital, DMARC és més que només un protocol avançat de seguretat de correu electrònic. És un far de confiança, assegurant que els correus electrònics genuïns vegin la llum del dia mentre que els maliciosos s'amaguen a les ombres. Per a organitzacions i individus per igual, entendre i implementar DMARC és un pas cap a un paisatge de comunicació digital més segur i de confiança.
+Amb l'augment d'atacs de phishing sofisticats i la importància primordial de la
+confiança en la comunicació digital, DMARC és més que només un protocol avançat
+de seguretat de correu electrònic. És un far de confiança, assegurant que els
+correus electrònics genuïns vegin la llum del dia mentre que els maliciosos
+s'amaguen a les ombres. Per a organitzacions i individus per igual, entendre i
+implementar DMARC és un pas cap a un paisatge de comunicació digital més segur i
+de confiança.
 
-Així que, la propera vegada que estiguis mirant les teves mesures de seguretat de correu electrònic, recorda que DMARC no és només una opció — és una necessitat.
+Així que, la propera vegada que estiguis mirant les teves mesures de seguretat
+de correu electrònic, recorda que DMARC no és només una opció — és una
+necessitat.
 
 ### **Recursos i Eines Addicionals**
 
-Per a aquells que desitgin aprofundir en DMARC i les seves complexitats, aquí hi ha alguns recursos i eines valuosos:
+Per a aquells que desitgin aprofundir en DMARC i les seves complexitats, aquí hi
+ha alguns recursos i eines valuosos:
 
-- **Guia DMARC**: Una guia completa per la Global Cyber Alliance que cobreix els matisos de DMARC en detall. [Mira-la aquí](https://www.globalcyberalliance.org/dmarc/).
-- **Verificador de Configuració DMARC**: Una eina inavaluable proporcionada per la Global Cyber Alliance. No només verifica si el teu DMARC està configurat correctament, sinó que també ofereix consells sobre rectificacions si és necessari. [Prova l'eina aquí](https://dmarcguide.globalcyberalliance.org/#/).
+- **Guia DMARC**: Una guia completa per la Global Cyber Alliance que cobreix els
+  matisos de DMARC en detall.
+  [Mira-la aquí](https://www.globalcyberalliance.org/dmarc/).
+- **Verificador de Configuració DMARC**: Una eina inavaluable proporcionada per
+  la Global Cyber Alliance. No només verifica si el teu DMARC està configurat
+  correctament, sinó que també ofereix consells sobre rectificacions si és
+  necessari. [Prova l'eina aquí](https://dmarcguide.globalcyberalliance.org/#/).

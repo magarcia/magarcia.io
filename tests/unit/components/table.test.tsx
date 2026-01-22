@@ -18,7 +18,7 @@ describe("Table Components", () => {
               <td>Cell</td>
             </tr>
           </tbody>
-        </Table>
+        </Table>,
       );
 
       const table = container.querySelector("table");
@@ -34,7 +34,7 @@ describe("Table Components", () => {
               <td>Cell</td>
             </tr>
           </tbody>
-        </Table>
+        </Table>,
       );
 
       const table = screen.getByRole("table");
@@ -52,7 +52,7 @@ describe("Table Components", () => {
               <th>Header</th>
             </tr>
           </TableHead>
-        </table>
+        </table>,
       );
 
       const thead = container.querySelector("thead");
@@ -62,7 +62,7 @@ describe("Table Components", () => {
         "md:not-sr-only",
         "md:table-header-group",
         "font-medium",
-        "border-b"
+        "border-b",
       );
     });
 
@@ -74,7 +74,7 @@ describe("Table Components", () => {
               <th>Header</th>
             </tr>
           </TableHead>
-        </table>
+        </table>,
       );
 
       const thead = screen.getByTestId("custom-thead");
@@ -92,7 +92,7 @@ describe("Table Components", () => {
               <td>Cell</td>
             </tr>
           </TableBody>
-        </table>
+        </table>,
       );
 
       const tbody = container.querySelector("tbody");
@@ -107,7 +107,7 @@ describe("Table Components", () => {
               <td>Cell</td>
             </tr>
           </TableBody>
-        </table>
+        </table>,
       );
 
       const tbody = screen.getByTestId("custom-tbody");
@@ -125,7 +125,7 @@ describe("Table Components", () => {
               <td>Cell</td>
             </TableRow>
           </tbody>
-        </table>
+        </table>,
       );
 
       const tr = container.querySelector("tr");
@@ -136,7 +136,7 @@ describe("Table Components", () => {
         "border-b",
         "last:border-b-0",
         "mb-4",
-        "md:mb-0"
+        "md:mb-0",
       );
     });
 
@@ -148,7 +148,7 @@ describe("Table Components", () => {
               <td>Cell</td>
             </TableRow>
           </tbody>
-        </table>
+        </table>,
       );
 
       const tr = screen.getByTestId("custom-row");
@@ -166,7 +166,7 @@ describe("Table Components", () => {
               <TableCell>Content</TableCell>
             </tr>
           </tbody>
-        </table>
+        </table>,
       );
 
       const td = container.querySelector("td");
@@ -177,7 +177,7 @@ describe("Table Components", () => {
         "relative",
         "py-3",
         "px-4",
-        "md:px-4"
+        "md:px-4",
       );
     });
 
@@ -189,7 +189,7 @@ describe("Table Components", () => {
               <TableCell>Test Content</TableCell>
             </tr>
           </tbody>
-        </table>
+        </table>,
       );
 
       expect(screen.getByText("Test Content")).toBeInTheDocument();
@@ -205,7 +205,7 @@ describe("Table Components", () => {
               </TableCell>
             </tr>
           </tbody>
-        </table>
+        </table>,
       );
 
       const td = screen.getByTestId("custom-cell");
@@ -223,7 +223,7 @@ describe("Table Components", () => {
               <TableHeaderCell>Header</TableHeaderCell>
             </tr>
           </thead>
-        </table>
+        </table>,
       );
 
       const th = container.querySelector("th");
@@ -237,7 +237,7 @@ describe("Table Components", () => {
         "px-4",
         "md:px-4",
         "font-medium",
-        "text-foreground"
+        "text-foreground",
       );
     });
 
@@ -250,7 +250,7 @@ describe("Table Components", () => {
               <td>Data</td>
             </tr>
           </tbody>
-        </table>
+        </table>,
       );
 
       const th = container.querySelector("th");
@@ -263,12 +263,15 @@ describe("Table Components", () => {
         <table>
           <thead>
             <tr>
-              <TableHeaderCell data-testid="custom-header" className="extra-class">
+              <TableHeaderCell
+                data-testid="custom-header"
+                className="extra-class"
+              >
                 Header
               </TableHeaderCell>
             </tr>
           </thead>
-        </table>
+        </table>,
       );
 
       const th = screen.getByTestId("custom-header");
@@ -297,7 +300,7 @@ describe("Table Components", () => {
               <TableCell>Row 2 Cell 2</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       expect(screen.getByText("Header 1")).toBeInTheDocument();
@@ -316,7 +319,7 @@ describe("Table Components", () => {
               <TableCell>Content</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       const table = screen.getByRole("table");
@@ -348,7 +351,7 @@ describe("Table Components", () => {
               <td>LA</td>
             </tr>
           </tbody>
-        </Table>
+        </Table>,
       );
 
       // Wait for requestAnimationFrame to complete
@@ -372,7 +375,7 @@ describe("Table Components", () => {
               <td>Cell 2</td>
             </tr>
           </tbody>
-        </Table>
+        </Table>,
       );
 
       await new Promise((resolve) => setTimeout(resolve, 50));

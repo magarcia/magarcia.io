@@ -7,7 +7,7 @@ describe("CodeBlock", () => {
     const { container } = render(
       <CodeBlock language="javascript">
         {["console.log('Hello World');"]}
-      </CodeBlock>
+      </CodeBlock>,
     );
 
     const pre = container.querySelector("pre");
@@ -19,7 +19,7 @@ describe("CodeBlock", () => {
     const { container } = render(
       <CodeBlock language="typescript">
         {["const x: string = 'test';"]}
-      </CodeBlock>
+      </CodeBlock>,
     );
 
     const pre = container.querySelector("pre");
@@ -28,9 +28,7 @@ describe("CodeBlock", () => {
 
   it("handles yumml to yaml language mapping", () => {
     const { container } = render(
-      <CodeBlock language="yumml">
-        {["key: value"]}
-      </CodeBlock>
+      <CodeBlock language="yumml">{["key: value"]}</CodeBlock>,
     );
 
     const pre = container.querySelector("pre");
@@ -43,7 +41,7 @@ describe("CodeBlock", () => {
     const { container } = render(
       <CodeBlock language="javascript" highlight={[1, 3]}>
         {[code]}
-      </CodeBlock>
+      </CodeBlock>,
     );
 
     // Get the pre element and its direct children (the line divs)
@@ -63,9 +61,7 @@ describe("CodeBlock", () => {
   it("handles string children by extracting first element if array", () => {
     const code = "const test = true;";
     const { container } = render(
-      <CodeBlock language="javascript">
-        {[code]}
-      </CodeBlock>
+      <CodeBlock language="javascript">{[code]}</CodeBlock>,
     );
 
     // The code should be rendered - check the wrapper div exists
@@ -81,9 +77,7 @@ describe("CodeBlock", () => {
   it("handles string children directly when not in array", () => {
     const code = "const test = true;";
     const { container } = render(
-      <CodeBlock language="javascript">
-        {code as any}
-      </CodeBlock>
+      <CodeBlock language="javascript">{code as any}</CodeBlock>,
     );
 
     // The code should be rendered - check the wrapper div exists
@@ -96,11 +90,7 @@ describe("CodeBlock", () => {
   });
 
   it("defaults to text language when no language provided", () => {
-    const { container } = render(
-      <CodeBlock>
-        {["plain text"]}
-      </CodeBlock>
-    );
+    const { container } = render(<CodeBlock>{["plain text"]}</CodeBlock>);
 
     const pre = container.querySelector("pre");
     expect(pre).toHaveClass("language-text");
@@ -114,7 +104,7 @@ describe("CodeBlock", () => {
         className="custom-class"
       >
         {["console.log('test');"]}
-      </CodeBlock>
+      </CodeBlock>,
     );
 
     const wrapper = container.querySelector("[data-language]");
@@ -124,9 +114,7 @@ describe("CodeBlock", () => {
   it("uses prism-react-renderer for syntax highlighting", () => {
     const code = "const x = 1;";
     const { container } = render(
-      <CodeBlock language="javascript">
-        {[code]}
-      </CodeBlock>
+      <CodeBlock language="javascript">{[code]}</CodeBlock>,
     );
 
     // Check that the structure is rendered correctly
@@ -146,7 +134,7 @@ describe("CodeBlock", () => {
     const { container } = render(
       <CodeBlock language="javascript" highlight={[1]}>
         {[code]}
-      </CodeBlock>
+      </CodeBlock>,
     );
 
     // Get the pre element and its direct children (the line divs)
@@ -160,15 +148,13 @@ describe("CodeBlock", () => {
   it("renders without highlighting when no highlight prop provided", () => {
     const code = "line 1\nline 2";
     const { container } = render(
-      <CodeBlock language="javascript">
-        {[code]}
-      </CodeBlock>
+      <CodeBlock language="javascript">{[code]}</CodeBlock>,
     );
 
     const lines = container.querySelectorAll("div[class*='px-4']");
 
     // No lines should have opacity-30 when no highlighting
-    lines.forEach(line => {
+    lines.forEach((line) => {
       expect(line).not.toHaveClass("opacity-30");
     });
   });

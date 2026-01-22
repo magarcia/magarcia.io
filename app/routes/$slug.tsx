@@ -1,6 +1,11 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/$slug";
-import { getFileBySlug, isValidSlug, isValidLang, type BlogPostWithNavigation } from "~/lib/blog";
+import {
+  getFileBySlug,
+  isValidSlug,
+  isValidLang,
+  type BlogPostWithNavigation,
+} from "~/lib/blog";
 import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime } from "~/lib/i18n";
@@ -11,11 +16,14 @@ import { mdxComponents } from "~/components/mdxComponents";
 
 // Handle ESM/CJS interop - some packages export { default } in Node.js SSR
 const ReactMarkdown =
-  (ReactMarkdownImport as unknown as { default?: typeof ReactMarkdownImport }).default ?? ReactMarkdownImport;
+  (ReactMarkdownImport as unknown as { default?: typeof ReactMarkdownImport })
+    .default ?? ReactMarkdownImport;
 const rehypeRaw =
-  (rehypeRawImport as unknown as { default?: typeof rehypeRawImport }).default ?? rehypeRawImport;
+  (rehypeRawImport as unknown as { default?: typeof rehypeRawImport })
+    .default ?? rehypeRawImport;
 const remarkGfm =
-  (remarkGfmImport as unknown as { default?: typeof remarkGfmImport }).default ?? remarkGfmImport;
+  (remarkGfmImport as unknown as { default?: typeof remarkGfmImport })
+    .default ?? remarkGfmImport;
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data || !data.frontMatter) {
@@ -52,7 +60,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const pathname = new URL(request.url).pathname;
-  const lang = pathname.startsWith("/es/") ? "es" : pathname.startsWith("/ca/") ? "ca" : "en";
+  const lang = pathname.startsWith("/es/")
+    ? "es"
+    : pathname.startsWith("/ca/")
+      ? "ca"
+      : "en";
 
   if (!isValidLang(lang)) {
     throw new Response("Not Found", { status: 404 });
@@ -85,10 +97,10 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             </h1>
 
             <div className="text-sm text-muted-foreground">
-              <time dateTime={date}>
-                {formatDate(date, lang)}
-              </time>{" "}
-              — <span data-testid="reading-time">{formatReadingTime(readingTime.minutes, lang)}</span>
+              <time dateTime={date}>{formatDate(date, lang)}</time> —{" "}
+              <span data-testid="reading-time">
+                {formatReadingTime(readingTime.minutes, lang)}
+              </span>
             </div>
           </header>
           <div className="prose prose-lg dark:prose-dark max-w-none">
@@ -103,7 +115,10 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
         </article>
         <footer className="mt-12 md:mt-24 text-sm text-muted-foreground">
           {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-10 md:mb-16" data-testid="post-tags">
+            <div
+              className="flex flex-wrap gap-2 mb-10 md:mb-16"
+              data-testid="post-tags"
+            >
               {tags.map((tag) => (
                 <Link
                   key={tag}

@@ -28,7 +28,7 @@ export default function ArticleListItem({
           ReactMarkdown: rm.default,
           mdxComponents: mc.mdxComponents,
         });
-      }
+      },
     );
   }, []);
 

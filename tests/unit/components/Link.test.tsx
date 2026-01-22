@@ -42,9 +42,14 @@ describe("Link", () => {
 
   it("passes through valid HTML anchor attributes", () => {
     const { container } = render(
-      <Link href="https://example.com" target="_blank" rel="noopener noreferrer" data-testid="custom-link">
+      <Link
+        href="https://example.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="custom-link"
+      >
         External link
-      </Link>
+      </Link>,
     );
 
     const link = container.querySelector("a");
@@ -66,7 +71,7 @@ describe("Link", () => {
     render(
       <Link>
         <span>nested</span> content
-      </Link>
+      </Link>,
     );
 
     expect(screen.getByText("nested")).toBeInTheDocument();

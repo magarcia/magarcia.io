@@ -1,7 +1,8 @@
 ---
 title: BLoC Pattern with React Hooks
-date: '2019-02-18'
-spoiler: About how to extract the business logic from the components of a React
+date: "2019-02-18"
+spoiler:
+  About how to extract the business logic from the components of a React
   application using the BLoC pattern from Flutter, the new hooks API, and RxJS
   observables.
 featuredImage: bloc-schema.png
@@ -12,22 +13,24 @@ tags:
 
 The **BLoC Pattern** has been designed by _Paolo Soares_ and _Cong Hui_, from
 Google and first presented during the _DartConf 2018_ (January 23-24, 2018).
-[See the video on YouTube](https://www.youtube.com/watch?v=PLHln7wHgPE 'BLoC Pattern Flutter').
+[See the video on YouTube](https://www.youtube.com/watch?v=PLHln7wHgPE "BLoC Pattern Flutter").
 
 BLoC stands for **B**usiness **Lo**gic **C**omponent. Initially was conceived to
 allow to reuse the same code between Flutter and Angular Dart, but in fact is
 independently of the platform: web application, mobile application, back-end.
 
 It can be considered an alternative to the
-[Redux port for flutter](https://pub.dartlang.org/packages/flutter_redux 'Redux port for flutter') making
-use of Dart streams. In our case, we’re going to use Observables from the library
-[RxJS](https://rxjs.dev/ 'RxJS') , but any other option like
-[xstream](http://staltz.github.io/xstream/ 'xstream') will be valid as well.
+[Redux port for flutter](https://pub.dartlang.org/packages/flutter_redux "Redux port for flutter")
+making use of Dart streams. In our case, we’re going to use Observables from the
+library [RxJS](https://rxjs.dev/ "RxJS") , but any other option like
+[xstream](http://staltz.github.io/xstream/ "xstream") will be valid as well.
 
 In short, the BLoC will:
 
-- contain business logic (ideally in bigger applications we will have multiple BLoCs)
-- rely _exclusively_ on the use of _Observables_ for both input (_Observer_) and output (_Observable_)
+- contain business logic (ideally in bigger applications we will have multiple
+  BLoCs)
+- rely _exclusively_ on the use of _Observables_ for both input (_Observer_) and
+  output (_Observable_)
 - remain _platform independent_
 - remain _environment independent_
 
@@ -50,18 +53,18 @@ This is basic typescript example of a search BLoC using RxJS:
 export class SearchBloc {
   private _results$: Observable<string[]>;
   private _preamble$: Observable<string>;
-  private _query$ = new BehaviorSubject<string>('');
+  private _query$ = new BehaviorSubject<string>("");
 
   constructor(private api: API) {
     this._results$ = this._query$.pipe(
       switchMap((query) => {
         return observableFrom(this.api.search(query));
-      })
+      }),
     );
     this._preamble$ = this.results$.pipe(
       withLatestFrom(this._query$, (_, q) => {
-        return q ? `Results for ${q}` : 'All results';
-      })
+        return q ? `Results for ${q}` : "All results";
+      }),
     );
   }
 
@@ -128,7 +131,7 @@ Then we can publish changes to the BLoC from the `SearchInput` component:
 ```jsx
 const SearchInput = () => {
   const searchBloc = useContext(SearchContext);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     searchBloc.query.next(query);

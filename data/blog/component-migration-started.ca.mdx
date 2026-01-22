@@ -1,6 +1,6 @@
 ---
 title: Migració de components iniciada
-date: '2016-06-05'
+date: "2016-06-05"
 spoiler: Comença la migració de components d'AngularJS a Angular2 a Jangouts.
 indexed: false
 tags:
@@ -8,10 +8,10 @@ tags:
   - open-source
 ---
 
-Una altra setmana acabada. Aquesta setmana passada no vaig poder fer tant com m'hagués
-agradat. Encara estic en època d'exàmens, així que vaig haver de passar gran part del temps estudiant. Però
-tot i així, hi ha hagut un progrés significatiu respecte al projecte. Tenim
-quatre punts importants:
+Una altra setmana acabada. Aquesta setmana passada no vaig poder fer tant com
+m'hagués agradat. Encara estic en època d'exàmens, així que vaig haver de passar
+gran part del temps estudiant. Però tot i així, hi ha hagut un progrés
+significatiu respecte al projecte. Tenim quatre punts importants:
 
 1. Arreglat el procés de construcció per a producció.
 2. Afegit test runner.
@@ -20,60 +20,68 @@ quatre punts importants:
 
 ## Arreglant el procés de construcció
 
-La setmana passada teníem l'entorn de desenvolupament llest i també, presumiblement, l'
-entorn per distribuir builds. Però al llarg de la setmana, vaig notar que amb
-la build distribuïda, Jangouts tenia problemes amb els elements de la quadrícula dins de la sala
-de vídeo xat. Després d'un temps provant diferents configuracions per a Webpack, vaig trobar que
-els problemes estaven relacionats principalment amb el procés d'uglify.
+La setmana passada teníem l'entorn de desenvolupament llest i també,
+presumiblement, l' entorn per distribuir builds. Però al llarg de la setmana,
+vaig notar que amb la build distribuïda, Jangouts tenia problemes amb els
+elements de la quadrícula dins de la sala de vídeo xat. Després d'un temps
+provant diferents configuracions per a Webpack, vaig trobar que els problemes
+estaven relacionats principalment amb el procés d'uglify.
 
-El problema estava relacionat amb el sistema de disseny de quadrícula de la sala de vídeo, que està
-implementat utilitzant [angular-gridster](http://manifestwebdesign.github.io/angular-gridster/).
-Així que, el problema pot venir de l'estil d'angular-gridster o del mòdul JavaScript.
-Primer de tot vaig intentar importar directament el CSS de la llibreria sense carregar-lo
-amb Webpack. Això no va solucionar res. Finalment, vaig trobar que en lloc d'incloure
-la versió minificada de la llibreria a l'arxiu `vendors.ts`, hauria d'utilitzar la versió
-font.
+El problema estava relacionat amb el sistema de disseny de quadrícula de la sala
+de vídeo, que està implementat utilitzant
+[angular-gridster](http://manifestwebdesign.github.io/angular-gridster/). Així
+que, el problema pot venir de l'estil d'angular-gridster o del mòdul JavaScript.
+Primer de tot vaig intentar importar directament el CSS de la llibreria sense
+carregar-lo amb Webpack. Això no va solucionar res. Finalment, vaig trobar que
+en lloc d'incloure la versió minificada de la llibreria a l'arxiu `vendors.ts`,
+hauria d'utilitzar la versió font.
 
-Això és una mica estrany, la versió font i la minificada haurien de funcionar de la mateixa manera.
-Independentment d'això, utilitzar la versió font arregla el problema i això no serà
-un problema perquè Webpack minifica tot el codi, incloent `vendor.ts`.
+Això és una mica estrany, la versió font i la minificada haurien de funcionar de
+la mateixa manera. Independentment d'això, utilitzar la versió font arregla el
+problema i això no serà un problema perquè Webpack minifica tot el codi,
+incloent `vendor.ts`.
 
 ## Afegint test runner
 
 Això va ser més fàcil del que esperava. Utilitzo l'increïble projecte
 [angular2-webpack-starter](https://github.com/AngularClass/angular2-webpack-starter)
 de [@AngularClass](https://angularclass.com/) com a font d'inspiració per
-implementar el test runner a Jangouts. Vaig obtenir els arxius `webpack.test.js` i
-`karma.conf.js` i, després d'alguns petits canvis, tot va funcionar perfectament. Aquesta és una
-de les millors coses de la comunitat de codi obert: Don't Repeat Yourself (No et repeteixis).
+implementar el test runner a Jangouts. Vaig obtenir els arxius `webpack.test.js`
+i `karma.conf.js` i, després d'alguns petits canvis, tot va funcionar
+perfectament. Aquesta és una de les millors coses de la comunitat de codi obert:
+Don't Repeat Yourself (No et repeteixis).
 
 ## Migrant el primer component
 
-Estava esperant aquest moment des que vaig enviar la meva proposta al GSoC. Vaig començar amb
-la migració d'un component simple, probablement el component més simple de tot
-Jangouts, el peu de pàgina. El peu de pàgina a Jangouts només mostra un enllaç a
-[SUSE](https://www.suse.com/) i la versió de Jangouts.
+Estava esperant aquest moment des que vaig enviar la meva proposta al GSoC. Vaig
+començar amb la migració d'un component simple, probablement el component més
+simple de tot Jangouts, el peu de pàgina. El peu de pàgina a Jangouts només
+mostra un enllaç a [SUSE](https://www.suse.com/) i la versió de Jangouts.
 
-A l'antic Jangouts (començaré a diferenciar entre pre i post-migració)
-el component de peu de pàgina estava compost per una simple directiva d'Angular 1 amb
-una plantilla i una plantilla [`jade`](http://jade-lang.com/), que era renderitzada per
-gulp afegint la versió actual.
+A l'antic Jangouts (començaré a diferenciar entre pre i post-migració) el
+component de peu de pàgina estava compost per una simple directiva d'Angular 1
+amb una plantilla i una plantilla [`jade`](http://jade-lang.com/), que era
+renderitzada per gulp afegint la versió actual.
 
-El nou component de peu de pàgina és igualment simple. És un [arxiu TypeScript](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.directive.ts)
-(una definició de component amb una classe buida) i una [plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
+El nou component de peu de pàgina és igualment simple. És un
+[arxiu TypeScript](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.directive.ts)
+(una definició de component amb una classe buida) i una
+[plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 Però té una diferència amb la versió anterior, ni gulp ni cap altra cosa
-modifica la plantilla per afegir la versió. *En el seu lloc*, la solució anterior, ara
-Webpack amb el [DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
-afegeix la versió com una constant global durant el procés de construcció, llegint el
-`package.json`.
+modifica la plantilla per afegir la versió. _En el seu lloc_, la solució
+anterior, ara Webpack amb el
+[DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
+afegeix la versió com una constant global durant el procés de construcció,
+llegint el `package.json`.
 
-Això té un parell de beneficis. Primer, el peu de pàgina és ara un component Angular pur
-i, d'altra banda, és més fàcil de provar.
+Això té un parell de beneficis. Primer, el peu de pàgina és ara un component
+Angular pur i, d'altra banda, és més fàcil de provar.
 
 ## Afegint tests
 
 Una de les coses importants a fer durant la migració a Angular 2, és afegir
-tests a tota la plataforma. I el nou component de peu de pàgina té els seus propis tests. No és
-res complex o realment "útil", els tests només comproven si la variable `version`
-està correctament definida. Però aquest test té un propòsit extra, m'ajuda
-a comprovar que el test runner i el reporter de cobertura estan funcionant correctament.
+tests a tota la plataforma. I el nou component de peu de pàgina té els seus
+propis tests. No és res complex o realment "útil", els tests només comproven si
+la variable `version` està correctament definida. Però aquest test té un
+propòsit extra, m'ajuda a comprovar que el test runner i el reporter de
+cobertura estan funcionant correctament.

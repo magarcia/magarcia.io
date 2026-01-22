@@ -29,7 +29,9 @@ describe("mdxComponents", () => {
 
       expectedComponents.forEach((component) => {
         expect(mdxComponents).toHaveProperty(component);
-        expect(typeof mdxComponents[component as keyof typeof mdxComponents]).toBe("function");
+        expect(
+          typeof mdxComponents[component as keyof typeof mdxComponents],
+        ).toBe("function");
       });
     });
   });
@@ -57,7 +59,9 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-      expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
+      expect(
+        container.querySelector("[data-language='typescript']"),
+      ).toBeInTheDocument();
     });
 
     it("defaults to text language when no className", () => {
@@ -68,13 +72,17 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-      expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
+      expect(
+        container.querySelector("[data-language='text']"),
+      ).toBeInTheDocument();
     });
 
     it("handles children without props object", () => {
       const children = "plain text code";
       const { container } = render(<Pre>{children}</Pre>);
-      expect(container.querySelector("[data-language='text']")).toBeInTheDocument();
+      expect(
+        container.querySelector("[data-language='text']"),
+      ).toBeInTheDocument();
     });
 
     it("renders pre element for code structure", () => {
@@ -102,7 +110,9 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-      expect(container.querySelector("[data-language='typescript']")).toBeInTheDocument();
+      expect(
+        container.querySelector("[data-language='typescript']"),
+      ).toBeInTheDocument();
     });
 
     it("handles range syntax in highlight specification", () => {
@@ -114,7 +124,9 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-      expect(container.querySelector("[data-language='javascript']")).toBeInTheDocument();
+      expect(
+        container.querySelector("[data-language='javascript']"),
+      ).toBeInTheDocument();
     });
 
     it("handles mixed single lines and ranges", () => {
@@ -126,7 +138,9 @@ describe("mdxComponents", () => {
       };
 
       const { container } = render(<Pre>{children}</Pre>);
-      expect(container.querySelector("[data-language='python']")).toBeInTheDocument();
+      expect(
+        container.querySelector("[data-language='python']"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -204,25 +218,33 @@ describe("mdxComponents", () => {
     it("h1 renders correct semantic element", () => {
       const H1 = mdxComponents.h1;
       render(<H1>Test H1</H1>);
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Test H1");
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+        "Test H1",
+      );
     });
 
     it("h2 renders correct semantic element", () => {
       const H2 = mdxComponents.h2;
       render(<H2>Test H2</H2>);
-      expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Test H2");
+      expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+        "Test H2",
+      );
     });
 
     it("h3 renders correct semantic element", () => {
       const H3 = mdxComponents.h3;
       render(<H3>Test H3</H3>);
-      expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Test H3");
+      expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
+        "Test H3",
+      );
     });
 
     it("h4 renders correct semantic element", () => {
       const H4 = mdxComponents.h4;
       render(<H4>Test H4</H4>);
-      expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent("Test H4");
+      expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent(
+        "Test H4",
+      );
     });
   });
 
@@ -270,7 +292,9 @@ describe("mdxComponents", () => {
 
     it("renders external links", () => {
       const Link = mdxComponents.a;
-      const { container } = render(<Link href="https://example.com">External</Link>);
+      const { container } = render(
+        <Link href="https://example.com">External</Link>,
+      );
       const link = container.querySelector("a");
       expect(link).toHaveAttribute("href", "https://example.com");
     });
@@ -283,7 +307,7 @@ describe("mdxComponents", () => {
         <OrderedList>
           <li>Item 1</li>
           <li>Item 2</li>
-        </OrderedList>
+        </OrderedList>,
       );
 
       const ol = container.querySelector("ol");
@@ -297,7 +321,7 @@ describe("mdxComponents", () => {
         <UnorderedList>
           <li>Item 1</li>
           <li>Item 2</li>
-        </UnorderedList>
+        </UnorderedList>,
       );
 
       const ul = container.querySelector("ul");
@@ -327,7 +351,7 @@ describe("mdxComponents", () => {
               <Td>Cell</Td>
             </Tr>
           </Tbody>
-        </Table>
+        </Table>,
       );
 
       expect(container.querySelector("table")).toBeInTheDocument();
@@ -344,7 +368,7 @@ describe("mdxComponents", () => {
       const { container } = render(
         <Table>
           <Caption>Table description</Caption>
-        </Table>
+        </Table>,
       );
 
       const caption = container.querySelector("caption");

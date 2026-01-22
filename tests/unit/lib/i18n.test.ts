@@ -109,8 +109,12 @@ describe("i18n utilities", () => {
     });
 
     it("handles zero posts", () => {
-      expect(formatTagPageTitle(0, "react", "en")).toBe('0 posts tagged with "react"');
-      expect(formatTagPageTitle(0, "react", "es")).toBe('0 posts etiquetados con "react"');
+      expect(formatTagPageTitle(0, "react", "en")).toBe(
+        '0 posts tagged with "react"',
+      );
+      expect(formatTagPageTitle(0, "react", "es")).toBe(
+        '0 posts etiquetados con "react"',
+      );
     });
 
     it("falls back to English for invalid lang", () => {

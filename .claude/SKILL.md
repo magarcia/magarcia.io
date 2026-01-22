@@ -12,7 +12,8 @@ allowed-tools:
 
 # Technical Blog Writing
 
-Write technical posts that developers actually read by following proven patterns and classic style principles.
+Write technical posts that developers actually read by following proven patterns
+and classic style principles.
 
 ## Core Principles
 
@@ -31,6 +32,7 @@ This "man in hole" pattern activates reader engagement and retention.
 ### First Three Sentences
 
 Answer two questions immediately:
+
 - "Is this article for me?"
 - "What will I gain from reading this?"
 
@@ -40,89 +42,95 @@ Avoid meandering introductions. Developers have short attention spans.
 
 Headers alone should tell the complete story.
 
-**Weak:** "Background", "Technical Details", "Implementation"
-**Strong:** "Why Copy-Pasting Wasn't Cutting It", "40% Fewer Tokens with TOON"
+**Weak:** "Background", "Technical Details", "Implementation" **Strong:** "Why
+Copy-Pasting Wasn't Cutting It", "40% Fewer Tokens with TOON"
 
 ## Elements of Style
 
-For detailed examples, see [references/elements-of-style.md](references/elements-of-style.md).
+For detailed examples, see
+[references/elements-of-style.md](references/elements-of-style.md).
 
 ### Active Voice (Rule 10)
 
-| Passive | Active |
-|---------|--------|
-| "The API was reverse engineered" | "I reverse engineered the API" |
-| "A survey was made" | "We surveyed" |
-| "There were leaves lying on the ground" | "Leaves covered the ground" |
+| Passive                                 | Active                         |
+| --------------------------------------- | ------------------------------ |
+| "The API was reverse engineered"        | "I reverse engineered the API" |
+| "A survey was made"                     | "We surveyed"                  |
+| "There were leaves lying on the ground" | "Leaves covered the ground"    |
 
 ### Positive Form (Rule 11)
 
 Make definite assertions. Avoid non-committal language.
 
-| Negative | Positive |
-|----------|----------|
+| Negative                        | Positive               |
+| ------------------------------- | ---------------------- |
 | "He was not very often on time" | "He usually came late" |
-| "did not remember" | "forgot" |
-| "did not pay attention to" | "ignored" |
-| "not important" | "trifling" |
+| "did not remember"              | "forgot"               |
+| "did not pay attention to"      | "ignored"              |
+| "not important"                 | "trifling"             |
 
 ### Specific and Concrete (Rule 12)
 
-| Vague | Specific |
-|-------|----------|
+| Vague                             | Specific                         |
+| --------------------------------- | -------------------------------- |
 | "A period of unfavorable weather" | "It rained every day for a week" |
-| "significantly faster" | "40% faster" |
-| "a few hours" | "4 to 5 hours" |
-| "many test cases" | "630+ test cases" |
+| "significantly faster"            | "40% faster"                     |
+| "a few hours"                     | "4 to 5 hours"                   |
+| "many test cases"                 | "630+ test cases"                |
 
 ### Omit Needless Words (Rule 13)
 
 Vigorous writing is concise. Make every word tell.
 
-| Wordy | Concise |
-|-------|---------|
-| "the question as to whether" | "whether" |
-| "owing to the fact that" | "because" |
-| "he is a man who" | "he" |
-| "this is a subject which" | "this subject" |
-| "the fact that" | omit entirely |
+| Wordy                        | Concise        |
+| ---------------------------- | -------------- |
+| "the question as to whether" | "whether"      |
+| "owing to the fact that"     | "because"      |
+| "he is a man who"            | "he"           |
+| "this is a subject which"    | "this subject" |
+| "the fact that"              | omit entirely  |
 
 ### Emphatic Position (Rule 18)
 
 Place important words at sentence end.
 
-**Weak:** "TOON makes a difference, surprisingly."
-**Strong:** "That's the difference between asking a follow-up question or hitting your context limit."
+**Weak:** "TOON makes a difference, surprisingly." **Strong:** "That's the
+difference between asking a follow-up question or hitting your context limit."
 
 ### Parallel Construction (Rule 15)
 
 Express co-ordinate ideas in similar form.
 
-**Non-parallel:** "Formerly by textbook method, while now laboratory method is employed"
-**Parallel:** "Formerly by textbook; now by laboratory"
+**Non-parallel:** "Formerly by textbook method, while now laboratory method is
+employed" **Parallel:** "Formerly by textbook; now by laboratory"
 
 ### One Paragraph Per Topic (Rule 8)
 
-Each paragraph signals a new step. Begin with topic sentence; end in conformity with beginning.
+Each paragraph signals a new step. Begin with topic sentence; end in conformity
+with beginning.
 
 ### Vary Sentence Structure (Rule 14)
 
-Avoid succession of loose sentences joined by "and", "but", "so", "which". Mix simple sentences, semicolons, and periodic sentences.
+Avoid succession of loose sentences joined by "and", "but", "so", "which". Mix
+simple sentences, semicolons, and periodic sentences.
 
 ## Punctuation Rules
 
 ### Oxford Comma (Rule 2)
+
 "red, white, and blue" — comma after each term except last.
 
 ### No Comma Splice (Rule 5)
-Use semicolon for independent clauses without conjunction:
-"The romances are entertaining; they are full of adventures."
+
+Use semicolon for independent clauses without conjunction: "The romances are
+entertaining; they are full of adventures."
 
 ### Dangling Modifiers (Rule 7)
+
 Opening phrase must refer to grammatical subject.
 
-**Wrong:** "Being dilapidated, I bought the house cheap."
-**Right:** "Being dilapidated, the house was available cheap."
+**Wrong:** "Being dilapidated, I bought the house cheap." **Right:** "Being
+dilapidated, the house was available cheap."
 
 ## Words to Avoid
 
@@ -160,6 +168,7 @@ Opening phrase must refer to grammatical subject.
 ### Show Concrete Value
 
 Include at least one of:
+
 - A practical technique readers can apply
 - Clear explanation of impactful concepts
 - Real terminal output or code examples

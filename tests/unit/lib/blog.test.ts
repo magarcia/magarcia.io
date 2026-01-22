@@ -32,11 +32,14 @@ const mockFs = {
   readdirSync: fs.readdirSync as ReturnType<typeof vi.fn>,
 };
 
-const createMarkdown = (frontmatter: Record<string, unknown>, content = "This is test content.") => {
+const createMarkdown = (
+  frontmatter: Record<string, unknown>,
+  content = "This is test content.",
+) => {
   const frontmatterString = Object.entries(frontmatter)
     .map(([key, value]) => {
       if (Array.isArray(value)) {
-        return `${key}: [${value.map(v => `"${v}"`).join(", ")}]`;
+        return `${key}: [${value.map((v) => `"${v}"`).join(", ")}]`;
       }
       if (typeof value === "string") {
         return `${key}: "${value}"`;
@@ -134,9 +137,13 @@ describe("blog.ts", () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readFileSync.mockReturnValue(invalidMarkdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.mdx",
+      ] as unknown as fs.Dirent[]);
 
-      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("Invalid frontmatter");
+      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow(
+        "Invalid frontmatter",
+      );
     });
 
     it("should allow posts without tags", () => {
@@ -149,7 +156,9 @@ describe("blog.ts", () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readFileSync.mockReturnValue(markdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.mdx",
+      ] as unknown as fs.Dirent[]);
 
       const result = getFileBySlug("blog", "test-slug", "en");
 
@@ -169,9 +178,13 @@ Content`;
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readFileSync.mockReturnValue(invalidMarkdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.mdx",
+      ] as unknown as fs.Dirent[]);
 
-      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("'tags' field must be an array");
+      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow(
+        "'tags' field must be an array",
+      );
     });
 
     it("should throw error when tags array contains non-strings", () => {
@@ -186,9 +199,13 @@ Content`;
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readFileSync.mockReturnValue(invalidMarkdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.mdx",
+      ] as unknown as fs.Dirent[]);
 
-      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow("'tags' field must be an array of strings");
+      expect(() => getFileBySlug("blog", "test-slug", "en")).toThrow(
+        "'tags' field must be an array of strings",
+      );
     });
 
     it("should load a post with .mdx extension for the specified language", () => {
@@ -204,14 +221,18 @@ Content`;
       });
 
       mockFs.readFileSync.mockReturnValue(markdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.es.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.es.mdx",
+      ] as unknown as fs.Dirent[]);
 
       const result = getFileBySlug("blog", "test-slug", "es");
 
       expect(result.frontMatter.title).toBe("Test Post");
       expect(result.frontMatter.slug).toBe("test-slug");
       expect(result.content).toContain("This is test content.");
-      expect(mockFs.existsSync).toHaveBeenCalledWith(expect.stringContaining("test-slug.es.mdx"));
+      expect(mockFs.existsSync).toHaveBeenCalledWith(
+        expect.stringContaining("test-slug.es.mdx"),
+      );
     });
 
     it("should load a post with .md extension for the specified language", () => {
@@ -228,12 +249,16 @@ Content`;
       });
 
       mockFs.readFileSync.mockReturnValue(markdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.ca.md"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.ca.md",
+      ] as unknown as fs.Dirent[]);
 
       const result = getFileBySlug("blog", "test-slug", "ca");
 
       expect(result.frontMatter.title).toBe("Test Post MD");
-      expect(mockFs.existsSync).toHaveBeenCalledWith(expect.stringContaining("test-slug.ca.md"));
+      expect(mockFs.existsSync).toHaveBeenCalledWith(
+        expect.stringContaining("test-slug.ca.md"),
+      );
     });
 
     it("should fallback to default language when language-specific file not found", () => {
@@ -246,23 +271,31 @@ Content`;
 
       mockFs.existsSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
-        return pathStr.includes("test-slug.mdx") && !pathStr.includes(".es.") && !pathStr.includes(".ca.");
+        return (
+          pathStr.includes("test-slug.mdx") &&
+          !pathStr.includes(".es.") &&
+          !pathStr.includes(".ca.")
+        );
       });
 
       mockFs.readFileSync.mockReturnValue(markdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.mdx",
+      ] as unknown as fs.Dirent[]);
 
       const result = getFileBySlug("blog", "test-slug", "es");
 
       expect(result.frontMatter.title).toBe("English Fallback");
-      expect(mockFs.existsSync).toHaveBeenCalledWith(expect.stringContaining("test-slug.mdx"));
+      expect(mockFs.existsSync).toHaveBeenCalledWith(
+        expect.stringContaining("test-slug.mdx"),
+      );
     });
 
     it("should throw error when no file found for slug", () => {
       mockFs.existsSync.mockReturnValue(false);
 
       expect(() => getFileBySlug("blog", "non-existent", "en")).toThrow(
-        "Post not found"
+        "Post not found",
       );
     });
 
@@ -327,7 +360,10 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+        "post-2.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -358,7 +394,10 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+        "post-2.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -382,12 +421,14 @@ Content`;
           spoiler: "Long content",
           tags: ["test"],
         },
-        longContent
+        longContent,
       );
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readFileSync.mockReturnValue(markdown);
-      mockFs.readdirSync.mockReturnValue(["test-slug.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "test-slug.mdx",
+      ] as unknown as fs.Dirent[]);
 
       const result = getFileBySlug("blog", "test-slug", "en");
 
@@ -516,7 +557,7 @@ Content`;
       const results = getAllFilesFrontMatter("blog", "en");
 
       expect(results).toHaveLength(2);
-      expect(results.map(r => r.title)).toContain("Draft Post");
+      expect(results.map((r) => r.title)).toContain("Draft Post");
     });
 
     it("should handle multiple language files and return unique slugs", () => {
@@ -541,7 +582,9 @@ Content`;
 
       mockFs.existsSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
-        return pathStr.includes("post-1.es.mdx") || pathStr.includes("post-1.mdx");
+        return (
+          pathStr.includes("post-1.es.mdx") || pathStr.includes("post-1.mdx")
+        );
       });
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
@@ -564,7 +607,9 @@ Content`;
         tags: ["test"],
       });
 
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.existsSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -589,12 +634,14 @@ Content`;
         return path.toString().includes("existing");
       });
 
-      mockFs.readFileSync.mockReturnValue(createMarkdown({
-        title: "Existing Post",
-        date: "2024-01-01",
-        spoiler: "Exists",
-        tags: ["test"],
-      }));
+      mockFs.readFileSync.mockReturnValue(
+        createMarkdown({
+          title: "Existing Post",
+          date: "2024-01-01",
+          spoiler: "Exists",
+          tags: ["test"],
+        }),
+      );
 
       const results = getAllFilesFrontMatter("blog", "en");
 
@@ -612,7 +659,7 @@ Content`;
           spoiler: "First post",
           tags: ["test"],
         },
-        "Content of post 1"
+        "Content of post 1",
       );
 
       const post2 = createMarkdown(
@@ -622,11 +669,14 @@ Content`;
           spoiler: "Second post",
           tags: ["test"],
         },
-        "Content of post 2"
+        "Content of post 2",
       );
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+        "post-2.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -655,7 +705,7 @@ Content`;
           tags: ["test"],
           draft: false,
         },
-        "Published content"
+        "Published content",
       );
 
       const draftPost = createMarkdown(
@@ -666,7 +716,7 @@ Content`;
           tags: ["test"],
           draft: true,
         },
-        "Draft content"
+        "Draft content",
       );
 
       mockFs.existsSync.mockReturnValue(true);
@@ -799,7 +849,10 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+        "post-2.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -822,7 +875,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(post);
 
       const tags = getAllTags("blog", "en");
@@ -846,7 +901,10 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+        "post-2.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -915,7 +973,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(post);
 
       const result = getPostsByTag("blog", "nonexistent", "en");
@@ -978,7 +1038,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(post1);
 
       const result = getTagBySlug("blog", "open-source");
@@ -1001,7 +1063,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(post);
 
       const result = getTagBySlug("blog", "nonexistent");
@@ -1018,7 +1082,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(post);
 
       const result = getTagBySlug("blog", "node-js");
@@ -1044,7 +1110,10 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post-1.mdx", "post-2.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post-1.mdx",
+        "post-2.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -1074,7 +1143,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["post.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "post.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(post);
 
       const result = getPostsByTagSlug("blog", "nonexistent", "en");
@@ -1108,7 +1179,10 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["past.mdx", "future.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "past.mdx",
+        "future.mdx",
+      ] as unknown as fs.Dirent[]);
 
       mockFs.readFileSync.mockImplementation((path: fs.PathLike) => {
         const pathStr = path.toString();
@@ -1137,7 +1211,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["future.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "future.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(futurePost);
 
       const results = getAllFilesFrontMatter("blog", "en");
@@ -1159,7 +1235,9 @@ Content`;
       });
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(["today.mdx"] as unknown as fs.Dirent[]);
+      mockFs.readdirSync.mockReturnValue([
+        "today.mdx",
+      ] as unknown as fs.Dirent[]);
       mockFs.readFileSync.mockReturnValue(todayPost);
 
       const results = getAllFilesFrontMatter("blog", "en");

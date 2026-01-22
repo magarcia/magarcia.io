@@ -1,19 +1,27 @@
 ---
 name: writing-clearly-and-concisely
-description: Use when user says "improve my writing", "make this clearer", "edit for clarity", "copyedit", "proofread", "review my prose", or asks for help with documentation, README files, commit messages, error messages, UI text, comments, or any prose humans will read. Applies Strunk's Elements of Style rules to make writing clearer, stronger, and more concise.
+description:
+  Use when user says "improve my writing", "make this clearer", "edit for
+  clarity", "copyedit", "proofread", "review my prose", or asks for help with
+  documentation, README files, commit messages, error messages, UI text,
+  comments, or any prose humans will read. Applies Strunk's Elements of Style
+  rules to make writing clearer, stronger, and more concise.
 ---
 
 # Writing Clearly and Concisely
 
 ## Reference
 
-**Read `elements-of-style.md` before writing or editing prose.** It contains the complete Strunk rules with examples (~12k tokens).
+**Read `elements-of-style.md` before writing or editing prose.** It contains the
+complete Strunk rules with examples (~12k tokens).
 
-When context is tight, dispatch a subagent with your draft and `elements-of-style.md` to copyedit.
+When context is tight, dispatch a subagent with your draft and
+`elements-of-style.md` to copyedit.
 
 ## All Rules
 
 ### Elementary Rules of Usage (Grammar/Punctuation)
+
 1. Form possessive singular by adding 's
 2. Use comma after each term in series except last
 3. Enclose parenthetic expressions between commas
@@ -23,6 +31,7 @@ When context is tight, dispatch a subagent with your draft and `elements-of-styl
 7. Participial phrase at beginning refers to grammatical subject
 
 ### Elementary Principles of Composition
+
 8. One paragraph per topic
 9. Begin paragraph with topic sentence
 10. **Use active voice**
@@ -36,4 +45,5 @@ When context is tight, dispatch a subagent with your draft and `elements-of-styl
 18. **Place emphatic words at end of sentence**
 
 ### Section V: Words and Expressions Commonly Misused
+
 Alphabetical reference for usage questions

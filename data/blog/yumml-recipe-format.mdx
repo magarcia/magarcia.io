@@ -1,30 +1,32 @@
 ---
 title: YumML - Yet Another Recipe Metadata Format
-date: '2026-01-10'
-spoiler: Existing recipe formats are old, poorly specified, or have license
+date: "2026-01-10"
+spoiler:
+  Existing recipe formats are old, poorly specified, or have license
   restrictions. YumML makes cooking recipes human and machine readable.
 tags:
   - open-source
 ---
 
-Years ago, talking with a friend, we realized that no standard format exists
-for saving cooking recipes. At that time I was learning React, and one of my early projects was a recipe
-management app. I didn't succeed (like many projects I started and never
-finished), but along the way I found a draft spec for a recipe format:
-**YumML**.
+Years ago, talking with a friend, we realized that no standard format exists for
+saving cooking recipes. At that time I was learning React, and one of my early
+projects was a recipe management app. I didn't succeed (like many projects I
+started and never finished), but along the way I found a draft spec for a recipe
+format: **YumML**.
 
 <br />
 
 ![XKCD: Standards](https://imgs.xkcd.com/comics/standards.png)
 
-*Yes, I'm fully aware of the irony. [xkcd.com/927](https://xkcd.com/927)*
+_Yes, I'm fully aware of the irony. [xkcd.com/927](https://xkcd.com/927)_
 
 <br />
 
 Paul Jenkins published this format on [vikingco.de](http://vikingco.de/), but
 the site is now offline. The only references available are from the
 [Internet Archive](https://web.archive.org/web/20160730232450/http://vikingco.de/)
-and the [repository of the page](https://github.com/vikingcode/vikingcode.github.io)
+and the
+[repository of the page](https://github.com/vikingcode/vikingcode.github.io)
 that remains available.
 
 > The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
@@ -34,22 +36,23 @@ that remains available.
 ## History
 
 The first draft of the YumML format is from September 21, 2011, made by Paul
-Jenkins, you can check the [original specification here](https://web.archive.org/web/20160730232450/http://vikingco.de/yumml.html)
+Jenkins, you can check the
+[original specification here](https://web.archive.org/web/20160730232450/http://vikingco.de/yumml.html)
 that I rescued from the old archives I found.
 
-This draft is promising as a format for cooking recipes, so I want to recover
-it from the forgotten archives and revive it, adding extra functionalities and
+This draft is promising as a format for cooking recipes, so I want to recover it
+from the forgotten archives and revive it, adding extra functionalities and
 specifications.
 
 ## Motivation
 
 As the original author of YumML mentioned in his blog post, I've investigated
 cooking recipe formats and, to be clear, most suck. The landscape of recipe
-interchange formats is fragmented, but most share one trait: they lack
-human readability.
+interchange formats is fragmented, but most share one trait: they lack human
+readability.
 
-Most cooking software ships with proprietary formats that only that software
-can read. Some can be imported by other programs.
+Most cooking software ships with proprietary formats that only that software can
+read. Some can be imported by other programs.
 [Meal-Master](http://web.archive.org/web/20151029032924/http://episoft.home.comcast.net:80/~episoft/)
 is one of these widely supported formats and due to that there is a
 [huge collection of recipes](http://www.ffts.com/recipes.htm) available online.
@@ -84,19 +87,20 @@ There are some other "famous" formats like:
 - [Recipe Exchange Markup Language](http://reml.sourceforge.net/)
 - [CookML](http://www.kalorio.de/index.php?Mod=Ac&Cap=CE&SCa=../cml/CookML_EN)
 
-But they are mainly XML-based formats, and no human can read a recipe written
-in them. If you're interested in finding other recipe formats, there is a
+But they are mainly XML-based formats, and no human can read a recipe written in
+them. If you're interested in finding other recipe formats, there is a
 [list of software-related cooking formats](http://microformats.org/wiki/recipe-formats).
 
 It's worth mentioning some formats that came with the age of the Internet. HTML
-microdata like [Google rich snippets](https://developers.google.com/search/docs/data-types/recipe)
+microdata like
+[Google rich snippets](https://developers.google.com/search/docs/data-types/recipe)
 and [schema.org microdata](http://schema.org/Recipe) are widely used by
-commercial recipe sites. Although microdata's main objective is machine-readability
-(especially for SEO), people still read and follow recipes.
+commercial recipe sites. Although microdata's main objective is
+machine-readability (especially for SEO), people still read and follow recipes.
 
 Finally, I found [pesto](https://6xq.net/pesto/), which aims for a simpler
-human-readable format, but I find it difficult to understand for someone
-who is unfamiliar with the syntax.
+human-readable format, but I find it difficult to understand for someone who is
+unfamiliar with the syntax.
 
 ## Original design considerations
 
@@ -106,7 +110,8 @@ of the format:
 - Does not need a long reference guide.
 - Can be easily read by non-technical people in the "raw" format.
 - Can be translatable between imperial and metric.
-- Want something like the _markdown_ of recipes (but still easy to parse with software).
+- Want something like the _markdown_ of recipes (but still easy to parse with
+  software).
 
 YumML is based on YAML to create a human _and_ system readable format.
 
@@ -122,18 +127,18 @@ about human and machine readability. Today, there's a third reader to consider:
 **Large Language Models (LLMs)**.
 
 As AI assistants become common in kitchens (think voice assistants reading
-recipes aloud, or chatbots helping you adapt recipes), the format you choose
-for structured data matters more than ever. Recent research shows that data
-format significantly impacts both **token efficiency** (cost) and **model
-accuracy** when LLMs process structured information.
+recipes aloud, or chatbots helping you adapt recipes), the format you choose for
+structured data matters more than ever. Recent research shows that data format
+significantly impacts both **token efficiency** (cost) and **model accuracy**
+when LLMs process structured information.
 
 [Benchmarks across different models](https://www.improvingagents.com/blog/best-nested-data-format/)
 show that YAML uses **27-40% fewer tokens than JSON** and **38-40% fewer than
-XML** for the same data. Beyond cost savings, format also affects
-comprehension: YAML achieved **12-18 percentage points higher accuracy** than
-JSON when models extracted information from nested data. The cleaner syntax
-with less punctuation noise helps models parse semantic content more reliably.
-While [minified JSON can be more efficient](https://www.curiouslychase.com/posts/yaml-vs-json-for-llm-token-efficiency-the-minification-truth),
+XML** for the same data. Beyond cost savings, format also affects comprehension:
+YAML achieved **12-18 percentage points higher accuracy** than JSON when models
+extracted information from nested data. The cleaner syntax with less punctuation
+noise helps models parse semantic content more reliably. While
+[minified JSON can be more efficient](https://www.curiouslychase.com/posts/yaml-vs-json-for-llm-token-efficiency-the-minification-truth),
 it sacrifices human readability entirely, which defeats YumML's core goals.
 
 ### The best of both worlds
@@ -157,9 +162,12 @@ I want to define more formal goals for the spec.
 YumML format:
 
 - **MUST** be human **and** system readable.
-- **MUST** be self contained, so it **MUST NOT** require additional resources to be interpreted.
+- **MUST** be self contained, so it **MUST NOT** require additional resources to
+  be interpreted.
 - **MUST** have support for different metric systems _(metric, imperial)_.
-- **SHOULD** be easy to translate into different languages _(recipes have a strong cultural influence and language should not be a barrier to someone who wants to understand)_.
+- **SHOULD** be easy to translate into different languages _(recipes have a
+  strong cultural influence and language should not be a barrier to someone who
+  wants to understand)_.
 - **SHOULD** be easy to parse using already existing tools.
 - **SHOULD** be easy to extend in the future.
 
@@ -192,32 +200,33 @@ instructions:
 
 ## Spec
 
-There are three main sections that every recipe **MUST** include: the header, the ingredients list, and the instructions.
+There are three main sections that every recipe **MUST** include: the header,
+the ingredients list, and the instructions.
 
 ### Header
 
 The header is an implicit section where all the attributes are placed at the
-root level of the file. All the attributes **SHOULD** be placed at the top of the
-file, before `ingredients` and `instructions`.
+root level of the file. All the attributes **SHOULD** be placed at the top of
+the file, before `ingredients` and `instructions`.
 
-| Attribute | Type | Status | Description |
-|:----------|:-----|:-------|:------------|
-| `name` | string | **REQUIRED** | Name of the recipe |
-| `date` | string | OPTIONAL | Publication date ([RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6) format, e.g., `2017-07-21`) |
-| `author` | string | OPTIONAL | Author of the recipe |
-| `description` | string | OPTIONAL | Brief description of the recipe |
-| `prepTime` | duration | OPTIONAL | Preparation time (e.g., `15 minutes`) |
-| `cookTime` | duration | OPTIONAL | Cooking/baking time (e.g., `10 minutes`) |
-| `totalTime` | duration | OPTIONAL | Total time (**MAY** be derived from `prepTime` + `cookTime`) |
-| `servings` | integer | OPTIONAL | Number of portions the recipe serves |
-| `yield` | string | OPTIONAL | What the recipe produces (e.g., `24 cookies`, `1 loaf`) |
-| `rating` | number (1-5) | OPTIONAL | Recipe rating |
-| `tags` | string[] | OPTIONAL | Categorization tags |
+| Attribute     | Type         | Status       | Description                                                                                               |
+| :------------ | :----------- | :----------- | :-------------------------------------------------------------------------------------------------------- |
+| `name`        | string       | **REQUIRED** | Name of the recipe                                                                                        |
+| `date`        | string       | OPTIONAL     | Publication date ([RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6) format, e.g., `2017-07-21`) |
+| `author`      | string       | OPTIONAL     | Author of the recipe                                                                                      |
+| `description` | string       | OPTIONAL     | Brief description of the recipe                                                                           |
+| `prepTime`    | duration     | OPTIONAL     | Preparation time (e.g., `15 minutes`)                                                                     |
+| `cookTime`    | duration     | OPTIONAL     | Cooking/baking time (e.g., `10 minutes`)                                                                  |
+| `totalTime`   | duration     | OPTIONAL     | Total time (**MAY** be derived from `prepTime` + `cookTime`)                                              |
+| `servings`    | integer      | OPTIONAL     | Number of portions the recipe serves                                                                      |
+| `yield`       | string       | OPTIONAL     | What the recipe produces (e.g., `24 cookies`, `1 loaf`)                                                   |
+| `rating`      | number (1-5) | OPTIONAL     | Recipe rating                                                                                             |
+| `tags`        | string[]     | OPTIONAL     | Categorization tags                                                                                       |
 
-**Duration format**: Human-readable strings. For maximum compatibility, use integers
-followed by `minutes`, `hours`, or `seconds` (e.g., `15 minutes`, `1 hour 30 minutes`).
-Parsers **SHOULD** also accept common abbreviations (`15 min`, `1 hr`) and natural
-variations (`1.5 hours`).
+**Duration format**: Human-readable strings. For maximum compatibility, use
+integers followed by `minutes`, `hours`, or `seconds` (e.g., `15 minutes`,
+`1 hour 30 minutes`). Parsers **SHOULD** also accept common abbreviations
+(`15 min`, `1 hr`) and natural variations (`1.5 hours`).
 
 #### Example
 
@@ -249,25 +258,27 @@ instructions:
 
 ### Ingredients
 
-The `ingredients` section is a **REQUIRED** list of all ingredients needed for the recipe.
+The `ingredients` section is a **REQUIRED** list of all ingredients needed for
+the recipe.
 
-| Attribute | Type | Status | Description |
-|:----------|:-----|:-------|:------------|
-| `quantity` | number \| string | OPTIONAL | Amount (number, fraction like `"1/2"`, or descriptor like `"to taste"`) |
-| `unit` | string | OPTIONAL | Unit of measurement (see canonical units below) |
-| `item` | string | **REQUIRED** | Name of the ingredient |
-| `notes` | string | OPTIONAL | Additional notes (e.g., `room temperature`, `finely chopped`) |
-| `optional` | boolean | OPTIONAL | Whether the ingredient is optional (default: `false`) |
+| Attribute  | Type             | Status       | Description                                                             |
+| :--------- | :--------------- | :----------- | :---------------------------------------------------------------------- |
+| `quantity` | number \| string | OPTIONAL     | Amount (number, fraction like `"1/2"`, or descriptor like `"to taste"`) |
+| `unit`     | string           | OPTIONAL     | Unit of measurement (see canonical units below)                         |
+| `item`     | string           | **REQUIRED** | Name of the ingredient                                                  |
+| `notes`    | string           | OPTIONAL     | Additional notes (e.g., `room temperature`, `finely chopped`)           |
+| `optional` | boolean          | OPTIONAL     | Whether the ingredient is optional (default: `false`)                   |
 
 #### Canonical Units
 
-To support conversion between metric and imperial systems, implementations **SHOULD** recognize these canonical unit abbreviations:
+To support conversion between metric and imperial systems, implementations
+**SHOULD** recognize these canonical unit abbreviations:
 
-| Category | Units |
-|:---------|:------|
-| Volume | `tsp`, `tbsp`, `cup`, `ml`, `l`, `fl-oz` |
-| Weight | `g`, `kg`, `oz`, `lb` |
-| Count | *(omit `unit` for countable items like eggs)* |
+| Category | Units                                         |
+| :------- | :-------------------------------------------- |
+| Volume   | `tsp`, `tbsp`, `cup`, `ml`, `l`, `fl-oz`      |
+| Weight   | `g`, `kg`, `oz`, `lb`                         |
+| Count    | _(omit `unit` for countable items like eggs)_ |
 
 #### Example
 
@@ -306,15 +317,17 @@ ingredients:
 
 ### Instructions
 
-The `instructions` section is a **REQUIRED** list of steps to prepare the recipe. Instructions support two formats: a simple flat list or grouped sections for complex recipes.
+The `instructions` section is a **REQUIRED** list of steps to prepare the
+recipe. Instructions support two formats: a simple flat list or grouped sections
+for complex recipes.
 
 #### Simple Format
 
-| Attribute | Type | Status | Description |
-|:----------|:-----|:-------|:------------|
-| `step` | string | **REQUIRED** | The instruction text |
-| `duration` | duration | OPTIONAL | Time for this step |
-| `temperature` | string | OPTIONAL | Temperature setting (e.g., `180C`, `350F`) |
+| Attribute     | Type     | Status       | Description                                |
+| :------------ | :------- | :----------- | :----------------------------------------- |
+| `step`        | string   | **REQUIRED** | The instruction text                       |
+| `duration`    | duration | OPTIONAL     | Time for this step                         |
+| `temperature` | string   | OPTIONAL     | Temperature setting (e.g., `180C`, `350F`) |
 
 ```yumml
 instructions:
@@ -327,7 +340,8 @@ instructions:
 
 #### Grouped Format
 
-For complex recipes with multiple stages, instructions **MAY** be organized into sections:
+For complex recipes with multiple stages, instructions **MAY** be organized into
+sections:
 
 > **Implementation note**: Parsers **MUST** handle both formats. Check for the
 > presence of `section` to determine the format: if any item has a `section`
@@ -353,19 +367,22 @@ A few decisions deserve explanation.
 
 ### Why `quantity` is optional and accepts strings
 
-Cooking is fuzzy. Real recipes include instructions like "salt to taste", "a pinch
-of nutmeg", or "butter for greasing". Forcing a numeric quantity would either
-exclude these cases or push authors toward awkward workarounds like `quantity: 0`.
+Cooking is fuzzy. Real recipes include instructions like "salt to taste", "a
+pinch of nutmeg", or "butter for greasing". Forcing a numeric quantity would
+either exclude these cases or push authors toward awkward workarounds like
+`quantity: 0`.
 
-Allowing strings also enables fractions like `"1/2"`, which are more readable in a
-recipe context than `0.5`. The trade-off is that parsers need to handle multiple
-types, but this reflects the inherent ambiguity of cooking rather than fighting it.
+Allowing strings also enables fractions like `"1/2"`, which are more readable in
+a recipe context than `0.5`. The trade-off is that parsers need to handle
+multiple types, but this reflects the inherent ambiguity of cooking rather than
+fighting it.
 
 ### Why human-readable durations instead of ISO 8601
 
 ISO 8601 durations (`PT25M`) are unambiguous and machine-friendly, but they fail
-the "readable by a non-technical person" goal. A home cook glancing at a `.yumml`
-file should immediately understand `25 minutes` without consulting a reference.
+the "readable by a non-technical person" goal. A home cook glancing at a
+`.yumml` file should immediately understand `25 minutes` without consulting a
+reference.
 
 The spec recommends a structured subset (`integer + unit`) for tools that need
 reliable parsing but remains flexible enough to accept natural variations.
@@ -376,8 +393,8 @@ Simple recipes don't need sections. Forcing authors to write `section: main` for
 a basic cookie recipe adds friction. But complex recipes (like a multi-component
 pie) genuinely benefit from grouping steps by stage.
 
-The polymorphic design prioritizes author convenience over parser simplicity. The
-implementation note makes the parsing logic explicit: check for `section` to
+The polymorphic design prioritizes author convenience over parser simplicity.
+The implementation note makes the parsing logic explicit: check for `section` to
 determine the format.
 
 ## Complete Example
@@ -469,7 +486,8 @@ This spec is a starting point—to become useful, YumML needs implementations. I
 you're interested in contributing:
 
 - **Write a parser** in your favorite language (TypeScript, Python, Go, Rust...)
-- **Build a converter** from [schema.org/Recipe](http://schema.org/Recipe) to YumML
+- **Build a converter** from [schema.org/Recipe](http://schema.org/Recipe) to
+  YumML
 - **Create a VS Code extension** with syntax highlighting and validation
 - **Experiment with LLMs** to see how well they can generate and parse YumML
 

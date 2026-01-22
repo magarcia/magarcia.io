@@ -1,6 +1,6 @@
 ---
 title: First coding week
-date: '2016-05-29'
+date: "2016-05-29"
 spoiler: The first week working on the migration of Jangouts to Angular2.
 indexed: false
 tags:
@@ -12,8 +12,9 @@ The first week of the coding period at GSoC 2016, so I started the upgrading
 process of Jangouts from Angular 1.x to Angular 2. This week, the tasks have
 been fulfilled within the deadline, I hope to remain so for the next week.
 
-I'm following the [upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html)
-from official Angular docs, which has two main blocks:
+I'm following the
+[upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html) from
+official Angular docs, which has two main blocks:
 
 - Preparation
 - Upgrading with The Upgrade Adapter
@@ -21,10 +22,11 @@ from official Angular docs, which has two main blocks:
 I just finished the preparation block. I was lucky because the code of Jangouts
 is really clear and it follows two important points of the preparation block:
 Follow the Angular style guide and use component directives. So this left me
-only two things to do. First of all, switch from load files with `<script>`
-tags to a module loader and then migrate the code from JavaScript to TypeScript.
-But I've done it in reverse order, first migrate to TypeScript and then switch to
-a module loader. Why? I think this way is more "natural", at least for this project.
+only two things to do. First of all, switch from load files with `<script>` tags
+to a module loader and then migrate the code from JavaScript to TypeScript. But
+I've done it in reverse order, first migrate to TypeScript and then switch to a
+module loader. Why? I think this way is more "natural", at least for this
+project.
 
 ## Migrating to TypeScript
 
@@ -34,20 +36,20 @@ and when all was ready, then I try to take profit from the `import` syntax of
 TypeScript/ES6.
 
 Migrate code from JavaScript to TypeScript is really easy, only need to change
-the extension form `.js` to `.ts`. Obviously, the existing gulp system doesn't works
-with these changes, so in parallel of running gulp you should run
+the extension form `.js` to `.ts`. Obviously, the existing gulp system doesn't
+works with these changes, so in parallel of running gulp you should run
 `tsc --watch src/**/*.ts`. This command shows a lot of errors but don't worry
-about this if the JavaScript code is correct, all these errors are related to the
-type checking process of TypeScript compiler.
+about this if the JavaScript code is correct, all these errors are related to
+the type checking process of TypeScript compiler.
 
 During this migration process, I also perform some changes in the code to make
 it more modular. Jangouts have all the components registered in the same Angular
 module `janusHangouts` and in other projects I worked before I learned that this
-can make some troubles when you have to do unit testing, so I define a
-different module for each component (`janusHangouts.componentName`)
-and then make it a dependency of the main module. This has to advantages: make
-tests is easier and in the future we can load components on demand with a
-module loader (but I'm not sure about the last one).
+can make some troubles when you have to do unit testing, so I define a different
+module for each component (`janusHangouts.componentName`) and then make it a
+dependency of the main module. This has to advantages: make tests is easier and
+in the future we can load components on demand with a module loader (but I'm not
+sure about the last one).
 
 Back to some, I said earlier, when compiling the JavaScript code with `tsc` this
 shows a lot of errors. One that could appear a lot is something like this:
@@ -55,8 +57,8 @@ shows a lot of errors. One that could appear a lot is something like this:
 > `error TS7006: Parameter '$state' implicitly has an 'any' type.`
 
 This is because TypeScript compiler wants a type defined for all variables, but
-we can make that `tsc` set the implicit type any for variables without type.
-The only thing to do is disable the option `noImplicitAny` in the `tsconfig.json`
+we can make that `tsc` set the implicit type any for variables without type. The
+only thing to do is disable the option `noImplicitAny` in the `tsconfig.json`
 file.
 
 Another error we can find when working with HTML elements is:
@@ -66,13 +68,13 @@ Another error we can find when working with HTML elements is:
 This error is produced from a code like that:
 
 ```javascript
-var video = $('video', element)[0];
+var video = $("video", element)[0];
 video.muted = true;
 ```
 
 The error is produced because TypeScript is type save. So the
-`$('video', element)[0]` returns the type `HTMLElement` which does not contain
-a `muted` property. The subtype `HTMLVideoElement` does however contain the
+`$('video', element)[0]` returns the type `HTMLElement` which does not contain a
+`muted` property. The subtype `HTMLVideoElement` does however contain the
 `muted` property. So the solution is to cast the result to `HTMLVideoElement`
 like this:
 
@@ -121,12 +123,13 @@ function isRoom(room: Room) {
 
 Why we should use a module loader? We can find the response in Angular site:
 
-> Using a module loader such as [SystemJS](https://github.com/systemjs/systemjs),
+> Using a module loader such as
+> [SystemJS](https://github.com/systemjs/systemjs),
 > [Webpack](http://webpack.github.io/), or [Browserify](http://browserify.org/)
 > allows us to use the built-in module systems of the TypeScript or ES2015
-> languages in our apps. We can use the import and export features that explicitly
-> specify what code can and will be shared between different parts of the
-> application. [...]
+> languages in our apps. We can use the import and export features that
+> explicitly specify what code can and will be shared between different parts of
+> the application. [...]
 >
 > When we then take our applications into production, module loaders also make
 > it easier to package them all up into production bundles with batteries
@@ -168,8 +171,8 @@ the performance but without making difficult program it.
 
 ## One more thing
 
-This summer looks exciting with all the things I have to learn with GSoC. If
-you want to follow the progress of what I'm doing keep update of this blog or
-follow my contributions on GitHub. Also, I published a
+This summer looks exciting with all the things I have to learn with GSoC. If you
+want to follow the progress of what I'm doing keep update of this blog or follow
+my contributions on GitHub. Also, I published a
 [Trello board](https://trello.com/b/vtQJBxbf/jangouts) with the planning and
 things to do with this project (not fully update yet but in progress).

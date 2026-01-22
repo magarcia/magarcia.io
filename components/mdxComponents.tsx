@@ -7,7 +7,13 @@ import CodeInline from "./CodeInline";
 import CodeBlock from "./CodeBlock";
 import Link from "./Link";
 import List from "./List";
-import Table, { TableHead, TableBody, TableRow, TableCell, TableHeaderCell } from "./Table";
+import Table, {
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "./Table";
 
 // Component wrappers for react-markdown
 const H1 = (props: any) => <Heading level={1} {...props} />;

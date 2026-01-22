@@ -5,7 +5,9 @@ import type { FrontMatter } from "~/lib/blog";
 vi.mock("~/lib/blog", () => ({
   getPostsByTagSlug: vi.fn(),
   getTagBySlug: vi.fn(),
-  isValidSlug: vi.fn((slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug)),
+  isValidSlug: vi.fn((slug: string) =>
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug),
+  ),
   isValidLang: vi.fn((lang: string) => ["en", "es", "ca"].includes(lang)),
 }));
 
@@ -47,7 +49,11 @@ describe("tags.$tag route loader", () => {
       const result = await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
-      expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "en");
+      expect(getPostsByTagSlug).toHaveBeenCalledWith(
+        "blog",
+        "typescript",
+        "en",
+      );
       expect(result.posts).toEqual(mockPosts);
       expect(result.tag).toBe("TypeScript");
       expect(result.totalCount).toBe(2);
@@ -88,7 +94,11 @@ describe("tags.$tag route loader", () => {
       await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
-      expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "es");
+      expect(getPostsByTagSlug).toHaveBeenCalledWith(
+        "blog",
+        "typescript",
+        "es",
+      );
     });
 
     it("detects Catalan language from URL for post filtering", async () => {
@@ -100,7 +110,11 @@ describe("tags.$tag route loader", () => {
       await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
-      expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "ca");
+      expect(getPostsByTagSlug).toHaveBeenCalledWith(
+        "blog",
+        "typescript",
+        "ca",
+      );
     });
 
     it("defaults to English for non-prefixed URLs", async () => {
@@ -112,7 +126,11 @@ describe("tags.$tag route loader", () => {
       await loader({ request, params, context: {} } as any);
 
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "typescript");
-      expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "typescript", "en");
+      expect(getPostsByTagSlug).toHaveBeenCalledWith(
+        "blog",
+        "typescript",
+        "en",
+      );
     });
   });
 
@@ -123,7 +141,7 @@ describe("tags.$tag route loader", () => {
       const params = { tag: "nonexistent" };
 
       await expect(
-        loader({ request, params, context: {} } as any)
+        loader({ request, params, context: {} } as any),
       ).rejects.toMatchObject({
         status: 404,
       });
@@ -135,7 +153,7 @@ describe("tags.$tag route loader", () => {
       const params = { tag: "typescript" };
 
       await expect(
-        loader({ request, params, context: {} } as any)
+        loader({ request, params, context: {} } as any),
       ).rejects.toMatchObject({
         status: 404,
       });
@@ -165,7 +183,11 @@ describe("tags.$tag route loader", () => {
 
       expect(result.tag).toBe("Object Oriented");
       expect(getTagBySlug).toHaveBeenCalledWith("blog", "object-oriented");
-      expect(getPostsByTagSlug).toHaveBeenCalledWith("blog", "object-oriented", "ca");
+      expect(getPostsByTagSlug).toHaveBeenCalledWith(
+        "blog",
+        "object-oriented",
+        "ca",
+      );
     });
   });
 });

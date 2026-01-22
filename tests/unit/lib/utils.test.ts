@@ -119,7 +119,9 @@ describe("cn", () => {
       const variantClasses = "bg-blue-500 text-white";
 
       const result = cn(baseClasses, sizeClasses, variantClasses);
-      expect(result).toBe("rounded-md font-medium px-4 py-2 bg-blue-500 text-white");
+      expect(result).toBe(
+        "rounded-md font-medium px-4 py-2 bg-blue-500 text-white",
+      );
     });
 
     it("handles override pattern for component props", () => {
@@ -132,19 +134,13 @@ describe("cn", () => {
 
     it("handles conditional disabled state", () => {
       const isDisabled = true;
-      const result = cn(
-        "btn",
-        isDisabled && "opacity-50 cursor-not-allowed"
-      );
+      const result = cn("btn", isDisabled && "opacity-50 cursor-not-allowed");
       expect(result).toBe("btn opacity-50 cursor-not-allowed");
     });
 
     it("handles conditional active state", () => {
       const isActive = false;
-      const result = cn(
-        "nav-item",
-        isActive ? "bg-blue-500" : "bg-gray-200"
-      );
+      const result = cn("nav-item", isActive ? "bg-blue-500" : "bg-gray-200");
       expect(result).toBe("nav-item bg-gray-200");
     });
   });

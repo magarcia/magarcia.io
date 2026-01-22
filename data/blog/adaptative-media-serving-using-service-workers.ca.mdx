@@ -1,7 +1,10 @@
 ---
 title: Servir mitjans adaptatius utilitzant Service Workers
-date: '2019-06-17'
-spoiler: Tothom ha experimentat com visitar un lloc web a través d'una connexió de xarxa lenta sol trigar una eternitat a carregar-se. Explorarem com carregar diferents continguts multimèdia utilitzant l'API d'Informació de Xarxa.
+date: "2019-06-17"
+spoiler:
+  Tothom ha experimentat com visitar un lloc web a través d'una connexió de
+  xarxa lenta sol trigar una eternitat a carregar-se. Explorarem com carregar
+  diferents continguts multimèdia utilitzant l'API d'Informació de Xarxa.
 tags:
   - javascript
   - service-workers
@@ -10,94 +13,119 @@ tags:
 
 _Fent pair amb [@Ester Martí](https://github.com/estermv)_
 
-Tothom ha experimentat com visitar un lloc web a través d'una connexió de xarxa lenta
-sol trigar una eternitat a carregar-se, fent que l'experiència sigui molt dolorosa o completament
-impossible.
+Tothom ha experimentat com visitar un lloc web a través d'una connexió de xarxa
+lenta sol trigar una eternitat a carregar-se, fent que l'experiència sigui molt
+dolorosa o completament impossible.
 
 Quan es tracta de desenvolupament web, solem oblidar el rendiment de càrrega
-centrant-nos més a afegir noves característiques cridaneres. Però probablement els nostres usuaris
-no estan utilitzant l'últim MacBook Pro connectat a una xarxa d'1Gps. És
-més probable que estiguin utilitzant un dispositiu mòbil de gamma mitjana o baixa amb una
-connexió de xarxa que en el millor dels casos és una connexió 3G.
+centrant-nos més a afegir noves característiques cridaneres. Però probablement
+els nostres usuaris no estan utilitzant l'últim MacBook Pro connectat a una
+xarxa d'1Gps. És més probable que estiguin utilitzant un dispositiu mòbil de
+gamma mitjana o baixa amb una connexió de xarxa que en el millor dels casos és
+una connexió 3G.
 
 > [El 2018, el 52.2% de totes les pàgines web globals es van servir a telèfons mòbils.](https://www.statista.com/statistics/241462/global-mobile-phone-website-traffic-share/)
 
-Per tant, tenir cura del rendiment és important i un dels que més recursos consumeix
-és l'entrega de mitjans. Mostrarem com adaptar l'entrega de mitjans
+Per tant, tenir cura del rendiment és important i un dels que més recursos
+consumeix és l'entrega de mitjans. Mostrarem com adaptar l'entrega de mitjans
 basada en la connexió de xarxa utilitzant l'
-[API d'Informació de Xarxa](http://wicg.github.io/netinfo/). Aquesta és una versió millorada
-d'un experiment que vaig fer amb el meu company [@Eduardo Aquiles](https://twitter.com/eduaquiles)
-com un component de React, similar al que [Max Böck](https://mxb.dev/) explica en
-el seu article sobre [components conscients de la connexió](https://mxb.dev/blog/connection-aware-components/)
+[API d'Informació de Xarxa](http://wicg.github.io/netinfo/). Aquesta és una
+versió millorada d'un experiment que vaig fer amb el meu company
+[@Eduardo Aquiles](https://twitter.com/eduaquiles) com un component de React,
+similar al que [Max Böck](https://mxb.dev/) explica en el seu article sobre
+[components conscients de la connexió](https://mxb.dev/blog/connection-aware-components/)
 però en aquest cas, utilitzant service workers.
 
 ## L'API d'Informació de Xarxa
 
-L'API d'Informació de Xarxa és un esborrany d'especificació que exposa una interfície
-a JavaScript amb informació sobre la connexió del dispositiu.
+L'API d'Informació de Xarxa és un esborrany d'especificació que exposa una
+interfície a JavaScript amb informació sobre la connexió del dispositiu.
 
 La interfície consta d'un conjunt diferent d'atributs que ens dóna múltiple
-informació sobre la xarxa. Els més rellevants per a nosaltres en aquest article són:
+informació sobre la xarxa. Els més rellevants per a nosaltres en aquest article
+són:
 
-- **type:** El [tipus de connexió](http://wicg.github.io/netinfo/#dfn-connection-type)
-  que l'agent d'usuari està utilitzant. (p.ex. ‘wifi’, ‘cellular’, ‘ethernet’, etc.)
-- **effectiveType** El [tipus de connexió efectiva](http://wicg.github.io/netinfo/#dfn-effective-connection-type)
-  que es determina utilitzant una combinació de [rtt](http://wicg.github.io/netinfo/#dom-networkinformation-rtt) i [downlink](http://wicg.github.io/netinfo/#dom-networkinformation-downlink) observats recentment. (_[veure taula](#effectivetype-values)_)
+- **type:** El
+  [tipus de connexió](http://wicg.github.io/netinfo/#dfn-connection-type) que
+  l'agent d'usuari està utilitzant. (p.ex. ‘wifi’, ‘cellular’, ‘ethernet’, etc.)
+- **effectiveType** El
+  [tipus de connexió efectiva](http://wicg.github.io/netinfo/#dfn-effective-connection-type)
+  que es determina utilitzant una combinació de
+  [rtt](http://wicg.github.io/netinfo/#dom-networkinformation-rtt) i
+  [downlink](http://wicg.github.io/netinfo/#dom-networkinformation-downlink)
+  observats recentment. (_[veure taula](#effectivetype-values)_)
 - **saveData** Indica quan l'usuari va sol·licitar un ús reduït de dades.
 
 ### valors d'effectiveType
 
 <table>
-   <thead>
-      <tr>
-         <th>ECT</th>
-         <th>RTT Mínim (ms)</th>
-         <th>Downlink Màxim (Kbps)</th>
-         <th>Explicació</th>
-      </tr>
-   </thead>
-   <tbody>
-      <tr>
-         <td data-column="ECT">slow‑2g</td>
-         <td data-column="RTT">2000</td>
-         <td data-column="Downlink">50</td>
-         <td data-column="Explicació">La xarxa és adequada només per a transferències petites com pàgines de només text.</td>
-      </tr>
-      <tr>
-         <td data-column="ECT">2g</td>
-         <td data-column="RTT">1400</td>
-         <td data-column="Downlink">70</td>
-         <td data-column="Explicació">La xarxa és adequada per a transferències d'imatges petites.</td>
-      </tr>
-      <tr>
-         <td  data-column="ECT">3g</td>
-         <td data-column="RTT">270</td>
-         <td data-column="Downlink">700</td>
-         <td data-column="Explicació">La xarxa és adequada per a transferències d'actius grans com imatges d'alta resolució, àudio i vídeo SD.</td>
-      </tr>
-      <tr>
-         <td  data-column="ECT">4g</td>
-         <td data-column="RTT">0</td>
-         <td data-column="Downlink">∞</td>
-         <td data-column="Explicació">La xarxa és adequada per a vídeo HD, vídeo en temps real, etc.</td>
-      </tr>
-   </tbody>
-   <caption align="bottom">Taula de <a href="http://wicg.github.io/netinfo/#dfn-effective-connection-type">tipus de connexió efectiva (ECT)</a></caption>
+  <thead>
+    <tr>
+      <th>ECT</th>
+      <th>RTT Mínim (ms)</th>
+      <th>Downlink Màxim (Kbps)</th>
+      <th>Explicació</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-column="ECT">slow‑2g</td>
+      <td data-column="RTT">2000</td>
+      <td data-column="Downlink">50</td>
+      <td data-column="Explicació">
+        La xarxa és adequada només per a transferències petites com pàgines de
+        només text.
+      </td>
+    </tr>
+    <tr>
+      <td data-column="ECT">2g</td>
+      <td data-column="RTT">1400</td>
+      <td data-column="Downlink">70</td>
+      <td data-column="Explicació">
+        La xarxa és adequada per a transferències d'imatges petites.
+      </td>
+    </tr>
+    <tr>
+      <td data-column="ECT">3g</td>
+      <td data-column="RTT">270</td>
+      <td data-column="Downlink">700</td>
+      <td data-column="Explicació">
+        La xarxa és adequada per a transferències d'actius grans com imatges
+        d'alta resolució, àudio i vídeo SD.
+      </td>
+    </tr>
+    <tr>
+      <td data-column="ECT">4g</td>
+      <td data-column="RTT">0</td>
+      <td data-column="Downlink">∞</td>
+      <td data-column="Explicació">
+        La xarxa és adequada per a vídeo HD, vídeo en temps real, etc.
+      </td>
+    </tr>
+  </tbody>
+  <caption align="bottom">
+    Taula de{" "}
+    <a href="http://wicg.github.io/netinfo/#dfn-effective-connection-type">
+      tipus de connexió efectiva (ECT)
+    </a>
+  </caption>
 </table>
 
 ### Suport del navegador
 
-L'API encara no té un suport complet del navegador però és [suportada pels navegadors mòbils més populars](https://caniuse.com/#feat=netinfo)
+L'API encara no té un suport complet del navegador però és
+[suportada pels navegadors mòbils més populars](https://caniuse.com/#feat=netinfo)
 que són on aquesta tècnica tindrà més impacte.
 
 ![Suport del navegador per a l'API d'Informació de Xarxa](/images/caniuse.png)
 
-De fet, el 70% dels usuaris mòbils tenen aquesta API habilitada al seu dispositiu.
+De fet, el 70% dels usuaris mòbils tenen aquesta API habilitada al seu
+dispositiu.
 
 ## Servir Mitjans Adaptatius
 
-El nostre propòsit serà servir diferents recursos multimèdia basats en la informació
-que obtenim de l'atribut `effectiveType`. Quan parlem de diferents
+El nostre propòsit serà servir diferents recursos multimèdia basats en la
+informació que obtenim de l'atribut `effectiveType`. Quan parlem de diferents
 recursos multimèdia podria ser un mitjà completament diferent, com canviar entre
 vídeo HD, imatge HD o imatge de baixa qualitat, l'enfocament suggerit per
 [Addy Osmani](https://addyosmani.com/blog/adaptive-serving/).
@@ -105,27 +133,30 @@ vídeo HD, imatge HD o imatge de baixa qualitat, l'enfocament suggerit per
 En aquest exemple, utilitzarem diferents nivells de compressió per a la mateixa
 imatge.
 
-Primer, necessitem obtenir la qualitat adequada basada en les condicions de la xarxa. Això és
-fàcilment assolible utilitzant el següent fragment:
+Primer, necessitem obtenir la qualitat adequada basada en les condicions de la
+xarxa. Això és fàcilment assolible utilitzant el següent fragment:
 
 ```javascript
 function getMediaQuality() {
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
 
   if (!connection) {
-    return 'medium';
+    return "medium";
   }
 
   switch (connection.effectiveType) {
-    case 'slow-2g':
-    case '2g':
-      return 'low';
-    case '3g':
-      return 'medium';
-    case '4g':
-      return 'high';
+    case "slow-2g":
+    case "2g":
+      return "low";
+    case "3g":
+      return "medium";
+    case "4g":
+      return "high";
     default:
-      return 'low';
+      return "low";
   }
 }
 ```
@@ -140,57 +171,61 @@ d'imatges com segueix:
 ```
 
 ```javascript
-const images = document.querySelectorAll('img');
-images.forEach(img => {
-  img.src = img.src.replace('low', getMediaQuality());
+const images = document.querySelectorAll("img");
+images.forEach((img) => {
+  img.src = img.src.replace("low", getMediaQuality());
 });
 ```
 
 És important notar que la qualitat per defecte establerta a la imatge és `low`,
-el que significa que els dispositius carregaran primer la imatge de baixa qualitat i després si
-té una connexió d'alta velocitat carregarà la de millor qualitat.
+el que significa que els dispositius carregaran primer la imatge de baixa
+qualitat i després si té una connexió d'alta velocitat carregarà la de millor
+qualitat.
 
-Després el fragment de JavaScript anterior obtindrà totes les imatges al document i
-reemplaçarà el paràmetre de qualitat a l'apropiat basat en el que la
-funció `getMediaQuality` retorna. Si la qualitat és `low` no farà
-més peticions, però si canvia farà dues peticions: una amb la imatge de qualitat `low`
-quan els navegadors analitzen l'etiqueta `img` i una altra amb
-qualitat `medium` o `high` quan s'executa el codi JavaScript.
+Després el fragment de JavaScript anterior obtindrà totes les imatges al
+document i reemplaçarà el paràmetre de qualitat a l'apropiat basat en el que la
+funció `getMediaQuality` retorna. Si la qualitat és `low` no farà més peticions,
+però si canvia farà dues peticions: una amb la imatge de qualitat `low` quan els
+navegadors analitzen l'etiqueta `img` i una altra amb qualitat `medium` o `high`
+quan s'executa el codi JavaScript.
 
-Això no és ideal però millorarà els temps de càrrega en xarxes lentes. Però per a
-xarxes de connexió mitjana/alta, com hem esmentat abans, farà dues
-peticions per a cada imatge consumint més dades de les necessàries.
+Això no és ideal però millorarà els temps de càrrega en xarxes lentes. Però per
+a xarxes de connexió mitjana/alta, com hem esmentat abans, farà dues peticions
+per a cada imatge consumint més dades de les necessàries.
 
 ## Utilitzant Service Workers
 
 El problema esmentat respecte a les dues peticions pot ser arreglat utilitzant
 [service workers](https://developers.google.com/web/fundamentals/primers/service-workers/),
-interceptant la petició feta pel navegador i reemplaçant-la amb la
-qualitat apropiada per a la imatge.
+interceptant la petició feta pel navegador i reemplaçant-la amb la qualitat
+apropiada per a la imatge.
 
 Primer, necessitem registrar el nostre service worker:
 
 ```javascript
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(
-      function(registration) {
-        console.log('Registre de ServiceWorker exitós amb abast: ', registration.scope);
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/sw.js").then(
+      function (registration) {
+        console.log(
+          "Registre de ServiceWorker exitós amb abast: ",
+          registration.scope,
+        );
       },
-      function(err) {
-        console.log('Registre de ServiceWorker fallit: ', err);
-      }
+      function (err) {
+        console.log("Registre de ServiceWorker fallit: ", err);
+      },
     );
   });
 }
 ```
 
-A continuació, afegim un listener per a l'esdeveniment fetch, que per a totes les imatges sol·licitades
-des del lloc afegirà el paràmetre de qualitat correcte utilitzant la funció `getMediaQuality`
-creada a la secció anterior.
+A continuació, afegim un listener per a l'esdeveniment fetch, que per a totes
+les imatges sol·licitades des del lloc afegirà el paràmetre de qualitat correcte
+utilitzant la funció `getMediaQuality` creada a la secció anterior.
 
 ```javascript
-self.addEventListener('fetch', function(event) {
+self.addEventListener("fetch", function (event) {
   if (/\.jpg$|.png$|.webp$/.test(event.request.url)) {
     const url = event.request.url + `?quality=${getMediaQuality()}`;
     event.respondWith(fetch(url));
@@ -198,8 +233,8 @@ self.addEventListener('fetch', function(event) {
 });
 ```
 
-I ja no necessitem especificar el paràmetre de qualitat a l'etiqueta `img`
-ja que el service worker s'encarregarà d'això.
+I ja no necessitem especificar el paràmetre de qualitat a l'etiqueta `img` ja
+que el service worker s'encarregarà d'això.
 
 ```html
 <img src=“http://images.magarcia.io/cute_cat” alt=“Gat bonic”/>
@@ -207,8 +242,8 @@ ja que el service worker s'encarregarà d'això.
 
 ## El codi
 
-Pots trobar el codi d'aquest post (més complet, net i amb menys errors)
-en [aquest repositori de GitHub](https://github.com/estermv/adaptative-media-serving).
+Pots trobar el codi d'aquest post (més complet, net i amb menys errors) en
+[aquest repositori de GitHub](https://github.com/estermv/adaptative-media-serving).
 
 ## Lectura Addicional
 

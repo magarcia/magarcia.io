@@ -3,10 +3,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   mode: "jit",
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   darkMode: ["class"],
   theme: {
     container: {
@@ -24,8 +21,18 @@ module.exports = {
         sans: ['"EB Garamond"', '"Times New Roman"', "serif"],
         serif: ['"EB Garamond"', '"Times New Roman"', "serif"],
         mono: ['"IBM Plex Mono"', '"Fira Code"', "Consolas", "monospace"],
-        heading: ['"Cormorant Garamond"', '"EB Garamond"', '"Times New Roman"', "serif"],
-        display: ['"Cormorant Garamond"', '"EB Garamond"', '"Times New Roman"', "serif"],
+        heading: [
+          '"Cormorant Garamond"',
+          '"EB Garamond"',
+          '"Times New Roman"',
+          "serif",
+        ],
+        display: [
+          '"Cormorant Garamond"',
+          '"EB Garamond"',
+          '"Times New Roman"',
+          "serif",
+        ],
       },
       colors: {
         border: "hsl(var(--border))",

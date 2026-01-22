@@ -1,18 +1,25 @@
 ---
 title: Comprovar undefined en JavaScript
-date: '2020-05-03'
-spoiler: Una cosa que tothom que ha estat treballant amb JavaScript durant un temps ha fet és comprovar si una variable és undefined. En aquest article, explico quines són les diferents maneres que pots utilitzar per a això i les diferències entre elles.
+date: "2020-05-03"
+spoiler:
+  Una cosa que tothom que ha estat treballant amb JavaScript durant un temps ha
+  fet és comprovar si una variable és undefined. En aquest article, explico
+  quines són les diferents maneres que pots utilitzar per a això i les
+  diferències entre elles.
 tags:
   - javascript
 ---
 
-Si escrius JavaScript més o menys regularment, en algun moment probablement t'enfrontis a una situació on hi havia una necessitat de comprovar si una variable és `undefined`.
+Si escrius JavaScript més o menys regularment, en algun moment probablement
+t'enfrontis a una situació on hi havia una necessitat de comprovar si una
+variable és `undefined`.
 
 Però, quina és la millor manera de fer-ho?
 
 ## La manera intuïtiva
 
-Qualsevol programador amb experiència en un altre llenguatge utilitzarà la intuïció per esbrinar:
+Qualsevol programador amb experiència en un altre llenguatge utilitzarà la
+intuïció per esbrinar:
 
 ```js
 if (x === undefined) { ... }
@@ -20,36 +27,46 @@ if (x === undefined) { ... }
 
 I això funcionarà sense cap problema, o gairebé.
 
-Comparar directament amb `undefined` funcionarà en tots els navegadors moderns. Però els navegadors antics permetien que el seu valor fos reassignat així:
+Comparar directament amb `undefined` funcionarà en tots els navegadors moderns.
+Però els navegadors antics permetien que el seu valor fos reassignat així:
 
 ```js
-undefined = 'new value';
+undefined = "new value";
 ```
 
 Amb aquesta reassignació, una computació directa no funcionarà com s'espera.
 
-Aquest comportament va ser arreglat el 2009 amb [ECMAScript 5](https://es5.github.io/#x15.1.1.3) :
+Aquest comportament va ser arreglat el 2009 amb
+[ECMAScript 5](https://es5.github.io/#x15.1.1.3) :
 
 > **15.1.1.3 undefined**  
-> El valor de `undefined` és **undefined** (veure 8.1). Aquesta propietat té els atributs `{ [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }`.
+> El valor de `undefined` és **undefined** (veure 8.1). Aquesta propietat té els
+> atributs
+> `{ [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }`.
 
 ## La manera "segura"
 
-Si has de suportar navegadors antics i et preocupa que algú reassigni el valor de `undefined` hi ha altres maneres de fer la comprovació.
+Si has de suportar navegadors antics i et preocupa que algú reassigni el valor
+de `undefined` hi ha altres maneres de fer la comprovació.
 
 ### Llegint el tipus
 
-Pots utilitzar l'[operador typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), que retornarà la cadena `"undefined"` perquè puguis comprovar-ho.
+Pots utilitzar
+l'[operador typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof),
+que retornarà la cadena `"undefined"` perquè puguis comprovar-ho.
 
 ```js
 if (typeof x === "undefined") { ... }
 ```
 
-**Nota:** L'operador `typeof` no llança un error si la variable no ha estat declarada.
+**Nota:** L'operador `typeof` no llança un error si la variable no ha estat
+declarada.
 
 ### Utilitzant `void`
 
-Alternativament, pots utilitzar l'[operador void](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void) per comprovar `undefined`. Per exemple:
+Alternativament, pots utilitzar
+l'[operador void](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void)
+per comprovar `undefined`. Per exemple:
 
 ```js
 if (x === void(0)) { ... }
@@ -57,10 +74,19 @@ if (x === void(0)) { ... }
 
 En aquest exemple, el zero no té cap significat especial. Com s'indica a MDN:
 
-> L'**operador void** avalua l'_expressió_ donada i després retorna [undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
+> L'**operador void** avalua l'_expressió_ donada i després retorna
+> [undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
 
 ## Quina manera és millor
 
-En el meu temps com a consultor, vaig aprendre quina és la millor resposta per a aquest tipus de pregunta: depèn. Dependria del cas d'ús concret que tinguis, però puc donar-te alguns consells.
+En el meu temps com a consultor, vaig aprendre quina és la millor resposta per a
+aquest tipus de pregunta: depèn. Dependria del cas d'ús concret que tinguis,
+però puc donar-te alguns consells.
 
-En general, tendeixo a utilitzar la convenció que ja està present al codi base. Però si estàs escrivint un codi nou que s'executarà només en navegadors moderns, suggeriria anar per la comparació directa (és clar i fàcil d'entendre també per a persones que no saben JavaScript). Per al suport de navegadors antics, recomano encaridament crear una funció `isUndefined` i utilitzar l'opció de la teva elecció dins. Llavors el codi expressarà el seu propòsit clarament a tothom.
+En general, tendeixo a utilitzar la convenció que ja està present al codi base.
+Però si estàs escrivint un codi nou que s'executarà només en navegadors moderns,
+suggeriria anar per la comparació directa (és clar i fàcil d'entendre també per
+a persones que no saben JavaScript). Per al suport de navegadors antics,
+recomano encaridament crear una funció `isUndefined` i utilitzar l'opció de la
+teva elecció dins. Llavors el codi expressarà el seu propòsit clarament a
+tothom.

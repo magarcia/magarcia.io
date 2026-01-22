@@ -8,7 +8,11 @@ import {
   isValidChangefreq,
   isValidLastmod,
 } from "../helpers/sitemap-validators";
-import { getAllFilesFrontMatter, getAllTags, FrontMatter } from "../../../lib/blog";
+import {
+  getAllFilesFrontMatter,
+  getAllTags,
+  FrontMatter,
+} from "../../../lib/blog";
 import { slugifyTag } from "../../../lib/urls";
 import { siteMetadata } from "../../../blog.config";
 
@@ -45,7 +49,7 @@ describe("Sitemap Generation", () => {
   beforeAll(() => {
     if (!fs.existsSync(SITEMAP_PATH)) {
       throw new Error(
-        `Sitemap file not found at ${SITEMAP_PATH}. Run 'yarn build' first.`
+        `Sitemap file not found at ${SITEMAP_PATH}. Run 'yarn build' first.`,
       );
     }
     sitemapContent = fs.readFileSync(SITEMAP_PATH, "utf-8");
@@ -77,7 +81,7 @@ describe("Sitemap Generation", () => {
 
     it("should have correct namespace", () => {
       expect(parsedSitemap.urlset?.["@_xmlns"]).toBe(
-        "http://www.sitemaps.org/schemas/sitemap/0.9"
+        "http://www.sitemaps.org/schemas/sitemap/0.9",
       );
     });
   });
@@ -98,13 +102,12 @@ describe("Sitemap Generation", () => {
       const urls = getUrls();
       urls.forEach((url, index) => {
         expect(url.loc, `URL ${index} should have loc element`).toBeDefined();
-        expect(
-          typeof url.loc,
-          `URL ${index} loc should be string`
-        ).toBe("string");
+        expect(typeof url.loc, `URL ${index} loc should be string`).toBe(
+          "string",
+        );
         expect(
           url.loc!.length,
-          `URL ${index} loc should not be empty`
+          `URL ${index} loc should not be empty`,
         ).toBeGreaterThan(0);
       });
     });
@@ -123,7 +126,7 @@ describe("Sitemap Generation", () => {
         if (url.loc) {
           expect(
             isValidUrl(url.loc),
-            `URL ${index} loc should be valid URL: ${url.loc}`
+            `URL ${index} loc should be valid URL: ${url.loc}`,
           ).toBe(true);
         }
       });
@@ -135,7 +138,7 @@ describe("Sitemap Generation", () => {
         if (url.loc) {
           expect(
             url.loc.startsWith(siteMetadata.siteUrl),
-            `URL ${index} should start with ${siteMetadata.siteUrl}: ${url.loc}`
+            `URL ${index} should start with ${siteMetadata.siteUrl}: ${url.loc}`,
           ).toBe(true);
         }
       });
@@ -155,7 +158,7 @@ describe("Sitemap Generation", () => {
         if (url.priority !== undefined) {
           expect(
             isValidPriority(url.priority),
-            `URL ${index} priority should be 0.0-1.0: ${url.priority}`
+            `URL ${index} priority should be 0.0-1.0: ${url.priority}`,
           ).toBe(true);
         }
       });
@@ -166,10 +169,7 @@ describe("Sitemap Generation", () => {
       const homepage = urls.find((url) => url.loc === siteMetadata.siteUrl);
 
       expect(homepage, "Homepage should be present in sitemap").toBeDefined();
-      expect(
-        homepage?.priority,
-        "Homepage priority should be 1.0"
-      ).toBe(1);
+      expect(homepage?.priority, "Homepage priority should be 1.0").toBe(1);
     });
 
     it("blog posts should have priority 0.7", () => {
@@ -178,13 +178,13 @@ describe("Sitemap Generation", () => {
 
       posts.forEach((post) => {
         const postUrl = urls.find(
-          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}`
+          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}`,
         );
 
         if (postUrl) {
           expect(
             postUrl.priority,
-            `Post ${post.slug} should have priority 0.7`
+            `Post ${post.slug} should have priority 0.7`,
           ).toBe(0.7);
         }
       });
@@ -197,14 +197,13 @@ describe("Sitemap Generation", () => {
       tags.forEach((tag) => {
         const tagSlug = tag.toLowerCase().replace(/\s+/g, "-");
         const tagUrl = urls.find(
-          (url) => url.loc === `${siteMetadata.siteUrl}/tags/${tagSlug}`
+          (url) => url.loc === `${siteMetadata.siteUrl}/tags/${tagSlug}`,
         );
 
         if (tagUrl) {
-          expect(
-            tagUrl.priority,
-            `Tag ${tag} should have priority 0.3`
-          ).toBe(0.3);
+          expect(tagUrl.priority, `Tag ${tag} should have priority 0.3`).toBe(
+            0.3,
+          );
         }
       });
     });
@@ -223,7 +222,7 @@ describe("Sitemap Generation", () => {
         if (url.changefreq) {
           expect(
             isValidChangefreq(url.changefreq),
-            `URL ${index} changefreq should be valid: ${url.changefreq}`
+            `URL ${index} changefreq should be valid: ${url.changefreq}`,
           ).toBe(true);
         }
       });
@@ -235,7 +234,7 @@ describe("Sitemap Generation", () => {
 
       expect(
         homepage?.changefreq,
-        "Homepage changefreq should be 'daily'"
+        "Homepage changefreq should be 'daily'",
       ).toBe("daily");
     });
 
@@ -245,13 +244,13 @@ describe("Sitemap Generation", () => {
 
       posts.forEach((post) => {
         const postUrl = urls.find(
-          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}`
+          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}`,
         );
 
         if (postUrl) {
           expect(
             postUrl.changefreq,
-            `Post ${post.slug} should have 'monthly' changefreq`
+            `Post ${post.slug} should have 'monthly' changefreq`,
           ).toBe("monthly");
         }
       });
@@ -271,7 +270,7 @@ describe("Sitemap Generation", () => {
         if (url.lastmod) {
           expect(
             isValidLastmod(url.lastmod),
-            `URL ${index} lastmod should be ISO 8601 format: ${url.lastmod}`
+            `URL ${index} lastmod should be ISO 8601 format: ${url.lastmod}`,
           ).toBe(true);
         }
       });
@@ -295,14 +294,14 @@ describe("Sitemap Generation", () => {
 
         expect(
           found,
-          `Sitemap should include post: ${post.slug} (${expectedUrl})`
+          `Sitemap should include post: ${post.slug} (${expectedUrl})`,
         ).toBe(true);
       });
     });
 
     it("should exclude future-dated posts", () => {
       const futurePosts = getAllFilesFrontMatter("blog").filter(
-        (post) => !isPublished(post)
+        (post) => !isPublished(post),
       );
       const urls = getUrls();
 
@@ -312,7 +311,7 @@ describe("Sitemap Generation", () => {
 
         expect(
           found,
-          `Sitemap should NOT include future post: ${post.slug} (${expectedUrl})`
+          `Sitemap should NOT include future post: ${post.slug} (${expectedUrl})`,
         ).toBe(false);
       });
     });
@@ -327,7 +326,7 @@ describe("Sitemap Generation", () => {
 
         expect(
           found,
-          `Sitemap should include tag page: ${tag} (${expectedUrl})`
+          `Sitemap should include tag page: ${tag} (${expectedUrl})`,
         ).toBe(true);
       });
     });

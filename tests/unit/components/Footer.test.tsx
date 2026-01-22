@@ -11,7 +11,7 @@ describe("Footer", () => {
       expect(blueskyLink).toBeInTheDocument();
       expect(blueskyLink).toHaveAttribute(
         "href",
-        "https://bsky.app/profile/mgarcia.bsky.social"
+        "https://bsky.app/profile/mgarcia.bsky.social",
       );
     });
 
@@ -30,7 +30,7 @@ describe("Footer", () => {
       expect(linkedinLink).toBeInTheDocument();
       expect(linkedinLink).toHaveAttribute(
         "href",
-        "https://www.linkedin.com/in/martingarciamonterde/"
+        "https://www.linkedin.com/in/martingarciamonterde/",
       );
     });
   });
@@ -70,21 +70,30 @@ describe("Footer", () => {
       render(<Footer />);
 
       const blueskyLink = screen.getByRole("link", { name: /bluesky/i });
-      expect(blueskyLink).toHaveAttribute("aria-label", "Visit Martin Garcia on Bluesky (opens in new tab)");
+      expect(blueskyLink).toHaveAttribute(
+        "aria-label",
+        "Visit Martin Garcia on Bluesky (opens in new tab)",
+      );
     });
 
     it("GitHub link has descriptive aria-label", () => {
       render(<Footer />);
 
       const githubLink = screen.getByRole("link", { name: /github/i });
-      expect(githubLink).toHaveAttribute("aria-label", "Visit Martin Garcia on GitHub (opens in new tab)");
+      expect(githubLink).toHaveAttribute(
+        "aria-label",
+        "Visit Martin Garcia on GitHub (opens in new tab)",
+      );
     });
 
     it("LinkedIn link has descriptive aria-label", () => {
       render(<Footer />);
 
       const linkedinLink = screen.getByRole("link", { name: /linkedin/i });
-      expect(linkedinLink).toHaveAttribute("aria-label", "Visit Martin Garcia on LinkedIn (opens in new tab)");
+      expect(linkedinLink).toHaveAttribute(
+        "aria-label",
+        "Visit Martin Garcia on LinkedIn (opens in new tab)",
+      );
     });
 
     it("RSS link has descriptive aria-label", () => {
@@ -132,7 +141,14 @@ describe("Footer", () => {
       const { container } = render(<Footer />);
 
       const footer = container.querySelector("footer");
-      expect(footer).toHaveClass("px-8", "md:px-16", "mx-auto", "my-12", "md:my-24", "max-w-[75ch]");
+      expect(footer).toHaveClass(
+        "px-8",
+        "md:px-16",
+        "mx-auto",
+        "my-12",
+        "md:my-24",
+        "max-w-[75ch]",
+      );
     });
   });
 

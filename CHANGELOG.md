@@ -8,8 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- End-to-end testing with Playwright (47 tests covering homepage, blog posts, tags, theme switching, i18n, and accessibility)
-- Page objects pattern for test organization (Header, HomePage, BlogPostPage, TagPage)
+- End-to-end testing with Playwright (47 tests covering homepage, blog posts,
+  tags, theme switching, i18n, and accessibility)
+- Page objects pattern for test organization (Header, HomePage, BlogPostPage,
+  TagPage)
 - Accessibility testing with Axe integration
 - Data-testid attributes to key components
 
@@ -29,10 +31,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- **Major Migration**: Migrated from Next.js 14 to React Router 7 with TypeScript (#14)
+- **Major Migration**: Migrated from Next.js 14 to React Router 7 with
+  TypeScript (#14)
   - Converted all JavaScript files to TypeScript
   - Converted all `.md` blog posts to `.mdx` format
-  - Implemented custom `useTheme` hook for dark/light mode (replacing next-themes)
+  - Implemented custom `useTheme` hook for dark/light mode (replacing
+    next-themes)
   - Used react-markdown with client-side dynamic imports
   - Configured static prerendering for all blog posts and tag pages
   - Updated build scripts for sitemap and RSS feed generation
@@ -229,10 +233,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 This blog has evolved through several major phases:
 
-1. **2021**: Initial creation with Next.js, dark mode, accessibility features, and view counters
-2. **2022**: Added analytics (Plausible.io), middleware optimizations, and security updates
+1. **2021**: Initial creation with Next.js, dark mode, accessibility features,
+   and view counters
+2. **2022**: Added analytics (Plausible.io), middleware optimizations, and
+   security updates
 3. **2023**: Security maintenance and continued content updates
 4. **2024**: Major upgrade to Next.js 14 with Cloudflare Pages deployment
-5. **2025**: Major migration to React Router 7 with TypeScript, added i18n support, and comprehensive E2E testing
+5. **2025**: Major migration to React Router 7 with TypeScript, added i18n
+   support, and comprehensive E2E testing
 
-The project uses Yarn as the package manager and is deployed automatically on every merge to main.
+The project uses Yarn as the package manager and is deployed automatically on
+every merge to main.

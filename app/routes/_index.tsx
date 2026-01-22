@@ -36,7 +36,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   else if (pathname === "/ca" || pathname === "/ca/") lang = "ca";
   else lang = "en";
   const posts = getAllFilesFrontMatter("blog", lang).filter(
-    ({ indexed }) => indexed !== false
+    ({ indexed }) => indexed !== false,
   );
 
   return { posts, lang };
@@ -48,7 +48,10 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Header main lang={lang} />
-      <main className="max-w-[75ch] mx-auto px-8 md:px-16" data-testid="homepage">
+      <main
+        className="max-w-[75ch] mx-auto px-8 md:px-16"
+        data-testid="homepage"
+      >
         <AboutSection lang={lang} />
         <ProjectsSection lang={lang} />
         <WritingSection posts={posts} lang={lang} />

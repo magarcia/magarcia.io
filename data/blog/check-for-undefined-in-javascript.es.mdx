@@ -1,18 +1,25 @@
 ---
 title: Comprobar undefined en JavaScript
-date: '2020-05-03'
-spoiler: Algo que todos los que han estado trabajando con JavaScript por un tiempo han hecho es comprobar si una variable es undefined. En este artículo, explico cuáles son las diferentes formas que puedes usar para ello y las diferencias entre ellas.
+date: "2020-05-03"
+spoiler:
+  Algo que todos los que han estado trabajando con JavaScript por un tiempo han
+  hecho es comprobar si una variable es undefined. En este artículo, explico
+  cuáles son las diferentes formas que puedes usar para ello y las diferencias
+  entre ellas.
 tags:
   - javascript
 ---
 
-Si escribes JavaScript más o menos regularmente, en algún momento probablemente te enfrentes a una situación donde hubo una necesidad de comprobar si una variable es `undefined`.
+Si escribes JavaScript más o menos regularmente, en algún momento probablemente
+te enfrentes a una situación donde hubo una necesidad de comprobar si una
+variable es `undefined`.
 
 Pero, ¿cuál es la mejor manera de hacerlo?
 
 ## La manera intuitiva
 
-Cualquier programador con experiencia en otro lenguaje usará la intuición para averiguar:
+Cualquier programador con experiencia en otro lenguaje usará la intuición para
+averiguar:
 
 ```js
 if (x === undefined) { ... }
@@ -20,47 +27,68 @@ if (x === undefined) { ... }
 
 Y esto funcionará sin ningún problema, o casi.
 
-Comparar directamente con `undefined` funcionará en todos los navegadores modernos. Pero los navegadores antiguos permitían que su valor fuera reasignado así:
+Comparar directamente con `undefined` funcionará en todos los navegadores
+modernos. Pero los navegadores antiguos permitían que su valor fuera reasignado
+así:
 
 ```js
-undefined = 'new value';
+undefined = "new value";
 ```
 
 Con esta reasignación, una computación directa no funcionará como se espera.
 
-Este comportamiento fue arreglado en 2009 con [ECMAScript 5](https://es5.github.io/#x15.1.1.3) :
+Este comportamiento fue arreglado en 2009 con
+[ECMAScript 5](https://es5.github.io/#x15.1.1.3) :
 
 > **15.1.1.3 undefined**  
-> El valor de `undefined` es **undefined** (ver 8.1). Esta propiedad tiene los atributos `{ [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }`.
+> El valor de `undefined` es **undefined** (ver 8.1). Esta propiedad tiene los
+> atributos
+> `{ [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }`.
 
 ## La manera "segura"
 
-Si tienes que soportar navegadores antiguos y te preocupa que alguien reasigne el valor de `undefined` hay otras formas de hacer la comprobación.
+Si tienes que soportar navegadores antiguos y te preocupa que alguien reasigne
+el valor de `undefined` hay otras formas de hacer la comprobación.
 
 ### Leyendo el tipo
 
-Puedes usar el [operador typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), que devolverá la cadena `"undefined"` para que puedas comprobarlo.
+Puedes usar el
+[operador typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof),
+que devolverá la cadena `"undefined"` para que puedas comprobarlo.
 
 ```js
 if (typeof x === "undefined") { ... }
 ```
 
-**Nota:** El operador `typeof` no lanza un error si la variable no ha sido declarada.
+**Nota:** El operador `typeof` no lanza un error si la variable no ha sido
+declarada.
 
 ### Usando `void`
 
-Alternativamente, puedes usar el [operador void](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void) para comprobar `undefined`. Por ejemplo:
+Alternativamente, puedes usar el
+[operador void](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void)
+para comprobar `undefined`. Por ejemplo:
 
 ```js
 if (x === void(0)) { ... }
 ```
 
-En este ejemplo, el cero no tiene ningún significado especial. Como se indica en MDN:
+En este ejemplo, el cero no tiene ningún significado especial. Como se indica en
+MDN:
 
-> El **operador void** evalúa la _expresión_ dada y luego devuelve [undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
+> El **operador void** evalúa la _expresión_ dada y luego devuelve
+> [undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
 
 ## Qué manera es mejor
 
-En mi tiempo como consultor, aprendí cuál es la mejor respuesta para este tipo de pregunta: depende. Dependería del caso de uso concreto que tengas, pero puedo darte algunos consejos.
+En mi tiempo como consultor, aprendí cuál es la mejor respuesta para este tipo
+de pregunta: depende. Dependería del caso de uso concreto que tengas, pero puedo
+darte algunos consejos.
 
-En general, tiendo a usar la convención que ya está presente en el código base. Pero si estás escribiendo un código nuevo que se ejecutará solo en navegadores modernos, sugeriría ir por la comparación directa (es claro y fácil de entender también para personas que no saben JavaScript). Para el soporte de navegadores antiguos, recomiendo encarecidamente crear una función `isUndefined` y usar la opción de tu elección dentro. Entonces el código expresará su propósito claramente a todos.
+En general, tiendo a usar la convención que ya está presente en el código base.
+Pero si estás escribiendo un código nuevo que se ejecutará solo en navegadores
+modernos, sugeriría ir por la comparación directa (es claro y fácil de entender
+también para personas que no saben JavaScript). Para el soporte de navegadores
+antiguos, recomiendo encarecidamente crear una función `isUndefined` y usar la
+opción de tu elección dentro. Entonces el código expresará su propósito
+claramente a todos.

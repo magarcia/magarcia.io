@@ -34,7 +34,7 @@ vi.mock("react-router", () => {
     HTMLAnchorElement,
     React.AnchorHTMLAttributes<HTMLAnchorElement> & { to: string }
   >(({ to, children, ...props }, ref) =>
-    React.createElement("a", { href: to, ref, ...props }, children)
+    React.createElement("a", { href: to, ref, ...props }, children),
   );
   MockLink.displayName = "MockLink";
   return { Link: MockLink };

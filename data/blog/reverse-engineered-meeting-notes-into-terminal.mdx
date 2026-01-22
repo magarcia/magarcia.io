@@ -1,7 +1,10 @@
 ---
 title: "I Reverse Engineered My Meeting Notes into the Terminal"
 date: "2025-12-22"
-spoiler: I built granola-cli to access my AI meeting notes from the command line. Now I can query my meetings with Claude Code, grep transcripts, and pipe action items directly into my workflows.
+spoiler:
+  I built granola-cli to access my AI meeting notes from the command line. Now I
+  can query my meetings with Claude Code, grep transcripts, and pipe action
+  items directly into my workflows.
 tags:
   - typescript
   - node-js
@@ -11,33 +14,54 @@ tags:
   - open-source
 ---
 
-> **Disclaimer:** This project is an independent open-source tool and is not affiliated with, endorsed by, or connected to Granola.ai.
+> **Disclaimer:** This project is an independent open-source tool and is not
+> affiliated with, endorsed by, or connected to Granola.ai.
 
-I built **granola-cli** to access my AI meeting notes from the command line. Now I can query my meetings with **Claude Code**, grep transcripts, and pipe action items directly into my workflows.
+I built **granola-cli** to access my AI meeting notes from the command line. Now
+I can query my meetings with **Claude Code**, grep transcripts, and pipe action
+items directly into my workflows.
 
 ## What is Granola?
 
-[Granola](https://www.granola.ai/) is an AI meeting assistant that sits in your menu bar. It records system audio, transcribes locally, and uses LLMs to produce structured summaries—key decisions, action items, discussion points. No bots joining your calls, no awkward "Granola is recording" notifications to your teammates. At [**Buffer**](https://buffer.com), it has become a daily driver for our team.
+[Granola](https://www.granola.ai/) is an AI meeting assistant that sits in your
+menu bar. It records system audio, transcribes locally, and uses LLMs to produce
+structured summaries—key decisions, action items, discussion points. No bots
+joining your calls, no awkward "Granola is recording" notifications to your
+teammates. At [**Buffer**](https://buffer.com), it has become a daily driver for
+our team.
 
 The notes it generates are excellent. But I hit a ceiling.
 
 ## The Problem I Needed to Solve
 
-I wanted raw data in my terminal. I wanted to feed last week's engineering syncs into **Claude Code** to plan my next sprint. I wanted to grep through transcripts or pipe action items directly into my task manager.
+I wanted raw data in my terminal. I wanted to feed last week's engineering syncs
+into **Claude Code** to plan my next sprint. I wanted to grep through
+transcripts or pipe action items directly into my task manager.
 
-Copy-pasting from a web UI wasn't cutting it. I looked for existing solutions and found [Joseph Thacker's research](https://josephthacker.com/hacking/2025/05/08/reverse-engineering-granola-notes.html) on reverse engineering the Granola API, plus the [getprobo/reverse-engineering-granola-api](https://github.com/getprobo/reverse-engineering-granola-api) repo. The groundwork existed. What didn't exist was a proper CLI to make this useful day-to-day.
+Copy-pasting from a web UI wasn't cutting it. I looked for existing solutions
+and found
+[Joseph Thacker's research](https://josephthacker.com/hacking/2025/05/08/reverse-engineering-granola-notes.html)
+on reverse engineering the Granola API, plus the
+[getprobo/reverse-engineering-granola-api](https://github.com/getprobo/reverse-engineering-granola-api)
+repo. The groundwork existed. What didn't exist was a proper CLI to make this
+useful day-to-day.
 
 So I built one.
 
 ## How I Mapped Granola's API
 
-The Granola desktop app stores authentication tokens in a local JSON file. The CLI reads these credentials, stores them securely in your system keychain via **cross-keychain** (which I [wrote about previously](/cross-platform-secret-storage-with-cross-keychain)), and uses them to call Granola's internal APIs.
+The Granola desktop app stores authentication tokens in a local JSON file. The
+CLI reads these credentials, stores them securely in your system keychain via
+**cross-keychain** (which I
+[wrote about previously](/cross-platform-secret-storage-with-cross-keychain)),
+and uses them to call Granola's internal APIs.
 
 **Key endpoints I mapped:**
 
 - `POST /v2/get-documents` — list meetings with cursor pagination
 - `POST /v1/get-document-metadata` — notes and participant data
-- `POST /v1/get-document-transcript` — transcript segments with speaker detection
+- `POST /v1/get-document-transcript` — transcript segments with speaker
+  detection
 - `POST /v2/get-document-lists` — folders and workspace organization
 
 ## Query, Filter, and Export Your Meetings
@@ -88,9 +112,13 @@ granola meeting enhanced <id> --output toon | llm "What were the action items?"
 
 ## 40% Fewer Tokens with TOON
 
-The CLI supports [TOON](https://toonformat.dev/) (Token-Oriented Object Notation), a format designed specifically for LLM consumption. TOON delivers the same structured data as JSON but uses **40% fewer tokens**.
+The CLI supports [TOON](https://toonformat.dev/) (Token-Oriented Object
+Notation), a format designed specifically for LLM consumption. TOON delivers the
+same structured data as JSON but uses **40% fewer tokens**.
 
-When you pipe meeting data to Claude or another model, every token saved means more context for your actual question. TOON makes the difference between fitting one meeting or three into your context window.
+When you pipe meeting data to Claude or another model, every token saved means
+more context for your actual question. TOON makes the difference between fitting
+one meeting or three into your context window.
 
 ```
 $ granola meeting export abc123 --format json | wc -c
@@ -100,13 +128,15 @@ $ granola meeting export abc123 --format toon | wc -c
   9140
 ```
 
-Same data. 40% smaller. That's the difference between asking a follow-up question or hitting your context limit.
+Same data. 40% smaller. That's the difference between asking a follow-up
+question or hitting your context limit.
 
 ## Turning Meeting History into AI Context
 
 This is why I built it: to empower my AI agents.
 
-I use **Claude Code** heavily. With **granola-cli** installed, I can ask Claude to analyze my meetings directly:
+I use **Claude Code** heavily. With **granola-cli** installed, I can ask Claude
+to analyze my meetings directly:
 
 ```
 You: Check my engineering syncs from last week and list any blockers mentioned.
@@ -123,41 +153,74 @@ Blockers mentioned:
 3. API rate limiting issues with the third-party integration (Dec 20 sync)
 ```
 
-No copy-pasting. No switching windows. Claude reads the data directly and gives me answers.
+No copy-pasting. No switching windows. Claude reads the data directly and gives
+me answers.
 
-I've also built [Agent Skills](https://agentskills.io/home) that check meeting history, summarize decisions, and surface blockers from previous syncs. Your meeting history becomes a queryable database for your AI workflow.
+I've also built [Agent Skills](https://agentskills.io/home) that check meeting
+history, summarize decisions, and surface blockers from previous syncs. Your
+meeting history becomes a queryable database for your AI workflow.
 
 ## Under the Hood
 
 ### Secure Credential Storage
 
-I refuse to store API tokens in plaintext config files. Too many CLI tools dump secrets into `~/.config/toolname/credentials.json` and call it a day. One accidental `git add .` or a misconfigured backup, and your tokens are exposed.
+I refuse to store API tokens in plaintext config files. Too many CLI tools dump
+secrets into `~/.config/toolname/credentials.json` and call it a day. One
+accidental `git add .` or a misconfigured backup, and your tokens are exposed.
 
-The CLI uses **cross-keychain** to store credentials in your OS's native credential manager—macOS Keychain, Windows Credential Manager, or Linux Secret Service. These systems encrypt secrets at rest, integrate with your login session, and follow platform security best practices. Your Granola tokens never touch the filesystem in readable form.
+The CLI uses **cross-keychain** to store credentials in your OS's native
+credential manager—macOS Keychain, Windows Credential Manager, or Linux Secret
+Service. These systems encrypt secrets at rest, integrate with your login
+session, and follow platform security best practices. Your Granola tokens never
+touch the filesystem in readable form.
 
 ### Token Refresh with File Locking
 
-Granola uses single-use refresh tokens—each token can only be used once before it's invalidated. This improves security but creates a race condition: if two CLI processes refresh simultaneously, one gets a valid token while the other wastes the refresh token and fails.
+Granola uses single-use refresh tokens—each token can only be used once before
+it's invalidated. This improves security but creates a race condition: if two
+CLI processes refresh simultaneously, one gets a valid token while the other
+wastes the refresh token and fails.
 
-The CLI solves this with file-based locking. Before refreshing tokens, the process acquires an exclusive lock on a file in your temp directory. If another process is already refreshing, the second one waits (with a 30-second timeout) rather than racing. The lock is released immediately after the refresh completes, so parallel CLI invocations work smoothly—they just take turns refreshing when needed.
+The CLI solves this with file-based locking. Before refreshing tokens, the
+process acquires an exclusive lock on a file in your temp directory. If another
+process is already refreshing, the second one waits (with a 30-second timeout)
+rather than racing. The lock is released immediately after the refresh
+completes, so parallel CLI invocations work smoothly—they just take turns
+refreshing when needed.
 
 ### ProseMirror to Markdown Conversion
 
-Granola stores notes in ProseMirror format—the same rich-text framework Notion, The New York Times, and Atlassian use. It represents content as a JSON tree of nodes with marks (formatting) attached.
+Granola stores notes in ProseMirror format—the same rich-text framework Notion,
+The New York Times, and Atlassian use. It represents content as a JSON tree of
+nodes with marks (formatting) attached.
 
-The CLI walks this tree and converts it to Markdown. Headings become `#` lines, lists become `-` items, and text marks become their Markdown equivalents: bold wraps in `**`, italic in `*`, code in backticks. The conversion preserves nested structures, so a bulleted list inside a blockquote renders correctly. You get readable Markdown you can pipe to other tools, search with grep, or feed to an LLM.
+The CLI walks this tree and converts it to Markdown. Headings become `#` lines,
+lists become `-` items, and text marks become their Markdown equivalents: bold
+wraps in `**`, italic in `*`, code in backticks. The conversion preserves nested
+structures, so a bulleted list inside a blockquote renders correctly. You get
+readable Markdown you can pipe to other tools, search with grep, or feed to an
+LLM.
 
 ### Natural Language Date Parsing
 
-Nobody wants to type ISO dates. The CLI accepts "today", "yesterday", "3 days ago", "last week", or partial dates like "Dec 1". For ranges, combine `--since` and `--until` with any format. The parser handles the rest.
+Nobody wants to type ISO dates. The CLI accepts "today", "yesterday", "3 days
+ago", "last week", or partial dates like "Dec 1". For ranges, combine `--since`
+and `--until` with any format. The parser handles the rest.
 
-The parser normalizes input, handles edge cases (what does "last week" mean on a Monday?), and always returns UTC timestamps that match Granola's API expectations. It makes the common case—"show me yesterday's meetings"—a single intuitive flag.
+The parser normalizes input, handles edge cases (what does "last week" mean on a
+Monday?), and always returns UTC timestamps that match Granola's API
+expectations. It makes the common case—"show me yesterday's meetings"—a single
+intuitive flag.
 
 ## 4 Hours with Claude Code Opus 4.5
 
-I built this tool in about **4 to 5 hours** pairing with **Claude Code Opus 4.5**. I focused on architecture and intent while Claude handled implementation. The result: a production-ready CLI with strict TypeScript, 95%+ test coverage across 630+ test cases, and modular design—all in a single afternoon.
+I built this tool in about **4 to 5 hours** pairing with **Claude Code Opus
+4.5**. I focused on architecture and intent while Claude handled implementation.
+The result: a production-ready CLI with strict TypeScript, 95%+ test coverage
+across 630+ test cases, and modular design—all in a single afternoon.
 
-This is "vibe engineering" in practice. I skipped the lengthy planning phase, described what I wanted, reviewed the output, and iterated quickly.
+This is "vibe engineering" in practice. I skipped the lengthy planning phase,
+described what I wanted, reviewed the output, and iterated quickly.
 
 ## Get Started
 
@@ -172,4 +235,6 @@ granola auth login
 granola meeting list
 ```
 
-The source is at [github.com/magarcia/granola-cli](https://github.com/magarcia/granola-cli). Issues and PRs welcome.
+The source is at
+[github.com/magarcia/granola-cli](https://github.com/magarcia/granola-cli).
+Issues and PRs welcome.
