@@ -70,7 +70,7 @@ export default function LanguageSelector({
             </Link>
           ))}
         </nav>
-        <span className="p-2 group-hover:text-blue-500 group-focus-within:text-blue-500 transition-colors duration-300 ease-out text-muted-foreground/50">
+        <span className="p-2 pointer-events-none group-hover:text-blue-500 group-focus-within:text-blue-500 transition-colors duration-300 ease-out text-muted-foreground/50">
           <LanguagesIcon ref={iconRef} size={18} />
         </span>
       </div>
