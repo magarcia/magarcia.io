@@ -47,9 +47,7 @@ async function findArticlesToTranslate(): Promise<TranslationTarget[]> {
 
   const baseArticles = files.filter(
     (f) =>
-      f.endsWith(".mdx") &&
-      !f.endsWith(".es.mdx") &&
-      !f.endsWith(".ca.mdx")
+      f.endsWith(".mdx") && !f.endsWith(".es.mdx") && !f.endsWith(".ca.mdx"),
   );
 
   const targets: TranslationTarget[] = [];
@@ -103,7 +101,7 @@ function cleanGeminiOutput(output: string): string {
 
 async function translateArticle(
   content: string,
-  lang: "es" | "ca"
+  lang: "es" | "ca",
 ): Promise<string> {
   const prompt = TRANSLATION_PROMPTS[lang];
   const fullPrompt = `${prompt}\n\n---\n\n${content}`;
@@ -113,14 +111,11 @@ async function translateArticle(
   await writeFile(tempFile, fullPrompt);
 
   try {
-    const result = execSync(
-      `cat "${tempFile}" | gemini -m ${GEMINI_MODEL}`,
-      {
-        encoding: "utf-8",
-        maxBuffer: 10 * 1024 * 1024, // 10MB
-        timeout: 120000, // 2 minutes
-      }
-    );
+    const result = execSync(`cat "${tempFile}" | gemini -m ${GEMINI_MODEL}`, {
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024, // 10MB
+      timeout: 120000, // 2 minutes
+    });
 
     return cleanGeminiOutput(result);
   } finally {
@@ -143,7 +138,9 @@ async function main() {
     return;
   }
 
-  console.log(`Found ${targets.length} article(s) with missing translations:\n`);
+  console.log(
+    `Found ${targets.length} article(s) with missing translations:\n`,
+  );
 
   for (const target of targets) {
     console.log(`  📄 ${target.slug}`);
@@ -152,13 +149,20 @@ async function main() {
 
   console.log("\n🌐 Starting translations...\n");
 
-  const results: { slug: string; lang: string; success: boolean; error?: string }[] = [];
+  const results: {
+    slug: string;
+    lang: string;
+    success: boolean;
+    error?: string;
+  }[] = [];
 
   for (const target of targets) {
     // Translate both languages in parallel
     const translations = await Promise.allSettled(
       target.missingLangs.map(async (lang) => {
-        console.log(`  ⏳ Translating ${target.slug} to ${lang.toUpperCase()}...`);
+        console.log(
+          `  ⏳ Translating ${target.slug} to ${lang.toUpperCase()}...`,
+        );
 
         try {
           const translated = await translateArticle(target.content, lang);
@@ -168,11 +172,12 @@ async function main() {
           console.log(`  ✅ ${target.slug}.${lang}.mdx created`);
           return { slug: target.slug, lang, success: true };
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
+          const errorMsg =
+            error instanceof Error ? error.message : String(error);
           console.log(`  ❌ ${target.slug} (${lang}): ${errorMsg}`);
           return { slug: target.slug, lang, success: false, error: errorMsg };
         }
-      })
+      }),
     );
 
     for (const result of translations) {
