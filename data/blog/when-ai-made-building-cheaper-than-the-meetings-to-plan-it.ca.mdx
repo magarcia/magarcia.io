@@ -1,0 +1,165 @@
+---
+title:
+  "Quan la IA va Fer que Construir Fos Més Barat que les Reunions per
+  Planificar-ho"
+date: "2026-01-23"
+spoiler:
+  Vam debatre una funcionalitat durant setmanes. Després algú la va construir en
+  un dia amb IA. Quan l'execució costa menys que la coordinació, les reunions es
+  converteixen en el coll d'ampolla.
+tags:
+  - ai
+  - developer-tools
+  - software-engineering
+---
+
+La IA transformarà com crea la humanitat. Aquest és el panorama general. Però
+aquí vull centrar-me en alguna cosa més immediata: com la IA està reconfigurant
+la forma en què treballem a les empreses d'enginyeria de software.
+
+> Aquest article és part d'una sèrie de dues parts. Vegeu també:
+> [Per Què les Skills Públiques d'IA No Encaixen en la teva Base de Codi](/ca/why-public-ai-skills-dont-fit-your-codebase)
+
+## Prototipar és Ara Ràpid i Barat
+
+El canvi fonamental és simple: podem construir coses dramàticament més ràpid i
+barat. Això sona obvi, però els efectes de segon ordre són profunds. Quan
+l'execució és barata, tot l'aparell que vam construir al voltant de l'execució
+cara—reunions de planificació, revisions de disseny, cerimònies de sprint,
+rituals d'estimació—comença a semblar sobrecàrrega (_overhead_).
+
+Aquí hi ha un exemple real de Buffer. Teníem un projecte que va ser
+desprioritzat. La funcionalitat tenia un valor clar. La lògica del backend ja
+existia en un servei llegat, però necessitava ser migrada als nostres nous
+sistemes—noves APIs, nou frontend, nous patrons. El projecte seguia caient en el
+backlog perquè l'esforç estimat era significatiu: propostes de disseny de
+backend, revisions d'arquitectura, dissenys de frontend, múltiples rondes de
+feedback. Vam passar més temps discutint _si_ havíem de construir-ho del que
+hagués pres simplement construir-ho.
+
+Llavors un dels meus companys va decidir simplement fer-ho. Amb
+[Claude Code](https://www.anthropic.com/claude-code) i unes poques iteracions,
+tenia un prototip funcional de tot el projecte en menys d'un dia.
+
+El prototip no estava llest per a producció—necessitava neteja i tests
+adequats—però estava construït amb els nostres patrons perquè hem invertit en
+ensenyar a les nostres eines d'IA les convencions de la nostra base de codi.
+Refactoritzar codi funcional que segueix la teva arquitectura és molt més fàcil
+que reescriure alguna cosa construïda amb patrons aliens.
+
+Les matemàtiques encara se senten surreals. Vam passar dies en reunions,
+redactant especificacions, debatent enfocaments—tot per concloure "ara no, massa
+car". Mentrestant, la implementació real va prendre hores.
+
+## El Cost de Coordinació Ara Supera el Cost d'Execució
+
+Aquest exemple il·lustra alguna cosa més gran: hem creuat un llindar on la
+coordinació al voltant de construir alguna cosa sovint costa més que
+construir-ho. La reunió per discutir una funcionalitat—alinear els interessats,
+reunir requisits, obtenir aprovació—pot prendre més temps que implementar
+aquesta funcionalitat amb assistència d'IA.
+
+Això inverteix dècades d'economia del software. Les reunions de planificació
+existien perquè _mesura dues vegades, talla una_ tenia sentit quan tallar era
+car. Quan tallar és barat, mesura una vegada, talla, mira el resultat, talla de
+nou. El bucle d'iteració es converteix en el procés de planificació.
+
+## Construeix Primer, Després Reacciona
+
+El vell flux de treball era: Especificació → Aprovació → Construcció → Demo →
+Feedback → Iterar.
+
+El flux de treball emergent és: Construir → Demo → Feedback → Iterar.
+L'especificació emergeix de les iteracions.
+
+Això funciona perquè la gent lluita per articular desitjos abstractes. "Què
+hauria de mostrar el dashboard?" produeix respostes vagues. Però "És útil aquest
+dashboard?" produeix feedback específic i accionable. Mostra a algú un prototip
+funcional i pregunta "Què està malament amb això?"—obtindràs millors requisits
+en tres iteracions que en deu hores de reunions de requisits.
+
+El prototip es converteix en l'especificació funcional. No escrius un document
+descrivint el que el software hauria de fer; construeixes software que fa alguna
+cosa i refines des d'aquí. La intenció i les restriccions encara es
+documenten—però la mecànica es defineix mitjançant codi funcional.
+
+## Producte i Disseny Necessiten Adaptar-se També
+
+Aquest canvi no és només sobre enginyeria. Els processos de producte i disseny
+també van ser construïts sota l'assumpció que la implementació és cara. Quan
+construir era lent, tenia sentit invertir fortament en wireframes, mockups i
+PRDs—proxies per a la cosa real que eren més barats d'iterar que el software
+real.
+
+Aquest càlcul ha canviat. Per a funcionalitats amb molta interacció—dashboards,
+formularis, fluxos de treball—els mockups d'alta fidelitat sovint prenen més
+temps que construir la cosa real. Però això no significa saltar-se el _design
+thinking_ per complet. Un esbós ràpid o wireframe combinat amb prototipatge
+ràpid amb IA et permet explorar possibilitats més ràpid que qualsevol dels
+enfocaments per separat.
+
+El disseny no és obsolet. Però el rol canvia de "produir artefactos que
+descriuen què construir" a "reaccionar a artefactos i guiar-los cap a bones
+solucions". Els dissenyadors i product managers es converteixen en crítics i
+directors, no només autors d'especificacions.
+
+## La IA No Reemplaçarà els Desenvolupadors—Està Creant Més Feina
+
+Molts enginyers temen perdre els seus treballs davant la IA. És una preocupació
+raonable. Però jo crec que les companyies que abracin la IA efectivament
+contractaran més enginyers, no menys.
+
+Això sona contraintuïtiu fins que penses en el que permet l'execució barata.
+Cada companyia té un backlog d'idees que mai es van construir perquè el
+cost-benefici no quadrava. Eines internes que seria bo tenir. Automatització que
+estalviaria temps però no valia la inversió d'enginyeria. Funcionalitats per a
+segments d'usuaris nínxol que no podien justificar el cost de desenvolupament.
+
+Quan construir es torna barat, aquests càlculs s'inverteixen. Projectes que "no
+valien la pena" de sobte valen la pena. El backlog de coses que val la pena fer
+s'expandeix més ràpid que la nostra capacitat per fer-les—fins i tot amb
+acceleració per IA.
+
+Hi ha un risc aquí que val la pena nomenar: només perquè alguna cosa sigui
+barata de construir no significa que hagi d'existir. Que el backlog s'expandeixi
+no és inherentment bo—pot portar a una saturació de funcionalitats (_feature
+bloat_), càrrega de manteniment i productes desenfocats. La nova disciplina no
+és "hauríem de construir això?" sinó "hauria d'existir això en absolut?"
+
+Aquesta és la paradoxa de l'execució barata: _perquè_ podem construir més ràpid,
+necessitem un judici més agut sobre _què_ construir. La vella restricció—"això
+prendria massa temps"—forçava la priorització. Sense ella, podem construir
+eficientment les coses incorrectes. El pensament de "construir primer" requereix
+més disciplina de producte, no menys.
+
+Aquest patró està generalitzat. La IA expandeix el mercat direccionable per al
+software. Sempre hi ha hagut més software que valia la pena construir del que
+podíem permetre'ns construir. Baixa el cost, i més d'aquesta demanda latent es
+torna real.
+
+## La Feina Canvia, Però No Desapareix
+
+El que està canviant és la naturalesa de la feina. Menys temps escrivint
+boilerplate. Més temps entenent problemes, dirigint la IA, revisant resultats i
+prenent decisions de judici. El rol del desenvolupador es mou d'_escriptor de
+codi_ a _director de codi_.
+
+Això requereix habilitats diferents. La claredat es torna primària—necessites
+articular una intenció precisa perquè la IA executa instantània i literalment.
+Una entrada vaga produeix una sortida incorrecta immediata i concreta. Depurar
+codi generat per IA és una habilitat diferent: estàs avaluant les eleccions
+d'implementació d'un altre, no raonant a través de les teves pròpies intencions.
+
+Els desenvolupadors que prosperin seran aquells orientats cap a la resolució de
+problemes en lloc de la producció de codi. La feina mai va ser realment
+"escriure codi". Sempre va ser "resoldre problemes amb software". La IA
+simplement fa això més clar.
+
+---
+
+Estem d'hora en aquest canvi. Les eines estan evolucionant ràpidament, i tots
+estem descobrint nous fluxos de treball en temps real. Però la direcció és
+clara: l'execució és barata, la coordinació és cara, i construir és la nova
+forma de pensar.
+
+La pregunta no és si adaptar-se. És com de ràpid pots fer-ho.

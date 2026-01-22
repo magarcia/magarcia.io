@@ -1,0 +1,174 @@
+---
+title: "Per Què les Skills Públiques d'IA No Encaixen en la teva Base de Codi"
+date: "2026-01-23"
+spoiler:
+  Les skills de React de Vercel li diuen a Claude que utilitzi Server
+  Components. Nosaltres no utilitzem Server Components. Les skills genèriques
+  d'IA produeixen codi plausible que no encaixa en la teva base de codi.
+tags:
+  - ai
+  - developer-tools
+  - software-engineering
+---
+
+Els recursos públics per a programació amb IA han explotat:
+[Les Millors Pràctiques de React de Vercel](https://vercel.com/blog/introducing-react-best-practices),
+[Impeccable](https://impeccable.style), innombrables llibreries de prompts i
+[skills de Claude Code](https://code.claude.com/docs/en/skills). (Una "skill" en
+aquest context és un document estructurat—típicament markdown amb metadades—que
+proporciona context, regles i exemples per a assistents de programació d'IA.
+Pensa en això com documentació llegible per màquina que la IA referencia abans
+de generar codi.) Aquests funcionen notablement bé per a projectes paral·lels i
+aventures en solitari.
+
+Però sovint fallen el tret per a les empreses.
+
+> Aquest article és part d'una sèrie de dues parts. Vegeu també:
+> [Quan la IA va Fer que Construir Fos Més Barat que les Reunions per Planificar-ho](/ca/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+
+## La Bretxa Entre Públic i Privat
+
+Les skills de React de Vercel, per exemple, estan fortament enfocades en Next.js
+i React Server Components. Genial si utilitzes Next.js. Buffer no ho fa. Quan
+aquestes skills li diuen a Claude que utilitzi Server Components, no són només
+inútils—són activament contraproduents. La IA genera amb confiança patrons de
+codi que la nostra base de codi no suporta.
+
+[Impeccable](https://impeccable.style) té directrius de disseny sòlides, però
+segueixen convencions que no coincideixen amb el nostre sistema de disseny.
+Utilitzem Popcorn, la nostra llibreria de components interna, amb tokens
+d'espaiat específics, variables de color i APIs de components. Els principis
+genèrics de "bon disseny" no saben res d'això.
+
+Aquestes eines són útils per al seu context previst. El problema és que cada
+companyia té les seves pròpies restriccions, patrons i preferències—i les eines
+genèriques no poden tenir això en compte.
+
+## Per Què Això Importa Més del Que Penses
+
+Els assistents de programació d'IA són potents reconeixedors de patrons.
+Alimenta'ls amb bons patrons; produeixen bona sortida. Alimenta'ls amb patrons
+que no coincideixen amb el teu context, i obtens codi d'aparença plausible que
+no encaixa.
+
+El mode de fallada és subtil. El codi generat _funciona_. S'executa. Podria fins
+i tot passar tests bàsics. Però no segueix les teves convencions. Utilitza
+l'enfocament de gestió d'estat incorrecte. Importa de paquets que no utilitzes.
+Estructura components de formes que entren en conflicte amb la teva
+arquitectura.
+
+Cada desviació dels teus estàndards crea fricció. Algú ha de revisar-ho i
+corregir-ho. O pitjor, s'envia i es converteix en precedent per a més
+desviacions. L' "ajuda" de la IA es converteix en deute tècnic.
+
+## La Velocitat Requereix Context
+
+A
+[la primera part](/ca/when-ai-made-building-cheaper-than-the-meetings-to-plan-it),
+vaig escriure que l'execució és ara més barata que la planificació. Això només
+és sostenible si la teva IA coneix el teu context. Si executes barat amb skills
+genèriques, estàs intercanviant temps de planificació per temps de
+refactorització. El prototip que va prendre hores en construir-se podria prendre
+dies en netejar-se si està construït sobre patrons que la teva base de codi no
+suporta. L'avantatge de velocitat de programar amb IA depèn que la IA entengui
+les teves restriccions específiques.
+
+## Les Empreses Necessiten Invertir en Bases de Coneixement Personalitzades
+
+Les empreses que vulguin aprofitar la IA efectivament han de construir les seves
+pròpies skills i bases de coneixement. Pots començar des de fonaments de codi
+obert, però necessitaràs personalitzar-los per a que coincideixin amb el teu
+context específic:
+
+- **El teu stack**: Quins frameworks, llibreries i eines utilitzes realment
+- **Els teus patrons**: Com estructures components, gestiones estat, maneges
+  errors
+- **El teu sistema de disseny**: APIs de components, tokens, patrons de
+  composició
+- **Les teves convencions**: Nomenament, organització d'arxius, enfocaments de
+  testing
+- **Les teves restriccions**: Què està prohibit, què requereix aprovació, què té
+  trampes conegudes
+
+Això és una inversió real. Significa documentar patrons interns en un format que
+la IA pugui consumir. Significa crear prompts i skills adaptats a la teva base
+de codi. Significa mantenir aquesta documentació a mesura que les coses
+evolucionen.
+
+## El Benefici es Compon
+
+Però el retorn es compon amb el temps. Cada desenvolupador en el teu equip es
+beneficia de aquest coneixement compilat. Les noves contractacions obtenen
+assistència d'IA que realment coincideix amb com funciona la teva base de codi.
+La IA es converteix en un multiplicador de força per al teu context específic,
+no només desenvolupament web genèric.
+
+Pensa en això com codificar l'experiència del teu equip. Els enginyers sènior
+poden codificar coneixement tribal—"fem X perquè Y"—en skills que beneficien a
+tothom. El coneixement tribal es converteix en capacitat institucional.
+
+A diferència d'una pàgina wiki que es torna obsoleta, una skill és "llegida" per
+la IA cada vegada que genera codi. L'aplicació és automàtica. Escriu la regla
+una vegada, i s' aplica a cada línia de codi que la IA produeix. La documentació
+es torna executable.
+
+La bona notícia: [Agent Skills](https://agentskills.io) és ara un estàndard
+obert adoptat per Claude Code, GitHub Copilot, OpenAI Codex i altres.
+Construeixes una skill una vegada, i funciona a través de múltiples eines d'IA.
+Això fa que la inversió sigui més portable que mai.
+
+## On Començar
+
+Si estàs considerant aquesta inversió, aquí hi ha un punt de partida pràctic:
+
+1. **Audita els teus punts de fricció.** On falla més sovint el codi generat per
+   IA? Millor encara: audita els teus comentaris de revisió de codi. Quin
+   feedback repeteixen els teus sèniors més sovint? Aquests patrons són les
+   teves primeres skills per escriure.
+
+2. **Comença amb restriccions, no millors pràctiques.** És més fàcil dir a la IA
+   què _no_ fer que descriure exhaustivament els patrons ideals. "Mai utilitzis
+   X" és més clar que "prefereix Y en la majoria de situacions".
+
+3. **Documenta el perquè, no només el què.** La IA és millor aplicant regles
+   quan entén el raonament. "Utilitza variables CSS per a colors perquè suportem
+   mode fosc" és més útil que "utilitza variables CSS per a colors".
+
+4. **Itera basat en la sortida.** Construeix una skill, utilitza-la per una
+   setmana, mira on falla, refina. El bucle de feedback és ràpid.
+
+5. **Fes-ho una responsabilitat compartida.** Els enginyers que noten bretxes
+   haurien d'estar empoderats per arreglar-les. Tracta les skills com codi:
+   requereix revisions de PR, assigna un code owner al directori `skills/`, i
+   mantén-les amb la mateixa barra de qualitat que el teu codi de producció.
+
+---
+
+Hi ha una tensió entre aquest post i
+[la primera part](/ca/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+que val la pena fer explícita. La primera part argumenta "deixa de planificar,
+comença a construir". Aquest post argumenta "escriu documentació (skills) perquè
+la IA sàpiga què construir".
+
+La resolució: _el context és la nova especificació_. Ja no estàs escrivint
+especificacions per a funcionalitats—PRDs detallats que descriuen què construir
+i com. En el seu lloc, estàs escrivint especificacions per a _capacitats_:
+skills que codifiquen els teus patrons, restriccions i convencions. Les
+funcionalitats es generen al vol; les skills asseguren que encaixin en la teva
+base de codi.
+
+El canvi no és de documentació a no documentació. És de documentar _què
+construir_ a documentar _com construïm aquí_. El primer és sobrecàrrega per
+projecte; l'últim és infraestructura reutilitzable.
+
+L'ecosistema públic d'eines d'IA és valuós—utilitza'l com a punt de partida.
+Navega per
+[awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) per
+a inspiració, o comença des de
+[els plugins oficials d'Anthropic](https://github.com/anthropics/claude-code/tree/main/plugins).
+Però no esperis que solucions llestes per utilitzar entenguin la teva base de
+codi específica, el teu sistema de disseny, o les convencions guanyades amb
+esforç del teu equip. Aquest coneixement és teu per codificar.
+
+Les companyies que construeixin aquesta infraestructura compondran el seu
+avantatge d'IA. Les que no ho facin seguiran corregint els mateixos errors.

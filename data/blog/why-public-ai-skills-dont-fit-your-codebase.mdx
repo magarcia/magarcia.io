@@ -1,0 +1,157 @@
+---
+title: "Why Public AI Skills Don't Fit Your Codebase"
+date: "2026-01-23"
+spoiler:
+  Vercel's React skills tell Claude to use Server Components. We don't use
+  Server Components. Generic AI skills produce plausible code that doesn't fit
+  your codebase.
+tags:
+  - ai
+  - developer-tools
+  - software-engineering
+---
+
+Public resources for AI coding have exploded:
+[Vercel's React Best Practices](https://vercel.com/blog/introducing-react-best-practices),
+[Impeccable](https://impeccable.style), countless prompt libraries and
+[Claude Code skills](https://code.claude.com/docs/en/skills). (A "skill" in this
+context is a structured document—typically markdown with metadata—that provides
+context, rules, and examples for AI coding assistants. Think of it as
+machine-readable documentation the AI references before generating code.) These
+work remarkably well for side projects and solo ventures.
+
+But they often miss the mark for companies.
+
+> This article is part of a two-part series. See also:
+> [When AI Made Building Cheaper Than the Meetings to Plan It](/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+
+## The Gap Between Public and Private
+
+Vercel's React skills, for instance, are heavily focused on Next.js and React
+Server Components. Great if you use Next.js. Buffer doesn't. When those skills
+tell Claude to use Server Components, they're not just unhelpful—they're
+actively counterproductive. The AI confidently generates code patterns our
+codebase doesn't support.
+
+[Impeccable](https://impeccable.style) has solid design guidelines, but they
+follow conventions that don't match our design system. We use Popcorn, our
+internal component library, with specific spacing tokens, color variables, and
+component APIs. Generic "good design" principles don't know about any of that.
+
+These tools are useful for their intended context. The problem is that every
+company has its own constraints, patterns, and preferences—and generic tools
+can't account for that.
+
+## Why This Matters More Than You Think
+
+AI coding assistants are powerful pattern matchers. Feed them good patterns;
+they produce good output. Feed them patterns that don't match your context, and
+you get plausible-looking code that doesn't fit.
+
+The failure mode is subtle. The generated code _works_. It runs. It might even
+pass basic tests. But it doesn't follow your conventions. It uses the wrong
+state management approach. It imports from packages you don't use. It structures
+components in ways that conflict with your architecture.
+
+Every deviation from your standards creates friction. Someone has to review and
+correct it. Or worse, it ships and becomes precedent for more deviations. The
+AI's "help" becomes technical debt.
+
+## Speed Requires Context
+
+In [part one](/when-ai-made-building-cheaper-than-the-meetings-to-plan-it), I
+wrote that execution is now cheaper than planning. That's only sustainable if
+your AI knows your context. If you execute cheaply with generic skills, you're
+trading planning time for refactoring time. The prototype that took hours to
+build might take days to clean up if it's built on patterns your codebase
+doesn't support. The speed advantage of AI coding depends on the AI
+understanding your specific constraints.
+
+## Companies Need to Invest in Custom Knowledge Bases
+
+Companies that want to leverage AI effectively must build their own skills and
+knowledge bases. You can start from open-source foundations, but you'll need to
+customize them to match your specific context:
+
+- **Your stack**: Which frameworks, libraries, and tools you actually use
+- **Your patterns**: How you structure components, manage state, handle errors
+- **Your design system**: Component APIs, tokens, composition patterns
+- **Your conventions**: Naming, file organization, testing approaches
+- **Your constraints**: What's off-limits, what requires approval, what has
+  known gotchas
+
+This is a real investment. It means documenting internal patterns in a format AI
+can consume. It means creating prompts and skills tailored to your codebase. It
+means maintaining that documentation as things evolve.
+
+## The Payoff Compounds
+
+But the return compounds over time. Every developer on your team benefits from
+that accumulated knowledge. New hires get AI assistance that actually matches
+how your codebase works. The AI becomes a force multiplier for your specific
+context, not just generic web development.
+
+Think of it as codifying your team's expertise. Senior engineers can encode
+tribal knowledge—"we do X because Y"—into skills that benefit everyone. Tribal
+knowledge becomes institutional capability.
+
+Unlike a wiki page that goes stale, a skill is "read" by the AI every time it
+generates code. The enforcement is automatic. Write the rule once, and it's
+applied to every line of code the AI produces. Documentation becomes executable.
+
+The good news: [Agent Skills](https://agentskills.io) is now an open standard
+adopted by Claude Code, GitHub Copilot, OpenAI Codex, and others. You build a
+skill once, and it works across multiple AI tools. This makes the investment
+more portable than ever.
+
+## Where to Start
+
+If you're considering this investment, here's a practical starting point:
+
+1. **Audit your friction points.** Where does AI-generated code most often miss
+   the mark? Better yet: audit your code review comments. What feedback do your
+   seniors repeat most often? Those patterns are your first skills to write.
+
+2. **Start with constraints, not best practices.** It's easier to tell AI what
+   _not_ to do than to comprehensively describe ideal patterns. "Never use X" is
+   clearer than "prefer Y in most situations."
+
+3. **Document the why, not just the what.** AI is better at applying rules when
+   it understands the reasoning. "Use CSS variables for colors because we
+   support dark mode" is more useful than "use CSS variables for colors."
+
+4. **Iterate based on output.** Build a skill, use it for a week, see where it
+   fails, refine. The feedback loop is fast.
+
+5. **Make it a shared responsibility.** The engineers who notice gaps should be
+   empowered to fix them. Treat skills like code: require PR reviews, assign a
+   code owner to the `skills/` directory, and hold them to the same quality bar
+   as your production code.
+
+---
+
+There's a tension between this post and
+[part one](/when-ai-made-building-cheaper-than-the-meetings-to-plan-it) that's
+worth making explicit. Part one argues "stop planning, start building." This
+post argues "write documentation (skills) so the AI knows what to build."
+
+The resolution: _context is the new spec_. You're no longer writing
+specifications for features—detailed PRDs that describe what to build and how.
+Instead, you're writing specifications for _capabilities_: skills that encode
+your patterns, constraints, and conventions. Features get generated on the fly;
+the skills ensure they fit your codebase.
+
+The shift isn't from documentation to no documentation. It's from documenting
+_what to build_ to documenting _how we build here_. The former is per-project
+overhead; the latter is reusable infrastructure.
+
+The public AI tooling ecosystem is valuable—use it as a starting point. Browse
+[awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) for
+inspiration, or start from
+[Anthropic's official plugins](https://github.com/anthropics/claude-code/tree/main/plugins).
+But don't expect off-the-shelf solutions to understand your specific codebase,
+your design system, or your team's hard-won conventions. That knowledge is yours
+to encode.
+
+The companies that build this infrastructure will compound their AI advantage.
+The ones that don't will keep correcting the same mistakes.

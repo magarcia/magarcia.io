@@ -1,0 +1,167 @@
+---
+title:
+  "Cuando la IA Hizo que Construir Fuera Más Barato que las Reuniones para
+  Planificarlo"
+date: "2026-01-23"
+spoiler:
+  Debatimos una funcionalidad durante semanas. Luego alguien la construyó en un
+  día con IA. Cuando la ejecución cuesta menos que la coordinación, las
+  reuniones se convierten en el cuello de botella.
+tags:
+  - ai
+  - developer-tools
+  - software-engineering
+---
+
+La IA transformará cómo crea la humanidad. Ese es el panorama general. Pero aquí
+quiero centrarme en algo más inmediato: cómo la IA está reconfigurando la forma
+en que trabajamos en las empresas de ingeniería de software.
+
+> Este artículo es parte de una serie de dos partes. Ver también:
+> [Por Qué las Skills Públicas de IA No Encajan en tu Base de Código](/es/why-public-ai-skills-dont-fit-your-codebase)
+
+## Prototipar es Ahora Rápido y Barato
+
+El cambio fundamental es simple: podemos construir cosas dramáticamente más
+rápido y barato. Esto suena obvio, pero los efectos de segundo orden son
+profundos. Cuando la ejecución es barata, todo el aparato que construimos
+alrededor de la ejecución cara—reuniones de planificación, revisiones de diseño,
+ceremonias de sprint, rituales de estimación—empieza a parecer sobrecarga
+(_overhead_).
+
+Aquí hay un ejemplo real de Buffer. Teníamos un proyecto que fue despriorizado.
+La funcionalidad tenía un valor claro. La lógica del backend ya existía en un
+servicio legado, pero necesitaba ser migrada a nuestros nuevos sistemas—nuevas
+APIs, nuevo frontend, nuevos patrones. El proyecto seguía cayendo en el backlog
+porque el esfuerzo estimado era significativo: propuestas de diseño de backend,
+revisiones de arquitectura, diseños de frontend, múltiples rondas de feedback.
+Pasamos más tiempo discutiendo _si_ debíamos construirlo del que hubiera tomado
+simplemente construirlo.
+
+Entonces uno de mis compañeros decidió simplemente hacerlo. Con
+[Claude Code](https://www.anthropic.com/claude-code) y unas pocas iteraciones,
+tenía un prototipo funcional de todo el proyecto en menos de un día.
+
+El prototipo no estaba listo para producción—necesitaba limpieza y tests
+adecuados—pero estaba construido con nuestros patrones porque hemos invertido en
+enseñar a nuestras herramientas de IA las convenciones de nuestra base de
+código. Refactorizar código funcional que sigue tu arquitectura es mucho más
+fácil que reescribir algo construido con patrones ajenos.
+
+Las matemáticas todavía se sienten surreales. Pasamos días en reuniones,
+redactando especificaciones, debatiendo enfoques—todo para concluir "ahora no,
+demasiado caro". Mientras tanto, la implementación real tomó horas.
+
+## El Coste de Coordinación Ahora Supera el Coste de Ejecución
+
+Este ejemplo ilustra algo más grande: hemos cruzado un umbral donde la
+coordinación alrededor de construir algo a menudo cuesta más que construirlo. La
+reunión para discutir una funcionalidad—alinear a los interesados, reunir
+requisitos, obtener aprobación—puede tomar más tiempo que implementar esa
+funcionalidad con asistencia de IA.
+
+Esto invierte décadas de economía del software. Las reuniones de planificación
+existían porque _mide dos veces, corta una_ tenía sentido cuando cortar era
+caro. Cuando cortar es barato, mide una vez, corta, mira el resultado, corta de
+nuevo. El bucle de iteración se convierte en el proceso de planificación.
+
+## Construye Primero, Luego Reacciona
+
+El viejo flujo de trabajo era: Especificación → Aprobación → Construcción → Demo
+→ Feedback → Iterar.
+
+El flujo de trabajo emergente es: Construir → Demo → Feedback → Iterar. La
+especificación emerge de las iteraciones.
+
+Esto funciona porque la gente lucha para articular deseos abstractos. "¿Qué
+debería mostrar el dashboard?" produce respuestas vagas. Pero "¿Es útil este
+dashboard?" produce feedback específico y accionable. Muestra a alguien un
+prototipo funcional y pregunta "¿Qué está mal con esto?"—obtendrás mejores
+requisitos en tres iteraciones que en diez horas de reuniones de requisitos.
+
+El prototipo se convierte en la especificación funcional. No escribes un
+documento describiendo lo que el software debería hacer; construyes software que
+hace algo y refinas desde ahí. La intención y las restricciones aún se
+documentan—pero la mecánica se define mediante código funcional.
+
+## Producto y Diseño Necesitan Adaptarse También
+
+Este cambio no es solo sobre ingeniería. Los procesos de producto y diseño
+también fueron construidos bajo la asunción de que la implementación es cara.
+Cuando construir era lento, tenía sentido invertir fuertemente en wireframes,
+mockups y PRDs—proxies para la cosa real que eran más baratos de iterar que el
+software real.
+
+Ese cálculo ha cambiado. Para funcionalidades con mucha interacción—dashboards,
+formularios, flujos de trabajo—los mockups de alta fidelidad a menudo toman más
+tiempo que construir la cosa real. Pero esto no significa saltarse el _design
+thinking_ por completo. Un boceto rápido o wireframe combinado con prototipado
+rápido con IA te permite explorar posibilidades más rápido que cualquiera de los
+enfoques por separado.
+
+El diseño no es obsoleto. Pero el rol cambia de "producir artefactos que
+describen qué construir" a "reaccionar a artefactos y guiarlos hacia buenas
+soluciones". Los diseñadores y product managers se convierten en críticos y
+directores, no solo autores de especificaciones.
+
+## La IA No Reemplazará a los Desarrolladores—Está Creando Más Trabajo
+
+Muchos ingenieros temen perder sus trabajos ante la IA. Es una preocupación
+razonable. Pero yo creo que las compañías que abracen la IA efectivamente
+contratarán más ingenieros, no menos.
+
+Esto suena contraintuitivo hasta que piensas en lo que permite la ejecución
+barata. Cada compañía tiene un backlog de ideas que nunca se construyeron porque
+el coste-beneficio no cuadraba. Herramientas internas que sería bueno tener.
+Automatización que ahorraría tiempo pero no valía la inversión de ingeniería.
+Funcionalidades para segmentos de usuarios nicho que no podían justificar el
+coste de desarrollo.
+
+Cuando construir se vuelve barato, esos cálculos se invierten. Proyectos que "no
+valían la pena" de repente valen la pena. El backlog de cosas que vale la pena
+hacer se expande más rápido que nuestra capacidad para hacerlas—incluso con
+aceleración por IA.
+
+Hay un riesgo aquí que vale la pena nombrar: solo porque algo sea barato de
+construir no significa que deba existir. Que el backlog se expanda no es
+inherentemente bueno—puede llevar a una saturación de funcionalidades (_feature
+bloat_), carga de mantenimiento y productos desenfocados. La nueva disciplina no
+es "¿deberíamos construir esto?" sino "¿debería esto existir en absoluto?"
+
+Esta es la paradoja de la ejecución barata: _porque_ podemos construir más
+rápido, necesitamos un juicio más agudo sobre _qué_ construir. La vieja
+restricción—"esto tomaría demasiado tiempo"—forzaba la priorización. Sin ella,
+podemos construir eficientemente las cosas incorrectas. El pensamiento de
+"construir primero" requiere más disciplina de producto, no menos.
+
+Este patrón está generalizado. La IA expande el mercado direccionable para el
+software. Siempre ha habido más software que valía la pena construir del que
+podíamos permitirnos construir. Baja el coste, y más de esa demanda latente se
+vuelve real.
+
+## El Trabajo Cambia, Pero No Desaparece
+
+Lo que está cambiando es la naturaleza del trabajo. Menos tiempo escribiendo
+boilerplate. Más tiempo entendiendo problemas, dirigiendo a la IA, revisando
+resultados y tomando decisiones de juicio. El rol del desarrollador se mueve de
+_escritor de código_ a _director de código_.
+
+Esto requiere habilidades diferentes. La claridad se vuelve primaria—necesitas
+articular una intención precisa porque la IA ejecuta instantánea y literalmente.
+Una entrada vaga produce una salida incorrecta inmediata y concreta. Depurar
+código generado por IA es una habilidad distinta: estás evaluando las elecciones
+de implementación de otro, no razonando a través de tus propias intenciones.
+
+Los desarrolladores que prosperen serán aquellos orientados hacia la resolución
+de problemas en lugar de la producción de código. El trabajo nunca fue realmente
+"escribir código". Siempre fue "resolver problemas con software". La IA
+simplemente hace eso más claro.
+
+---
+
+Estamos temprano en este cambio. Las herramientas están evolucionando
+rápidamente, y todos estamos descubriendo nuevos flujos de trabajo en tiempo
+real. Pero la dirección es clara: la ejecución es barata, la coordinación es
+cara, y construir es la nueva forma de pensar.
+
+La pregunta no es si adaptarse. Es qué tan rápido puedes hacerlo.

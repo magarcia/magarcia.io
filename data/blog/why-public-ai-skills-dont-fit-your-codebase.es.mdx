@@ -1,0 +1,173 @@
+---
+title: "Por Qué las Skills Públicas de IA No Encajan en tu Base de Código"
+date: "2026-01-23"
+spoiler:
+  Las skills de React de Vercel le dicen a Claude que use Server Components.
+  Nosotros no usamos Server Components. Las skills genéricas de IA producen
+  código plausible que no encaja en tu base de código.
+tags:
+  - ai
+  - developer-tools
+  - software-engineering
+---
+
+Los recursos públicos para programación con IA han explotado:
+[Las Mejores Prácticas de React de Vercel](https://vercel.com/blog/introducing-react-best-practices),
+[Impeccable](https://impeccable.style), innumerables librerías de prompts y
+[skills de Claude Code](https://code.claude.com/docs/en/skills). (Una "skill" en
+este contexto es un documento estructurado—típicamente markdown con
+metadatos—que proporciona contexto, reglas y ejemplos para asistentes de
+programación de IA. Piensa en ello como documentación legible por máquina que la
+IA referencia antes de generar código.) Estos funcionan notablemente bien para
+proyectos paralelos y aventuras en solitario.
+
+Pero a menudo fallan el tiro para las empresas.
+
+> Este artículo es parte de una serie de dos partes. Ver también:
+> [Cuando la IA Hizo que Construir Fuera Más Barato que las Reuniones para Planificarlo](/es/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+
+## La Brecha Entre Público y Privado
+
+Las skills de React de Vercel, por ejemplo, están fuertemente enfocadas en
+Next.js y React Server Components. Genial si usas Next.js. Buffer no lo hace.
+Cuando esas skills le dicen a Claude que use Server Components, no son solo
+inútiles—son activamente contraproducentes. La IA genera con confianza patrones
+de código que nuestra base de código no soporta.
+
+[Impeccable](https://impeccable.style) tiene directrices de diseño sólidas, pero
+siguen convenciones que no coinciden con nuestro sistema de diseño. Usamos
+Popcorn, nuestra librería de componentes interna, con tokens de espaciado
+específicos, variables de color y APIs de componentes. Los principios genéricos
+de "buen diseño" no saben nada de eso.
+
+Estas herramientas son útiles para su contexto previsto. El problema es que cada
+compañía tiene sus propias restricciones, patrones y preferencias—y las
+herramientas genéricas no pueden tener eso en cuenta.
+
+## Por Qué Esto Importa Más de lo Que Piensas
+
+Los asistentes de programación de IA son potentes reconocedores de patrones.
+Aliméntalos con buenos patrones; producen buena salida. Aliméntalos con patrones
+que no coinciden con tu contexto, y obtienes código de apariencia plausible que
+no encaja.
+
+El modo de fallo es sutil. El código generado _funciona_. Se ejecuta. Podría
+incluso pasar tests básicos. Pero no sigue tus convenciones. Usa el enfoque de
+gestión de estado incorrecto. Importa de paquetes que no usas. Estructura
+componentes de formas que entran en conflicto con tu arquitectura.
+
+Cada desviación de tus estándares crea fricción. Alguien tiene que revisarlo y
+corregirlo. O peor, se envía y se convierte en precedente para más desviaciones.
+La "ayuda" de la IA se convierte en deuda técnica.
+
+## La Velocidad Requiere Contexto
+
+En
+[la primera parte](/es/when-ai-made-building-cheaper-than-the-meetings-to-plan-it),
+escribí que la ejecución es ahora más barata que la planificación. Eso solo es
+sostenible si tu IA conoce tu contexto. Si ejecutas barato con skills genéricas,
+estás intercambiando tiempo de planificación por tiempo de refactorización. El
+prototipo que tomó horas en construirse podría tomar días en limpiarse si está
+construido sobre patrones que tu base de código no soporta. La ventaja de
+velocidad de programar con IA depende de que la IA entienda tus restricciones
+específicas.
+
+## Las Empresas Necesitan Invertir en Bases de Conocimiento Personalizadas
+
+Las empresas que quieran aprovechar la IA efectivamente deben construir sus
+propias skills y bases de conocimiento. Puedes empezar desde cimientos de código
+abierto, pero necesitarás personalizarlos para que coincidan con tu contexto
+específico:
+
+- **Tu stack**: Qué frameworks, librerías y herramientas usas realmente
+- **Tus patrones**: Cómo estructuras componentes, gestionas estado, manejas
+  errores
+- **Tu sistema de diseño**: APIs de componentes, tokens, patrones de composición
+- **Tus convenciones**: Nombramiento, organización de archivos, enfoques de
+  testing
+- **Tus restricciones**: Qué está prohibido, qué requiere aprobación, qué tiene
+  trampas conocidas
+
+Esto es una inversión real. Significa documentar patrones internos en un formato
+que la IA pueda consumir. Significa crear prompts y skills adaptados a tu base
+de código. Significa mantener esa documentación a medida que las cosas
+evolucionan.
+
+## El Beneficio se Compone
+
+Pero el retorno se compone con el tiempo. Cada desarrollador en tu equipo se
+beneficia de ese conocimiento acumulado. Las nuevas contrataciones obtienen
+asistencia de IA que realmente coincide con cómo funciona tu base de código. La
+IA se convierte en un multiplicador de fuerza para tu contexto específico, no
+solo desarrollo web genérico.
+
+Piensa en ello como codificar la experiencia de tu equipo. Los ingenieros senior
+pueden codificar conocimiento tribal—"hacemos X porque Y"—en skills que
+benefician a todos. El conocimiento tribal se convierte en capacidad
+institucional.
+
+A diferencia de una página wiki que se vuelve obsoleta, una skill es "leída" por
+la IA cada vez que genera código. La aplicación es automática. Escribe la regla
+una vez, y se aplica a cada línea de código que la IA produce. La documentación
+se vuelve ejecutable.
+
+La buena noticia: [Agent Skills](https://agentskills.io) es ahora un estándar
+abierto adoptado por Claude Code, GitHub Copilot, OpenAI Codex y otros.
+Construyes una skill una vez, y funciona a través de múltiples herramientas de
+IA. Esto hace que la inversión sea más portable que nunca.
+
+## Dónde Empezar
+
+Si estás considerando esta inversión, aquí hay un punto de partida práctico:
+
+1. **Audita tus puntos de fricción.** ¿Dónde falla más a menudo el código
+   generado por IA? Mejor aún: audita tus comentarios de revisión de código.
+   ¿Qué feedback repiten tus seniors más a menudo? Esos patrones son tus
+   primeras skills para escribir.
+
+2. **Empieza con restricciones, no mejores prácticas.** Es más fácil decir a la
+   IA qué _no_ hacer que describir exhaustivamente los patrones ideales. "Nunca
+   uses X" es más claro que "prefiere Y en la mayoría de situaciones".
+
+3. **Documenta el porqué, no solo el qué.** La IA es mejor aplicando reglas
+   cuando entiende el razonamiento. "Usa variables CSS para colores porque
+   soportamos modo oscuro" es más útil que "usa variables CSS para colores".
+
+4. **Itera basado en la salida.** Construye una skill, úsala por una semana,
+   mira dónde falla, refina. El bucle de feedback es rápido.
+
+5. **Hazlo una responsabilidad compartida.** Los ingenieros que notan brechas
+   deberían estar empoderados para arreglarlas. Trata las skills como código:
+   requiere revisiones de PR, asigna un code owner al directorio `skills/`, y
+   mantenlas con la misma barra de calidad que tu código de producción.
+
+---
+
+Hay una tensión entre este post y
+[la primera parte](/es/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+que vale la pena hacer explícita. La primera parte argumenta "deja de
+planificar, empieza a construir". Este post argumenta "escribe documentación
+(skills) para que la IA sepa qué construir".
+
+La resolución: _el contexto es la nueva especificación_. Ya no estás escribiendo
+especificaciones para funcionalidades—PRDs detallados que describen qué
+construir y cómo. En su lugar, estás escribiendo especificaciones para
+_capacidades_: skills que codifican tus patrones, restricciones y convenciones.
+Las funcionalidades se generan al vuelo; las skills aseguran que encajen en tu
+base de código.
+
+El cambio no es de documentación a no documentación. Es de documentar _qué
+construir_ a documentar _cómo construimos aquí_. Lo primero es sobrecarga por
+proyecto; lo último es infraestructura reutilizable.
+
+El ecosistema público de herramientas de IA es valioso—úsalo como punto de
+partida. Navega por
+[awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills)
+para inspiración, o empieza desde
+[los plugins oficiales de Anthropic](https://github.com/anthropics/claude-code/tree/main/plugins).
+Pero no esperes que soluciones listas para usar entiendan tu base de código
+específica, tu sistema de diseño, o las convenciones ganadas con esfuerzo de tu
+equipo. Ese conocimiento es tuyo para codificar.
+
+Las compañías que construyan esta infraestructura compondrán su ventaja de IA.
+Las que no lo hagan seguirán corrigiendo los mismos errores.

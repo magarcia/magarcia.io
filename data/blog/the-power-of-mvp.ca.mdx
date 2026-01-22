@@ -1,41 +1,106 @@
 ---
 layout: post
 title: El poder del MVP
-date: '2020-01-29'
-spoiler: Un producte mínim viable (MVP) sovint es vincula al món de les startups
-  però és una eina molt útil en grans corporacions també. I per tenir èxit amb ell
-  és important que els equips d'enginyeria estiguin completament compromesos.
+date: "2020-01-29"
+spoiler:
+  Un producte mínim viable (MVP) sovint es vincula al món de les startups però
+  és una eina molt útil en grans corporacions també. I per tenir èxit amb ell és
+  important que els equips d'enginyeria estiguin completament compromesos.
 draft: false
 tags:
   - mvp
 ---
 
-Hi ha molta literatura sobre productes mínims viables (MVP) a tot arreu. No crec que pugui aportar al camp més informació o valor que la que ja existeix però donaré el meu punt de vista sobre això basat en una experiència que vaig tenir treballant amb un client.
+Hi ha molta literatura sobre productes mínims viables (MVP) a tot arreu. No crec
+que pugui aportar al camp més informació o valor que la que ja existeix però
+donaré el meu punt de vista sobre això basat en una experiència que vaig tenir
+treballant amb un client.
 
 ![MVP - Un patí primer, després una bici i finalment un cotxe](/images/mvp.png)
 
-> Un producte mínim viable (MVP) és una versió d'un producte amb les característiques justes per satisfer els primers clients i proporcionar retroalimentació per al desenvolupament futur del producte.
+> Un producte mínim viable (MVP) és una versió d'un producte amb les
+> característiques justes per satisfer els primers clients i proporcionar
+> retroalimentació per al desenvolupament futur del producte.
 >
 > [Wikipedia](https://ca.wikipedia.org/wiki/Producte_viable_m%C3%ADnim)
 
-Comencem posant aquest article en context. El client era una empresa europea líder en el camp immobiliari, encara que no crec que el domini importi en aquest cas, i l'equip de producte tenia una idea d'un producte bastant complex que volien vendre als seus clients. Per conèixer l'acceptació per part dels usuaris del lloc web, vam executar múltiples proves A/B per veure quin era l'enfocament més exitós. El producte en si no era tan complex d'implementar però la decisió de quins usuaris haurien de veure què, aquesta era una altra història. Havíem de tenir en compte la ubicació de l'usuari, en quina ubicació estava buscant, l'última visita a la pàgina, etc. El nombre de valors amb els quals havíem de jugar era gran, així que per tenir prou dades valuoses per prendre la decisió adequada, vam executar les proves durant gairebé mig any.
+Comencem posant aquest article en context. El client era una empresa europea
+líder en el camp immobiliari, encara que no crec que el domini importi en aquest
+cas, i l'equip de producte tenia una idea d'un producte bastant complex que
+volien vendre als seus clients. Per conèixer l'acceptació per part dels usuaris
+del lloc web, vam executar múltiples proves A/B per veure quin era l'enfocament
+més exitós. El producte en si no era tan complex d'implementar però la decisió
+de quins usuaris haurien de veure què, aquesta era una altra història. Havíem de
+tenir en compte la ubicació de l'usuari, en quina ubicació estava buscant,
+l'última visita a la pàgina, etc. El nombre de valors amb els quals havíem de
+jugar era gran, així que per tenir prou dades valuoses per prendre la decisió
+adequada, vam executar les proves durant gairebé mig any.
 
-Aquest tipus d'experiment no té sentit sense mètriques adequades, així que vam mesurar tot. Una vegada que la prova va acabar, l'equip d'anàlisi de dades va fer la seva feina i va resultar que els valors no eren els esperats, ni a prop d'això. Resulta que no tot era tan dolent. Una petita part del producte va tenir una acceptació realment bona entre els usuaris, i un mes després l'equip de producte va idear un producte diferent basat en aquesta petita part.
+Aquest tipus d'experiment no té sentit sense mètriques adequades, així que vam
+mesurar tot. Una vegada que la prova va acabar, l'equip d'anàlisi de dades va
+fer la seva feina i va resultar que els valors no eren els esperats, ni a prop
+d'això. Resulta que no tot era tan dolent. Una petita part del producte va tenir
+una acceptació realment bona entre els usuaris, i un mes després l'equip de
+producte va idear un producte diferent basat en aquesta petita part.
 
-Després d'aquesta, no tan petita introducció, és on comença aquesta història. Aquest nou producte no tenia les regles complexes de l'anterior: res relacionat amb la ubicació, ni visites d'usuari o historial de cerca. Els clients tindran una secció especial a la pàgina per mostrar els seus productes i podrien compartir com prefereixen amb els seus clients. Ara que teníem el producte (la part orientada a l'usuari ja estava implementada per a la prova anterior) era hora de fer-lo real i començar a vendre'l.
+Després d'aquesta, no tan petita introducció, és on comença aquesta història.
+Aquest nou producte no tenia les regles complexes de l'anterior: res relacionat
+amb la ubicació, ni visites d'usuari o historial de cerca. Els clients tindran
+una secció especial a la pàgina per mostrar els seus productes i podrien
+compartir com prefereixen amb els seus clients. Ara que teníem el producte (la
+part orientada a l'usuari ja estava implementada per a la prova anterior) era
+hora de fer-lo real i començar a vendre'l.
 
-Un dia vam tenir la reunió per definir l'arquitectura i com anàvem a fer-ho. Els dos equips d'enginyeria involucrats, el cap de tecnologia i el propietari del producte. Al voltant de 14 persones a la sala (realment sales virtuals ja que els equips estaven distribuïts en diferents països) discutint quina anava a ser la millor manera d'implementar-lo i intentant endevinar quan anava a estar llest. Algú va dir que perquè el producte necessita ser comprat per clients hauríem de parlar tard o d'hora amb l'equip d'enginyeria a càrrec d'aquesta àrea. L'equip a càrrec dels productes haurà de crear un nou microservei per gestionar el nou producte i el que està a càrrec del lloc web haurà de consumir i processar aquestes dades per habilitar o no el producte per a un client donat.
+Un dia vam tenir la reunió per definir l'arquitectura i com anàvem a fer-ho. Els
+dos equips d'enginyeria involucrats, el cap de tecnologia i el propietari del
+producte. Al voltant de 14 persones a la sala (realment sales virtuals ja que
+els equips estaven distribuïts en diferents països) discutint quina anava a ser
+la millor manera d'implementar-lo i intentant endevinar quan anava a estar
+llest. Algú va dir que perquè el producte necessita ser comprat per clients
+hauríem de parlar tard o d'hora amb l'equip d'enginyeria a càrrec d'aquesta
+àrea. L'equip a càrrec dels productes haurà de crear un nou microservei per
+gestionar el nou producte i el que està a càrrec del lloc web haurà de consumir
+i processar aquestes dades per habilitar o no el producte per a un client donat.
 
-Tot junt comença a semblar complex de nou, les primeres estimacions de quan es faria eren almenys tres mesos, però probablement més ja que implicaria coordinació amb múltiples equips d'enginyeria, màrqueting, disseny, etc. Escoltant totes les discussions que succeïen la part mandrosa del meu cervell es va activar i vaig fer una pregunta clau al propietari del producte: “_Com es va a dirigir aquest producte als clients per vendre'l a curt termini?_”. La resposta va ser la clau per trobar una manera més fàcil de resoldre aquest problema. Només un petit grup de persones a l'equip de vendes contactarà els clients més importants per vendre el producte, almenys inicialment; i després d'això, avaluaran quins altres clients estarien interessats.
+Tot junt comença a semblar complex de nou, les primeres estimacions de quan es
+faria eren almenys tres mesos, però probablement més ja que implicaria
+coordinació amb múltiples equips d'enginyeria, màrqueting, disseny, etc.
+Escoltant totes les discussions que succeïen la part mandrosa del meu cervell es
+va activar i vaig fer una pregunta clau al propietari del producte: “_Com es va
+a dirigir aquest producte als clients per vendre'l a curt termini?_”. La
+resposta va ser la clau per trobar una manera més fàcil de resoldre aquest
+problema. Només un petit grup de persones a l'equip de vendes contactarà els
+clients més importants per vendre el producte, almenys inicialment; i després
+d'això, avaluaran quins altres clients estarien interessats.
 
-Amb aquesta nova informació, vaig proposar un enfocament poc ortodox per a la implementació. En lloc de construir el sistema complex, coordinar múltiples equips i bloquejar el llançament fins que tot estigui fet; per què no codificar els id dels clients en el codi i tenir només un parell de línies per gestionar la lògica? Cada vegada que el producte es vengui a un client, algú només ha d'enviar un correu electrònic a l'equip i podríem afegir l'id en minuts. Això, òbviament, no és una solució que escali però no és la intenció. Atès que les vendes anaven a ser “manualment” al principi podem esperar que el ritme al qual els clients adquiriran el producte serà controlat.
+Amb aquesta nova informació, vaig proposar un enfocament poc ortodox per a la
+implementació. En lloc de construir el sistema complex, coordinar múltiples
+equips i bloquejar el llançament fins que tot estigui fet; per què no codificar
+els id dels clients en el codi i tenir només un parell de línies per gestionar
+la lògica? Cada vegada que el producte es vengui a un client, algú només ha
+d'enviar un correu electrònic a l'equip i podríem afegir l'id en minuts. Això,
+òbviament, no és una solució que escali però no és la intenció. Atès que les
+vendes anaven a ser “manualment” al principi podem esperar que el ritme al qual
+els clients adquiriran el producte serà controlat.
 
-La proposta que vaig fer va ser realment ben rebuda per tots, això ens permetrà començar a vendre abans i alleujarà la pressió sobre els equips d'enginyeria per construir la solució final. En només una setmana teníem el producte al seu lloc i venut al primer client. Els següents mesos els equips van estar més relaxats treballant en la implementació final que no implicarà interaccions manuals més.
+La proposta que vaig fer va ser realment ben rebuda per tots, això ens permetrà
+començar a vendre abans i alleujarà la pressió sobre els equips d'enginyeria per
+construir la solució final. En només una setmana teníem el producte al seu lloc
+i venut al primer client. Els següents mesos els equips van estar més relaxats
+treballant en la implementació final que no implicarà interaccions manuals més.
 
-Així que, aquesta va ser la història que volia compartir. No sé si seria útil per a tu però almenys vaig aprendre alguns punts importants:
+Així que, aquesta va ser la història que volia compartir. No sé si seria útil
+per a tu però almenys vaig aprendre alguns punts importants:
 
-- Mantén la implementació el més simple possible, no només arribaràs al mercat abans probablement podries eliminar o relaxar alguns terminis.
-- Els equips d'enginyeria haurien d'estar involucrats el més aviat possible en la definició del producte perquè diferents punts de vista poden trobar una millor solució.
-- Tota la visió del projecte hauria de ser compartida amb els enginyers, no només la part en la qual han de treballar ja que ajuda a decidir l'arquitectura.
+- Mantén la implementació el més simple possible, no només arribaràs al mercat
+  abans probablement podries eliminar o relaxar alguns terminis.
+- Els equips d'enginyeria haurien d'estar involucrats el més aviat possible en
+  la definició del producte perquè diferents punts de vista poden trobar una
+  millor solució.
+- Tota la visió del projecte hauria de ser compartida amb els enginyers, no
+  només la part en la qual han de treballar ja que ajuda a decidir
+  l'arquitectura.
 
-En conclusió, vaig a seguir fent una de les coses que considero més importants en un desenvolupador: ser mandrós. Perquè aquesta actitud m'ajudarà a trobar la manera més fàcil i ràpida de resoldre un problema.
+En conclusió, vaig a seguir fent una de les coses que considero més importants
+en un desenvolupador: ser mandrós. Perquè aquesta actitud m'ajudarà a trobar la
+manera més fàcil i ràpida de resoldre un problema.

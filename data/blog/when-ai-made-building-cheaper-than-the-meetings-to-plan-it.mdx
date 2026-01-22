@@ -1,0 +1,150 @@
+---
+title: "When AI Made Building Cheaper Than the Meetings to Plan It"
+date: "2026-01-23"
+spoiler:
+  We debated a feature for weeks. Then someone built it in a day with AI. When
+  execution costs less than coordination, meetings become the bottleneck.
+tags:
+  - ai
+  - developer-tools
+  - software-engineering
+---
+
+AI will transform how humanity creates. That's the big picture. But here I want
+to focus on something more immediate: how AI is reshaping the way we work at
+software engineering companies.
+
+> This article is part of a two-part series. See also:
+> [Why Public AI Skills Don't Fit Your Codebase](/why-public-ai-skills-dont-fit-your-codebase)
+
+## Prototyping is Now Fast and Cheap
+
+The fundamental shift is simple: we can build things dramatically faster and
+cheaper. This sounds obvious, but the second-order effects are profound. When
+execution is cheap, the entire apparatus we built around expensive
+execution—planning meetings, design reviews, sprint ceremonies, estimation
+rituals—starts to look like overhead.
+
+Here's a real example from Buffer. We had a project that got deprioritized. The
+feature had clear value. The backend logic already existed in a legacy service,
+but it needed to be migrated to our new systems—new APIs, new frontend, new
+patterns. The project kept slipping down the backlog because the estimated
+effort was significant: backend design proposals, architecture reviews, frontend
+designs, multiple rounds of feedback. We spent more time discussing _whether_ to
+build it than it would have taken to just build it.
+
+Then one of my coworkers decided to just do it. With
+[Claude Code](https://www.anthropic.com/claude-code) and a few iterations, he
+had a working prototype of the entire project in less than a day.
+
+The prototype wasn't production-ready—it needed cleanup and proper tests—but it
+was built with our patterns because we've invested in teaching our AI tools our
+codebase conventions. Refactoring working code that follows your architecture is
+far easier than rewriting something built on foreign patterns.
+
+The math still feels surreal. We spent days in meetings, drafting
+specifications, debating approaches—all to conclude "not now, too expensive."
+Meanwhile, the actual implementation took hours.
+
+## The Coordination Cost Now Exceeds the Execution Cost
+
+This example illustrates something bigger: we've crossed a threshold where the
+coordination around building something often costs more than building it. The
+meeting to discuss a feature—aligning stakeholders, gathering requirements,
+getting approval—can take longer than implementing that feature with AI
+assistance.
+
+This inverts decades of software economics. Planning meetings existed because
+_measure twice, cut once_ made sense when cutting was expensive. When cutting is
+cheap, measure once, cut, look at the result, cut again. The iteration loop
+becomes the planning process.
+
+## Build First, Then React
+
+The old workflow was: Spec → Approval → Build → Demo → Feedback → Iterate.
+
+The emerging workflow is: Build → Demo → Feedback → Iterate. The spec emerges
+from the iterations.
+
+This works because people struggle to articulate abstract wants. "What should
+the dashboard show?" produces vague answers. But "Is this dashboard useful?"
+produces specific, actionable feedback. Show someone a working prototype and ask
+"What's wrong with this?"—you'll get better requirements in three iterations
+than in ten hours of requirements meetings.
+
+The prototype becomes the functional specification. You don't write a document
+describing what the software should do; you build software that does something
+and refine from there. The intent and constraints still get documented—but the
+mechanics are defined by working code.
+
+## Product and Design Need to Adapt Too
+
+This shift isn't just about engineering. Product and design processes were also
+built around the assumption that implementation is expensive. When building was
+slow, it made sense to invest heavily in wireframes, mockups, and PRDs—proxies
+for the real thing that were cheaper to iterate on than actual software.
+
+That calculus has changed. For interaction-heavy features—dashboards, forms,
+workflows—high-fidelity mockups often take longer than building the real thing.
+But this doesn't mean skipping design thinking entirely. A quick sketch or
+wireframe combined with rapid AI prototyping lets you explore possibilities
+faster than either approach alone.
+
+Design isn't obsolete. But the role shifts from "produce artifacts that describe
+what to build" to "react to artifacts and guide them toward good solutions."
+Designers and product managers become critics and directors, not just authors of
+specifications.
+
+## AI Won't Replace Developers—It's Creating More Work
+
+Many engineers fear losing their jobs to AI. It's a reasonable concern. But I
+believe companies that embrace AI effectively will hire more engineers, not
+fewer.
+
+This sounds counterintuitive until you think about what cheap execution enables.
+Every company has a backlog of ideas that never got built because the
+cost-benefit didn't pencil out. Internal tools that would be nice to have.
+Automation that would save time but wasn't worth the engineering investment.
+Features for niche user segments that couldn't justify the development cost.
+
+When building becomes cheap, those calculations flip. Projects that were "not
+worth it" suddenly become worth it. The backlog of things worth doing expands
+faster than our capacity to do them—even with AI acceleration.
+
+There's a risk here worth naming: just because something is cheap to build
+doesn't mean it should exist. The backlog expanding isn't inherently good—it can
+lead to feature bloat, maintenance burden, and unfocused products. The new
+discipline isn't "should we build this?" but "should this exist at all?"
+
+This is the paradox of cheap execution: _because_ we can build faster, we need
+sharper judgment about _what_ to build. The old constraint—"this would take too
+long"—forced prioritization. Without it, we can efficiently build the wrong
+things. Build-first thinking requires more product discipline, not less.
+
+This pattern is widespread. AI expands the addressable market for software.
+There's always been more software worth building than we could afford to build.
+Lower the cost, and more of that latent demand becomes real.
+
+## The Job Changes, But It Doesn't Disappear
+
+What's shifting is the nature of the work. Less time writing boilerplate. More
+time understanding problems, directing AI, reviewing output, and making judgment
+calls. The developer role moves from _code writer_ to _code director_.
+
+This requires different skills. Clarity becomes primary—you need to articulate
+precise intent because AI executes instantly and literally. Vague input produces
+immediate, concrete wrong output. Debugging AI-generated code is a distinct
+skill: you're evaluating someone else's implementation choices, not reasoning
+through your own intentions.
+
+The developers who thrive will be those oriented toward problem-solving rather
+than code production. The job was never really "write code." It was always
+"solve problems with software." AI just makes that clearer.
+
+---
+
+We're early in this shift. The tools are evolving rapidly, and we're all
+figuring out new workflows in real time. But the direction is clear: execution
+is cheap, coordination is expensive, and building is the new way to think.
+
+The question isn't whether to adapt. It's how fast you can.
