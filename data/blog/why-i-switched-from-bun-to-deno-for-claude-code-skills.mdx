@@ -59,7 +59,9 @@ right.
 
 Deno's `npm:` specifier works regardless of whether `node_modules` exists.
 Dependencies always go to Deno's global cache at `~/.cache/deno`. Local
-`node_modules` directories don't affect resolution. Consistent behavior
+`node_modules` directories don't affect resolution—though you need the
+`--node-modules-dir=false` flag to ensure this behavior when running from
+directories that already have a `node_modules` folder. Consistent behavior
 everywhere.
 
 The same `npx` distribution trick works. Just like `npx -y bun`, you can use
@@ -77,7 +79,7 @@ machine with npm, regardless of what's pre-installed.
 Here's what a Deno-based skill looks like:
 
 ```typescript
-#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+#!/usr/bin/env -S npx -y deno run --node-modules-dir=false --allow-read --allow-write
 
 import { parse } from "npm:csv-parse@^5.0/sync";
 import chalk from "npm:chalk@^5.0.0";
@@ -135,7 +137,7 @@ The structure follows the same pattern from the
 Deno-specific APIs:
 
 ```typescript
-#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+#!/usr/bin/env -S npx -y deno run --node-modules-dir=false --allow-read --allow-write
 
 import { parse } from "npm:csv-parse@^5.0/sync";
 import * as XLSX from "npm:xlsx@^0.20";

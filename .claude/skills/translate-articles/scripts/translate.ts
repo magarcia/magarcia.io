@@ -14,6 +14,27 @@ interface TranslationTarget {
   missingLangs: ("es" | "ca")[];
 }
 
+// Technical terms that should remain in English (engineers are used to these)
+const TECHNICAL_TERMS = [
+  // General programming
+  "flag", "flags", "commit", "merge", "rebase", "branch", "pull request", "push",
+  "bug", "debug", "fix", "build", "deploy", "release", "cache", "buffer",
+  "callback", "promise", "async", "await", "framework", "library", "runtime",
+  "script", "shebang", "stack", "heap", "queue", "string", "array", "object",
+  "map", "set", "type", "interface", "enum", "variable", "constant", "function",
+  "method", "class",
+  // Web & frontend
+  "API", "REST", "GraphQL", "CLI", "terminal", "shell", "component", "props",
+  "state", "hooks", "DOM", "event", "handler", "frontend", "backend", "fullstack",
+  "middleware", "endpoint", "render", "hydrate", "router", "route",
+  // Tools & technologies
+  "TypeScript", "JavaScript", "React", "Node.js", "Deno", "Bun", "npm", "yarn",
+  "pnpm", "Git", "GitHub", "GitLab", "Docker", "Kubernetes", "VS Code", "IDE",
+  // DevOps & infrastructure
+  "CI/CD", "pipeline", "container", "pod", "environment", "staging", "production",
+  "log", "logging", "server", "serverless", "test", "unit test", "integration test",
+];
+
 const TRANSLATION_PROMPTS = {
   es: `Translate this blog article from English to Spanish (Castellano from Spain).
 
@@ -22,7 +43,7 @@ RULES:
 - Keep "tags" in English exactly as they are (site requirement)
 - Keep all other frontmatter fields unchanged (date, draft, etc.)
 - Preserve all markdown formatting, code blocks, and links exactly
-- Keep technical terms in English naturally (API, CLI, TypeScript, React, hooks, components, props, state, etc.)
+- Keep these technical terms in English (engineers are used to them): ${TECHNICAL_TERMS.join(", ")}
 - Use informal "tú" form
 - Use Castellano conventions from Spain (not Latin American Spanish)
 
@@ -35,7 +56,7 @@ RULES:
 - Keep "tags" in English exactly as they are (site requirement)
 - Keep all other frontmatter fields unchanged (date, draft, etc.)
 - Preserve all markdown formatting, code blocks, and links exactly
-- Keep technical terms in English naturally (API, CLI, TypeScript, React, hooks, components, props, state, etc.)
+- Keep these technical terms in English (engineers are used to them): ${TECHNICAL_TERMS.join(", ")}
 - Use informal "tu" form
 - Use standard Catalan conventions
 

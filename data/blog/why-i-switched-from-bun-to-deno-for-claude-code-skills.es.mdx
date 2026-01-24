@@ -62,7 +62,9 @@ sugerencia era correcta.
 El especificador `npm:` de Deno funciona independientemente de si existe
 `node_modules`. Las dependencias siempre van a la caché global de Deno en
 `~/.cache/deno`. Los directorios `node_modules` locales no afectan la
-resolución. Comportamiento consistente en todas partes.
+resolución—aunque necesitas la flag `--node-modules-dir=false` para asegurar
+este comportamiento cuando ejecutas desde directorios que ya tienen una carpeta
+`node_modules`. Comportamiento consistente en todas partes.
 
 El mismo truco de distribución con `npx` funciona. Al igual que `npx -y bun`,
 puedes usar `npx -y deno` para ejecutar Deno sin instalarlo globalmente.
@@ -80,7 +82,7 @@ preinstalado.
 Así es como se ve una skill basada en Deno:
 
 ```typescript
-#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+#!/usr/bin/env -S npx -y deno run --node-modules-dir=false --allow-read --allow-write
 
 import { parse } from "npm:csv-parse@^5.0/sync";
 import chalk from "npm:chalk@^5.0.0";
@@ -99,7 +101,7 @@ de versiones vive en la ruta de importación, igual que con Bun. No se requiere
 `deno.json` ni mapa de importación—las dependencias se resuelven directamente
 desde los especificadores.
 
-Deno requiere banderas de permisos—`--allow-read`, `--allow-write`,
+Deno requiere flags de permisos—`--allow-read`, `--allow-write`,
 `--allow-net`, etc. Más verboso que Bun, pero declaras exactamente lo que hace
 el script. Para skills que se ejecutan a través de Claude Code, los permisos
 explícitos documentan a qué puede acceder el script. Para entornos de confianza,
@@ -113,7 +115,7 @@ explícitos documentan a qué puede acceder el script. Para entornos de confianz
 | Seguro con node_modules | No                        | Sí                            |
 | Rendimiento bruto       | ~20-30% más rápido        | Ligeramente más lento         |
 | TypeScript              | Nativo                    | Nativo                        |
-| Modelo de permisos      | Permisivo por defecto     | Requiere banderas explícitas  |
+| Modelo de permisos      | Permisivo por defecto     | Requiere flags explícitas  |
 
 Bun es más rápido. Tiempo de inicio, rendimiento en ejecución, servicio HTTP—Bun
 supera consistentemente a Deno en los benchmarks. Si estás construyendo una API
@@ -140,7 +142,7 @@ La estructura sigue el mismo patrón del
 las APIs específicas de Deno:
 
 ```typescript
-#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+#!/usr/bin/env -S npx -y deno run --node-modules-dir=false --allow-read --allow-write
 
 import { parse } from "npm:csv-parse@^5.0/sync";
 import * as XLSX from "npm:xlsx@^0.20";
@@ -157,7 +159,7 @@ independientemente del directorio.
 
 ## Conclusión
 
-El prefijo `npm:` es más verboso. Las banderas de permisos añaden ceremonia. La
+El prefijo `npm:` es más verboso. Las flags de permisos añaden ceremonia. La
 sintaxis de importación de Bun es más limpia y rápida. Pero la fiabilidad de
 Deno a través de diferentes estructuras de directorios lo convierte en la mejor
 opción para las skills de Claude Code.
@@ -166,7 +168,7 @@ No tienes que depurar por qué una skill funciona en un directorio y falla en
 otro. No tienes que documentar "esto solo funciona fuera de proyectos con
 node_modules". El script simplemente funciona.
 
-Si Bun añade una bandera para forzar la autoinstalación independientemente de la
+Si Bun añade una flag para forzar la autoinstalación independientemente de la
 presencia de `node_modules`, lo reconsideraria. Hasta entonces, la consistencia
 de Deno gana.
 

@@ -62,8 +62,10 @@ neta—però el suggeriment era correcte.
 
 L'especificador `npm:` de Deno funciona independentment de si existeix
 `node_modules`. Les dependències sempre van a la memòria cau global de Deno a
-`~/.cache/deno`. Els directoris `node_modules` locals no afecten la resolució.
-Comportament consistent a tot arreu.
+`~/.cache/deno`. Els directoris `node_modules` locals no afecten la
+resolució—encara que necessites la flag `--node-modules-dir=false` per
+assegurar aquest comportament quan executes des de directoris que ja tenen una
+carpeta `node_modules`. Comportament consistent a tot arreu.
 
 El mateix truc de distribució amb `npx` funciona. Igual que `npx -y bun`, pots
 utilitzar `npx -y deno` per executar Deno sense instal·lar-lo globalment.
@@ -81,7 +83,7 @@ del que estigui preinstal·lat.
 Així és com es veu una skill basada en Deno:
 
 ```typescript
-#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+#!/usr/bin/env -S npx -y deno run --node-modules-dir=false --allow-read --allow-write
 
 import { parse } from "npm:csv-parse@^5.0/sync";
 import chalk from "npm:chalk@^5.0.0";
@@ -140,7 +142,7 @@ l'[article original](/ca/writing-powerful-claude-code-skills-with-npx-bun)—un
 APIs específiques de Deno:
 
 ```typescript
-#!/usr/bin/env -S npx -y deno run --allow-read --allow-write
+#!/usr/bin/env -S npx -y deno run --node-modules-dir=false --allow-read --allow-write
 
 import { parse } from "npm:csv-parse@^5.0/sync";
 import * as XLSX from "npm:xlsx@^0.20";
@@ -166,7 +168,7 @@ No has de depurar per què una skill funciona en un directori i falla en un
 altre. No has de documentar "això només funciona fora de projectes amb
 node_modules". L'script simplement funciona.
 
-Si Bun afegeix una bandera per forçar l'autoinstal·lació independentment de la
+Si Bun afegeix una flag per forçar l'autoinstal·lació independentment de la
 presència de `node_modules`, ho reconsideraria. Fins aleshores, la consistència
 de Deno guanya.
 

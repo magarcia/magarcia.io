@@ -122,7 +122,7 @@ ESM pur. La latència de xarxa en cada arrencada en fred s'acumula.
 shell en JavaScript. Embolcalla `child_process` i afegeix comoditats com el
 literal de plantilla `$` per executar comandes.
 
-La bandera `--install` auto-instal·la les dependències que falten:
+La flag `--install` auto-instal·la les dependències que falten:
 
 ```javascript
 #!/usr/bin/env zx
@@ -171,7 +171,7 @@ necessito npm.
 npx -y bun script.ts
 ```
 
-La bandera `-y` omet la sol·licitud de confirmació, la qual cosa és important
+La flag `-y` omet la sol·licitud de confirmació, la qual cosa és important
 per a l'execució no interactiva. Això funciona perquè `bun` està publicat com a
 paquet npm. Quan executes `npx bun`, npm descarrega el binari de Bun i executa
 el teu script. Obtens l'auto-instal·lació de Bun, suport per a TypeScript i
@@ -221,7 +221,7 @@ import chalk from "chalk@^5.0.0";
 console.log(chalk.green("Hello!"));
 ```
 
-La bandera `-S` li diu a `env` que divideixi la cadena en arguments separats.
+La flag `-S` li diu a `env` que divideixi la cadena en arguments separats.
 Fes l'script executable i executa'l directament:
 
 ```bash
