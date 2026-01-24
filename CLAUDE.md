@@ -119,7 +119,7 @@ Tags must be **lowercase and slug-friendly** (e.g., `developer-tools`, `node-js`
 2. Prefer reusing existing tags to maintain consistency and ensure tags have multiple posts
 3. New tags are allowed when they represent a genuinely distinct topic not covered by existing tags
 
-**Current tags:** `ai`, `angular`, `bun`, `cli`, `developer-tools`, `gsoc`, `javascript`, `mvp`, `node-js`, `open-source`, `patterns`, `performance`, `react`, `redux`, `security`, `service-workers`, `typescript`
+**Current tags:** `ai`, `angular`, `bun`, `cli`, `developer-tools`, `gsoc`, `javascript`, `mvp`, `node-js`, `open-source`, `patterns`, `performance`, `react`, `redux`, `security`, `service-workers`, `software-engineering`, `typescript`
 
 **Note:** All tags should be in English, even for translated articles (Spanish/Catalan).
 ```
