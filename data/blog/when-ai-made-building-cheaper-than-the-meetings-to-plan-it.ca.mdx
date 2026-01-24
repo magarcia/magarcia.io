@@ -13,60 +13,56 @@ tags:
   - software-engineering
 ---
 
-La IA transformarà com crea la humanitat. Aquest és el panorama general. Però
-aquí vull centrar-me en alguna cosa més immediata: com la IA està reconfigurant
-la forma en què treballem a les empreses d'enginyeria de software.
-
-> Aquest article és part d'una sèrie de dues parts. Vegeu també:
-> [Per Què les Skills Públiques d'IA No Encaixen en la teva Base de Codi](/ca/why-public-ai-skills-dont-fit-your-codebase)
+Vam debatre una funcionalitat durant setmanes. Després algú la va construir en
+un dia amb IA. Quan l'execució costa menys que la coordinació, les reunions es
+converteixen en el coll d'ampolla. Això està reconfigurant com treballen els
+equips de software.
 
 ## Prototipar és Ara Ràpid i Barat
 
-El canvi fonamental és simple: podem construir coses dramàticament més ràpid i
-barat. Això sona obvi, però els efectes de segon ordre són profunds. Quan
-l'execució és barata, tot l'aparell que vam construir al voltant de l'execució
-cara—reunions de planificació, revisions de disseny, cerimònies de sprint,
-rituals d'estimació—comença a semblar sobrecàrrega (_overhead_).
+Podem construir coses més ràpid i barat que mai. Els efectes de segon ordre són
+profunds. Quan l'execució és barata, tot l'aparell que vam construir al voltant
+de l'execució cara—reunions de planificació, revisions de disseny, cerimònies de
+sprint, rituals d'estimació—comença a semblar sobrecàrrega (_overhead_).
 
-Aquí hi ha un exemple real de Buffer. Teníem un projecte que va ser
-desprioritzat. La funcionalitat tenia un valor clar. La lògica del backend ja
-existia en un servei llegat, però necessitava ser migrada als nostres nous
-sistemes—noves APIs, nou frontend, nous patrons. El projecte seguia caient en el
-backlog perquè l'esforç estimat era significatiu: propostes de disseny de
-backend, revisions d'arquitectura, dissenys de frontend, múltiples rondes de
-feedback. Vam passar més temps discutint _si_ havíem de construir-ho del que
-hagués pres simplement construir-ho.
+Un exemple real de Buffer: Teníem un projecte que va ser desprioritzat. La
+funcionalitat tenia un valor clar. La lògica del backend ja existia en un servei
+legacy, però necessitava ser migrada als nostres nous sistemes—noves APIs, nou
+frontend, nous patrons. El projecte seguia caient en el backlog perquè l'esforç
+estimat era significatiu: propostes de disseny de backend, revisions
+d'arquitectura, dissenys de frontend, múltiples rondes de feedback. Vam passar
+més temps discutint _si_ havíem de construir-ho del que hagués pres simplement
+construir-ho.
 
 Llavors un dels meus companys va decidir simplement fer-ho. Amb
 [Claude Code](https://www.anthropic.com/claude-code) i unes poques iteracions,
 tenia un prototip funcional de tot el projecte en menys d'un dia.
 
 El prototip no estava llest per a producció—necessitava neteja i tests
-adequats—però estava construït amb els nostres patrons perquè hem invertit en
-ensenyar a les nostres eines d'IA les convencions de la nostra base de codi.
-Refactoritzar codi funcional que segueix la teva arquitectura és molt més fàcil
-que reescriure alguna cosa construïda amb patrons aliens.
+adequats—però seguia els nostres patrons perquè hem ensenyat a les nostres eines
+d'IA les convencions de la nostra base de codi. Refactoritzar codi funcional que
+segueix la teva arquitectura és molt més fàcil que reescriure alguna cosa
+construïda amb patrons aliens.
 
-Les matemàtiques encara se senten surreals. Vam passar dies en reunions,
-redactant especificacions, debatent enfocaments—tot per concloure "ara no, massa
-car". Mentrestant, la implementació real va prendre hores.
+Les matemàtiques se senten surreals. Vam passar dies en reunions, redactant
+especificacions, debatent enfocaments—tot per concloure "ara no, massa car".
+Mentrestant, la implementació real va prendre hores.
 
 ## El Cost de Coordinació Ara Supera el Cost d'Execució
 
-Aquest exemple il·lustra alguna cosa més gran: hem creuat un llindar on la
-coordinació al voltant de construir alguna cosa sovint costa més que
-construir-ho. La reunió per discutir una funcionalitat—alinear els interessats,
-reunir requisits, obtenir aprovació—pot prendre més temps que implementar
-aquesta funcionalitat amb assistència d'IA.
+Hem creuat un llindar on la coordinació sovint costa més que l'execució. La
+reunió per discutir una funcionalitat—alinear els interessats, reunir requisits,
+obtenir aprovació—pot prendre més temps que implementar aquesta funcionalitat
+amb assistència d'IA.
 
 Això inverteix dècades d'economia del software. Les reunions de planificació
 existien perquè _mesura dues vegades, talla una_ tenia sentit quan tallar era
 car. Quan tallar és barat, mesura una vegada, talla, mira el resultat, talla de
-nou. El bucle d'iteració es converteix en el procés de planificació.
+nou, i deixa que el bucle d'iteració serveixi com el procés de planificació.
 
 ## Construeix Primer, Després Reacciona
 
-El vell flux de treball era: Especificació → Aprovació → Construcció → Demo →
+El vell flux de treball: Especificació → Aprovació → Construcció → Demo →
 Feedback → Iterar.
 
 El flux de treball emergent és: Construir → Demo → Feedback → Iterar.
@@ -98,33 +94,62 @@ thinking_ per complet. Un esbós ràpid o wireframe combinat amb prototipatge
 ràpid amb IA et permet explorar possibilitats més ràpid que qualsevol dels
 enfocaments per separat.
 
-El disseny no és obsolet. Però el rol canvia de "produir artefactos que
-descriuen què construir" a "reaccionar a artefactos i guiar-los cap a bones
-solucions". Els dissenyadors i product managers es converteixen en crítics i
-directors, no només autors d'especificacions.
+El disseny no és obsolet. Els dissenyadors i product managers es converteixen en
+crítics i directors—reaccionant a prototips funcionals i guiant-los cap a bones
+solucions en lloc d'escriure especificacions per avançat.
 
-## La IA No Reemplaçarà els Desenvolupadors—Està Creant Més Feina
+## Com Són les Empreses AI-Native
 
-Molts enginyers temen perdre els seus treballs davant la IA. És una preocupació
-raonable. Però jo crec que les companyies que abracin la IA efectivament
-contractaran més enginyers, no menys.
+Les empreses que abracen aquest canvi no només usen IA—es tornen AI-native. Els
+seus processos, terminis i expectatives es reestructuren al voltant del que ara
+és possible.
 
-Això sona contraintuïtiu fins que penses en el que permet l'execució barata.
-Cada companyia té un backlog d'idees que mai es van construir perquè el
-cost-benefici no quadrava. Eines internes que seria bo tenir. Automatització que
-estalviaria temps però no valia la inversió d'enginyeria. Funcionalitats per a
-segments d'usuaris nínxol que no podien justificar el cost de desenvolupament.
+Anthropic és l'exemple més clar. Claude Code es va llançar al febrer de 2025 i
+va estar disponible de forma general al maig. Sis mesos després, va assolir
+$1.000 milions en ingressos anualitzats. Però el més cridaner és com van
+construir sobre aquest impuls.
 
-Quan construir es torna barat, aquests càlculs s'inverteixen. Projectes que "no
-valien la pena" de sobte valen la pena. El backlog de coses que val la pena fer
-s'expandeix més ràpid que la nostra capacitat per fer-les—fins i tot amb
-acceleració per IA.
+Al gener de 2026, Anthropic va llançar
+[Cowork](https://www.anthropic.com/news/introducing-cowork)—un agent
+d'escriptori que porta el poder de Claude Code a usuaris no tècnics. Un equip de
+quatre enginyers va construir tot el producte en aproximadament deu dies, usant
+Claude Code. L'eina de codi amb IA va construir el seu propi germà no tècnic.
+
+En una empresa tradicional, un producte com Cowork prendria mesos de recollida
+de requisits, revisions de disseny, propostes d'arquitectura i alineació de
+stakeholders. Anthropic es va saltar tot això. Van notar que els usuaris estaven
+forçant Claude Code a fer tasques no relacionades amb codi—investigació de
+vacances, presentacions, neteja d'emails—i en lloc de debatre si construir una
+solució, simplement la van construir.
+
+Però Anthropic construeix IA. Què passa amb les empreses que només la _usen_?
+
+[Sentry](https://sentry.io) va construir el seu
+[servidor MCP](https://docs.sentry.io/product/sentry-mcp/) usant Claude Code. El
+resultat és excel·lent—prou bo com per fer-me reconsiderar la nostra pròpia
+configuració de seguiment d'errors. Quan la teva integració és millor perquè la
+IA va ajudar els teus enginyers a construir-la més ràpid i iterar més, aquesta
+és l'avantatge competitiu en acció.
+
+[Lovable](https://lovable.dev) va assolir $100 milions en ingressos anuals vuit
+mesos després del seu llançament. Van arribar a $200 milions d'ARR només quatre
+mesos després. Amb un equip d'aproximadament 45 persones. Tota la plataforma
+està impulsada per Claude, i quan es va llançar Claude 4, el seu CEO va publicar
+que "va esborrar la majoria dels errors de Lovable". No estan construint
+IA—estan construint sobre ella, i llançant a un ritme que hagués estat
+impossible amb cicles de desenvolupament tradicionals.
+
+Aquesta és l'avantatge competitiu de les empreses AI-native: validen idees amb
+software funcional en lloc de presentacions, i iteren en dies en lloc de
+trimestres. Les empreses que descobreixin això superaran les que encara executen
+cicles de planificació tradicionals.
+
+## Construeix Ràpid, Però Fes-te Responsable del que Llances
 
 Hi ha un risc aquí que val la pena nomenar: només perquè alguna cosa sigui
-barata de construir no significa que hagi d'existir. Que el backlog s'expandeixi
-no és inherentment bo—pot portar a una saturació de funcionalitats (_feature
-bloat_), càrrega de manteniment i productes desenfocats. La nova disciplina no
-és "hauríem de construir això?" sinó "hauria d'existir això en absolut?"
+barata de construir no significa que hagi d'existir. Un backlog en expansió no
+és bo—pot portar a saturació de funcionalitats i productes desenfocats. La nova
+disciplina: "hauria d'existir això en absolut?"
 
 Aquesta és la paradoxa de l'execució barata: _perquè_ podem construir més ràpid,
 necessitem un judici més agut sobre _què_ construir. La vella restricció—"això
@@ -132,17 +157,42 @@ prendria massa temps"—forçava la priorització. Sense ella, podem construir
 eficientment les coses incorrectes. El pensament de "construir primer" requereix
 més disciplina de producte, no menys.
 
-Aquest patró està generalitzat. La IA expandeix el mercat direccionable per al
-software. Sempre hi ha hagut més software que valia la pena construir del que
-podíem permetre'ns construir. Baixa el cost, i més d'aquesta demanda latent es
-torna real.
+Una altra disciplina es torna més important: la revisió de codi.
+
+## El Vibe Coding No Pertany a Producció
+
+"Vibe coding"—llançar codi generat per IA que no entens—és temptador quan
+construir és tan ràpid. El prototip funciona, els tests passen, per què no
+simplement fer merge? Perquè algú ha de ser responsable quan falli a les 3am.
+
+Cada canvi a producció hauria de ser revisat per algú que estarà de guàrdia per
+a aquest sistema. Aquesta saviesa és anterior a la IA. La diferència és que la
+IA fa més fàcil produir codi que funciona sense entendre per què funciona. Això
+està bé per a exploració. És perillós per a producció.
+
+Això és sobre responsabilitat operacional, no sobre gatekeeping. Els no
+enginyers absolutament poden usar IA per construir prototips útils. Però la
+restricció per a producció no és l'habilitat tècnica—és la responsabilitat
+operacional. Si no et trucaran quan el sistema falli, els teus canvis necessiten
+revisió d'algú a qui sí trucaran. El revisor no està bloquejant la teva
+contribució; està acceptant la responsabilitat per ella.
+
+Els enginyers aporten coneixement que la IA no reemplaça: experiència
+operacional i la saviesa acumulada d'haver estat trucat a les 3am per problemes
+que es veien bé en testing. La IA fa els enginyers més ràpids; no els fa
+innecessaris.
+
+Això crea una porta de qualitat natural que escala amb l'acceleració de la IA.
+Construeix tan ràpid com vulguis, prototipa lliurement, però el camí a producció
+passa per algú que assumeixi les conseqüències, i aquesta responsabilitat separa
+les demos dels deployments.
 
 ## La Feina Canvia, Però No Desapareix
 
 El que està canviant és la naturalesa de la feina. Menys temps escrivint
 boilerplate. Més temps entenent problemes, dirigint la IA, revisant resultats i
-prenent decisions de judici. El rol del desenvolupador es mou d'_escriptor de
-codi_ a _director de codi_.
+prenent decisions de judici. El desenvolupador es converteix en un _director de
+codi_.
 
 Això requereix habilitats diferents. La claredat es torna primària—necessites
 articular una intenció precisa perquè la IA executa instantània i literalment.
@@ -150,16 +200,25 @@ Una entrada vaga produeix una sortida incorrecta immediata i concreta. Depurar
 codi generat per IA és una habilitat diferent: estàs avaluant les eleccions
 d'implementació d'un altre, no raonant a través de les teves pròpies intencions.
 
-Els desenvolupadors que prosperin seran aquells orientats cap a la resolució de
-problemes en lloc de la producció de codi. La feina mai va ser realment
-"escriure codi". Sempre va ser "resoldre problemes amb software". La IA
-simplement fa això més clar.
+La revisió es torna més important, no menys. Quan qualsevol pot generar codi
+plausible, l'habilitat d'avaluar aquest codi—detectar bugs subtils, entendre
+implicacions de rendiment, anticipar casos límit—és el que separa el software
+funcional de les bombes de temps. Els enginyers que prosperin seran aquells que
+puguin dirigir la IA efectivament i després avaluar críticament el que produeix.
+
+La feina sempre ha estat resoldre problemes amb software. La IA elimina la
+pretensió que es tractava de teclejar.
+
+<br />
 
 ---
+
+<br />
 
 Estem d'hora en aquest canvi. Les eines estan evolucionant ràpidament, i tots
 estem descobrint nous fluxos de treball en temps real. Però la direcció és
 clara: l'execució és barata, la coordinació és cara, i construir és la nova
 forma de pensar.
 
-La pregunta no és si adaptar-se. És com de ràpid pots fer-ho.
+La pregunta és com de ràpid pots adaptar-te mentre segueixes fent-te responsable
+del que llances.

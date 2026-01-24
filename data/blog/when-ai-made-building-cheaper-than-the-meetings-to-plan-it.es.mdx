@@ -13,25 +13,22 @@ tags:
   - software-engineering
 ---
 
-La IA transformará cómo crea la humanidad. Ese es el panorama general. Pero aquí
-quiero centrarme en algo más inmediato: cómo la IA está reconfigurando la forma
-en que trabajamos en las empresas de ingeniería de software.
-
-> Este artículo es parte de una serie de dos partes. Ver también:
-> [Por Qué las Skills Públicas de IA No Encajan en tu Base de Código](/es/why-public-ai-skills-dont-fit-your-codebase)
+Debatimos una funcionalidad durante semanas. Luego alguien la construyó en un
+día con IA. Cuando la ejecución cuesta menos que la coordinación, las reuniones
+se convierten en el cuello de botella. Esto está reconfigurando cómo trabajan
+los equipos de software.
 
 ## Prototipar es Ahora Rápido y Barato
 
-El cambio fundamental es simple: podemos construir cosas dramáticamente más
-rápido y barato. Esto suena obvio, pero los efectos de segundo orden son
-profundos. Cuando la ejecución es barata, todo el aparato que construimos
-alrededor de la ejecución cara—reuniones de planificación, revisiones de diseño,
-ceremonias de sprint, rituales de estimación—empieza a parecer sobrecarga
-(_overhead_).
+Podemos construir cosas más rápido y barato que nunca. Los efectos de segundo
+orden son profundos. Cuando la ejecución es barata, todo el aparato que
+construimos alrededor de la ejecución cara—reuniones de planificación,
+revisiones de diseño, ceremonias de sprint, rituales de estimación—empieza a
+parecer sobrecarga (_overhead_).
 
-Aquí hay un ejemplo real de Buffer. Teníamos un proyecto que fue despriorizado.
-La funcionalidad tenía un valor claro. La lógica del backend ya existía en un
-servicio legado, pero necesitaba ser migrada a nuestros nuevos sistemas—nuevas
+Un ejemplo real de Buffer: Teníamos un proyecto que fue despriorizado. La
+funcionalidad tenía un valor claro. La lógica del backend ya existía en un
+servicio legacy, pero necesitaba ser migrada a nuestros nuevos sistemas—nuevas
 APIs, nuevo frontend, nuevos patrones. El proyecto seguía cayendo en el backlog
 porque el esfuerzo estimado era significativo: propuestas de diseño de backend,
 revisiones de arquitectura, diseños de frontend, múltiples rondas de feedback.
@@ -43,32 +40,31 @@ Entonces uno de mis compañeros decidió simplemente hacerlo. Con
 tenía un prototipo funcional de todo el proyecto en menos de un día.
 
 El prototipo no estaba listo para producción—necesitaba limpieza y tests
-adecuados—pero estaba construido con nuestros patrones porque hemos invertido en
-enseñar a nuestras herramientas de IA las convenciones de nuestra base de
-código. Refactorizar código funcional que sigue tu arquitectura es mucho más
-fácil que reescribir algo construido con patrones ajenos.
+adecuados—pero seguía nuestros patrones porque le hemos enseñado a nuestras
+herramientas de IA las convenciones de nuestra base de código. Refactorizar
+código funcional que sigue tu arquitectura es mucho más fácil que reescribir
+algo construido con patrones ajenos.
 
-Las matemáticas todavía se sienten surreales. Pasamos días en reuniones,
-redactando especificaciones, debatiendo enfoques—todo para concluir "ahora no,
-demasiado caro". Mientras tanto, la implementación real tomó horas.
+Las matemáticas se sienten surreales. Pasamos días en reuniones, redactando
+especificaciones, debatiendo enfoques—todo para concluir "ahora no, demasiado
+caro". Mientras tanto, la implementación real tomó horas.
 
 ## El Coste de Coordinación Ahora Supera el Coste de Ejecución
 
-Este ejemplo ilustra algo más grande: hemos cruzado un umbral donde la
-coordinación alrededor de construir algo a menudo cuesta más que construirlo. La
-reunión para discutir una funcionalidad—alinear a los interesados, reunir
-requisitos, obtener aprobación—puede tomar más tiempo que implementar esa
+Hemos cruzado un umbral donde la coordinación a menudo cuesta más que la
+ejecución. La reunión para discutir una funcionalidad—alinear a los interesados,
+reunir requisitos, obtener aprobación—puede tomar más tiempo que implementar esa
 funcionalidad con asistencia de IA.
 
 Esto invierte décadas de economía del software. Las reuniones de planificación
 existían porque _mide dos veces, corta una_ tenía sentido cuando cortar era
 caro. Cuando cortar es barato, mide una vez, corta, mira el resultado, corta de
-nuevo. El bucle de iteración se convierte en el proceso de planificación.
+nuevo, y deja que el bucle de iteración sirva como el proceso de planificación.
 
 ## Construye Primero, Luego Reacciona
 
-El viejo flujo de trabajo era: Especificación → Aprobación → Construcción → Demo
-→ Feedback → Iterar.
+El viejo flujo de trabajo: Especificación → Aprobación → Construcción → Demo →
+Feedback → Iterar.
 
 El flujo de trabajo emergente es: Construir → Demo → Feedback → Iterar. La
 especificación emerge de las iteraciones.
@@ -99,34 +95,63 @@ thinking_ por completo. Un boceto rápido o wireframe combinado con prototipado
 rápido con IA te permite explorar posibilidades más rápido que cualquiera de los
 enfoques por separado.
 
-El diseño no es obsoleto. Pero el rol cambia de "producir artefactos que
-describen qué construir" a "reaccionar a artefactos y guiarlos hacia buenas
-soluciones". Los diseñadores y product managers se convierten en críticos y
-directores, no solo autores de especificaciones.
+El diseño no es obsoleto. Los diseñadores y product managers se convierten en
+críticos y directores—reaccionando a prototipos funcionales y guiándolos hacia
+buenas soluciones en lugar de escribir especificaciones por adelantado.
 
-## La IA No Reemplazará a los Desarrolladores—Está Creando Más Trabajo
+## Cómo Son las Empresas AI-Native
 
-Muchos ingenieros temen perder sus trabajos ante la IA. Es una preocupación
-razonable. Pero yo creo que las compañías que abracen la IA efectivamente
-contratarán más ingenieros, no menos.
+Las empresas que abrazan este cambio no solo usan IA—se vuelven AI-native. Sus
+procesos, plazos y expectativas se reestructuran alrededor de lo que ahora es
+posible.
 
-Esto suena contraintuitivo hasta que piensas en lo que permite la ejecución
-barata. Cada compañía tiene un backlog de ideas que nunca se construyeron porque
-el coste-beneficio no cuadraba. Herramientas internas que sería bueno tener.
-Automatización que ahorraría tiempo pero no valía la inversión de ingeniería.
-Funcionalidades para segmentos de usuarios nicho que no podían justificar el
-coste de desarrollo.
+Anthropic es el ejemplo más claro. Claude Code se lanzó en febrero de 2025 y
+estuvo disponible de forma general en mayo. Seis meses después, alcanzó $1.000
+millones en ingresos anualizados. Pero lo más llamativo es cómo construyeron
+sobre ese impulso.
 
-Cuando construir se vuelve barato, esos cálculos se invierten. Proyectos que "no
-valían la pena" de repente valen la pena. El backlog de cosas que vale la pena
-hacer se expande más rápido que nuestra capacidad para hacerlas—incluso con
-aceleración por IA.
+En enero de 2026, Anthropic lanzó
+[Cowork](https://www.anthropic.com/news/introducing-cowork)—un agente de
+escritorio que lleva el poder de Claude Code a usuarios no técnicos. Un equipo
+de cuatro ingenieros construyó todo el producto en aproximadamente diez días,
+usando Claude Code. La herramienta de código con IA construyó a su propio
+hermano no técnico.
+
+En una empresa tradicional, un producto como Cowork tomaría meses de recolección
+de requisitos, revisiones de diseño, propuestas de arquitectura y alineación de
+stakeholders. Anthropic se saltó todo eso. Notaron que los usuarios estaban
+forzando a Claude Code a hacer tareas no relacionadas con código—investigación
+de vacaciones, presentaciones, limpieza de emails—y en lugar de debatir si
+construir una solución, simplemente la construyeron.
+
+Pero Anthropic construye IA. ¿Qué pasa con las empresas que solo la _usan_?
+
+[Sentry](https://sentry.io) construyó su
+[servidor MCP](https://docs.sentry.io/product/sentry-mcp/) usando Claude Code.
+El resultado es excelente—lo suficientemente bueno como para hacerme
+reconsiderar nuestra propia configuración de seguimiento de errores. Cuando tu
+integración es mejor porque la IA ayudó a tus ingenieros a construirla más
+rápido e iterar más, esa es la ventaja competitiva en acción.
+
+[Lovable](https://lovable.dev) alcanzó $100 millones en ingresos anuales ocho
+meses después de su lanzamiento. Llegaron a $200 millones de ARR solo cuatro
+meses después. Con un equipo de aproximadamente 45 personas. Toda la plataforma
+está impulsada por Claude, y cuando se lanzó Claude 4, su CEO publicó que "borró
+la mayoría de los errores de Lovable". No están construyendo IA—están
+construyendo sobre ella, y lanzando a un ritmo que hubiera sido imposible con
+ciclos de desarrollo tradicionales.
+
+Esta es la ventaja competitiva de las empresas AI-native: validan ideas con
+software funcional en lugar de presentaciones, e iteran en días en lugar de
+trimestres. Las empresas que descubran esto superarán a las que aún ejecutan
+ciclos de planificación tradicionales.
+
+## Construye Rápido, Pero Hazte Responsable de lo que Lanzas
 
 Hay un riesgo aquí que vale la pena nombrar: solo porque algo sea barato de
-construir no significa que deba existir. Que el backlog se expanda no es
-inherentemente bueno—puede llevar a una saturación de funcionalidades (_feature
-bloat_), carga de mantenimiento y productos desenfocados. La nueva disciplina no
-es "¿deberíamos construir esto?" sino "¿debería esto existir en absoluto?"
+construir no significa que deba existir. Un backlog en expansión no es
+bueno—puede llevar a saturación de funcionalidades y productos desenfocados. La
+nueva disciplina: "¿debería esto existir en absoluto?"
 
 Esta es la paradoja de la ejecución barata: _porque_ podemos construir más
 rápido, necesitamos un juicio más agudo sobre _qué_ construir. La vieja
@@ -134,17 +159,43 @@ restricción—"esto tomaría demasiado tiempo"—forzaba la priorización. Sin 
 podemos construir eficientemente las cosas incorrectas. El pensamiento de
 "construir primero" requiere más disciplina de producto, no menos.
 
-Este patrón está generalizado. La IA expande el mercado direccionable para el
-software. Siempre ha habido más software que valía la pena construir del que
-podíamos permitirnos construir. Baja el coste, y más de esa demanda latente se
-vuelve real.
+Otra disciplina se vuelve más importante: la revisión de código.
+
+## El Vibe Coding No Pertenece a Producción
+
+"Vibe coding"—lanzar código generado por IA que no entiendes—es tentador cuando
+construir es tan rápido. El prototipo funciona, los tests pasan, ¿por qué no
+simplemente hacer merge? Porque alguien tiene que ser responsable cuando falle a
+las 3am.
+
+Cada cambio a producción debería ser revisado por alguien que estará de guardia
+para ese sistema. Esta sabiduría es anterior a la IA. La diferencia es que la IA
+hace más fácil producir código que funciona sin entender por qué funciona. Eso
+está bien para exploración. Es peligroso para producción.
+
+Esto es sobre responsabilidad operacional, no sobre gatekeeping. Los no
+ingenieros absolutamente pueden usar IA para construir prototipos útiles. Pero
+la restricción para producción no es la habilidad técnica—es la responsabilidad
+operacional. Si no te van a llamar cuando el sistema falle, tus cambios
+necesitan revisión de alguien a quien sí llamarán. El revisor no está bloqueando
+tu contribución; está aceptando la responsabilidad por ella.
+
+Los ingenieros aportan conocimiento que la IA no reemplaza: experiencia
+operacional y la sabiduría acumulada de haber sido llamado a las 3am por
+problemas que se veían bien en testing. La IA hace a los ingenieros más rápidos;
+no los hace innecesarios.
+
+Esto crea una puerta de calidad natural que escala con la aceleración de la IA.
+Construye tan rápido como quieras, prototipa libremente, pero el camino a
+producción pasa por alguien que asuma las consecuencias, y esa responsabilidad
+separa las demos de los deployments.
 
 ## El Trabajo Cambia, Pero No Desaparece
 
 Lo que está cambiando es la naturaleza del trabajo. Menos tiempo escribiendo
 boilerplate. Más tiempo entendiendo problemas, dirigiendo a la IA, revisando
-resultados y tomando decisiones de juicio. El rol del desarrollador se mueve de
-_escritor de código_ a _director de código_.
+resultados y tomando decisiones de juicio. El desarrollador se convierte en un
+_director de código_.
 
 Esto requiere habilidades diferentes. La claridad se vuelve primaria—necesitas
 articular una intención precisa porque la IA ejecuta instantánea y literalmente.
@@ -152,16 +203,26 @@ Una entrada vaga produce una salida incorrecta inmediata y concreta. Depurar
 código generado por IA es una habilidad distinta: estás evaluando las elecciones
 de implementación de otro, no razonando a través de tus propias intenciones.
 
-Los desarrolladores que prosperen serán aquellos orientados hacia la resolución
-de problemas en lugar de la producción de código. El trabajo nunca fue realmente
-"escribir código". Siempre fue "resolver problemas con software". La IA
-simplemente hace eso más claro.
+La revisión se vuelve más importante, no menos. Cuando cualquiera puede generar
+código plausible, la habilidad de evaluar ese código—detectar bugs sutiles,
+entender implicaciones de rendimiento, anticipar casos límite—es lo que separa
+el software funcional de las bombas de tiempo. Los ingenieros que prosperen
+serán aquellos que puedan dirigir la IA efectivamente y luego evaluar
+críticamente lo que produce.
+
+El trabajo siempre ha sido resolver problemas con software. La IA elimina la
+pretensión de que se trataba de teclear.
+
+<br />
 
 ---
+
+<br />
 
 Estamos temprano en este cambio. Las herramientas están evolucionando
 rápidamente, y todos estamos descubriendo nuevos flujos de trabajo en tiempo
 real. Pero la dirección es clara: la ejecución es barata, la coordinación es
 cara, y construir es la nueva forma de pensar.
 
-La pregunta no es si adaptarse. Es qué tan rápido puedes hacerlo.
+La pregunta es qué tan rápido puedes adaptarte mientras sigues haciéndote
+responsable de lo que lanzas.
