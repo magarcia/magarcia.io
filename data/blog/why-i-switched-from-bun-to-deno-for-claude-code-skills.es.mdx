@@ -101,10 +101,10 @@ de versiones vive en la ruta de importación, igual que con Bun. No se requiere
 `deno.json` ni mapa de importación—las dependencias se resuelven directamente
 desde los especificadores.
 
-Deno requiere flags de permisos—`--allow-read`, `--allow-write`,
-`--allow-net`, etc. Más verboso que Bun, pero declaras exactamente lo que hace
-el script. Para skills que se ejecutan a través de Claude Code, los permisos
-explícitos documentan a qué puede acceder el script. Para entornos de confianza,
+Deno requiere flags de permisos—`--allow-read`, `--allow-write`, `--allow-net`,
+etc. Más verboso que Bun, pero declaras exactamente lo que hace el script. Para
+skills que se ejecutan a través de Claude Code, los permisos explícitos
+documentan a qué puede acceder el script. Para entornos de confianza,
 `--allow-all` (o `-A`) se salta la ceremonia.
 
 ## Compromisos
@@ -115,7 +115,7 @@ explícitos documentan a qué puede acceder el script. Para entornos de confianz
 | Seguro con node_modules | No                        | Sí                            |
 | Rendimiento bruto       | ~20-30% más rápido        | Ligeramente más lento         |
 | TypeScript              | Nativo                    | Nativo                        |
-| Modelo de permisos      | Permisivo por defecto     | Requiere flags explícitas  |
+| Modelo de permisos      | Permisivo por defecto     | Requiere flags explícitas     |
 
 Bun es más rápido. Tiempo de inicio, rendimiento en ejecución, servicio HTTP—Bun
 supera consistentemente a Deno en los benchmarks. Si estás construyendo una API

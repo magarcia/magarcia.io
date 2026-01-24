@@ -171,10 +171,10 @@ necessito npm.
 npx -y bun script.ts
 ```
 
-La flag `-y` omet la sol·licitud de confirmació, la qual cosa és important
-per a l'execució no interactiva. Això funciona perquè `bun` està publicat com a
-paquet npm. Quan executes `npx bun`, npm descarrega el binari de Bun i executa
-el teu script. Obtens l'auto-instal·lació de Bun, suport per a TypeScript i
+La flag `-y` omet la sol·licitud de confirmació, la qual cosa és important per a
+l'execució no interactiva. Això funciona perquè `bun` està publicat com a paquet
+npm. Quan executes `npx bun`, npm descarrega el binari de Bun i executa el teu
+script. Obtens l'auto-instal·lació de Bun, suport per a TypeScript i
 velocitat—tot a través de la cadena d'eines npm/Node.js que ja és a tot arreu.
 
 Vaig provar això en un entorn fresc:
@@ -221,8 +221,8 @@ import chalk from "chalk@^5.0.0";
 console.log(chalk.green("Hello!"));
 ```
 
-La flag `-S` li diu a `env` que divideixi la cadena en arguments separats.
-Fes l'script executable i executa'l directament:
+La flag `-S` li diu a `env` que divideixi la cadena en arguments separats. Fes
+l'script executable i executa'l directament:
 
 ```bash
 chmod +x script.ts
