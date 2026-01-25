@@ -1,6 +1,6 @@
 import { Archive, ExternalLink } from "react-feather";
 import type { Route } from "./+types/projects";
-import { allProjects, type Project } from "~/data/projects";
+import { projects, type Project } from "~/data/projects";
 import Header from "~/components/Header";
 import Footer from "~/components/Footer";
 
@@ -84,11 +84,11 @@ export default function ProjectsPage({ loaderData }: Route.ComponentProps) {
   const title = pageTitles[lang];
   const description = pageDescriptions[lang];
 
-  // Sort projects: featured first, then by stars
-  const sortedProjects = [...allProjects].sort((a, b) => {
+  // Sort projects: featured first
+  const sortedProjects = [...projects].sort((a, b) => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
-    return (b.stars || 0) - (a.stars || 0);
+    return 0;
   });
 
   return (

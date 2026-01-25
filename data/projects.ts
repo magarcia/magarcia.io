@@ -3,13 +3,11 @@ export interface Project {
   url: string;
   description: Record<string, string>;
   featured?: boolean;
-  stars?: number;
   language?: string;
   archived?: boolean;
 }
 
-// Featured projects shown on the homepage
-export const featuredProjects: Project[] = [
+export const projects: Project[] = [
   {
     name: "Palabreja",
     url: "https://palabreja.com",
@@ -29,7 +27,6 @@ export const featuredProjects: Project[] = [
       ca: "Integració de Giphy per a Model Context Protocol (MCP)",
     },
     featured: true,
-    stars: 26,
     language: "TypeScript",
   },
   {
@@ -41,14 +38,8 @@ export const featuredProjects: Project[] = [
       ca: "Protocol d'arrencada QR-WebRTC - Senyalització WebRTC sense servidor mitjançant codis QR",
     },
     featured: true,
-    stars: 3,
     language: "TypeScript",
   },
-];
-
-// All projects for the projects page
-export const allProjects: Project[] = [
-  ...featuredProjects,
   {
     name: "cross-keychain",
     url: "https://github.com/magarcia/cross-keychain",
@@ -57,7 +48,6 @@ export const allProjects: Project[] = [
       es: "Almacenamiento seguro multiplataforma para aplicaciones Node.js y uso en CLI",
       ca: "Emmagatzematge segur multiplataforma per a aplicacions Node.js i ús en CLI",
     },
-    stars: 5,
     language: "TypeScript",
   },
   {
@@ -78,7 +68,6 @@ export const allProjects: Project[] = [
       es: "Encuentra el índice de color xterm 256 más cercano para un valor RGB",
       ca: "Troba l'índex de color xterm 256 més proper per a un valor RGB",
     },
-    stars: 25,
     language: "Python",
   },
   {
@@ -89,7 +78,6 @@ export const allProjects: Project[] = [
       es: "Renderiza imágenes en la terminal con colores xterm 256",
       ca: "Renderitza imatges a la terminal amb colors xterm 256",
     },
-    stars: 5,
     language: "Python",
     archived: true,
   },
@@ -101,10 +89,6 @@ export const allProjects: Project[] = [
       es: "SDK en TypeScript para la API de Cuéntica - contabilidad y gestión fiscal",
       ca: "SDK en TypeScript per a l'API de Cuéntica - comptabilitat i gestió fiscal",
     },
-    stars: 1,
     language: "TypeScript",
   },
 ];
-
-// For backwards compatibility
-export const projects = featuredProjects;

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { featuredProjects } from "~/data/projects";
+import { projects } from "~/data/projects";
 import { getSectionTitle, getMoreProjectsLabel } from "~/lib/i18n";
 import SectionHeader from "./SectionHeader";
 import ProjectItem from "./ProjectItem";
@@ -10,6 +10,7 @@ interface ProjectsSectionProps {
 
 export default function ProjectsSection({ lang }: ProjectsSectionProps) {
   const projectsPath = lang === "en" ? "/projects" : `/${lang}/projects`;
+  const featuredProjects = projects.filter((p) => p.featured);
 
   return (
     <section className="mb-10 md:mb-16">
