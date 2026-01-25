@@ -20,6 +20,14 @@ type Pages = {
   "/ca": {
     params: {};
   };
+  "/projects": {
+    params: {};
+  };
+  "/:lang/projects": {
+    params: {
+      "lang": string;
+    };
+  };
   "/:slug": {
     params: {
       "slug": string;
@@ -47,7 +55,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/es" | "/ca" | "/:slug" | "/:lang/:slug" | "/tags/:tag" | "/:lang/tags/:tag";
+    page: "/" | "/es" | "/ca" | "/projects" | "/:lang/projects" | "/:slug" | "/:lang/:slug" | "/tags/:tag" | "/:lang/tags/:tag";
   };
   "routes/_index.tsx": {
     id: "index";
@@ -58,6 +66,13 @@ type RouteFiles = {
   } | {
     id: "index-ca";
     page: "/ca";
+  };
+  "routes/projects.tsx": {
+    id: "projects";
+    page: "/projects";
+  } | {
+    id: "projects-lang";
+    page: "/:lang/projects";
   };
   "routes/$slug.tsx": {
     id: "post";
@@ -80,6 +95,8 @@ type RouteModules = {
   "index": typeof import("./app/routes/_index.tsx");
   "index-es": typeof import("./app/routes/_index.tsx");
   "index-ca": typeof import("./app/routes/_index.tsx");
+  "projects": typeof import("./app/routes/projects.tsx");
+  "projects-lang": typeof import("./app/routes/projects.tsx");
   "post": typeof import("./app/routes/$slug.tsx");
   "post-lang": typeof import("./app/routes/$slug.tsx");
   "tag": typeof import("./app/routes/tags.$tag.tsx");
