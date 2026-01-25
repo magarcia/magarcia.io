@@ -61,17 +61,6 @@ export const allProjects: Project[] = [
     language: "TypeScript",
   },
   {
-    name: "gitingest",
-    url: "https://github.com/magarcia/gitingest",
-    description: {
-      en: "CLI tool to turn any Git repository into a text digest for LLMs",
-      es: "Herramienta CLI para convertir cualquier repositorio Git en un resumen de texto para LLMs",
-      ca: "Eina CLI per convertir qualsevol repositori Git en un resum de text per a LLMs",
-    },
-    stars: 5,
-    language: "JavaScript",
-  },
-  {
     name: "granola-cli",
     url: "https://github.com/magarcia/granola-cli",
     description: {
@@ -114,65 +103,6 @@ export const allProjects: Project[] = [
     },
     stars: 1,
     language: "TypeScript",
-  },
-  {
-    name: "generator-angular2-webpack-starter",
-    url: "https://github.com/magarcia/generator-angular2-webpack-starter",
-    description: {
-      en: "Yeoman generator for Angular 2 with Webpack",
-      es: "Generador Yeoman para Angular 2 con Webpack",
-      ca: "Generador Yeoman per a Angular 2 amb Webpack",
-    },
-    stars: 26,
-    language: "JavaScript",
-    archived: true,
-  },
-  {
-    name: "todomvc-redux-starter-kit",
-    url: "https://github.com/magarcia/todomvc-redux-starter-kit",
-    description: {
-      en: "TodoMVC implementation with Redux Starter Kit",
-      es: "Implementación de TodoMVC con Redux Starter Kit",
-      ca: "Implementació de TodoMVC amb Redux Starter Kit",
-    },
-    stars: 11,
-    language: "JavaScript",
-    archived: true,
-  },
-  {
-    name: "react-pokedex",
-    url: "https://github.com/magarcia/react-pokedex",
-    description: {
-      en: "Pokédex application built with React and PokéAPI",
-      es: "Aplicación Pokédex construida con React y PokéAPI",
-      ca: "Aplicació Pokédex construïda amb React i PokéAPI",
-    },
-    stars: 7,
-    language: "JavaScript",
-    archived: true,
-  },
-  {
-    name: "vim-angular2-snippets",
-    url: "https://github.com/magarcia/vim-angular2-snippets",
-    description: {
-      en: "Angular 2 TypeScript code snippets for Vim",
-      es: "Fragmentos de código Angular 2 TypeScript para Vim",
-      ca: "Fragments de codi Angular 2 TypeScript per a Vim",
-    },
-    stars: 12,
-    language: "Vim Script",
-    archived: true,
-  },
-  {
-    name: "wordle",
-    url: "https://github.com/magarcia/wordle",
-    description: {
-      en: "Personal implementation of the word-guessing game",
-      es: "Implementación personal del juego de adivinar palabras",
-      ca: "Implementació personal del joc d'endevinar paraules",
-    },
-    stars: 2,
-    language: "JavaScript",
   },
 ];
 
