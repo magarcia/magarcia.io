@@ -30,6 +30,12 @@ const sectionTitles: Record<string, Record<string, string>> = {
   writing: { en: "Writing", es: "Escritura", ca: "Escriptura" },
 };
 
+const moreProjectsLabels: Record<string, string> = {
+  en: "More projects",
+  es: "Más proyectos",
+  ca: "Més projectes",
+};
+
 /**
  * Formats a date string according to the specified language locale.
  *
@@ -107,4 +113,18 @@ export function getSectionTitle(
   return (
     sectionTitles[section]?.[lang] || sectionTitles[section]?.en || section
   );
+}
+
+/**
+ * Gets the localized "More projects" label for the projects section link.
+ *
+ * @param lang - Language code ("en", "es", "ca"). Defaults to "en"
+ * @returns Localized "More projects" label
+ *
+ * @example
+ * getMoreProjectsLabel("en") // "More projects"
+ * getMoreProjectsLabel("es") // "Más proyectos"
+ */
+export function getMoreProjectsLabel(lang: string = "en"): string {
+  return moreProjectsLabels[lang] || moreProjectsLabels.en;
 }
