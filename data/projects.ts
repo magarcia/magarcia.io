@@ -51,6 +51,16 @@ export const projects: Project[] = [
     language: "TypeScript",
   },
   {
+    name: "env-interpolation",
+    url: "https://github.com/magarcia/env-interpolation",
+    description: {
+      en: "Lightweight utility for interpolating environment variables in strings, objects, and arrays",
+      es: "Utilidad ligera para interpolar variables de entorno en cadenas, objetos y arrays",
+      ca: "Utilitat lleugera per interpolar variables d'entorn en cadenes, objectes i arrays",
+    },
+    language: "TypeScript",
+  },
+  {
     name: "granola-cli",
     url: "https://github.com/magarcia/granola-cli",
     description: {
