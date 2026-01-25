@@ -40,9 +40,10 @@ export class Header {
       es: "ES",
       ca: "CA",
     };
+    // Use force: true because parent flex containers can intercept clicks during CSS animation
     await this.languageSelector
       .getByRole("link", { name: langLabels[lang] })
-      .click();
+      .click({ force: true });
   }
 
   async clickLogo(): Promise<void> {
