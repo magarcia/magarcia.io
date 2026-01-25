@@ -1,5 +1,4 @@
-import { Link } from "react-router";
-import { ArrowLeft, Star, Archive, ExternalLink } from "react-feather";
+import { Archive, ExternalLink } from "react-feather";
 import type { Route } from "./+types/projects";
 import { allProjects, type Project } from "~/data/projects";
 import Header from "~/components/Header";
@@ -15,12 +14,6 @@ const pageDescriptions: Record<string, string> = {
   en: "Open source projects, tools, and experiments",
   es: "Proyectos de código abierto, herramientas y experimentos",
   ca: "Projectes de codi obert, eines i experiments",
-};
-
-const backLabels: Record<string, string> = {
-  en: "Back",
-  es: "Volver",
-  ca: "Tornar",
 };
 
 export function meta({ data }: Route.MetaArgs) {
@@ -77,18 +70,10 @@ function ProjectCard({ project, lang }: { project: Project; lang: string }) {
           </div>
           <p className="text-muted-foreground text-sm mt-1">{description}</p>
         </div>
-        <div className="flex items-center gap-3 text-muted-foreground shrink-0">
-          {project.stars !== undefined && project.stars > 0 && (
-            <span className="flex items-center gap-1 text-sm">
-              <Star size={14} />
-              {project.stars}
-            </span>
-          )}
-          <ExternalLink
-            size={16}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-        </div>
+        <ExternalLink
+          size={16}
+          className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+        />
       </div>
     </a>
   );
@@ -98,8 +83,6 @@ export default function ProjectsPage({ loaderData }: Route.ComponentProps) {
   const { lang } = loaderData;
   const title = pageTitles[lang];
   const description = pageDescriptions[lang];
-  const backLabel = backLabels[lang];
-  const homePath = lang === "en" ? "/" : `/${lang}`;
 
   // Sort projects: featured first, then by stars
   const sortedProjects = [...allProjects].sort((a, b) => {
@@ -112,14 +95,6 @@ export default function ProjectsPage({ loaderData }: Route.ComponentProps) {
     <>
       <Header lang={lang} />
       <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-12 md:mb-24">
-        <Link
-          to={homePath}
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-yellow-600 dark:hover:text-purple-400 transition-colors mb-8"
-        >
-          <ArrowLeft size={16} />
-          {backLabel}
-        </Link>
-
         <h1 className="text-3xl md:text-4xl font-heading text-foreground mb-2">
           {title}
         </h1>
