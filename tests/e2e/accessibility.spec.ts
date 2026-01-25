@@ -96,9 +96,13 @@ test.describe("Accessibility", () => {
 test.describe("Keyboard Navigation", () => {
   test("should be able to navigate with keyboard", async ({ page }) => {
     await page.goto("/");
+    await page.waitForLoadState("domcontentloaded");
 
     // Tab through the page
     await page.keyboard.press("Tab");
+
+    // Wait for focus to be established
+    await page.waitForFunction(() => document.activeElement !== document.body);
 
     // First focusable element should be focused
     const focusedElement = page.locator(":focus");

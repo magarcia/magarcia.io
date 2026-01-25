@@ -25,8 +25,12 @@ export class Header {
   async openLanguageMenu(): Promise<void> {
     // Hover over the language selector to expand it
     await this.languageSelector.hover();
-    // Wait for the nav to expand (it animates from max-w-0 to max-w-24)
-    await this.page.waitForTimeout(350);
+    // Wait for the nav to be fully expanded and stable
+    await this.page.waitForTimeout(500);
+    // Verify language links are visible and actionable
+    await this.languageSelector
+      .getByRole("link", { name: "EN" })
+      .waitFor({ state: "visible" });
   }
 
   async selectLanguage(lang: Language): Promise<void> {
