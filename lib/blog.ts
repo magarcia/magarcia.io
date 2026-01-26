@@ -62,6 +62,29 @@ export interface BlogPostWithNavigation extends BlogPost {
   next: FrontMatter | null;
 }
 
+function resolveFilePath(
+  dirPath: string,
+  slug: string,
+  lang: string,
+): string | null {
+  const mdxPath = path.join(dirPath, `${slug}.${lang}.mdx`);
+  const mdPath = path.join(dirPath, `${slug}.${lang}.md`);
+  const defaultMdxPath = path.join(dirPath, `${slug}.mdx`);
+  const defaultMdPath = path.join(dirPath, `${slug}.md`);
+
+  if (fs.existsSync(mdxPath)) {
+    return mdxPath;
+  } else if (fs.existsSync(mdPath)) {
+    return mdPath;
+  } else if (fs.existsSync(defaultMdxPath)) {
+    return defaultMdxPath;
+  } else if (fs.existsSync(defaultMdPath)) {
+    return defaultMdPath;
+  }
+
+  return null;
+}
+
 function getFrontMatter(source: string, slug: string): BlogPost {
   const { data, content } = matter(source);
 
@@ -108,24 +131,14 @@ export function getFileBySlug(
   validateSlug(slug);
   validateLang(lang);
 
-  let source: string;
-  const mdxPath = path.join(root, "data", type, `${slug}.${lang}.mdx`);
-  const mdPath = path.join(root, "data", type, `${slug}.${lang}.md`);
-  const defaultMdxPath = path.join(root, "data", type, `${slug}.mdx`);
-  const defaultMdPath = path.join(root, "data", type, `${slug}.md`);
+  const dirPath = path.join(root, "data", type);
+  const filePath = resolveFilePath(dirPath, slug, lang);
 
-  if (fs.existsSync(mdxPath)) {
-    source = fs.readFileSync(mdxPath, "utf8");
-  } else if (fs.existsSync(mdPath)) {
-    source = fs.readFileSync(mdPath, "utf8");
-  } else if (fs.existsSync(defaultMdxPath)) {
-    source = fs.readFileSync(defaultMdxPath, "utf8");
-  } else if (fs.existsSync(defaultMdPath)) {
-    source = fs.readFileSync(defaultMdPath, "utf8");
-  } else {
+  if (!filePath) {
     throw new Error("Post not found");
   }
 
+  const source = fs.readFileSync(filePath, "utf8");
   const allFiles = getAllFilesFrontMatter(type, lang);
   const index = allFiles.findIndex((post) => post.slug === slug);
 
@@ -156,24 +169,13 @@ export function getAllFilesFrontMatter(
 
   return uniqueSlugs
     .reduce((allFiles: FrontMatter[], slug: string) => {
-      const mdxPath = path.join(dirPath, `${slug}.${lang}.mdx`);
-      const mdPath = path.join(dirPath, `${slug}.${lang}.md`);
-      const defaultMdxPath = path.join(dirPath, `${slug}.mdx`);
-      const defaultMdPath = path.join(dirPath, `${slug}.md`);
+      const filePath = resolveFilePath(dirPath, slug, lang);
 
-      let source: string;
-      if (fs.existsSync(mdxPath)) {
-        source = fs.readFileSync(mdxPath, "utf8");
-      } else if (fs.existsSync(mdPath)) {
-        source = fs.readFileSync(mdPath, "utf8");
-      } else if (fs.existsSync(defaultMdxPath)) {
-        source = fs.readFileSync(defaultMdxPath, "utf8");
-      } else if (fs.existsSync(defaultMdPath)) {
-        source = fs.readFileSync(defaultMdPath, "utf8");
-      } else {
+      if (!filePath) {
         return allFiles;
       }
 
+      const source = fs.readFileSync(filePath, "utf8");
       const { frontMatter } = getFrontMatter(source, slug);
 
       if (frontMatter.draft && process.env.NODE_ENV === "production") {
