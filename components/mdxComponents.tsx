@@ -16,12 +16,40 @@ import Table, {
 } from "./Table";
 
 // Component wrappers for react-markdown
-const H1 = (props: any) => <Heading level={1} {...props} />;
-const H2 = (props: any) => <Heading level={2} {...props} />;
-const H3 = (props: any) => <Heading level={3} {...props} />;
-const H4 = (props: any) => <Heading level={4} {...props} />;
-const OrderedList = (props: any) => <List ordered={true} {...props} />;
+type MarkdownHeadingProps = React.HTMLAttributes<HTMLHeadingElement> & {
+  children?: React.ReactNode;
+};
+type MarkdownListProps = React.HTMLAttributes<HTMLUListElement> & {
+  children?: React.ReactNode;
+};
 
+const H1 = ({ children, ...props }: MarkdownHeadingProps) => (
+  <Heading level={1} {...props}>
+    {children}
+  </Heading>
+);
+const H2 = ({ children, ...props }: MarkdownHeadingProps) => (
+  <Heading level={2} {...props}>
+    {children}
+  </Heading>
+);
+const H3 = ({ children, ...props }: MarkdownHeadingProps) => (
+  <Heading level={3} {...props}>
+    {children}
+  </Heading>
+);
+const H4 = ({ children, ...props }: MarkdownHeadingProps) => (
+  <Heading level={4} {...props}>
+    {children}
+  </Heading>
+);
+const OrderedList = ({ children, ...props }: MarkdownListProps) => (
+  <List ordered={true} {...props}>
+    {children}
+  </List>
+);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Pre = ({ children, ...props }: any) => {
   // Extract language and code from the pre > code structure
   const childProps = children?.props || {};
@@ -30,7 +58,9 @@ const Pre = ({ children, ...props }: any) => {
   const code = childProps.children || children;
 
   // Parse highlight syntax (e.g., "typescript:1,3-5")
-  const [lang, lines] = language.split(":");
+  const parts = language.split(":");
+  const lang = parts[0];
+  const lines = parts[1];
   let highlight: number[] | undefined;
   if (lines) {
     highlight = lines.split(",").flatMap((x: string) => {
