@@ -75,12 +75,12 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
     <>
       <Header lang={lang} />
       <main className="max-w-[75ch] mx-auto px-8 md:px-16 mb-12 md:mb-24">
-        <h2
+        <h1
           className="text-2xl font-normal text-foreground mb-8 md:mb-12"
           data-testid="tag-heading"
         >
           {title}
-        </h2>
+        </h1>
 
         <div className="pl-7" data-testid="article-list">
           {posts.map(({ title, slug, readingTime, date }: FrontMatter) => (
