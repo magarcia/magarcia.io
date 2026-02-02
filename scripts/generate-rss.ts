@@ -28,7 +28,7 @@ const markdown = new MarkdownIt();
   const posts = getAllFiles("blog");
 
   posts.forEach((post) => {
-    const url = `${baseUrl}/${post.frontMatter.slug}`;
+    const url = `${baseUrl}/${post.frontMatter.slug}/`;
     const renderedContent = markdown.render(post.content);
     // Convert relative URLs to absolute URLs
     // Handle: /path, ./path, and their HTML-encoded quote variants

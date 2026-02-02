@@ -45,14 +45,14 @@ describe("LanguageSelector", () => {
       render(<LanguageSelector lang="en" />);
 
       const spanishLink = screen.getByText("ES");
-      expect(spanishLink).toHaveAttribute("href", "/es");
+      expect(spanishLink).toHaveAttribute("href", "/es/");
     });
 
     it("generates correct link for Català", () => {
       render(<LanguageSelector lang="en" />);
 
       const catalanLink = screen.getByText("CA");
-      expect(catalanLink).toHaveAttribute("href", "/ca");
+      expect(catalanLink).toHaveAttribute("href", "/ca/");
     });
   });
 
@@ -63,21 +63,21 @@ describe("LanguageSelector", () => {
       render(<LanguageSelector lang="en" slug={slug} />);
 
       const englishLink = screen.getByText("EN");
-      expect(englishLink).toHaveAttribute("href", `/${slug}`);
+      expect(englishLink).toHaveAttribute("href", `/${slug}/`);
     });
 
     it("generates correct link for Español with slug", () => {
       render(<LanguageSelector lang="en" slug={slug} />);
 
       const spanishLink = screen.getByText("ES");
-      expect(spanishLink).toHaveAttribute("href", `/es/${slug}`);
+      expect(spanishLink).toHaveAttribute("href", `/es/${slug}/`);
     });
 
     it("generates correct link for Català with slug", () => {
       render(<LanguageSelector lang="en" slug={slug} />);
 
       const catalanLink = screen.getByText("CA");
-      expect(catalanLink).toHaveAttribute("href", `/ca/${slug}`);
+      expect(catalanLink).toHaveAttribute("href", `/ca/${slug}/`);
     });
   });
 

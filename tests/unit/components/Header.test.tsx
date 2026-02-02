@@ -70,21 +70,21 @@ describe("Header", () => {
       render(<Header main lang="es" />);
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/es");
+      expect(link).toHaveAttribute("href", "/es/");
     });
 
     it("links to /es for Spanish when not main", () => {
       render(<Header lang="es" />);
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/es");
+      expect(link).toHaveAttribute("href", "/es/");
     });
 
     it("links to /ca for Catalan", () => {
       render(<Header lang="ca" />);
 
       const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "/ca");
+      expect(link).toHaveAttribute("href", "/ca/");
     });
   });
 

@@ -33,7 +33,7 @@ function buildEntry(
             ${buildEntry(baseUrl, { priority: 1.0 })}
             ${posts
               .map(({ slug }) =>
-                buildEntry(`${baseUrl}/${slug}`, {
+                buildEntry(`${baseUrl}/${slug}/`, {
                   changefreq: "monthly",
                   priority: 0.7,
                 }),
@@ -41,7 +41,7 @@ function buildEntry(
               .join("")}
             ${tags
               .map((tag) =>
-                buildEntry(`${baseUrl}/tags/${slugifyTag(tag)}`, {
+                buildEntry(`${baseUrl}/tags/${slugifyTag(tag)}/`, {
                   priority: 0.3,
                 }),
               )

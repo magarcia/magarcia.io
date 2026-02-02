@@ -5,7 +5,7 @@ const GITHUB_REPO_NAME = "magarcia.io";
 
 export function buildPostUrl(slug: string, lang: string = "en"): string {
   const path = lang === "en" ? slug : `${lang}/${slug}`;
-  return `${siteMetadata.siteUrl}/${path}`;
+  return `${siteMetadata.siteUrl}/${path}/`;
 }
 
 export function buildEditUrl(slug: string, lang: string = "en"): string {
@@ -19,8 +19,8 @@ export function buildDiscussUrl(slug: string, lang: string = "en"): string {
 }
 
 export function getLocalizedPath(path: string, lang: string): string {
-  if (lang === "en") return path;
-  return `/${lang}${path === "/" ? "" : path}`;
+  if (lang === "en") return path === "/" ? "/" : `${path}/`;
+  return path === "/" ? `/${lang}/` : `/${lang}${path}/`;
 }
 
 export function slugifyTag(tag: string): string {
@@ -35,5 +35,5 @@ export function slugifyTag(tag: string): string {
 export function buildTagUrl(tag: string, lang: string = "en"): string {
   const slug = slugifyTag(tag);
   const path = `/tags/${slug}`;
-  return lang === "en" ? path : `/${lang}${path}`;
+  return lang === "en" ? `${path}/` : `/${lang}${path}/`;
 }

@@ -9,7 +9,7 @@ interface ProjectsSectionProps {
 }
 
 export default function ProjectsSection({ lang }: ProjectsSectionProps) {
-  const projectsPath = lang === "en" ? "/projects" : `/${lang}/projects`;
+  const projectsPath = lang === "en" ? "/projects/" : `/${lang}/projects/`;
   const featuredProjects = projects.filter((p) => p.featured);
 
   return (

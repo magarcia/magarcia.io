@@ -136,7 +136,9 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             {prev && (
               <li className="min-w-0 max-w-[45%]">
                 <Link
-                  to={lang === "en" ? `/${prev.slug}` : `/${lang}/${prev.slug}`}
+                  to={
+                    lang === "en" ? `/${prev.slug}/` : `/${lang}/${prev.slug}/`
+                  }
                   rel="prev"
                   title={prev.title}
                   className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
@@ -149,7 +151,9 @@ export default function BlogPost({ loaderData }: Route.ComponentProps) {
             {next && (
               <li className="min-w-0 max-w-[45%] ml-auto">
                 <Link
-                  to={lang === "en" ? `/${next.slug}` : `/${lang}/${next.slug}`}
+                  to={
+                    lang === "en" ? `/${next.slug}/` : `/${lang}/${next.slug}/`
+                  }
                   rel="next"
                   title={next.title}
                   className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"

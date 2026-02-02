@@ -32,7 +32,7 @@ export default function ArticleListItem({
     );
   }, []);
 
-  const postPath = lang === "en" ? `/${slug}` : `/${lang}/${slug}`;
+  const postPath = lang === "en" ? `/${slug}/` : `/${lang}/${slug}/`;
   const year = format(parseISO(date), "yyyy");
 
   return (

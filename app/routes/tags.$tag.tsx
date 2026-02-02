@@ -85,7 +85,7 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
             <div key={slug} className="my-6 md:my-8" data-testid="article-item">
               <h3 className="font-medium text-lg text-foreground">
                 <Link
-                  to={`/${slug}`}
+                  to={`/${slug}/`}
                   title={title}
                   className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors"
                 >

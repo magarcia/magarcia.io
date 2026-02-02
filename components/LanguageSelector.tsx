@@ -32,10 +32,10 @@ export default function LanguageSelector({
   const getLanguageLink = (targetLang: string) => {
     if (safeSlug) {
       return targetLang === "en"
-        ? `/${safeSlug}`
-        : `/${targetLang}/${safeSlug}`;
+        ? `/${safeSlug}/`
+        : `/${targetLang}/${safeSlug}/`;
     }
-    return targetLang === "en" ? "/" : `/${targetLang}`;
+    return targetLang === "en" ? "/" : `/${targetLang}/`;
   };
 
   const handleMouseEnter = () => {

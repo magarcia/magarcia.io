@@ -26,7 +26,7 @@ export default function Header({
     setMounted(true);
   }, []);
 
-  const homeUrl = lang === "en" ? "/" : `/${lang}`;
+  const homeUrl = lang === "en" ? "/" : `/${lang}/`;
   const backText = backTranslations[lang] || backTranslations.en;
 
   return (

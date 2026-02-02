@@ -63,28 +63,28 @@ describe("ArticleListItem", () => {
     render(<ArticleListItem {...mockArticle} />);
 
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/test-article");
+    expect(link).toHaveAttribute("href", "/test-article/");
   });
 
   it("links to correct path for English articles when lang is explicitly en", () => {
     render(<ArticleListItem {...mockArticle} lang="en" />);
 
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/test-article");
+    expect(link).toHaveAttribute("href", "/test-article/");
   });
 
   it("links to correct path for non-English articles", () => {
     render(<ArticleListItem {...mockArticle} lang="es" />);
 
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/es/test-article");
+    expect(link).toHaveAttribute("href", "/es/test-article/");
   });
 
   it("links to correct path for French articles", () => {
     render(<ArticleListItem {...mockArticle} lang="fr" />);
 
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/fr/test-article");
+    expect(link).toHaveAttribute("href", "/fr/test-article/");
   });
 
   it("renders article with all metadata visible", () => {
