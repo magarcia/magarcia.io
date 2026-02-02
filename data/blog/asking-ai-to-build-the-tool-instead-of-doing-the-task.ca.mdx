@@ -2,10 +2,10 @@
 title: Demanar a la IA que construeixi l'eina en lloc de fer la tasca
 date: "2025-06-06"
 spoiler:
-  Treballar amb IA per a canvis de codi a gran escala pot ser frustrant. Aquest
-  article comparteix una tècnica que ha ajudat al nostre equip a reduir els
-  errors de migració en un 95% mentre fa que el procés sigui sorprenentment
-  agradable.
+  Deixa de demanar a la IA que faci canvis de codi repetitius directament. En
+  lloc d'això, demana-li que construeixi un codemod. Aquesta tècnica va reduir
+  els nostres errors de migració en un 95% i va convertir una tasca de 2 dies en
+  2 hores.
 tags:
   - ai
   - javascript
@@ -13,16 +13,17 @@ tags:
   - developer-tools
 ---
 
-Treballar amb IA per a canvis de codi a gran escala pot ser frustrant. Aquest
-article comparteix una tècnica que ha ajudat al nostre equip a reduir els errors
-de migració en un 95% mentre fa que el procés sigui sorprenentment agradable.
+I si la millor manera d'usar la IA per a migracions de codi no és demanar-li que
+faci la feina, sinó demanar-li que construeixi l'eina que la faci? Aquest
+enfocament contraintuïtiu va transformar com el nostre equip gestiona les
+refactoritzacions a gran escala, reduint errors en un 95% i completant
+migracions en hores en lloc de dies.
 
 ## El Problema
 
-Quan treballem en qualsevol base de codi de mida raonable, sovint ens enfrontem
-a la necessitat de realitzar canvis a gran escala: migrar d'una llibreria a una
-altra, actualitzar APIs obsoletes o refactoritzar components per seguir nous
-patrons. L'enfocament tradicional amb IA s'assembla a això:
+Qualsevol base de codi de mida raonable exigeix canvis a gran escala: migrar
+llibreries, actualitzar APIs obsoletes o refactoritzar components. L'enfocament
+tradicional amb IA es veu així:
 
 ```
 Ei IA, si us plau actualitza tots els components tooltip de @old-design-system a @new-design-system
@@ -115,10 +116,9 @@ migració directament:
 
 ## Per Què Funciona Això
 
-La idea clau és que la IA sobresurt en el reconeixement de patrons i la
-generació de codi, però lluita amb el manteniment del context a través
-d'operacions a gran escala. En demanar-li que construeixi una eina, estem jugant
-a les seves fortaleses:
+La IA sobresurt en el reconeixement de patrons i la generació de codi, però
+lluita per mantenir el context en operacions a gran escala. Demanar-li que
+construeixi una eina aprofita les seves fortaleses:
 
 1. **Tasca única enfocada**: Construir un codemod és una tasca coherent, no
    centenars de micro-tasques
@@ -131,25 +131,22 @@ a les seves fortaleses:
 
 ## La Bellesa del Codi Rebutjable
 
-Aquí hi ha alguna cosa que podria sorprendre't: no revisem el codi del codemod
-que genera la IA. Per què? Perquè no ens importa la seva qualitat — és un script
-d'un sol ús que es rebutjarà després de la migració.
+Mai revisem el codi del codemod que genera la IA. Per què? La seva qualitat no
+importa — s'executa una vegada i s'elimina després de la migració.
 
-Aquest és realment l'escenari perfecte per al que alguns anomenen "vibe coding"
-— deixar que la IA generi codi sense molta revisió. L'única cosa que importa és
-el resultat: Va funcionar la migració correctament? Són correctes els arxius
-transformats?
+Aquest és l'escenari perfecte per al "vibe coding" — deixar que la IA generi
+codi sense revisió. Només importa el resultat: Va funcionar la migració? Són
+correctes els arxius transformats?
 
 Pensa-hi:
 
-- El codemod s'executa una vegada i s'elimina
+- El codemod s'executa una vegada, després s'elimina
 - Revisaràs els canvis reals en el teu pull request de totes maneres
-- El pitjor cas és que no funcioni i iteris
-- Ningú mantindrà aquest codi o construirà sobre ell
+- Si falla, iteres
+- Ningú manté ni construeix sobre aquest codi
 
-Aquest canvi de mentalitat és alliberador. En lloc de gastar temps perfeccionant
-un script de migració, pots concentrar-te en el que realment importa: el codi
-migrat en si.
+Aquest canvi de mentalitat t'allibera. Salta la perfecció de l'script de
+migració; concentra't en el codi migrat.
 
 ## Una Observació Interessant
 
@@ -158,11 +155,10 @@ cosa fascinant. La IA va començar fent canvis arxiu per arxiu, però després d
 processar uns pocs arxius, es va aturar i va començar a escriure scripts de
 migració en el seu lloc.
 
-No va ser perfecte — va crear múltiples scripts bash per a diferents casos
-extrems en lloc d'un codemod unificat — però mostra que les eines de IA estan
-començant a reconèixer aquests patrons per si mateixes. La IA es va adonar de
-forma autònoma que construir una eina era més eficient que fer la tasca
-manualment.
+Va crear múltiples scripts bash per a diferents casos extrems en lloc d'un
+codemod unificat — no perfecte, però mostra que les eines de IA ja reconeixen
+aquests patrons. La IA es va adonar autònomament que construir una eina supera
+fer la tasca manualment.
 
 ## Quan Utilitzar Aquest Enfocament
 
@@ -181,16 +177,21 @@ Aquesta tècnica funciona millor per a:
 
 ## Conclusió
 
-La meta-lliçó aquí és simple: de vegades és millor que la IA construeixi la
-canya de pescar en lloc d'atrapar cada peix individualment. La propera vegada
-que t'enfrontis a un canvi de codi a gran escala, resisteix l'impuls de bolcar
-tota la tasca en la IA. En el seu lloc:
+La meta-lliçó: fes que la IA construeixi la canya de pescar, no que atrapi cada
+peix. Quan t'enfrontis a un canvi de codi a gran escala, resisteix bolcar tota
+la tasca en la IA. En el seu lloc:
 
 1. Fes un exemple manualment
 2. Fes que la IA construeixi l'automatització
 3. Revisa i executa l'eina
 
-Aquest enfocament ha transformat com el nostre equip gestiona les migracions, i
-l'he estat compartint amb companys d'equip que estan constantment sorpresos pel
-bé que funciona. No es tracta d'utilitzar menys la IA — es tracta d'utilitzar-la
-de manera més intel·ligent.
+Aquest enfocament va transformar com el nostre equip gestiona les migracions.
+Els companys amb qui el comparteixo es meravellen dels resultats. Utilitza la IA
+més intel·ligentment, no menys.
+
+**Articles relacionats:**
+
+- [Writing Powerful Claude Code Skills with npx + Bun](/writing-powerful-claude-code-skills-with-npx-bun) -
+  Amplia les capacitats d'IA amb skills personalitzats
+- [Why I Switched from Bun to Deno for Claude Code Skills](/why-i-switched-from-bun-to-deno-for-claude-code-skills) -
+  Consideracions de runtime per a eines d'IA

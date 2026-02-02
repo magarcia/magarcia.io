@@ -8,9 +8,9 @@ tags:
   - open-source
 ---
 
-The first week of the coding period at GSoC 2016, so I started the upgrading
-process of Jangouts from Angular 1.x to Angular 2. This week, the tasks have
-been fulfilled within the deadline, I hope to remain so for the next week.
+The first week of GSoC 2016 coding period has ended. I started upgrading
+Jangouts from Angular 1.x to Angular 2. I completed all tasks within the
+deadline and hope to maintain this pace next week.
 
 I'm following the
 [upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html) from
@@ -19,47 +19,39 @@ official Angular docs, which has two main blocks:
 - Preparation
 - Upgrading with The Upgrade Adapter
 
-I just finished the preparation block. I was lucky because the code of Jangouts
-is really clear and it follows two important points of the preparation block:
-Follow the Angular style guide and use component directives. So this left me
-only two things to do. First of all, switch from load files with `<script>` tags
-to a module loader and then migrate the code from JavaScript to TypeScript. But
-I've done it in reverse order, first migrate to TypeScript and then switch to a
-module loader. Why? I think this way is more "natural", at least for this
-project.
+I just finished the preparation block. Fortunately, the Jangouts code is clear
+and already follows two key preparation requirements: the Angular style guide
+and component directives. This left me only two tasks: switch from `<script>`
+tags to a module loader, and migrate from JavaScript to TypeScript. I reversed
+the order, migrating to TypeScript first and then switching to a module loader.
+This sequence felt more natural for this project.
 
 ## Migrating to TypeScript
 
-Jangouts has a gulp build system working, so I didn't have to worry about how
-the scripts are loaded. First I worry about migrating the files to TypeScript
-and when all was ready, then I try to take profit from the `import` syntax of
-TypeScript/ES6.
+Jangouts has a working gulp build system, so I did not need to worry about
+script loading. I focused first on migrating files to TypeScript, then leveraged
+the `import` syntax of TypeScript/ES6.
 
-Migrate code from JavaScript to TypeScript is really easy, only need to change
-the extension form `.js` to `.ts`. Obviously, the existing gulp system doesn't
-works with these changes, so in parallel of running gulp you should run
-`tsc --watch src/**/*.ts`. This command shows a lot of errors but don't worry
-about this if the JavaScript code is correct, all these errors are related to
-the type checking process of TypeScript compiler.
+Migrating code from JavaScript to TypeScript is straightforward: change the
+extension from `.js` to `.ts`. The existing gulp system does not work with these
+changes, so run `tsc --watch src/**/*.ts` alongside gulp. This command shows
+many errors, but if the JavaScript code is correct, these errors relate only to
+TypeScript's type checking.
 
-During this migration process, I also perform some changes in the code to make
-it more modular. Jangouts have all the components registered in the same Angular
-module `janusHangouts` and in other projects I worked before I learned that this
-can make some troubles when you have to do unit testing, so I define a different
-module for each component (`janusHangouts.componentName`) and then make it a
-dependency of the main module. This has to advantages: make tests is easier and
-in the future we can load components on demand with a module loader (but I'm not
-sure about the last one).
+During this migration, I also made the code more modular. Jangouts had all
+components registered in a single Angular module `janusHangouts`. From previous
+projects, I learned this causes trouble with unit testing. I now define a
+separate module for each component (`janusHangouts.componentName`) and make it a
+dependency of the main module. This has two advantages: easier testing, and
+potentially loading components on demand with a module loader.
 
-Back to some, I said earlier, when compiling the JavaScript code with `tsc` this
-shows a lot of errors. One that could appear a lot is something like this:
+As mentioned earlier, compiling JavaScript code with `tsc` shows many errors.
+One common error is:
 
 > `error TS7006: Parameter '$state' implicitly has an 'any' type.`
 
-This is because TypeScript compiler wants a type defined for all variables, but
-we can make that `tsc` set the implicit type any for variables without type. The
-only thing to do is disable the option `noImplicitAny` in the `tsconfig.json`
-file.
+The TypeScript compiler requires a type for all variables. To allow implicit
+`any` types for untyped variables, disable `noImplicitAny` in `tsconfig.json`.
 
 Another error we can find when working with HTML elements is:
 
@@ -72,11 +64,9 @@ var video = $("video", element)[0];
 video.muted = true;
 ```
 
-The error is produced because TypeScript is type save. So the
-`$('video', element)[0]` returns the type `HTMLElement` which does not contain a
-`muted` property. The subtype `HTMLVideoElement` does however contain the
-`muted` property. So the solution is to cast the result to `HTMLVideoElement`
-like this:
+TypeScript is type safe: `$('video', element)[0]` returns `HTMLElement`, which
+lacks the `muted` property. The subtype `HTMLVideoElement` contains `muted`.
+Cast the result to `HTMLVideoElement`:
 
 ```javascript
 var video = <HTMLVideoElement>$('video', element)[0];
@@ -87,8 +77,7 @@ Finally, another common error is:
 
 > `error TS2339: Property 'id' does not exist on type '{}'.`
 
-This is another "problem" produced by the type validations of TypeScript. We can
-found errors like that in fragments of code similar to:
+TypeScript's type validation causes this error in code like:
 
 ```javascript
 var room = {};
@@ -100,8 +89,7 @@ function isRoom(room) {
 }
 ```
 
-To solve this and make the code less error-prone, we should define an interface
-for the room object.
+Define an interface for the room object to fix this and reduce errors:
 
 ```javascript
 interface Room {
@@ -121,7 +109,7 @@ function isRoom(room: Room) {
 
 ## Using a Module Loader
 
-Why we should use a module loader? We can find the response in Angular site:
+Why use a module loader? The Angular site explains:
 
 > Using a module loader such as
 > [SystemJS](https://github.com/systemjs/systemjs),
@@ -135,44 +123,37 @@ Why we should use a module loader? We can find the response in Angular site:
 > it easier to package them all up into production bundles with batteries
 > included.
 
-I discard Browserify because I had bad experiences in the past. So I have only
-tried with SystemJS and Webpack.
+I discarded Browserify due to past bad experiences and tried only SystemJS and
+Webpack.
 
 ### SystemJS
 
-SystemJS looks really clean, really simple. The only thing I was to do is define
-an entry point (normally the main file of the application) and the `import`
-syntax do the rest. So, if we have the `import` statements correctly placed, all
-work without a problem.
+SystemJS looks clean and simple. Define an entry point (typically the main
+application file) and the `import` syntax handles the rest. With correct
+`import` statements, everything works.
 
-But with this solution, we need to conserve gulp, because SystemJS only cares
-about the imports. So this implies add the TypesScript compiler to gulp and
-disable the auto inject of script in html.
+However, this solution requires keeping gulp since SystemJS only handles
+imports. This means adding the TypeScript compiler to gulp and disabling auto
+script injection in HTML.
 
-Sincerely I didn't try that before trying to rewrite the gulp configuration I
-wanted to have a look at Webpack first.
+Before rewriting the gulp configuration, I wanted to try Webpack first.
 
 ### Webpack
 
-The configuration of Webpack is more complex than SystemJS, but it gives a
-substitution of gulp. As SystemJS does, we need to define an entry point for the
-application and also tell him where is the `index.html` to include the
-JavaScript files.
+Webpack configuration is more complex than SystemJS, but replaces gulp entirely.
+Like SystemJS, we define an entry point and specify where `index.html` is
+located for JavaScript file inclusion.
 
-Initially, I had some troubles, but after looking at some examples, I had a
-functional version. Exploring more depth in Webpack I found something that makes
-me choose it before others: we can `import` or `require` non JavaScript files.
-So we can do things like require the template of an Angular directive, and in
-the building process this template will be included as a string variable inside
-the component, and with styles we have the same feature. This functionality
-improves the final build of the application because all the files needed by a
-component will be placed inside the JavaScript file of the component, improving
-the performance but without making difficult program it.
+I had initial troubles, but after studying examples, I got a functional version.
+Exploring Webpack further, I found what made me choose it: we can `import` or
+`require` non-JavaScript files. We can require an Angular directive template,
+and the build process includes it as a string variable inside the component.
+Styles work the same way. This improves performance by bundling all files a
+component needs into its JavaScript file, without complicating development.
 
 ## One more thing
 
-This summer looks exciting with all the things I have to learn with GSoC. If you
-want to follow the progress of what I'm doing keep update of this blog or follow
-my contributions on GitHub. Also, I published a
-[Trello board](https://trello.com/b/vtQJBxbf/jangouts) with the planning and
-things to do with this project (not fully update yet but in progress).
+This summer looks exciting with everything I will learn through GSoC. Follow my
+progress on this blog or through my GitHub contributions. I also published a
+[Trello board](https://trello.com/b/vtQJBxbf/jangouts) with the project planning
+and tasks (still being updated).

@@ -14,32 +14,28 @@ tags:
   - security
 ---
 
-En los primeros días de desarrollar [Voices.ink](https://voices.ink/), un
-proyecto colaborativo con [@Ester Martí](https://github.com/estermv) que
-transcribe sin esfuerzo notas de voz en tu cuenta de Notion, enfrenté una duda
-común. ¿Cómo podía asegurar que nuestros correos electrónicos transaccionales no
-terminaran perdidos en el vacío de las carpetas de spam o peor, fueran
-utilizados como arma para phishing? Mi investigación para un entorno de correo
-electrónico seguro y confiable me llevó a DMARC.
+Mientras desarrollaba [Voices.ink](https://voices.ink/), un proyecto
+colaborativo con [@Ester Martí](https://github.com/estermv) que transcribe notas
+de voz a Notion, enfrenté un problema común. ¿Cómo podía asegurar que nuestros
+correos transaccionales llegaran a bandejas de entrada en lugar de carpetas de
+spam — o peor, evitar que atacantes usaran nuestro dominio para phishing? Mi
+investigación me llevó a DMARC.
 
-En una era donde el correo electrónico forma la columna vertebral de la
-comunicación profesional, sus vulnerabilidades de seguridad son sorprendentes.
-Los atacantes cibernéticos y las entidades fraudulentas están constantemente al
-acecho, utilizando técnicas sofisticadas para engañar a través de la
-suplantación de identidad y el phishing. A medida que el fraude por correo
-electrónico aumenta, la necesidad de una solución robusta se vuelve imperativa.
-Entra DMARC — un protocolo avanzado de correo electrónico que promete restaurar
-la confianza en nuestras bandejas de entrada.
+El correo electrónico forma la columna vertebral de la comunicación profesional,
+pero sus vulnerabilidades de seguridad siguen siendo sorprendentes. Los
+atacantes cibernéticos engañan constantemente mediante suplantación de identidad
+y phishing. A medida que el fraude aumenta, las soluciones robustas se vuelven
+imperativas. DMARC — un protocolo avanzado de correo electrónico — restaura la
+confianza en nuestras bandejas de entrada.
 
 ### **¿Por Qué Necesitamos DMARC?**
 
-Las vulnerabilidades inherentes del correo electrónico lo hacen susceptible a la
-suplantación de dominio, donde los atacantes envían correos electrónicos
-fingiendo ser de fuentes confiables. Mientras que soluciones como SPF (Sender
-Policy Framework) y DKIM (DomainKeys Identified Mail) se introdujeron para
-contrarrestar estas amenazas, no eran infalibles. DMARC (Domain-based Message
-Authentication, Reporting & Conformance) llena este vacío construyendo sobre y
-aprovechando las fortalezas tanto de SPF como de DKIM.
+Las vulnerabilidades inherentes del correo electrónico permiten la suplantación
+de dominio, donde los atacantes envían correos fingiendo ser de fuentes
+confiables. SPF (Sender Policy Framework) y DKIM (DomainKeys Identified Mail)
+contrarrestan estas amenazas pero siguen siendo imperfectos. DMARC (Domain-based
+Message Authentication, Reporting & Conformance) llena este vacío aprovechando
+tanto SPF como DKIM.
 
 ### **Entendiendo la Importancia de DMARC**
 
@@ -137,21 +133,18 @@ ser rechazados, puestos en cuarentena o dejados pasar sin acción.
 
 ### **La Conclusión**
 
-Con el aumento de ataques de phishing sofisticados y la importancia primordial
-de la confianza en la comunicación digital, DMARC es más que solo un protocolo
-avanzado de seguridad de correo electrónico. Es un faro de confianza, asegurando
-que los correos electrónicos genuinos vean la luz del día mientras que los
-maliciosos acechan en las sombras. Para organizaciones e individuos por igual,
-entender e implementar DMARC es un paso hacia un paisaje de comunicación digital
-más seguro y confiable.
+Los ataques de phishing sofisticados hacen que la confianza sea primordial en la
+comunicación digital. DMARC va más allá de la seguridad del correo — asegura que
+los correos genuinos lleguen a los destinatarios mientras los maliciosos
+permanecen bloqueados. Para organizaciones e individuos por igual, implementar
+DMARC nos acerca a una comunicación digital más segura.
 
-Así que, la próxima vez que estés mirando tus medidas de seguridad de correo
-electrónico, recuerda que DMARC no es solo una opción — es una necesidad.
+Al revisar tus medidas de seguridad de correo, recuerda: DMARC no es opcional —
+es necesario.
 
 ### **Recursos y Herramientas Adicionales**
 
-Para aquellos que deseen profundizar en DMARC y sus complejidades, aquí hay
-algunos recursos y herramientas valiosos:
+Para explorar DMARC más a fondo:
 
 - **Guía DMARC**: Una guía completa por la Global Cyber Alliance que cubre los
   matices de DMARC en detalle.

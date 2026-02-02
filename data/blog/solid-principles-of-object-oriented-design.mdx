@@ -19,9 +19,8 @@ tags:
 [_Principles of Object-Oriented Design_](http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod)
 by Robert C. Martin.
 
-Applying these principles helps to develop maintainable and extensible code.
-They also help to catch code smells, refactor code easily, and practice a good
-agile development.
+These principles help you write maintainable and extensible code. They also help
+you catch code smells, refactor easily, and practice agile development.
 
 - **S** stands for **SRP** - Single Responsibility Principle
 - **O** stands for **OCP** - Open-Closed Principle
@@ -34,15 +33,13 @@ agile development.
 > A software entity (classes, modules, functions, etc.) should have one, and
 > only one, reason to change.
 
-This principle means that an entity should do only one thing. So single
-responsibility denotes some **work in isolation**. Therefore if we have a
-software entity that performs some calculations the only reason to change it is
-if these calculations need to change.
+An entity should do only one thing. Single responsibility means **work in
+isolation**. If a software entity performs calculations, the only reason to
+change it is when those calculations need to change.
 
-In order to understand better the principle, we can do an example. Let's say
-that we have to implement an application that given some shapes it calculates
-the sum of the area of these shapes and prints the output. So, let's start
-creating our shapes classes:
+An example clarifies this principle. Say we must implement an application that
+calculates the total area of given shapes and prints the result. Let's start
+with our shape classes:
 
 ```typescript
 class Circle {
@@ -82,8 +79,8 @@ class AreaCalculator {
   }
 ```
 
-To use the `AreaCalculator` we have to create an array of shapes, instantiate
-the class and show the output.
+To use `AreaCalculator`, create an array of shapes, instantiate the class, and
+display the output.
 
 ```typescript
 const shapes: any[] = [new Circle(2), new Circle(3), new Square(5)];
@@ -93,16 +90,15 @@ const areas = new AreaCalculator(shapes);
 console.log(areas.output());
 ```
 
-But this implementation has a problem. In this example, `AreaCalculator` handles
-the logic to calculate the sum of the areas **and** to output the data. What if
-the user wants the output in JSON?
+This implementation has a problem: `AreaCalculator` handles both the area
+calculation logic **and** the output formatting. What if the user wants JSON
+output?
 
-Here is when _Single Responsibility Principle_ comes into play. `AreaCalculator`
-should only change if we change how we calculate the sum of the areas, not when
-we want a different output or representation.
+The _Single Responsibility Principle_ addresses this. `AreaCalculator` should
+change only when the calculation logic changes, not when we want different
+output formats.
 
-We can fix this by implementing a class which its only responsibility is to
-output the data.
+We fix this by creating a class whose sole responsibility is output formatting.
 
 ```typescript
 const shapes: any[] = [new Circle(2), new Circle(3), new Square(5)];
@@ -114,21 +110,18 @@ console.log(output.text());
 console.log(output.json());
 ```
 
-Now we have two classes with one responsibility each one, if we want to change
-how calculations are made only `AreaCalculator` will change and the same to
-change the output, it will affect only `Outputter`.
+Now each class has one responsibility. Changing the calculation logic affects
+only `AreaCalculator`; changing the output format affects only `Outputter`.
 
 ## OCP - Open-Closed Principle
 
 > Software entities (classes, modules, functions, etc.) should be open for
 > extension, but closed for modification.
 
-A desirable property that our software entities is to be easy to extend his
-functionality without the need to change the entity itself.
+Software entities should be easy to extend without modifying the entity itself.
 
-Using the previous example, now we want to introduce a new fancy shape: the
-_Triangle_. But first, take a closer look at the sum part of our
-`AreaCalculator` class.
+Using the previous example, we want to add a new shape: the _Triangle_. First,
+examine the sum method in `AreaCalculator`.
 
 ```typescript
 class AreaCalculator {
@@ -154,13 +147,11 @@ class AreaCalculator {
 }
 ```
 
-Here we are violating the _Open/Close Principle_, because in order to add
-support for triangles we have to modify `AreaCalculator` adding a new `else if`
-block in order to handle the calculation of the new area.
+This violates the _Open/Closed Principle_: adding triangle support requires
+modifying `AreaCalculator` with a new `else if` block.
 
-To fix this we can move the code that calculates the area to the corresponding
-shapes, and make that shapes implement an interface that describes better what a
-shape can do.
+To fix this, move the area calculation to each shape class and define an
+interface that describes what a shape can do.
 
 ```typescript
 interface Shape {
@@ -180,9 +171,7 @@ class Circle implements Shape {
 }
 ```
 
-Now the `AreaCalculator` looks like the code below, that allows us to create new
-kind of shapes and it will work always that this new shape implements the
-`Shape` interface.
+Now `AreaCalculator` accepts any shape that implements the `Shape` interface:
 
 ```typescript
 class AreaCalculator {
@@ -208,10 +197,9 @@ class AreaCalculator {
 
 > Derived class must be substitutable for their base class.
 
-What this principle means is that objects in a program should be replaceable
-with instances of their subtypes without altering the correctness of that
-program. So if you pass a subclass of an abstraction you need to make sure you
-don’t alter any behavior or state semantics of the parent abstraction.
+Objects in a program should be replaceable with instances of their subtypes
+without altering the program's correctness. A subclass must preserve the
+behavior and state semantics of its parent abstraction.
 
 Continuing with the `AreaCalculator` class, now we want to create a
 `VolumeCalculator` class that extends `AreaCalculator`:
@@ -231,8 +219,7 @@ class VolumeCalculator extends AreaCalculator {
 }
 ```
 
-To understand better this example let's make a more detailed version of the
-`Outputter` class.
+A detailed `Outputter` class clarifies this example:
 
 ```typescript
 class Outputer {
@@ -265,17 +252,15 @@ console.log("Areas - ", new Ouputter(areas).text());
 console.log("Volumes - ", new Ouputter(volumes).text());
 ```
 
-The program is not gonna fail but the output will not be consistent since one
-output will be something like `Areas - Sum of provided shapes: 42`, and the
-other `Volumes - Sum of provided shapes: 13, 15, 14`. This is not what we expect
-from our program.
+The program runs but produces inconsistent output:
+`Areas - Sum of provided shapes: 42` versus
+`Volumes - Sum of provided shapes: 13, 15, 14`. This breaks our expectations.
 
-This happens because the violation of the _Liskov Substitution Principle_, the
-`sum` method of the `VolumeCalculator` class is an array of numbers while the
-`AreaCalculator` is just a number.
+The _Liskov Substitution Principle_ is violated: `VolumeCalculator.sum()`
+returns an array of numbers, while `AreaCalculator.sum()` returns a single
+number.
 
-To fix this we have to reimplement the sum method of `VolumeCalculator` to
-return a number instead of an array.
+The fix: `VolumeCalculator.sum()` must return a number, not an array.
 
 ```typescript
 class VolumeCalculator extends AreaCalculator {
@@ -294,13 +279,11 @@ class VolumeCalculator extends AreaCalculator {
 
 > Make fine grained interfaces that are client specific.
 
-In this case, we want to keep interfaces as small as possible, so clients are
-not forced to implement methods that they don't actually need.
+Keep interfaces small so clients implement only the methods they need.
 
 {/* REVIEW: This explanation could be more detailed */}
 
-So, coming back to our shape interface, now that we can calculate volumes our
-interface looks similar to this:
+Our shape interface now includes volume calculation:
 
 ```typescript
 interface Shape {
@@ -309,12 +292,11 @@ interface Shape {
 }
 ```
 
-But we know that not all our shapes have a volume, `Square` is a 2D shape but
-because of the interface, we are forced to implement a `volume` method.
+But `Square` is a 2D shape with no volume, yet the interface forces it to
+implement a `volume` method.
 
-Applying the _Interface Segregation Principle_ we split the `Shape` interface
-into two different interfaces, one to define 2D shapes and another for 3D
-shapes.
+The _Interface Segregation Principle_ leads us to split `Shape` into separate
+interfaces for 2D and 3D shapes:
 
 ```typescript
 interface Shape2D {
@@ -340,13 +322,12 @@ class Cuboid implements Shape2D, Shape3D {
 
 > Depend on abstractions, not on concretions.
 
-What this principle comes to says is that high-level modules should not depend
-on low-level modules, but they should depend on abstractions.
+High-level modules should depend on abstractions, not on low-level modules.
 
 {/* REVIEW: This explanation could be more detailed */}
 
-This principle allows for decoupling, an example that seems like the best way to
-explain this principle. Let's see a new class to save our shapes `ShapeManager`:
+This principle enables decoupling. Consider a `ShapeManager` class that saves
+shapes:
 
 ```typescript
 class ShapeManager {
@@ -360,14 +341,11 @@ class ShapeManager {
 }
 ```
 
-In this case, `ShapeManager` is a high-level module while `MySQL` is a low-level
-module, but this is a violation of the `Dependency Inversion Principle` since we
-are forced to depend on `MySQL`.
+`ShapeManager` (high-level) depends directly on `MySQL` (low-level), violating
+the _Dependency Inversion Principle_.
 
-If we want to change our database in the future we would have to edit the
-`ShapeManager` class and thus violates _Open-Close Principle_. In this case we
-should not care about which kind of database are we using, so to depend on
-abstractions on this case we will make use of an interface:
+Changing databases would require editing `ShapeManager`, also violating the
+_Open-Closed Principle_. The solution: depend on a `Database` interface instead:
 
 ```typescript
 interface Database {
@@ -395,8 +373,6 @@ And now our high-level and low-level modules are depending on abstractions.
 
 ## Conclusion
 
-When starting to write Object-Oriented programing the **SOLID** principles could
-be difficult to understand and, if they are understood, see where and when to
-apply them is not trivial. But they are an example of one of the most important
-things in software development, practice and experience will make you apply
-these principles in a very natural and intuitive way.
+The **SOLID** principles may seem difficult at first, and knowing when to apply
+them takes practice. But with experience, applying these principles becomes
+natural and intuitive.

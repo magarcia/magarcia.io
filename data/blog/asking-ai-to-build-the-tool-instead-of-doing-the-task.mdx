@@ -2,9 +2,9 @@
 title: Asking AI to Build the Tool Instead of Doing the Task
 date: "2025-06-06"
 spoiler:
-  Working with AI for large-scale code changes can be frustrating. This article
-  shares a technique that has helped our team reduce migration errors by 95%
-  while making the process surprisingly enjoyable.
+  Stop asking AI to perform repetitive code changes directly. Instead, have it
+  build a codemod. This technique reduced our migration errors by 95% and cut a
+  2-day task to 2 hours.
 tags:
   - ai
   - javascript
@@ -12,16 +12,16 @@ tags:
   - developer-tools
 ---
 
-Working with AI for large-scale code changes can be frustrating. This article
-shares a technique that has helped our team reduce migration errors by 95% while
-making the process surprisingly enjoyable.
+What if the best way to use AI for code migrations isn't asking it to do the
+work, but asking it to build the tool that does? This counterintuitive approach
+transformed how our team handles large-scale refactoring, reducing errors by 95%
+and completing migrations in hours instead of days.
 
 ## The Problem
 
-When working on any reasonably sized codebase, we often face the need to perform
-large-scale changes: migrating from one library to another, updating deprecated
-APIs, or refactoring components to follow new patterns. The traditional approach
-with AI looks something like this:
+Any reasonably sized codebase demands large-scale changes: migrating libraries,
+updating deprecated APIs, or refactoring components. The traditional AI approach
+looks like this:
 
 ```
 Hey AI, please update all tooltip components from @old-design-system to @new-design-system
@@ -114,9 +114,9 @@ directly:
 
 ## Why This Works
 
-The key insight is that AI excels at pattern recognition and code generation but
-struggles with maintaining context across large-scale operations. By asking it
-to build a tool, we're playing to its strengths:
+AI excels at pattern recognition and code generation but struggles to maintain
+context across large-scale operations. Asking it to build a tool plays to its
+strengths:
 
 1. **Single focused task**: Building a codemod is one coherent task, not
    hundreds of micro-tasks
@@ -129,24 +129,22 @@ to build a tool, we're playing to its strengths:
 
 ## The Beauty of Throwaway Code
 
-Here's something that might surprise you: we don't review the codemod code that
-the AI generates. Why? Because we don't care about its quality — it's a one-time
-script that will be thrown away after the migration.
+We never review the codemod code that the AI generates. Why? Its quality does
+not matter — it runs once and gets deleted after the migration.
 
-This is actually the perfect scenario for what some call "vibe coding" — letting
-AI generate code without much review. The only thing that matters is the
-outcome: Did the migration work correctly? Are the transformed files correct?
+This is the perfect scenario for "vibe coding" — letting AI generate code
+without review. Only the outcome matters: Did the migration work? Are the
+transformed files correct?
 
 Think about it:
 
-- The codemod runs once and gets deleted
-- You're going to review the actual changes in your pull request anyway
-- The worst case is it doesn't work and you iterate
-- No one will maintain this code or build upon it
+- The codemod runs once, then gets deleted
+- You review the actual changes in your pull request anyway
+- If it fails, you iterate
+- Nobody maintains or builds upon this code
 
-This mindset shift is liberating. Instead of spending time perfecting a
-migration script, you can focus on what actually matters: the migrated code
-itself.
+This mindset shift liberates you. Skip perfecting the migration script; focus on
+the migrated code.
 
 ## An Interesting Observation
 
@@ -154,10 +152,9 @@ While testing Claude Code on a similar migration task, I noticed something
 fascinating. The AI started by making changes file-by-file, but after processing
 a few files, it stopped and began writing migration scripts instead.
 
-It wasn't perfect — it created multiple bash scripts for different edge cases
-instead of a unified codemod — but it shows that AI tools are beginning to
-recognize these patterns themselves. The AI autonomously realized that building
-a tool was more efficient than doing the task manually.
+It created multiple bash scripts for different edge cases instead of a unified
+codemod — not perfect, but it shows that AI tools now recognize these patterns.
+The AI autonomously realized that building a tool beats doing the task manually.
 
 ## When to Use This Approach
 
@@ -176,14 +173,19 @@ It's less suitable for:
 
 ## Conclusion
 
-The meta-lesson here is simple: sometimes it's better to have AI build the
-fishing rod rather than catch each fish individually. Next time you're facing a
-large-scale code change, resist the urge to dump the entire task on AI. Instead:
+The meta-lesson: have AI build the fishing rod, not catch each fish. When facing
+a large-scale code change, resist dumping the entire task on AI. Instead:
 
 1. Do one example manually
 2. Have AI build the automation
 3. Review and run the tool
 
-This approach has transformed how our team handles migrations, and I've been
-sharing it with teammates who are consistently surprised by how well it works.
-It's not about using AI less — it's about using it smarter.
+This approach transformed how our team handles migrations. Teammates I share it
+with consistently marvel at the results. Use AI smarter, not less.
+
+**Related posts:**
+
+- [Writing Powerful Claude Code Skills with npx + Bun](/writing-powerful-claude-code-skills-with-npx-bun) -
+  Extend AI capabilities with custom skills
+- [Why I Switched from Bun to Deno for Claude Code Skills](/why-i-switched-from-bun-to-deno-for-claude-code-skills) -
+  Runtime considerations for AI tooling

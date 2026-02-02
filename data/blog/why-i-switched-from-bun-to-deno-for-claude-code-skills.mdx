@@ -3,8 +3,9 @@ title: "Why I Switched from Bun to Deno for Claude Code Skills"
 date: "2026-01-15"
 spoiler:
   "Bun's auto-install breaks when any node_modules directory exists in parent
-  paths—a footgun for portable skills. Deno's npm: specifier works everywhere,
-  from project directories to monorepos, without surprises."
+  paths—making skills fail in monorepos and project directories. Deno's npm:
+  specifier provides consistent behavior everywhere, making it the better choice
+  for portable Claude Code skills."
 ogImage: https://magarcia.io/og/deno-awesome-skill.png
 tags:
   - typescript
@@ -12,13 +13,15 @@ tags:
   - bun
   - ai
   - developer-tools
+  - cli
 ---
 
-Last week I wrote about
-[using npx bun to write Claude Code skills](/writing-powerful-claude-code-skills-with-npx-bun)
-with third-party dependencies. The approach worked for simple
-cases—self-contained scripts with auto-installing packages, no build step. But
-after using it in real environments, I discovered a significant problem.
+**Bun's auto-install feature breaks when any `node_modules` directory exists in
+parent paths.** This makes Bun unreliable for portable Claude Code skills that
+run from project directories or monorepos. After testing
+[my previous npx bun approach](/writing-powerful-claude-code-skills-with-npx-bun)
+in real environments, I switched to Deno. Here is why Deno's `npm:` specifier is
+the better choice for self-contained TypeScript skills.
 
 Bun's auto-install only works when no `node_modules` directory exists in the
 working directory or any parent directory. When `node_modules` is present

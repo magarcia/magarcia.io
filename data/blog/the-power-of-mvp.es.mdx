@@ -12,10 +12,9 @@ tags:
   - mvp
 ---
 
-Hay mucha literatura sobre productos mínimos viables (MVP) en todas partes. No
-creo que pueda aportar al campo más información o valor que la que ya existe
-pero daré mi punto de vista sobre ello basado en una experiencia que tuve
-trabajando con un cliente.
+Hay mucha literatura sobre productos mínimos viables (MVP). No creo que pueda
+aportar nuevas ideas, pero compartiré mi perspectiva basada en una experiencia
+con un cliente.
 
 ![MVP - Un patín primero, luego una bici y finalmente un coche](/images/mvp.png)
 
@@ -25,84 +24,68 @@ trabajando con un cliente.
 >
 > [Wikipedia](https://es.wikipedia.org/wiki/Producto_viable_m%C3%ADnimo)
 
-Empecemos poniendo este artículo en contexto. El cliente era una empresa europea
-líder en el campo inmobiliario, aunque no creo que el dominio importe en este
-caso, y el equipo de producto tenía una idea de un producto bastante complejo
-que querían vender a sus clientes. Para conocer la aceptación por parte de los
-usuarios del sitio web, ejecutamos múltiples pruebas A/B para ver cuál era el
-enfoque más exitoso. El producto en sí no era tan complejo de implementar pero
-la decisión de qué usuarios deberían ver qué, esa era otra historia. Teníamos
-que tener en cuenta la ubicación del usuario, en qué ubicación estaba buscando,
-la última visita a la página, etc. El número de valores con los que teníamos que
-jugar era grande, así que para tener suficientes datos valiosos para tomar la
-decisión adecuada, ejecutamos las pruebas durante casi medio año.
+Pongamos contexto. El cliente era una empresa europea líder en el campo
+inmobiliario—aunque el dominio importa poco aquí. El equipo de producto
+imaginaba un producto complejo para vender a sus clientes. Para medir la
+aceptación de los usuarios, ejecutamos múltiples pruebas A/B para encontrar el
+enfoque más exitoso. El producto era sencillo de implementar, pero decidir qué
+usuarios deberían ver qué era otra historia. Teníamos que considerar la
+ubicación del usuario, la ubicación de búsqueda, la última visita, etc. El
+número de variables era grande, así que ejecutamos las pruebas durante casi
+medio año para reunir datos significativos.
 
-Este tipo de experimento no tiene sentido sin métricas adecuadas, así que
-medimos todo. Una vez que la prueba terminó, el equipo de análisis de datos hizo
-su trabajo y resultó que los valores no eran los esperados, ni cerca de ello.
-Resulta que no todo era tan malo. Una pequeña parte del producto tuvo una
-aceptación realmente buena entre los usuarios, y un mes después el equipo de
-producto ideó un producto diferente basado en esta pequeña parte.
+Este tipo de experimento requiere métricas adecuadas, así que medimos todo. Una
+vez terminada la prueba, el equipo de análisis hizo su trabajo—y los resultados
+nos decepcionaron. Quedaron muy lejos de las expectativas. Sin embargo, una
+pequeña parte del producto resonó fuertemente con los usuarios, y un mes después
+el equipo de producto construyó un nuevo producto alrededor de ella.
 
-Después de esta, no tan pequeña introducción, es donde comienza esta historia.
-Este nuevo producto no tenía las reglas complejas del anterior: nada relacionado
-con la ubicación, ni visitas de usuario o historial de búsqueda. Los clientes
-tendrán una sección especial en la página para mostrar sus productos y podrían
-compartir cómo prefieren con sus clientes. Ahora que teníamos el producto (la
-parte orientada al usuario ya estaba implementada para la prueba anterior) era
-hora de hacerlo real y empezar a venderlo.
+Ahora comienza la historia real. El nuevo producto carecía de las reglas
+complejas del anterior: sin lógica de ubicación, sin historial de visitas, sin
+patrones de búsqueda. Los clientes tendrían una sección especial en la página
+para mostrar sus productos y compartirla como quisieran. Como la parte orientada
+al usuario ya existía de la prueba anterior, era hora de hacerlo real y empezar
+a vender.
 
-Un día tuvimos la reunión para definir la arquitectura y cómo íbamos a hacerlo.
-Los dos equipos de ingeniería involucrados, el jefe de tecnología y el
-propietario del producto. Alrededor de 14 personas en la sala (realmente salas
-virtuales ya que los equipos estaban distribuidos en diferentes países)
-discutiendo cuál iba a ser la mejor manera de implementarlo e intentando
-adivinar cuándo iba a estar listo. Alguien dijo que porque el producto necesita
-ser comprado por clientes deberíamos hablar tarde o temprano con el equipo de
-ingeniería a cargo de esta área. El equipo a cargo de los productos tendrá que
-crear un nuevo microservicio para manejar el nuevo producto y el que está a
-cargo del sitio web tendrá que consumir y procesar estos datos para habilitar o
-no el producto para un cliente dado.
+Tuvimos una reunión para definir la arquitectura y el plan de implementación.
+Dos equipos de ingeniería, el jefe de tecnología y el propietario del
+producto—unas 14 personas en salas virtuales a través de países—discutieron el
+mejor enfoque y estimaron la finalización. Alguien señaló que, dado que los
+clientes debían comprar el producto, necesitaríamos involucrar al equipo de
+comercio. El equipo de productos crearía un nuevo microservicio, y el equipo web
+consumiría y procesaría esos datos para habilitar el producto para cada cliente.
 
-Todo junto empieza a parecer complejo de nuevo, las primeras estimaciones de
-cuándo se haría eran al menos tres meses, pero probablemente más ya que
-implicaría coordinación con múltiples equipos de ingeniería, marketing, diseño,
-etc. Escuchando todas las discusiones que sucedían la parte perezosa de mi
-cerebro se activó e hice una pregunta clave al propietario del producto: “_¿Cómo
-se va a dirigir este producto a los clientes para venderlo a corto plazo?_”. La
-respuesta fue la clave para encontrar una manera más fácil de resolver este
-problema. Solo un pequeño grupo de personas en el equipo de ventas contactará a
-los clientes más importantes para vender el producto, al menos inicialmente; y
-después de eso, evaluarán qué otros clientes estarían interesados.
+La complejidad se acumulaba de nuevo. Las estimaciones iniciales apuntaban a
+tres meses mínimo—probablemente más, dada la coordinación entre ingeniería,
+marketing y diseño. Escuchando estas discusiones, pregunté al propietario del
+producto: "_¿Cómo venderán este producto a corto plazo?_" La respuesta
+desbloqueó un camino más fácil. Inicialmente, un pequeño equipo de ventas
+contactaría solo a los clientes más importantes. Después, evaluarían qué otros
+clientes podrían estar interesados.
 
-Con esta nueva información, propuse un enfoque poco ortodoxo para la
-implementación. En lugar de construir el sistema complejo, coordinar múltiples
-equipos y bloquear el lanzamiento hasta que todo esté hecho; ¿por qué no
-codificar los id de los clientes en el código y tener solo un par de líneas para
-manejar la lógica? Cada vez que el producto se venda a un cliente, alguien solo
-tiene que enviar un correo electrónico al equipo y podríamos añadir el id en
-minutos. Esto, obviamente, no es una solución que escale pero no es la
-intención. Dado que las ventas iban a ser “manualmente” al principio podemos
-esperar que el ritmo al que los clientes adquirirán el producto será controlado.
+Con esta información, propuse un enfoque poco ortodoxo. En lugar de construir el
+sistema complejo, coordinar múltiples equipos y bloquear el lanzamiento hasta
+que todo estuviera hecho—¿por qué no hardcodear los IDs de clientes? Unas pocas
+líneas de lógica, y listo. Cada vez que se vendiera el producto, alguien
+enviaría un email al equipo, y añadiríamos el ID en minutos. Esta solución no
+escala, pero no pretendía hacerlo. Como las ventas se manejarían manualmente al
+principio, podíamos controlar el ritmo de adquisición de clientes.
 
-La propuesta que hice fue realmente bien recibida por todos, esto nos permitirá
-empezar a vender antes y aliviará la presión sobre los equipos de ingeniería
-para construir la solución final. En solo una semana teníamos el producto en su
-lugar y vendido al primer cliente. Los siguientes meses los equipos estuvieron
-más relajados trabajando en la implementación final que no implicará
-interacciones manuales más.
+La propuesta fue bien recibida. Podíamos empezar a vender antes y aliviar la
+presión sobre los equipos de ingeniería. En solo una semana teníamos el producto
+listo y vendido al primer cliente. Durante los meses siguientes, los equipos
+trabajaron a un ritmo relajado en la implementación final—una que eliminaría los
+pasos manuales.
 
-Así que, esta fue la historia que quería compartir. No sé si sería útil para ti
-pero al menos aprendí algunos puntos importantes:
+Esa es la historia. Esto es lo que aprendí:
 
-- Mantén la implementación lo más simple posible, no solo llegarás al mercado
-  antes probablemente podrías eliminar o relajar algunos plazos.
-- Los equipos de ingeniería deberían estar involucrados lo antes posible en la
-  definición del producto porque diferentes puntos de vista pueden encontrar una
-  mejor solución.
-- Toda la visión del proyecto debería ser compartida con los ingenieros, no solo
-  la parte en la que tienen que trabajar ya que ayuda a decidir la arquitectura.
+- Mantén la implementación lo más simple posible. Llegarás al mercado antes y
+  podrás relajar algunos plazos.
+- Involucra a los equipos de ingeniería temprano en la definición del producto.
+  Diferentes perspectivas revelan mejores soluciones.
+- Comparte la visión completa del proyecto con los ingenieros, no solo su parte.
+  El contexto moldea mejor arquitectura.
 
-En conclusión, voy a seguir haciendo una de las cosas que considero más
-importantes en un desarrollador: ser perezoso. Porque esta actitud me ayudará a
-encontrar la manera más fácil y rápida de resolver un problema.
+En conclusión: seguiré practicando lo que considero uno de los rasgos más
+importantes en un desarrollador—la pereza. Ese instinto me impulsa a encontrar
+la forma más simple y rápida de resolver un problema.

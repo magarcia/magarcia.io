@@ -14,32 +14,28 @@ tags:
   - security
 ---
 
-En els primers dies de desenvolupar [Voices.ink](https://voices.ink/), un
-projecte col·laboratiu amb [@Ester Martí](https://github.com/estermv) que
-transcriu sense esforç notes de veu al teu compte de Notion, vaig enfrontar un
-dubte comú. Com podia assegurar que els nostres correus electrònics
-transaccionals no acabessin perduts en el buit de les carpetes d'spam o pitjor,
-fossin utilitzats com a arma per a phishing? La meva investigació per a un
-entorn de correu electrònic segur i de confiança em va portar a DMARC.
+Mentre desenvolupava [Voices.ink](https://voices.ink/), un projecte
+col·laboratiu amb [@Ester Martí](https://github.com/estermv) que transcriu notes
+de veu a Notion, vaig enfrontar un problema comú. Com podia assegurar que els
+nostres correus transaccionals arribessin a safates d'entrada en lloc de
+carpetes d'spam — o pitjor, evitar que atacants usessin el nostre domini per a
+phishing? La meva investigació em va portar a DMARC.
 
-En una era on el correu electrònic forma la columna vertebral de la comunicació
-professional, les seves vulnerabilitats de seguretat són sorprenents. Els
-atacants cibernètics i les entitats fraudulentes estan constantment a l'aguait,
-utilitzant tècniques sofisticades per enganyar a través de la suplantació
-d'identitat i el phishing. A mesura que el frau per correu electrònic augmenta,
-la necessitat d'una solució robusta esdevé imperativa. Entra DMARC — un protocol
-avançat de correu electrònic que promet restaurar la confiança a les nostres
-safates d'entrada.
+El correu electrònic forma la columna vertebral de la comunicació professional,
+però les seves vulnerabilitats de seguretat segueixen sent sorprenents. Els
+atacants cibernètics enganyen constantment mitjançant suplantació d'identitat i
+phishing. A mesura que el frau augmenta, les solucions robustes esdevenen
+imperatives. DMARC — un protocol avançat de correu electrònic — restaura la
+confiança a les nostres safates d'entrada.
 
 ### **Per Què Necessitem DMARC?**
 
-Les vulnerabilitats inherents del correu electrònic el fan susceptible a la
-suplantació de domini, on els atacants envien correus electrònics fingint ser de
-fonts de confiança. Mentre que solucions com SPF (Sender Policy Framework) i
-DKIM (DomainKeys Identified Mail) es van introduir per contrarestar aquestes
-amenaces, no eren infal·libles. DMARC (Domain-based Message Authentication,
-Reporting & Conformance) omple aquest buit construint sobre i aprofitant les
-fortaleses tant de SPF com de DKIM.
+Les vulnerabilitats inherents del correu electrònic permeten la suplantació de
+domini, on els atacants envien correus fingint ser de fonts de confiança. SPF
+(Sender Policy Framework) i DKIM (DomainKeys Identified Mail) contrarresten
+aquestes amenaces però segueixen sent imperfectes. DMARC (Domain-based Message
+Authentication, Reporting & Conformance) omple aquest buit aprofitant tant SPF
+com DKIM.
 
 ### **Entenent la Importància de DMARC**
 
@@ -139,22 +135,18 @@ rebutjats, posats en quarantena o deixats passar sense acció.
 
 ### **La Conclusió**
 
-Amb l'augment d'atacs de phishing sofisticats i la importància primordial de la
-confiança en la comunicació digital, DMARC és més que només un protocol avançat
-de seguretat de correu electrònic. És un far de confiança, assegurant que els
-correus electrònics genuïns vegin la llum del dia mentre que els maliciosos
-s'amaguen a les ombres. Per a organitzacions i individus per igual, entendre i
-implementar DMARC és un pas cap a un paisatge de comunicació digital més segur i
-de confiança.
+Els atacs de phishing sofisticats fan que la confiança sigui primordial en la
+comunicació digital. DMARC va més enllà de la seguretat del correu — assegura
+que els correus genuïns arribin als destinataris mentre els maliciosos romanguin
+bloquejats. Per a organitzacions i individus per igual, implementar DMARC ens
+acosta a una comunicació digital més segura.
 
-Així que, la propera vegada que estiguis mirant les teves mesures de seguretat
-de correu electrònic, recorda que DMARC no és només una opció — és una
-necessitat.
+Quan revisis les teves mesures de seguretat de correu, recorda: DMARC no és
+opcional — és necessari.
 
 ### **Recursos i Eines Addicionals**
 
-Per a aquells que desitgin aprofundir en DMARC i les seves complexitats, aquí hi
-ha alguns recursos i eines valuosos:
+Per explorar DMARC més a fons:
 
 - **Guia DMARC**: Una guia completa per la Global Cyber Alliance que cobreix els
   matisos de DMARC en detall.

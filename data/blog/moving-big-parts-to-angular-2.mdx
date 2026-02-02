@@ -8,87 +8,77 @@ tags:
   - open-source
 ---
 
-In a previous post I explained how I convert Jangouts to a hybrid Angular 1+2
-application. This approach, instead of a full migration, has two objectives. In
-first place test that the functionalities are working correctly is more easy,
-because it's possible to run Jangouts and use it. And on the other hand, if I
-can't finish the migration, the application will be still usable allowing others
-to continue the work. But I hope this last scenario won't be real.
+In a previous post I explained how I converted Jangouts to a hybrid Angular 1+2
+application. This approach, instead of a full migration, has two objectives.
+First, testing functionality becomes easier since Jangouts remains runnable
+throughout. Second, if I cannot finish the migration, others can continue the
+work. I hope this fallback proves unnecessary.
 
-With the hybrid approach applied, this week I have been working on migrating
-some components to Angular 2. I started migrating the Chat component, more
-complex than the Footer previously migrated, but not enough to be frustrating in
-these early stages.
+With the hybrid approach in place, this week I migrated several components to
+Angular 2. I started with the Chat component---more complex than the Footer, but
+manageable for these early stages.
 
 ## Migrating subcomponents
 
-The Chat component of Jangouts has three subcomponents, a part of the main
-component:
+The Jangouts Chat component has three subcomponents besides the main component:
 
-- **`chat-message`**: That handles the render the message sent by the user.
-- **`log-entry`**: That handles the notifications sent by the system (like "_The
-  user X has joined_").
-- **`chat-form`**: That handles the input of messages.
+- **`chat-message`**: Renders user messages.
+- **`log-entry`**: Renders system notifications (like "_User X has joined_").
+- **`chat-form`**: Handles message input.
 
-These subcomponents are really simple, each one has a component class without
-much code and a template. But the key of this migration has been that the styles
-were moved from the main `scss` file to independent files for each subcomponent.
-This takes profit of
+These subcomponents are simple: each has a minimal component class and a
+template. The key change: styles moved from the main `scss` file to independent
+files for each subcomponent. This leverages
 [Angular 2 View Encapsulation](https://angular.io/docs/ts/latest/guide/component-styles.html#!#view-encapsulation),
-ensuring that the styles will be only applied to the component.
+ensuring styles apply only to their component.
 
-During the `chat-message` migration, I found trouble. A problem that comes from
-the sue of [ngEmbed](https://github.com/ritz078/ng-embed) library that provides
-a directive to render the user messages. This directive allows users to use
-emojis and embed links, images, videos, etc. But as expected the library hasn't
-support for Angular 2, so I tried to upgrade the directive with the
-[Angular 2 Upgrade Adapter](https://angular.io/docs/ts/latest/guide/upgrade.html#!#how-the-upgrade-adapter-works)
-but I found a strange error.
+During the `chat-message` migration, I encountered a problem with
+[ngEmbed](https://github.com/ritz078/ng-embed), the library providing a
+directive to render user messages. This directive enables emojis and embedded
+links, images, and videos. The library lacks Angular 2 support, so I tried the
+[Angular 2 Upgrade Adapter](https://angular.io/docs/ts/latest/guide/upgrade.html#!#how-the-upgrade-adapter-works),
+but encountered a strange error.
 
-After some investigation, I found that ngEmbed use a function as `templateUrl`
-attribute (which is allowed in Angular 1), but in the version of Angular 2 that
-I'm currently using with the project, the upgrade adapter don't support this
-kind of `templateUrl`. I saw in the master branch of Angular 2 that the code has
-been updated to support this functionality, but now neither version incorporates
-the change. So after discussing with my mentors, we decide to disable this
-functionality in Jangouts and keep moving with the migration.
+Investigation revealed that ngEmbed uses a function as its `templateUrl`
+attribute (allowed in Angular 1). However, my current Angular 2 version's
+upgrade adapter lacks support for function-based `templateUrl`. The Angular 2
+master branch includes this support, but no released version incorporates it
+yet. After discussing with my mentors, we decided to disable this functionality
+and continue the migration.
 
-I wish to have time to reenable it in the future.
+I hope to re-enable it in the future.
 
 ## Differentiate between component and directive
 
-Migrate the main component was more complex. The main component has the list of
-all messages (user and system messages) in a view that auto scroll when a new
-message arrives. In the old Jangouts, this was one directive that renders the
-list of messages and controls the auto scroll. But Angular 2 is a different
-paradigm. In Angular 2, the correct approach, a component always have a template
-and never interacts with the DOM and a directive never have a template and can
-interact with the DOM.
+Migrating the main component proved more complex. It displays all messages (user
+and system) in a view that auto-scrolls when new messages arrive. In old
+Jangouts, one directive both rendered the message list and controlled
+auto-scrolling. Angular 2 requires a different approach: components always have
+templates and never interact with the DOM directly; directives never have
+templates but can interact with the DOM.
 
-So this evidence that the main chat component would be migrated into two
-different things:
+This meant splitting the main chat component into two parts:
 
-- A **component** to render the list of messages.
-- A **directive** that auto scrolls when it's necessary.
+- A **component** to render the message list.
+- A **directive** to handle auto-scrolling.
 
-After the migration, we have the component that renders the list of messages and
-inside it the directive that handles the auto scroll.
+After migration, the component renders the message list and contains the
+directive that handles auto-scrolling.
 
 ## Putting all together
 
-During the subcomponents migration, each one was downgraded to be Angular 1
-compatible using the provided adapter by Angular 2 and manually tested with the
-old version of the main component. When the main component was migrated, this
-made that the code of the component was pure Angular 2 (without downgrade the
-subcomponents) and the only thing to do to keep the compatibility with the rest
-of the Angular 1 application was downgrade the main chat component.
+During subcomponent migration, I downgraded each one to Angular 1 compatibility
+using Angular 2's adapter and tested manually with the old main component. When
+I migrated the main component, its code became pure Angular 2 (without
+downgraded subcomponents). Only the main chat component needed downgrading for
+Angular 1 compatibility.
 
 ## Applying the correct application structure
 
-The changes applied this week wasn't only in the code, I also update the
-application structure following the recommendations of the
-[style guide](https://angular.io/styleguide#!#application-structure_). Previous
-to the migration the application has the following structure:
+This week's changes extended beyond code. I also restructured the application
+following the
+[style guide](https://angular.io/styleguide#!#application-structure_)
+recommendations. Before migration, the structure was:
 
 ```
 src
@@ -115,7 +105,7 @@ src
     └── [...]
 ```
 
-But after the changes this is the result:
+After the changes:
 
 ```
 src
@@ -161,12 +151,10 @@ src
 
 ## Currently working
 
-Currently I'm working on the migration of Feed component. This is one of the
-most complex components in the application because it has a lot of services that
-handles the video/audio streams.
+I am now migrating the Feed component, one of the most complex in the
+application due to its many services handling video/audio streams.
 
-Actually, I've moved all the services and factories to Angular 2 services, but I
-still not enabled the support for work with the Angular 1 code. The reason? I
-want to make a full test suite that tests these services deeply before to
-continue with the migration of the rest of the component and make the
-integration with the rest of the application.
+I have moved all services and factories to Angular 2, but have not yet enabled
+Angular 1 compatibility. The reason: I want a comprehensive test suite covering
+these services before continuing the migration and integrating with the rest of
+the application.

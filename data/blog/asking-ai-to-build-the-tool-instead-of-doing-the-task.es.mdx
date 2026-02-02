@@ -2,10 +2,9 @@
 title: Pedir a la IA que construya la herramienta en lugar de hacer la tarea
 date: "2025-06-06"
 spoiler:
-  Trabajar con IA para cambios de código a gran escala puede ser frustrante.
-  Este artículo comparte una técnica que ha ayudado a nuestro equipo a reducir
-  los errores de migración en un 95% mientras hace que el proceso sea
-  sorprendentemente agradable.
+  Deja de pedir a la IA que realice cambios de código repetitivos directamente.
+  En su lugar, pídele que construya un codemod. Esta técnica redujo nuestros
+  errores de migración en un 95% y convirtió una tarea de 2 días en 2 horas.
 tags:
   - ai
   - javascript
@@ -13,17 +12,17 @@ tags:
   - developer-tools
 ---
 
-Trabajar con IA para cambios de código a gran escala puede ser frustrante. Este
-artículo comparte una técnica que ha ayudado a nuestro equipo a reducir los
-errores de migración en un 95% mientras hace que el proceso sea
-sorprendentemente agradable.
+¿Y si la mejor manera de usar la IA para migraciones de código no es pedirle que
+haga el trabajo, sino pedirle que construya la herramienta que lo haga? Este
+enfoque contraintuitivo transformó cómo nuestro equipo maneja las
+refactorizaciones a gran escala, reduciendo errores en un 95% y completando
+migraciones en horas en lugar de días.
 
 ## El Problema
 
-Cuando trabajamos en cualquier base de código de tamaño razonable, a menudo nos
-enfrentamos a la necesidad de realizar cambios a gran escala: migrar de una
-librería a otra, actualizar APIs obsoletas o refactorizar componentes para
-seguir nuevos patrones. El enfoque tradicional con IA se parece a esto:
+Cualquier base de código de tamaño razonable exige cambios a gran escala: migrar
+librerías, actualizar APIs obsoletas o refactorizar componentes. El enfoque
+tradicional con IA se ve así:
 
 ```
 Oye IA, por favor actualiza todos los componentes tooltip de @old-design-system a @new-design-system
@@ -117,10 +116,9 @@ la migración directamente:
 
 ## Por Qué Funciona Esto
 
-La idea clave es que la IA sobresale en el reconocimiento de patrones y la
-generación de código, pero lucha con el mantenimiento del contexto a través de
-operaciones a gran escala. Al pedirle que construya una herramienta, estamos
-jugando a sus fortalezas:
+La IA sobresale en el reconocimiento de patrones y la generación de código, pero
+lucha para mantener el contexto en operaciones a gran escala. Pedirle que
+construya una herramienta aprovecha sus fortalezas:
 
 1. **Tarea única enfocada**: Construir un codemod es una tarea coherente, no
    cientos de micro-tareas
@@ -133,25 +131,22 @@ jugando a sus fortalezas:
 
 ## La Belleza del Código Desechable
 
-Aquí hay algo que podría sorprenderte: no revisamos el código del codemod que
-genera la IA. ¿Por qué? Porque no nos importa su calidad — es un script de un
-solo uso que se desechará después de la migración.
+Nunca revisamos el código del codemod que genera la IA. ¿Por qué? Su calidad no
+importa — se ejecuta una vez y se elimina después de la migración.
 
-Este es realmente el escenario perfecto para lo que algunos llaman "vibe coding"
-— dejar que la IA genere código sin mucha revisión. Lo único que importa es el
-resultado: ¿Funcionó la migración correctamente? ¿Son correctos los archivos
-transformados?
+Este es el escenario perfecto para el "vibe coding" — dejar que la IA genere
+código sin revisión. Solo importa el resultado: ¿Funcionó la migración? ¿Son
+correctos los archivos transformados?
 
 Piénsalo:
 
-- El codemod se ejecuta una vez y se elimina
-- Vas a revisar los cambios reales en tu pull request de todos modos
-- El peor caso es que no funcione e iteres
-- Nadie mantendrá este código o construirá sobre él
+- El codemod se ejecuta una vez, luego se elimina
+- Revisarás los cambios reales en tu pull request de todos modos
+- Si falla, iteras
+- Nadie mantiene ni construye sobre este código
 
-Este cambio de mentalidad es liberador. En lugar de gastar tiempo perfeccionando
-un script de migración, puedes concentrarte en lo que realmente importa: el
-código migrado en sí.
+Este cambio de mentalidad te libera. Salta la perfección del script de
+migración; concéntrate en el código migrado.
 
 ## Una Observación Interesante
 
@@ -160,11 +155,10 @@ fascinante. La IA comenzó haciendo cambios archivo por archivo, pero después d
 procesar unos pocos archivos, se detuvo y comenzó a escribir scripts de
 migración en su lugar.
 
-No fue perfecto — creó múltiples scripts bash para diferentes casos extremos en
-lugar de un codemod unificado — pero muestra que las herramientas de IA están
-comenzando a reconocer estos patrones por sí mismas. La IA se dio cuenta de
-forma autónoma de que construir una herramienta era más eficiente que hacer la
-tarea manualmente.
+Creó múltiples scripts bash para diferentes casos extremos en lugar de un
+codemod unificado — no perfecto, pero muestra que las herramientas de IA ya
+reconocen estos patrones. La IA se dio cuenta autónomamente de que construir una
+herramienta supera hacer la tarea manualmente.
 
 ## Cuándo Usar Este Enfoque
 
@@ -183,16 +177,21 @@ Es menos adecuada para:
 
 ## Conclusión
 
-La meta-lección aquí es simple: a veces es mejor que la IA construya la caña de
-pescar en lugar de atrapar cada pez individualmente. La próxima vez que te
-enfrentes a un cambio de código a gran escala, resiste el impulso de volcar toda
-la tarea en la IA. En su lugar:
+La meta-lección: haz que la IA construya la caña de pescar, no que atrape cada
+pez. Cuando enfrentes un cambio de código a gran escala, resiste volcar toda la
+tarea en la IA. En su lugar:
 
 1. Haz un ejemplo manualmente
 2. Haz que la IA construya la automatización
 3. Revisa y ejecuta la herramienta
 
-Este enfoque ha transformado cómo nuestro equipo maneja las migraciones, y lo he
-estado compartiendo con compañeros de equipo que están constantemente
-sorprendidos por lo bien que funciona. No se trata de usar menos la IA — se
-trata de usarla de manera más inteligente.
+Este enfoque transformó cómo nuestro equipo maneja las migraciones. Los
+compañeros con quienes lo comparto se maravillan de los resultados. Usa la IA
+más inteligentemente, no menos.
+
+**Artículos relacionados:**
+
+- [Writing Powerful Claude Code Skills with npx + Bun](/writing-powerful-claude-code-skills-with-npx-bun) -
+  Extiende las capacidades de IA con skills personalizados
+- [Why I Switched from Bun to Deno for Claude Code Skills](/why-i-switched-from-bun-to-deno-for-claude-code-skills) -
+  Consideraciones de runtime para herramientas de IA

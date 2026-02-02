@@ -3,9 +3,10 @@ title: "Per què he canviat de Bun a Deno per a les Skills de Claude Code"
 date: "2026-01-15"
 spoiler:
   "L'autoinstal·lació de Bun es trenca quan existeix qualsevol directori
-  node_modules en les rutes pares—un problema per a skills portables.
-  L'especificador npm: de Deno funciona a tot arreu, des de directoris de
-  projecte fins a monorepos, sense sorpreses."
+  node_modules en rutes pares—fent que les skills fallin en monorepos i
+  directoris de projecte. L'especificador npm: de Deno proporciona comportament
+  consistent a tot arreu, convertint-lo en la millor opció per a skills
+  portables de Claude Code."
 ogImage: https://magarcia.io/og/deno-awesome-skill.png
 tags:
   - typescript
@@ -13,14 +14,16 @@ tags:
   - bun
   - ai
   - developer-tools
+  - cli
 ---
 
-La setmana passada vaig escriure sobre
-[utilitzar npx bun per escriure skills de Claude Code](/ca/writing-powerful-claude-code-skills-with-npx-bun)
-amb dependències de tercers. L'enfocament funcionava per a casos simples—scripts
-autocontinguts amb paquets que s'autoinstal·len, sense pas de compilació. Però
-després d'utilitzar-lo en entorns reals, vaig descobrir un problema
-significatiu.
+**La característica d'autoinstal·lació de Bun es trenca quan existeix qualsevol
+directori `node_modules` en rutes pares.** Això fa que Bun no sigui fiable per a
+skills portables de Claude Code que s'executen des de directoris de projecte o
+monorepos. Després de provar
+[el meu enfocament anterior amb npx bun](/ca/writing-powerful-claude-code-skills-with-npx-bun)
+en entorns reals, vaig canviar a Deno. Aquí explico per què l'especificador
+`npm:` de Deno és la millor opció per a skills TypeScript autocontinguts.
 
 L'autoinstal·lació de Bun només funciona quan no existeix un directori
 `node_modules` en el directori de treball o en qualsevol directori pare. Quan

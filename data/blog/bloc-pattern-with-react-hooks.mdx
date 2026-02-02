@@ -15,15 +15,14 @@ The **BLoC Pattern** has been designed by _Paolo Soares_ and _Cong Hui_, from
 Google and first presented during the _DartConf 2018_ (January 23-24, 2018).
 [See the video on YouTube](https://www.youtube.com/watch?v=PLHln7wHgPE "BLoC Pattern Flutter").
 
-BLoC stands for **B**usiness **Lo**gic **C**omponent. Initially was conceived to
-allow to reuse the same code between Flutter and Angular Dart, but in fact is
-independently of the platform: web application, mobile application, back-end.
+BLoC stands for **B**usiness **Lo**gic **C**omponent. Initially conceived to
+share code between Flutter and Angular Dart, it works independently of platform:
+web application, mobile application, or back-end.
 
-It can be considered an alternative to the
+It offers an alternative to the
 [Redux port for flutter](https://pub.dartlang.org/packages/flutter_redux "Redux port for flutter")
-making use of Dart streams. In our case, we’re going to use Observables from the
-library [RxJS](https://rxjs.dev/ "RxJS") , but any other option like
-[xstream](http://staltz.github.io/xstream/ "xstream") will be valid as well.
+using Dart streams. We'll use Observables from [RxJS](https://rxjs.dev/ "RxJS"),
+though [xstream](http://staltz.github.io/xstream/ "xstream") works equally well.
 
 In short, the BLoC will:
 
@@ -36,18 +35,18 @@ In short, the BLoC will:
 
 ## How BLoC works?
 
-I’m not going to explain extensively how BLoC works (there is other people that
-did a better job I will do here), but just some basic hints.
+Others have explained BLoC better than I will here, so I'll cover just the
+basics.
 
 ![BLoC Schema](/images/bloc-schema.png)
 
-The BLoC will hold the business logic and components will have no knowledge
-about what's happening inside. Components will send _events_to the BLoC via
-\_Observers_ and will be notified by the BLoC via _Observables_.
+The BLoC holds business logic; components know nothing about its internals.
+Components send _events_ to the BLoC via _Observers_ and receive notifications
+via _Observables_.
 
 ## Implementing the BLoC
 
-This is basic typescript example of a search BLoC using RxJS:
+Here is a basic TypeScript search BLoC using RxJS:
 
 ```typescript
 export class SearchBloc {
@@ -86,25 +85,25 @@ export class SearchBloc {
 }
 ```
 
-`results$` and `preamble$` are exposed to be subscribed from a component and
-they express asynchronous values that change in response to changes in `query`.
+`results$` and `preamble$` expose asynchronous values that change when `query`
+changes.
 
-`query` is exposed as `Observer<string>` to the outside, to allow the addition
-of new value from the components. Within `SearchBloc` , we have
-`_query$: BehaviorSubject<string>` as the stream source, and the constructor
-declares `_results$` and `_preamble$` to respond to `_query$`.
+`query` exposes an `Observer<string>` for components to add new values. Inside
+`SearchBloc`, `_query$: BehaviorSubject<string>` serves as the stream source,
+and the constructor declares `_results$` and `_preamble$` to respond to
+`_query$`.
 
 ## Using it on React
 
-In order to use it on React we need to create a new instance of the BLoC and
-share it to the child components using a React context.
+To use it in React, create a BLoC instance and share it with child components
+via React context.
 
 ```jsx
 const searchBloc = new SearchBloc(new API());
 const SearchContext = React.createContext(searchBloc);
 ```
 
-We have to expose it using the context provider:
+Expose it using the context provider:
 
 ```jsx
 const App = () => {
@@ -123,10 +122,10 @@ const App = () => {
 };
 ```
 
-It’s important to have the `useEffect` returning the dispose method of the BLoC
-so it will complete the observer when the component is unmounted.
+The `useEffect` returns the dispose method, completing the observer when the
+component unmounts.
 
-Then we can publish changes to the BLoC from the `SearchInput` component:
+Publish changes to the BLoC from the `SearchInput` component:
 
 ```jsx
 const SearchInput = () => {
@@ -148,10 +147,10 @@ const SearchInput = () => {
 };
 ```
 
-We got the BLoC using the hook `useContext` and then with `useEffect` every time
-the query change we publish the new value to the BLoC.
+We get the BLoC via `useContext`, then `useEffect` publishes each query change
+to the BLoC.
 
-Now it’s time to the `ResultList`:
+Now the `ResultList`:
 
 ```jsx
 const ResultList = () => {
@@ -172,17 +171,14 @@ const ResultList = () => {
 };
 ```
 
-As before, we use the `useContext` to get the BLoC, but now in the `useEffect`
-we subscribe the changes on the `results$` interface to update the local state
-of the component. It’s important to return the return value of the subscribe,
-since it will unsubscribe when the component is unmounted.
+We use `useContext` to get the BLoC, then `useEffect` subscribes to `results$`
+changes to update local state. Returning the subscription unsubscribes when the
+component unmounts.
 
 ## Final thoughts
 
-The final code is not complex, at least if you have a minimal knowledge about
-_Observables_ and _hooks_. I have the feeling that the code is quite readable
-and helps to keep the business logic outside the components. It’s true that we
-should take care about to unsubscribe from the observables and dispose the BLoC
-when the components are unmounted, but these issues could be easily solvable
-creating some new hooks like `useBlocObservable` and `useBlocObserver`. But this
-I’ll try in the future, soon I hope, in a side project I’m using this pattern.
+The final code is straightforward with basic knowledge of _Observables_ and
+_hooks_. The code is readable and keeps business logic outside components. We
+must remember to unsubscribe from observables and dispose the BLoC on unmount,
+but custom hooks like `useBlocObservable` and `useBlocObserver` could solve
+this. I plan to try this in a side project where I use this pattern.

@@ -3,16 +3,18 @@ title: "Creando Skills Potentes de Claude Code con npx bun"
 date: "2026-01-07"
 updated: "2026-01-15"
 spoiler:
-  "Cómo escribir skills de Claude Code que utilizan paquetes npm de terceros sin
-  un paso de compilación. Usar npx bun te proporciona instalación automática de
-  dependencias, TypeScript nativo y un fijado de versiones limpio: el
-  equivalente en JavaScript al uv run de Python."
+  "Aprende cómo escribir skills de Claude Code con paquetes npm de terceros y
+  sin paso de compilación. Usar npx bun proporciona instalación automática de
+  dependencias, soporte nativo de TypeScript y fijado limpio de versiones en
+  imports—el equivalente en JavaScript al uv run de Python para scripts
+  autocontenidos."
 tags:
   - typescript
   - node-js
   - bun
   - ai
   - developer-tools
+  - cli
 ---
 
 > **Actualización (15 de enero de 2026):** Después de más pruebas, he
@@ -23,17 +25,19 @@ tags:
 > [Por qué cambié de Bun a Deno para Skills de Claude Code](/es/why-i-switched-from-bun-to-deno-for-claude-code-skills)
 > para la explicación completa.
 
-Quería construir skills de
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) más
-complejas. Claude Code es la CLI de Anthropic para programación agéntica—y las
-skills te permiten extenderla con instrucciones personalizadas y scripts
-ejecutables. No solo markdown, sino scripts que usan librerías de terceros:
-parsear archivos CSV, manipular hojas de cálculo, llamar a APIs con clientes
-HTTP adecuados.
+Las **skills de Claude Code** te permiten extender la CLI de codificación
+agéntica de Anthropic con instrucciones personalizadas y scripts ejecutables.
+Pero, ¿qué pasa si tu script necesita paquetes npm de terceros como **lodash**,
+**zod** o **csv-parse**? Sin un paso de compilación ni carpeta `node_modules`,
+las importaciones fallan. Esta guía muestra cómo usar `npx bun` para escribir
+skills TypeScript autocontenidas que autoinstalan dependencias en tiempo de
+ejecución—sin necesidad de `package.json`.
 
-El problema: las skills no tienen paso de compilación (_build step_). No puedes
-simplemente hacer `import lodash from 'lodash'` y esperar que funcione. El
-script se ejecuta en un entorno limpio sin carpeta `node_modules`.
+El problema: las
+[skills de Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills)
+no tienen paso de compilación (_build step_). No puedes simplemente hacer
+`import lodash from 'lodash'` y esperar que funcione. El script se ejecuta en un
+entorno limpio sin carpeta `node_modules`.
 
 ## Lo que quería: uv run para JavaScript
 

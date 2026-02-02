@@ -13,35 +13,29 @@ tags:
 
 _Pairing with [@Ester Martí](https://github.com/estermv)_
 
-Everyone has experienced how visiting a web site over a slow network connection
-usually takes ages to load, making the experience very painful or completely
-impossible at all.
+Visiting a website over a slow network connection takes ages to load, making the
+experience painful or impossible.
 
-When it comes to web development, we usually tend to forget about load
-performance focusing more on adding new fancy features. But probably our users
-are not using the last brand new MacBook Pro connected to a 1Gps network. Is
-more likely that they are using a mid-range or low-end mobile device with a
-network connection that in the best case is a 3G connection.
+Web developers often forget load performance while adding fancy features. But
+users likely browse on mid-range or low-end mobile devices with 3G connections
+at best--not the latest MacBook Pro on gigabit fiber.
 
 > [In 2018, 52.2% of all global web pages were served to mobile phones.](https://www.statista.com/statistics/241462/global-mobile-phone-website-traffic-share/)
 
-So, taking care of performance is important and one of the most
-resource-consuming is media delivery. We are going to show how to adapt the
-media delivery based on the network connection using the
-[Network Information API](http://wicg.github.io/netinfo/). This is an improved
-version of an experiment I did with my coworker
-[@Eduardo Aquiles](https://twitter.com/eduaquiles) as a React component, similar
-to what [Max Böck](https://mxb.dev/) explains in his article about
-[connection-aware components](https://mxb.dev/blog/connection-aware-components/)
-but in this case, using service workers.
+Performance matters, and media delivery consumes the most resources. We'll adapt
+media delivery based on network connection using the
+[Network Information API](http://wicg.github.io/netinfo/). This improves an
+experiment I built with [@Eduardo Aquiles](https://twitter.com/eduaquiles) as a
+React component, similar to [Max Böck's](https://mxb.dev/) article on
+[connection-aware components](https://mxb.dev/blog/connection-aware-components/)--but
+using service workers.
 
 ## The Network Information API
 
-The Network Information API is a draft specification that exposes an interface
-to JavaScript with information about the device connection.
+The Network Information API is a draft specification exposing device connection
+information to JavaScript.
 
-The interface consists of a different set of attributes that gives us multiple
-information about the network. The most relevant for us in this article are:
+The interface provides several network attributes. The most relevant here:
 
 - **type:** The
   [connection type](http://wicg.github.io/netinfo/#dfn-connection-type) that the
@@ -110,9 +104,9 @@ information about the network. The most relevant for us in this article are:
 
 ### Browser support
 
-The API does not have a full browser support yet but is
-[supported by the most popular mobile browsers](https://caniuse.com/#feat=netinfo)
-which are the ones where this technique will have more impact.
+The API lacks full browser support but works in the
+[most popular mobile browsers](https://caniuse.com/#feat=netinfo)--where this
+technique has the greatest impact.
 
 ![Browser support for Network Information API](/images/caniuse.png)
 
@@ -120,17 +114,13 @@ In fact, 70% of mobile users have this API enabled on their device.
 
 ## Adaptive Media Serving
 
-Our purpose will be to serve different media resources based on the information
-that we get from the `effectiveType` attribute. When we talk about different
-media resources it could be a completely different media, like switching between
-HD video, HD image or low quality image, the approach suggested by
-[Addy Osmani](https://addyosmani.com/blog/adaptive-serving/).
+We'll serve different media resources based on `effectiveType`. "Different
+media" could mean switching between HD video, HD image, or low-quality image, as
+[Addy Osmani](https://addyosmani.com/blog/adaptive-serving/) suggests.
 
-In this example, we are going to use different compression levels for the same
-image.
+This example uses different compression levels for the same image.
 
-First, we need to get the proper quality based on network conditions. This is
-easily reachable using the next snippet:
+First, get the proper quality based on network conditions:
 
 ```javascript
 function getMediaQuality() {
@@ -157,10 +147,8 @@ function getMediaQuality() {
 }
 ```
 
-Imagine that we have an image server where we can specify the quality of the
-image that we want with a query parameter **quality** as `low`, `medium` or
-`high`. Therefore we can set the quality on the `src` attribute of the images
-tags as it follows:
+Imagine an image server accepting a **quality** query parameter (`low`,
+`medium`, or `high`). Set the quality in the `src` attribute:
 
 ```html
 <img src="http://images.magarcia.io/cute_cat?quality=low" alt="Cute cat" />
@@ -173,29 +161,24 @@ images.forEach((img) => {
 });
 ```
 
-It is important to notice that the default quality set on the image is `low`,
-which means that devices will load first the low quality image and then if it
-has a high-speed connection will load the better quality one.
+The default quality is `low`, so devices load the low-quality image first, then
+upgrade on high-speed connections.
 
-Then the JavaScript snippet above will get all the images in the document and
-will replace the quality parameter to the appropriate one based on what the
-`getMediaQuality` function returns. If the quality is `low` is not going to do
-more requests, but if it changes it will do two requests: one with the `low`
-quality image when the browsers parse the `img` tag and another one with
-`medium` or `high` quality when the JavaScript code is executed.
+The JavaScript gets all images and replaces the quality parameter based on
+`getMediaQuality`. For `low` quality, no additional requests occur. For `medium`
+or `high`, two requests happen: one for `low` when parsing the `img` tag,
+another for better quality when JavaScript executes.
 
-This is not ideal but it will improve load times on slow networks. But for
-medium/high connection networks, as we mentioned before, it will make two
-requests for each image consuming more data than needed.
+This improves load times on slow networks but doubles requests on fast
+connections, consuming extra data.
 
 ## Using Service Workers
 
-The problem mentioned regarding the two requests can be fixed using
-[service workers](https://developers.google.com/web/fundamentals/primers/service-workers/),
-intercepting the request made by the browser and replacing it with the
-appropriate quality for the image.
+[Service workers](https://developers.google.com/web/fundamentals/primers/service-workers/)
+solve the double-request problem by intercepting browser requests and replacing
+them with the appropriate quality.
 
-First, we need to register our service worker:
+First, register the service worker:
 
 ```javascript
 if ("serviceWorker" in navigator) {
@@ -215,9 +198,8 @@ if ("serviceWorker" in navigator) {
 }
 ```
 
-Next, we add a listener for the fetch event, which for all the images requested
-from the site will append the right quality parameter using the
-`getMediaQuality` function created in the previous section.
+Add a fetch event listener that appends the right quality parameter to image
+requests:
 
 ```javascript
 self.addEventListener("fetch", function (event) {
@@ -228,8 +210,7 @@ self.addEventListener("fetch", function (event) {
 });
 ```
 
-And we don’t need to specify the quality parameter on the `img` tag anymore
-since the service worker will be in charge of that.
+Now omit the quality parameter from `img` tags--the service worker handles it:
 
 ```html
 <img src=“http://images.magarcia.io/cute_cat” alt=“Cute cat”/>
@@ -237,8 +218,8 @@ since the service worker will be in charge of that.
 
 ## The code
 
-You can find the code of this post (a more complete, clean and with fewer bugs)
-on [this GitHub repo](https://github.com/estermv/adaptative-media-serving).
+Find the complete, cleaner code in
+[this GitHub repo](https://github.com/estermv/adaptative-media-serving).
 
 ## Further Reading
 

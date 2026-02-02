@@ -11,10 +11,9 @@ tags:
   - mvp
 ---
 
-Hi ha molta literatura sobre productes mínims viables (MVP) a tot arreu. No crec
-que pugui aportar al camp més informació o valor que la que ja existeix però
-donaré el meu punt de vista sobre això basat en una experiència que vaig tenir
-treballant amb un client.
+Hi ha molta literatura sobre productes mínims viables (MVP). No crec que pugui
+aportar noves idees, però compartiré la meva perspectiva basada en una
+experiència amb un client.
 
 ![MVP - Un patí primer, després una bici i finalment un cotxe](/images/mvp.png)
 
@@ -24,83 +23,68 @@ treballant amb un client.
 >
 > [Wikipedia](https://ca.wikipedia.org/wiki/Producte_viable_m%C3%ADnim)
 
-Comencem posant aquest article en context. El client era una empresa europea
-líder en el camp immobiliari, encara que no crec que el domini importi en aquest
-cas, i l'equip de producte tenia una idea d'un producte bastant complex que
-volien vendre als seus clients. Per conèixer l'acceptació per part dels usuaris
-del lloc web, vam executar múltiples proves A/B per veure quin era l'enfocament
-més exitós. El producte en si no era tan complex d'implementar però la decisió
-de quins usuaris haurien de veure què, aquesta era una altra història. Havíem de
-tenir en compte la ubicació de l'usuari, en quina ubicació estava buscant,
-l'última visita a la pàgina, etc. El nombre de valors amb els quals havíem de
-jugar era gran, així que per tenir prou dades valuoses per prendre la decisió
-adequada, vam executar les proves durant gairebé mig any.
+Posem context. El client era una empresa europea líder en el camp
+immobiliari—encara que el domini importa poc aquí. L'equip de producte imaginava
+un producte complex per vendre als seus clients. Per mesurar l'acceptació dels
+usuaris, vam executar múltiples proves A/B per trobar l'enfocament més exitós.
+El producte era senzill d'implementar, però decidir quins usuaris haurien de
+veure què era una altra història. Havíem de considerar la ubicació de l'usuari,
+la ubicació de cerca, l'última visita, etc. El nombre de variables era gran,
+així que vam executar les proves durant gairebé mig any per reunir dades
+significatives.
 
-Aquest tipus d'experiment no té sentit sense mètriques adequades, així que vam
-mesurar tot. Una vegada que la prova va acabar, l'equip d'anàlisi de dades va
-fer la seva feina i va resultar que els valors no eren els esperats, ni a prop
-d'això. Resulta que no tot era tan dolent. Una petita part del producte va tenir
-una acceptació realment bona entre els usuaris, i un mes després l'equip de
-producte va idear un producte diferent basat en aquesta petita part.
+Aquest tipus d'experiment requereix mètriques adequades, així que vam mesurar
+tot. Un cop acabada la prova, l'equip d'anàlisi va fer la seva feina—i els
+resultats ens van decebre. Van quedar molt lluny de les expectatives. Tot i
+així, una petita part del producte va ressonar fortament amb els usuaris, i un
+mes després l'equip de producte va construir un nou producte al voltant d'ella.
 
-Després d'aquesta, no tan petita introducció, és on comença aquesta història.
-Aquest nou producte no tenia les regles complexes de l'anterior: res relacionat
-amb la ubicació, ni visites d'usuari o historial de cerca. Els clients tindran
-una secció especial a la pàgina per mostrar els seus productes i podrien
-compartir com prefereixen amb els seus clients. Ara que teníem el producte (la
-part orientada a l'usuari ja estava implementada per a la prova anterior) era
-hora de fer-lo real i començar a vendre'l.
+Ara comença la història real. El nou producte mancava de les regles complexes de
+l'anterior: sense lògica d'ubicació, sense historial de visites, sense patrons
+de cerca. Els clients tindrien una secció especial a la pàgina per mostrar els
+seus productes i compartir-la com volguessin. Com que la part orientada a
+l'usuari ja existia de la prova anterior, era hora de fer-lo real i començar a
+vendre.
 
-Un dia vam tenir la reunió per definir l'arquitectura i com anàvem a fer-ho. Els
-dos equips d'enginyeria involucrats, el cap de tecnologia i el propietari del
-producte. Al voltant de 14 persones a la sala (realment sales virtuals ja que
-els equips estaven distribuïts en diferents països) discutint quina anava a ser
-la millor manera d'implementar-lo i intentant endevinar quan anava a estar
-llest. Algú va dir que perquè el producte necessita ser comprat per clients
-hauríem de parlar tard o d'hora amb l'equip d'enginyeria a càrrec d'aquesta
-àrea. L'equip a càrrec dels productes haurà de crear un nou microservei per
-gestionar el nou producte i el que està a càrrec del lloc web haurà de consumir
-i processar aquestes dades per habilitar o no el producte per a un client donat.
+Vam tenir una reunió per definir l'arquitectura i el pla d'implementació. Dos
+equips d'enginyeria, el cap de tecnologia i el propietari del producte—unes 14
+persones en sales virtuals a través de països—van discutir el millor enfocament
+i van estimar la finalització. Algú va assenyalar que, com que els clients
+havien de comprar el producte, necessitaríem involucrar l'equip de comerç.
+L'equip de productes crearia un nou microservei, i l'equip web consumiria i
+processaria aquestes dades per habilitar el producte per a cada client.
 
-Tot junt comença a semblar complex de nou, les primeres estimacions de quan es
-faria eren almenys tres mesos, però probablement més ja que implicaria
-coordinació amb múltiples equips d'enginyeria, màrqueting, disseny, etc.
-Escoltant totes les discussions que succeïen la part mandrosa del meu cervell es
-va activar i vaig fer una pregunta clau al propietari del producte: “_Com es va
-a dirigir aquest producte als clients per vendre'l a curt termini?_”. La
-resposta va ser la clau per trobar una manera més fàcil de resoldre aquest
-problema. Només un petit grup de persones a l'equip de vendes contactarà els
-clients més importants per vendre el producte, almenys inicialment; i després
-d'això, avaluaran quins altres clients estarien interessats.
+La complexitat s'acumulava de nou. Les estimacions inicials apuntaven a tres
+mesos mínim—probablement més, donada la coordinació entre enginyeria, màrqueting
+i disseny. Escoltant aquestes discussions, vaig preguntar al propietari del
+producte: "_Com vendreu aquest producte a curt termini?_" La resposta va
+desbloquejar un camí més fàcil. Inicialment, un petit equip de vendes
+contactaria només els clients més importants. Després, avaluarien quins altres
+clients podrien estar interessats.
 
-Amb aquesta nova informació, vaig proposar un enfocament poc ortodox per a la
-implementació. En lloc de construir el sistema complex, coordinar múltiples
-equips i bloquejar el llançament fins que tot estigui fet; per què no codificar
-els id dels clients en el codi i tenir només un parell de línies per gestionar
-la lògica? Cada vegada que el producte es vengui a un client, algú només ha
-d'enviar un correu electrònic a l'equip i podríem afegir l'id en minuts. Això,
-òbviament, no és una solució que escali però no és la intenció. Atès que les
-vendes anaven a ser “manualment” al principi podem esperar que el ritme al qual
-els clients adquiriran el producte serà controlat.
+Amb aquesta informació, vaig proposar un enfocament poc ortodox. En lloc de
+construir el sistema complex, coordinar múltiples equips i bloquejar el
+llançament fins que tot estigués fet—per què no hardcodejar els IDs de clients?
+Unes poques línies de lògica, i llest. Cada vegada que es vengués el producte,
+algú enviaria un email a l'equip, i afegiríem l'ID en minuts. Aquesta solució no
+escala, però no pretenia fer-ho. Com que les vendes es gestionarien manualment
+al principi, podíem controlar el ritme d'adquisició de clients.
 
-La proposta que vaig fer va ser realment ben rebuda per tots, això ens permetrà
-començar a vendre abans i alleujarà la pressió sobre els equips d'enginyeria per
-construir la solució final. En només una setmana teníem el producte al seu lloc
-i venut al primer client. Els següents mesos els equips van estar més relaxats
-treballant en la implementació final que no implicarà interaccions manuals més.
+La proposta va ser ben rebuda. Podíem començar a vendre abans i alleujar la
+pressió sobre els equips d'enginyeria. En només una setmana teníem el producte
+llest i venut al primer client. Durant els mesos següents, els equips van
+treballar a un ritme relaxat en la implementació final—una que eliminaria els
+passos manuals.
 
-Així que, aquesta va ser la història que volia compartir. No sé si seria útil
-per a tu però almenys vaig aprendre alguns punts importants:
+Aquesta és la història. Això és el que vaig aprendre:
 
-- Mantén la implementació el més simple possible, no només arribaràs al mercat
-  abans probablement podries eliminar o relaxar alguns terminis.
-- Els equips d'enginyeria haurien d'estar involucrats el més aviat possible en
-  la definició del producte perquè diferents punts de vista poden trobar una
-  millor solució.
-- Tota la visió del projecte hauria de ser compartida amb els enginyers, no
-  només la part en la qual han de treballar ja que ajuda a decidir
-  l'arquitectura.
+- Mantén la implementació el més simple possible. Arribaràs al mercat abans i
+  podràs relaxar alguns terminis.
+- Involucra els equips d'enginyeria aviat en la definició del producte.
+  Diferents perspectives revelen millors solucions.
+- Comparteix la visió completa del projecte amb els enginyers, no només la seva
+  part. El context modela millor arquitectura.
 
-En conclusió, vaig a seguir fent una de les coses que considero més importants
-en un desenvolupador: ser mandrós. Perquè aquesta actitud m'ajudarà a trobar la
-manera més fàcil i ràpida de resoldre un problema.
+En conclusió: seguiré practicant el que considero un dels trets més importants
+en un desenvolupador—la mandra. Aquest instint m'impulsa a trobar la forma més
+simple i ràpida de resoldre un problema.

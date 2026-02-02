@@ -8,44 +8,37 @@ tags:
   - angular
 ---
 
-Last Tuesday I enjoyed a talk of [Miško Hevery](http://misko.hevery.com/about/)
-about Angular2 thanks to guys of
-[AngularBeers](http://www.meetup.com/AngularJS-Beers/). It was a talk about what
-is coming with Angular 2 and the key point with which we have to stay is that
-Angluar leave the concept of frontend framework to become a full a platform.
+Last Tuesday I attended a talk by [Miško Hevery](http://misko.hevery.com/about/)
+about Angular 2, organized by
+[AngularBeers](http://www.meetup.com/AngularJS-Beers/). The key takeaway:
+Angular is evolving from a frontend framework into a full platform.
 
 ![miskohevery](/images/angularbeers-with-misko-hevery.jpg) _Sara (a good
 coworker and better friend), Miško and me_
 
-But, apart from this, I would like to remark a couple of things that will make
-Angular 2 a powerful option in a near future.
+Two upcoming features will make Angular 2 particularly powerful.
 
 ## Offline compile
 
-What does this means? Templates have been one of the places where mistakes are
-made since Angular 1. Even if we introduce TypeScript or lint tools, we couldn't
-be able to detect mistakes in templates until they are evaluated at the runtime.
-Until now Angular 1.X compiles the templates each time they should be rendered.
+Templates have been error-prone since Angular 1. Even with TypeScript or lint
+tools, template errors remain undetected until runtime. Angular 1.X compiles
+templates each time they render.
 
-With Angular 2 (without offline compile) the templates are compiled only once.
-But with offline compiling the templates are compiled on build time to
-JavaScript so it will be never compiled in the browser. The benefits we obtain
-here is that it enables us to statically type-check our templates with
-TypeScript, which is awesome, in addition to skipping the runtime compilation
-and smaller library size.
+Angular 2 (without offline compile) compiles templates only once. With offline
+compiling, templates compile to JavaScript at build time, eliminating browser
+compilation. The benefits: static type-checking of templates with TypeScript, no
+runtime compilation, and smaller library size.
 
 ## Angular Universal
 
 > Universal (isomorphic) JavaScript support for Angular 2.
 
-With Angular Universal, we can run Angular 2 in the server side and this gives
-us some advantages:
+Angular Universal enables server-side Angular 2, providing several advantages:
 
-1. **Better Perceived Performance:** The users will instantly see a
-   server-rendered view which greatly improves perceived performance and the
-   overall user experience.
-1. **Optimized for Search Engines:** Server-side pre-rendering is a reliable way
-   to ensure that all search engines can access your content.
-1. **Site Preview:** Ensure that Facebook, Twitter, and all other social media
-   apps correctly display a preview image of your app. (I deal with this problem
-   before and is _a pain in the ass_)
+1. **Better Perceived Performance:** Users instantly see a server-rendered view,
+   improving perceived performance and user experience.
+2. **Optimized for Search Engines:** Server-side pre-rendering ensures all
+   search engines can access your content.
+3. **Site Preview:** Facebook, Twitter, and other social media apps correctly
+   display preview images. (I have struggled with this problem before---it is
+   _frustrating_.)

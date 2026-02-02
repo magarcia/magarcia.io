@@ -3,16 +3,18 @@ title: "Escrivint skills potents de Claude Code amb npx bun"
 date: "2026-01-07"
 updated: "2026-01-15"
 spoiler:
-  "Com escriure skills de Claude Code que utilitzin paquets npm de tercers sense
-  un pas de compilació. Utilitzar npx bun et proporciona dependències
-  auto-instal·lables, TypeScript natiu i una fixació de versions
-  neta—l'equivalent en JavaScript a l'uv run de Python."
+  "Aprèn com escriure skills de Claude Code amb paquets npm de tercers i sense
+  pas de compilació. Utilitzar npx bun proporciona instal·lació automàtica de
+  dependències, suport natiu de TypeScript i fixació neta de versions en
+  imports—l'equivalent en JavaScript a l'uv run de Python per a scripts
+  autocontinguts."
 tags:
   - typescript
   - node-js
   - bun
   - ai
   - developer-tools
+  - cli
 ---
 
 > **Actualització (15 de gener de 2026):** Després de més proves, he descobert
@@ -23,15 +25,17 @@ tags:
 > [Per què vaig canviar de Bun a Deno per a Skills de Claude Code](/ca/why-i-switched-from-bun-to-deno-for-claude-code-skills)
 > per a l'explicació completa.
 
-Volia construir skills de
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) més
-complexes. Claude Code és la CLI d'Anthropic per a la programació amb agents—i
-les skills et permeten estendre-la amb instruccions personalitzades i scripts
-executables. No només markdown, sinó scripts que utilitzen biblioteques de
-tercers: analitzar fitxers CSV, manipular fulls de càlcul, cridar API amb
-clients HTTP adequats.
+Les **skills de Claude Code** et permeten estendre la CLI de codificació amb
+agents d'Anthropic amb instruccions personalitzades i scripts executables. Però,
+què passa si el teu script necessita paquets npm de tercers com **lodash**,
+**zod** o **csv-parse**? Sense un pas de compilació ni carpeta `node_modules`,
+les importacions fallen. Aquesta guia mostra com utilitzar `npx bun` per
+escriure skills TypeScript autocontinguts que autoinstal·len dependències en
+temps d'execució—sense necessitat de `package.json`.
 
-El problema: les skills no tenen un pas de compilació. No pots simplement fer
+El problema: les
+[skills de Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills)
+no tenen un pas de compilació. No pots simplement fer
 `import lodash from 'lodash'` i esperar que funcioni. L'script s'executa en un
 entorn fresc sense carpeta `node_modules`.
 

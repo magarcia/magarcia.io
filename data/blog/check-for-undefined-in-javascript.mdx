@@ -10,34 +10,31 @@ tags:
   - javascript
 ---
 
-If you’re writing JavaScript more or less regularly, at some point you’re
-probably faced with a situation where there was a need to check if a variable is
-`undefined`.
+If you write JavaScript regularly, you've likely needed to check whether a
+variable is `undefined`.
 
 But, what is the best way to do it?
 
 ## The intuitive way
 
-Any programmer with experience in other language will use the intuition to
-figure out:
+Any programmer experienced in other languages will intuit:
 
 ```js
 if (x === undefined) { ... }
 ```
 
-And this will work without any problem, or almost.
+This works without problems--almost.
 
-Comparing directly with `undefined` will work on all modern browsers. But old
-browsers allowed its value to be re-assigned like this:
+Direct comparison with `undefined` works in all modern browsers. Old browsers,
+however, allowed reassignment:
 
 ```js
 undefined = "new value";
 ```
 
-With this re-assignment, a direct computation will not work as expected.
+With this reassignment, direct comparison fails.
 
-This behavior was fixed in 2009 with
-[ECMAScript 5](https://es5.github.io/#x15.1.1.3) :
+[ECMAScript 5](https://es5.github.io/#x15.1.1.3) fixed this in 2009:
 
 > **15.1.1.3 undefined**  
 > The value of `undefined` is **undefined** (see 8.1). This property has the
@@ -46,47 +43,41 @@ This behavior was fixed in 2009 with
 
 ## The “safe” way
 
-If you have to support old browsers and you’re concerned about someone
-re-assigning the value of `undefined` there are other ways to do the check.
+If you support old browsers and worry about `undefined` reassignment, use
+alternative methods.
 
 ### Reading the type
 
-You can use the
-[typeof operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof),
-that will return the string `"undefined"` so you can check for it.
+The
+[typeof operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof)
+returns `"undefined"` for undefined values:
 
 ```js
 if (typeof x === "undefined") { ... }
 ```
 
-**Note:** The `typeof` operator does not throw an error if the variable has not
-been declared.
+**Note:** `typeof` does not throw an error for undeclared variables.
 
 ### Using `void`
 
-Alternatively, you can use the
-[typeof operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof)
-to check for `undefined`. For example:
+The
+[void operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void)
+also returns undefined:
 
 ```js
 if (x === void(0)) { ... }
 ```
 
-In this example, the zero doesn’t have any special meaning. As stated on MDN:
+The zero has no special meaning. As MDN states:
 
 > The **void operator** evaluates the given _expression_ and then returns
 > [undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined).
 
 ## Which way is better
 
-In my time as a consultant, I learned what’s the best answer for this kind of
-question: it depends. I would depend on the concrete use case you have, but I
-can give you some tips.
+As a consultant, I learned the best answer: it depends. Here are some tips.
 
-In general, I tend to use the convention that is already present on the
-codebase. But if you’re writing a new code that will run only on modern
-browsers, I’ll suggest going for the direct comparison (it’s clear and easy to
-understand also for people that don’t know JavaScript). For old browsers
-support, I strongly recommend to create a function `isUndefined` and use the
-option of your choice inside. Then the code will express their purpose clearly
-to everyone.
+Follow existing codebase conventions. For new code running only on modern
+browsers, use direct comparison--it's clear and readable even for JavaScript
+beginners. For old browser support, create an `isUndefined` function with your
+preferred method inside. This expresses intent clearly.

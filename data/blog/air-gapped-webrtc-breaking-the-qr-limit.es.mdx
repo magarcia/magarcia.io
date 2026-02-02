@@ -1,27 +1,33 @@
 ---
-title:
-  "Rompiendo el límite del QR: El descubrimiento de un protocolo WebRTC sin
-  servidor"
+title: "WebRTC sin Servidor via Codigo QR: Construyendo el Protocolo QWBP"
 date: "2026-01-19"
 spoiler:
-  Una simple petición de un usuario llevó a una sesión intensiva de diseño de
-  protocolos asistida por IA. Reduje la señalización WebRTC de 2.500 bytes a 55
-  bytes—una reducción del 97,79%—cuestionando cada buena práctica. Esta es la
-  historia de cómo nació QWBP.
+  Como comprimí la señalizacion WebRTC de 2.500 bytes a 55 bytes usando un
+  protocolo binario personalizado, permitiendo conexiones peer-to-peer a traves
+  de codigos QR sin ningun servidor de señalizacion. La historia completa de
+  QWBP (QR-WebRTC Bootstrap Protocol).
 tags:
   - javascript
+  - typescript
   - webrtc
-  - qr-code
   - security
+  - open-source
+  - ai
 ---
 
+**QWBP (QR-WebRTC Bootstrap Protocol)** permite conexiones peer-to-peer sin
+servidor comprimiendo la senalizacion WebRTC en codigos QR. Al disenar un
+protocolo binario personalizado que reduce el SDP de 2.500 bytes a solo 55
+bytes, dos dispositivos pueden establecer conexiones WebRTC encriptadas
+escaneando los codigos QR del otro—sin necesidad de servidor de senalizacion.
+
 > El hombre razonable se adapta al mundo: el irrazonable persiste en intentar
-> adaptar el mundo a sí mismo. Por tanto, todo progreso depende del hombre
+> adaptar el mundo a si mismo. Por tanto, todo progreso depende del hombre
 > irrazonable.
 >
 > — George Bernard Shaw
 
-Hardcodeé contraseñas en producción. Violé las mejores prácticas de WebRTC.
+Hardcodee contrasenas en produccion. Violé las mejores prácticas de WebRTC.
 Diseñé un protocolo binario personalizado. Luego tiré todo a la basura cuando
 descubrí que el verdadero problema no era la compresión—era la física.
 
@@ -1134,6 +1140,13 @@ a=candidate:1 1 udp 2122260223 192.168.1.5 54321 typ host
 
 <br />
 
-_Un usuario hizo una pregunta simple. Pasé una tarde y una mañana hablando con
-una IA sobre diseño de protocolos. Ser irrazonable resultó ser la única solución
+_Un usuario hizo una pregunta simple. Pase una tarde y una manana hablando con
+una IA sobre diseno de protocolos. Ser irrazonable resulto ser la unica solucion
 razonable._
+
+---
+
+_¿Quieres aprender mas sobre desarrollo asistido por IA? Lee sobre
+[como la IA esta cambiando los flujos de trabajo de equipos de software](/es/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+o explora
+[tecnicas para construir herramientas con IA](/es/asking-ai-to-build-the-tool-instead-of-doing-the-task)._

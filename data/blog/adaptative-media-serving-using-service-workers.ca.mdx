@@ -13,37 +13,31 @@ tags:
 
 _Fent pair amb [@Ester Martí](https://github.com/estermv)_
 
-Tothom ha experimentat com visitar un lloc web a través d'una connexió de xarxa
-lenta sol trigar una eternitat a carregar-se, fent que l'experiència sigui molt
-dolorosa o completament impossible.
+Visitar un lloc web amb una connexió de xarxa lenta triga una eternitat a
+carregar, fent l'experiència dolorosa o impossible.
 
-Quan es tracta de desenvolupament web, solem oblidar el rendiment de càrrega
-centrant-nos més a afegir noves característiques cridaneres. Però probablement
-els nostres usuaris no estan utilitzant l'últim MacBook Pro connectat a una
-xarxa d'1Gps. És més probable que estiguin utilitzant un dispositiu mòbil de
-gamma mitjana o baixa amb una connexió de xarxa que en el millor dels casos és
-una connexió 3G.
+Els desenvolupadors web sovint obliden el rendiment de càrrega mentre afegeixen
+característiques cridaneres. Però els usuaris probablement naveguen en
+dispositius mòbils de gamma mitjana o baixa amb connexions 3G com a màxim--no
+l'últim MacBook Pro amb fibra gigabit.
 
 > [El 2018, el 52.2% de totes les pàgines web globals es van servir a telèfons mòbils.](https://www.statista.com/statistics/241462/global-mobile-phone-website-traffic-share/)
 
-Per tant, tenir cura del rendiment és important i un dels que més recursos
-consumeix és l'entrega de mitjans. Mostrarem com adaptar l'entrega de mitjans
-basada en la connexió de xarxa utilitzant l'
-[API d'Informació de Xarxa](http://wicg.github.io/netinfo/). Aquesta és una
-versió millorada d'un experiment que vaig fer amb el meu company
-[@Eduardo Aquiles](https://twitter.com/eduaquiles) com un component de React,
-similar al que [Max Böck](https://mxb.dev/) explica en el seu article sobre
-[components conscients de la connexió](https://mxb.dev/blog/connection-aware-components/)
-però en aquest cas, utilitzant service workers.
+El rendiment importa, i l'entrega de mitjans consumeix més recursos. Adaptarem
+l'entrega de mitjans basada en la connexió de xarxa utilitzant
+l'[API d'Informació de Xarxa](http://wicg.github.io/netinfo/). Això millora un
+experiment que vaig construir amb
+[@Eduardo Aquiles](https://twitter.com/eduaquiles) com a component de React,
+similar a l'article de [Max Böck](https://mxb.dev/) sobre
+[components conscients de la connexió](https://mxb.dev/blog/connection-aware-components/)--però
+utilitzant service workers.
 
 ## L'API d'Informació de Xarxa
 
-L'API d'Informació de Xarxa és un esborrany d'especificació que exposa una
-interfície a JavaScript amb informació sobre la connexió del dispositiu.
+L'API d'Informació de Xarxa és un esborrany d'especificació que exposa
+informació de connexió del dispositiu a JavaScript.
 
-La interfície consta d'un conjunt diferent d'atributs que ens dóna múltiple
-informació sobre la xarxa. Els més rellevants per a nosaltres en aquest article
-són:
+La interfície proporciona diversos atributs de xarxa. Els més rellevants aquí:
 
 - **type:** El
   [tipus de connexió](http://wicg.github.io/netinfo/#dfn-connection-type) que
@@ -113,9 +107,9 @@ són:
 
 ### Suport del navegador
 
-L'API encara no té un suport complet del navegador però és
-[suportada pels navegadors mòbils més populars](https://caniuse.com/#feat=netinfo)
-que són on aquesta tècnica tindrà més impacte.
+L'API manca de suport complet del navegador però funciona en els
+[navegadors mòbils més populars](https://caniuse.com/#feat=netinfo)--on aquesta
+tècnica té major impacte.
 
 ![Suport del navegador per a l'API d'Informació de Xarxa](/images/caniuse.png)
 
@@ -124,17 +118,14 @@ dispositiu.
 
 ## Servir Mitjans Adaptatius
 
-El nostre propòsit serà servir diferents recursos multimèdia basats en la
-informació que obtenim de l'atribut `effectiveType`. Quan parlem de diferents
-recursos multimèdia podria ser un mitjà completament diferent, com canviar entre
-vídeo HD, imatge HD o imatge de baixa qualitat, l'enfocament suggerit per
+Servirem diferents recursos multimèdia basats en `effectiveType`. "Diferents
+mitjans" podria significar canviar entre vídeo HD, imatge HD o imatge de baixa
+qualitat, com suggereix
 [Addy Osmani](https://addyosmani.com/blog/adaptive-serving/).
 
-En aquest exemple, utilitzarem diferents nivells de compressió per a la mateixa
-imatge.
+Aquest exemple utilitza diferents nivells de compressió per a la mateixa imatge.
 
-Primer, necessitem obtenir la qualitat adequada basada en les condicions de la
-xarxa. Això és fàcilment assolible utilitzant el següent fragment:
+Primer, obté la qualitat adequada basada en les condicions de xarxa:
 
 ```javascript
 function getMediaQuality() {
@@ -161,10 +152,8 @@ function getMediaQuality() {
 }
 ```
 
-Imagina que tenim un servidor d'imatges on podem especificar la qualitat de la
-imatge que volem amb un paràmetre de consulta **quality** com `low`, `medium` o
-`high`. Per tant podem establir la qualitat a l'atribut `src` de les etiquetes
-d'imatges com segueix:
+Imagina un servidor d'imatges que accepta un paràmetre **quality** (`low`,
+`medium` o `high`). Estableix la qualitat a l'atribut `src`:
 
 ```html
 <img src="http://images.magarcia.io/cute_cat?quality=low" alt="Gat bonic" />
@@ -177,30 +166,25 @@ images.forEach((img) => {
 });
 ```
 
-És important notar que la qualitat per defecte establerta a la imatge és `low`,
-el que significa que els dispositius carregaran primer la imatge de baixa
-qualitat i després si té una connexió d'alta velocitat carregarà la de millor
-qualitat.
+La qualitat per defecte és `low`, així que els dispositius carreguen primer la
+imatge de baixa qualitat, després milloren en connexions ràpides.
 
-Després el fragment de JavaScript anterior obtindrà totes les imatges al
-document i reemplaçarà el paràmetre de qualitat a l'apropiat basat en el que la
-funció `getMediaQuality` retorna. Si la qualitat és `low` no farà més peticions,
-però si canvia farà dues peticions: una amb la imatge de qualitat `low` quan els
-navegadors analitzen l'etiqueta `img` i una altra amb qualitat `medium` o `high`
-quan s'executa el codi JavaScript.
+El JavaScript obté totes les imatges i reemplaça el paràmetre de qualitat segons
+`getMediaQuality`. Per a qualitat `low`, no hi ha peticions addicionals. Per a
+`medium` o `high`, ocorren dues peticions: una per a `low` en analitzar
+l'etiqueta `img`, una altra per a millor qualitat quan s'executa JavaScript.
 
-Això no és ideal però millorarà els temps de càrrega en xarxes lentes. Però per
-a xarxes de connexió mitjana/alta, com hem esmentat abans, farà dues peticions
-per a cada imatge consumint més dades de les necessàries.
+Això millora els temps de càrrega en xarxes lentes però duplica les peticions en
+connexions ràpides, consumint dades extra.
 
 ## Utilitzant Service Workers
 
-El problema esmentat respecte a les dues peticions pot ser arreglat utilitzant
-[service workers](https://developers.google.com/web/fundamentals/primers/service-workers/),
-interceptant la petició feta pel navegador i reemplaçant-la amb la qualitat
-apropiada per a la imatge.
+Els
+[service workers](https://developers.google.com/web/fundamentals/primers/service-workers/)
+resolen el problema de doble petició interceptant les peticions del navegador i
+reemplaçant-les amb la qualitat apropiada.
 
-Primer, necessitem registrar el nostre service worker:
+Primer, registra el service worker:
 
 ```javascript
 if ("serviceWorker" in navigator) {
@@ -220,9 +204,8 @@ if ("serviceWorker" in navigator) {
 }
 ```
 
-A continuació, afegim un listener per a l'esdeveniment fetch, que per a totes
-les imatges sol·licitades des del lloc afegirà el paràmetre de qualitat correcte
-utilitzant la funció `getMediaQuality` creada a la secció anterior.
+Afegeix un listener de l'esdeveniment fetch que afegeix el paràmetre de qualitat
+correcte a les peticions d'imatges:
 
 ```javascript
 self.addEventListener("fetch", function (event) {
@@ -233,8 +216,8 @@ self.addEventListener("fetch", function (event) {
 });
 ```
 
-I ja no necessitem especificar el paràmetre de qualitat a l'etiqueta `img` ja
-que el service worker s'encarregarà d'això.
+Ara omet el paràmetre de qualitat de les etiquetes `img`--el service worker ho
+gestiona:
 
 ```html
 <img src=“http://images.magarcia.io/cute_cat” alt=“Gat bonic”/>
@@ -242,7 +225,7 @@ que el service worker s'encarregarà d'això.
 
 ## El codi
 
-Pots trobar el codi d'aquest post (més complet, net i amb menys errors) en
+Troba el codi complet i més net en
 [aquest repositori de GitHub](https://github.com/estermv/adaptative-media-serving).
 
 ## Lectura Addicional

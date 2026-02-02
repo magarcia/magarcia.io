@@ -3,10 +3,10 @@ title: "Writing Powerful Claude Code Skills with npx bun"
 date: "2026-01-07"
 updated: "2026-01-15"
 spoiler:
-  How to write Claude Code skills that use third-party npm packages without a
-  build step. Using npx bun gives you auto-installing dependencies, native
-  TypeScript, and clean version pinning—the JavaScript equivalent of Python's uv
-  run.
+  Learn how to write Claude Code skills with third-party npm packages and no
+  build step. Using npx bun provides auto-installing dependencies, native
+  TypeScript support, and clean version pinning in imports—the JavaScript
+  equivalent of Python's uv run for self-contained scripts.
 ogImage: https://magarcia.io/og/awesome-skill.png
 tags:
   - typescript
@@ -14,6 +14,7 @@ tags:
   - bun
   - ai
   - developer-tools
+  - cli
 ---
 
 > **Update (January 15, 2026):** After more testing, I've found Bun's
@@ -23,16 +24,17 @@ tags:
 > [Why I Switched from Bun to Deno for Claude Code Skills](/why-i-switched-from-bun-to-deno-for-claude-code-skills)
 > for the full breakdown.
 
-I wanted to build more complex
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code/skills) skills.
-Claude Code is Anthropic's CLI for agentic coding—and skills let you extend it
-with custom instructions and executable scripts. Not just markdown, but scripts
-that use third-party libraries: parsing CSV files, manipulating spreadsheets,
-calling APIs with proper HTTP clients.
+**Claude Code skills** let you extend Anthropic's agentic coding CLI with custom
+instructions and executable scripts. But what if your script needs third-party
+npm packages like **lodash**, **zod**, or **csv-parse**? Without a build step or
+`node_modules` folder, imports fail. This guide shows how to use `npx bun` to
+write self-contained TypeScript skills that auto-install dependencies at
+runtime—no `package.json` required.
 
-The problem: skills have no build step. You can't just
-`import lodash from 'lodash'` and expect it to work. The script runs in a fresh
-environment with no `node_modules` folder.
+The problem:
+[Claude Code skills](https://docs.anthropic.com/en/docs/claude-code/skills) have
+no build step. You cannot just `import lodash from 'lodash'` and expect it to
+work. The script runs in a fresh environment with no `node_modules` folder.
 
 ## What I Wanted: uv run for JavaScript
 

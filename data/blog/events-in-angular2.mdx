@@ -9,9 +9,8 @@ tags:
   - open-source
 ---
 
-During the migration of the feed component, I found some lines that I didn't
-know how to code it on Angular 2. The following code is an extract of the code
-I'm talking about:
+During the feed component migration, I encountered code I did not know how to
+port to Angular 2:
 
 ```typescript
 if (!feed.isLocalScreen) {
@@ -49,10 +48,9 @@ if (!feed.isLocalScreen) {
 }
 ```
 
-As you can see in the snippet, if the condition is true then the directive
-listens for events of type `muted.byRequest`, `muted.byUser` and `muted.Join`.
-The code that involves this events is easy, without any type of complexity (for
-now we ignore the `$watch`).
+When the condition is true, the directive listens for `muted.byRequest`,
+`muted.byUser`, and `muted.Join` events. The event-handling code is
+straightforward (ignoring `$watch` for now).
 
 But, wait a minute, I have read the documentation of Angular 2 like a hundred
 times and I don't remember nothing about "events" with Angular 1.X style. That's

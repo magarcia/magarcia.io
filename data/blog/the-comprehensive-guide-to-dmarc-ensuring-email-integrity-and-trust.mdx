@@ -11,28 +11,24 @@ tags:
   - security
 ---
 
-In the early days of developing [Voices.ink](https://voices.ink/), a
-collaborative project with [@Ester Martí](https://github.com/estermv) that
-effortlessly transcribes voice notes into your Notion account, I faced a common
-doubt. How could I ensure that our transactional emails wouldn’t end up lost in
-the void of spam folders or worse, be weaponized for phishing? My research for a
-secure and trustworthy email environment led me to DMARC.
+While developing [Voices.ink](https://voices.ink/), a collaborative project with
+[@Ester Martí](https://github.com/estermv) that transcribes voice notes into
+Notion, I faced a common problem. How could I ensure our transactional emails
+reached inboxes rather than spam folders — or worse, prevent attackers from
+weaponizing our domain for phishing? My research led me to DMARC.
 
-In an age where email forms the backbone of professional communication, its
-security vulnerabilities are startling. Cyber attackers and fraudulent entities
-are constantly on the prowl, using sophisticated techniques to deceive through
-email spoofing and phishing. As email fraud escalates, the need for a robust
-solution becomes imperative. Enter DMARC — an advanced email protocol that
-promises to restore trust in our inboxes.
+Email forms the backbone of professional communication, yet its security
+vulnerabilities remain startling. Cyber attackers constantly deceive through
+email spoofing and phishing. As fraud escalates, robust solutions become
+imperative. DMARC — an advanced email protocol — restores trust in our inboxes.
 
 ### **Why Do We Need DMARC?**
 
-Email's inherent vulnerabilities make it susceptible to domain impersonation,
-where attackers send emails pretending to be from trusted sources. While
-solutions like SPF (Sender Policy Framework) and DKIM (DomainKeys Identified
-Mail) were introduced to counter these threats, they weren’t foolproof. DMARC
-(Domain-based Message Authentication, Reporting & Conformance) fills this gap by
-building upon and leveraging the strengths of both SPF and DKIM.
+Email's inherent vulnerabilities enable domain impersonation, where attackers
+send emails pretending to be from trusted sources. SPF (Sender Policy Framework)
+and DKIM (DomainKeys Identified Mail) counter these threats but remain
+imperfect. DMARC (Domain-based Message Authentication, Reporting & Conformance)
+fills this gap by leveraging both SPF and DKIM.
 
 ### **Understanding DMARC's Significance**
 
@@ -123,20 +119,17 @@ through with no action.
 
 ### **The Takeaway**
 
-With the rise in sophisticated phishing attacks and the paramount importance of
-trust in digital communication, DMARC is more than just an advanced email
-security protocol. It's a beacon of trust, ensuring that genuine emails see the
-light of day while malicious ones lurk in the shadows. For organizations and
-individuals alike, understanding and implementing DMARC is a step towards a
-safer, more trustworthy digital communication landscape.
+Sophisticated phishing attacks make trust paramount in digital communication.
+DMARC goes beyond email security — it ensures genuine emails reach recipients
+while malicious ones stay blocked. For organizations and individuals alike,
+implementing DMARC moves us toward safer digital communication.
 
-So, the next time you're looking at your email security measures, remember that
-DMARC isn't just an option — it's a necessity.
+When reviewing your email security measures, remember: DMARC is not optional —
+it is necessary.
 
 ### **Further Resources and Tools**
 
-For those who wish to dive deeper into DMARC and its intricacies, here are some
-valuable resources and tools:
+For deeper exploration of DMARC:
 
 - **DMARC Guide**: A comprehensive guide by the Global Cyber Alliance that
   covers the nuances of DMARC in detail.

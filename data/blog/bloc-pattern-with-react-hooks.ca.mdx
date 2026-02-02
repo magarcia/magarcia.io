@@ -16,15 +16,15 @@ i presentat per primera vegada durant la _DartConf 2018_ (23-24 de gener de
 [Veure el vídeo a YouTube](https://www.youtube.com/watch?v=PLHln7wHgPE "BLoC Pattern Flutter").
 
 BLoC significa **B**usiness **Lo**gic **C**omponent (Component de Lògica de
-Negoci). Inicialment va ser concebut per permetre reutilitzar el mateix codi
-entre Flutter i Angular Dart, però de fet és independent de la plataforma:
-aplicació web, aplicació mòbil, back-end.
+Negoci). Inicialment concebut per compartir codi entre Flutter i Angular Dart,
+funciona independentment de la plataforma: aplicació web, aplicació mòbil o
+back-end.
 
-Pot considerar-se una alternativa al
+Ofereix una alternativa al
 [port de Redux per a flutter](https://pub.dartlang.org/packages/flutter_redux "Redux port for flutter")
-fent ús de streams de Dart. En el nostre cas, utilitzarem Observables de la
-llibreria [RxJS](https://rxjs.dev/ "RxJS") , però qualsevol altra opció com
-[xstream](http://staltz.github.io/xstream/ "xstream") serà vàlida també.
+utilitzant streams de Dart. Utilitzarem Observables de
+[RxJS](https://rxjs.dev/ "RxJS"), tot i que
+[xstream](http://staltz.github.io/xstream/ "xstream") funciona igualment bé.
 
 En resum, el BLoC:
 
@@ -37,18 +37,17 @@ En resum, el BLoC:
 
 ## Com funciona BLoC?
 
-No explicaré extensament com funciona BLoC (hi ha altres persones que van fer
-una millor feina de la que faré aquí), sinó només algunes pistes bàsiques.
+Altres han explicat BLoC millor que jo, així que cobriré només el bàsic.
 
 ![Esquema BLoC](/images/bloc-schema.png)
 
-El BLoC mantindrà la lògica de negoci i els components no tindran coneixement
-sobre el que està succeint dins. Els components enviaran _esdeveniments_ al BLoC
-via \_Observers* i seran notificats pel BLoC via \_Observables*.
+El BLoC manté la lògica de negoci; els components desconeixen els seus
+internals. Els components envien _esdeveniments_ al BLoC via _Observers_ i reben
+notificacions via _Observables_.
 
 ## Implementant el BLoC
 
-Aquest és un exemple bàsic en typescript d'un BLoC de cerca utilitzant RxJS:
+Aquí està un BLoC de cerca bàsic en TypeScript utilitzant RxJS:
 
 ```typescript
 export class SearchBloc {
@@ -87,25 +86,25 @@ export class SearchBloc {
 }
 ```
 
-`results$` i `preamble$` estan exposats per ser subscrits des d'un component i
-expressen valors asíncrons que canvien en resposta a canvis en `query`.
+`results$` i `preamble$` exposen valors asíncrons que canvien quan `query`
+canvia.
 
-`query` s'exposa com `Observer<string>` a l'exterior, per permetre l'addició de
-nou valor des dels components. Dins de `SearchBloc`, tenim
-`_query$: BehaviorSubject<string>` com la font del stream, i el constructor
-declara `_results$` i `_preamble$` per respondre a `_query$`.
+`query` exposa un `Observer<string>` perquè els components afegeixin nous
+valors. Dins de `SearchBloc`, `_query$: BehaviorSubject<string>` serveix com a
+font del stream, i el constructor declara `_results$` i `_preamble$` per
+respondre a `_query$`.
 
 ## Utilitzant-lo en React
 
-Per utilitzar-lo en React necessitem crear una nova instància del BLoC i
-compartir-la als components fills utilitzant un context de React.
+Per utilitzar-lo en React, crea una instància del BLoC i comparteix-la amb els
+components fills via context de React.
 
 ```jsx
 const searchBloc = new SearchBloc(new API());
 const SearchContext = React.createContext(searchBloc);
 ```
 
-Hem d'exposar-lo utilitzant el proveïdor de context:
+Exposa'l utilitzant el proveïdor de context:
 
 ```jsx
 const App = () => {
@@ -124,10 +123,10 @@ const App = () => {
 };
 ```
 
-És important tenir el `useEffect` retornant el mètode dispose del BLoC perquè
-completi l'observer quan el component es desmunti.
+El `useEffect` retorna el mètode dispose, completant l'observer quan el
+component es desmunta.
 
-Després podem publicar canvis al BLoC des del component `SearchInput`:
+Publica canvis al BLoC des del component `SearchInput`:
 
 ```jsx
 const SearchInput = () => {
@@ -149,10 +148,10 @@ const SearchInput = () => {
 };
 ```
 
-Vam obtenir el BLoC utilitzant el hook `useContext` i després amb `useEffect`
-cada vegada que la consulta canvia publiquem el nou valor al BLoC.
+Obtenim el BLoC via `useContext`, després `useEffect` publica cada canvi de
+consulta al BLoC.
 
-Ara és el torn de `ResultList`:
+Ara el `ResultList`:
 
 ```jsx
 const ResultList = () => {
@@ -173,18 +172,15 @@ const ResultList = () => {
 };
 ```
 
-Com abans, utilitzem el `useContext` per obtenir el BLoC, però ara en el
-`useEffect` ens subscrivim als canvis en la interfície `results$` per
-actualitzar l'estat local del component. És important retornar el valor de
-retorn de la subscripció, ja que es dessubscriurà quan el component es desmunti.
+Utilitzem `useContext` per obtenir el BLoC, després `useEffect` es subscriu als
+canvis de `results$` per actualitzar l'estat local. Retornar la subscripció
+cancel·la la subscripció quan el component es desmunta.
 
 ## Pensaments finals
 
-El codi final no és complex, almenys si tens un coneixement mínim sobre
-_Observables_ i _hooks_. Tinc la sensació que el codi és bastant llegible i
-ajuda a mantenir la lògica de negoci fora dels components. És cert que hauríem
-de tenir cura de dessubscriure'ns dels observables i rebutjar el BLoC quan els
-components es desmunten, però aquests problemes podrien ser fàcilment
-solucionables creant alguns nous hooks com `useBlocObservable` i
-`useBlocObserver`. Però això ho intentaré en el futur, aviat espero, en un
-projecte paral·lel on estic utilitzant aquest patró.
+El codi final és directe amb coneixement bàsic d'_Observables_ i _hooks_. El
+codi és llegible i manté la lògica de negoci fora dels components. Hem de
+recordar dessubscriure'ns dels observables i descartar el BLoC al desmuntar,
+però hooks personalitzats com `useBlocObservable` i `useBlocObserver` podrien
+resoldre això. Planejo provar-ho en un projecte paral·lel on utilitzo aquest
+patró.

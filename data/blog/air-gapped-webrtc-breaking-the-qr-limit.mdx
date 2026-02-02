@@ -1,17 +1,25 @@
 ---
-title: "Breaking the QR Limit: The Discovery of a Serverless WebRTC Protocol"
+title: "Serverless WebRTC via QR Code: Building the QWBP Protocol"
 date: "2026-01-19"
 spoiler:
-  A user's simple request led to an intensive AI-assisted protocol design
-  session. I shrunk WebRTC signaling from 2,500 bytes to 55 bytes—a 97.79%
-  reduction—by questioning every best practice. This is the story of how QWBP
-  was born.
+  How I compressed WebRTC signaling from 2,500 bytes to 55 bytes using a custom
+  binary protocol, enabling peer-to-peer connections through QR codes without
+  any signaling server. The complete story of QWBP (QR-WebRTC Bootstrap
+  Protocol).
 tags:
   - javascript
+  - typescript
   - webrtc
-  - qr-code
   - security
+  - open-source
+  - ai
 ---
+
+**QWBP (QR-WebRTC Bootstrap Protocol)** enables serverless peer-to-peer
+connections by compressing WebRTC signaling into QR codes. By designing a custom
+binary protocol that reduces SDP from 2,500 bytes to just 55 bytes, two devices
+can establish encrypted WebRTC connections by scanning each other's QR
+codes—with no signaling server required.
 
 > The reasonable man adapts himself to the world: the unreasonable one persists
 > in trying to adapt the world to himself. Therefore all progress depends on the
@@ -1092,3 +1100,10 @@ a=candidate:1 1 udp 2122260223 192.168.1.5 54321 typ host
 _A user asked a simple question. I spent an evening and a morning talking to an
 AI about protocol design. Being unreasonable turned out to be the only
 reasonable solution._
+
+---
+
+_Want to learn more about AI-assisted development? Read about
+[how AI is changing software team workflows](/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+or explore
+[techniques for building tools with AI](/asking-ai-to-build-the-tool-instead-of-doing-the-task)._

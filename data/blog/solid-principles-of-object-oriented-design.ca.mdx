@@ -19,9 +19,8 @@ tags:
 [_Principles of Object-Oriented Design_](http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod)
 per Robert C. Martin.
 
-Aplicar aquests principis ajuda a desenvolupar codi mantenible i extensible.
-També ajuden a detectar code smells, refactoritzar codi fàcilment, i practicar
-un bon desenvolupament àgil.
+Aquests principis ajuden a escriure codi mantenible i extensible. També permeten
+detectar code smells, refactoritzar fàcilment i practicar desenvolupament àgil.
 
 - **S** significa **SRP** - Principi de Responsabilitat Única (Single
   Responsibility Principle)
@@ -38,15 +37,13 @@ un bon desenvolupament àgil.
 > Una entitat de programari (classes, mòduls, funcions, etc.) ha de tenir una, i
 > només una, raó per canviar.
 
-Aquest principi significa que una entitat ha de fer només una cosa. Així que
-responsabilitat única denota alguna **feina en aïllament**. Per tant si tenim
-una entitat de programari que realitza alguns càlculs l'única raó per canviar-la
-és si aquests càlculs necessiten canviar.
+Una entitat ha de fer només una cosa. Responsabilitat única significa **feina en
+aïllament**. Si una entitat de programari realitza càlculs, l'única raó per
+canviar-la és quan aquests càlculs necessiten canviar.
 
-Per entendre millor el principi, podem fer un exemple. Diguem que hem
-d'implementar una aplicació que donades algunes formes calcula la suma de l'àrea
-d'aquestes formes i imprimeix la sortida. Així que, comencem creant les nostres
-classes de formes:
+Un exemple clarifica aquest principi. Suposem que hem d'implementar una
+aplicació que calcula l'àrea total de diverses formes i imprimeix el resultat.
+Comencem amb les nostres classes de formes:
 
 ```typescript
 class Circle {
@@ -86,8 +83,8 @@ class AreaCalculator {
   }
 ```
 
-Per utilitzar l'`AreaCalculator` hem de crear un array de formes, instanciar la
-classe i mostrar la sortida.
+Per utilitzar `AreaCalculator`, creem un array de formes, instanciem la classe i
+mostrem la sortida.
 
 ```typescript
 const shapes: any[] = [new Circle(2), new Circle(3), new Square(5)];
@@ -97,16 +94,16 @@ const areas = new AreaCalculator(shapes);
 console.log(areas.output());
 ```
 
-Però aquesta implementació té un problema. En aquest exemple, `AreaCalculator`
-gestiona la lògica per calcular la suma de les àrees **i** per mostrar les
-dades. Què passa si l'usuari vol la sortida en JSON?
+Aquesta implementació té un problema: `AreaCalculator` gestiona tant la lògica
+de càlcul d'àrees **com** el format de sortida. Què passa si l'usuari vol la
+sortida en JSON?
 
-Aquí és quan el _Principi de Responsabilitat Única_ entra en joc.
-`AreaCalculator` només hauria de canviar si canviem com calculem la suma de les
-àrees, no quan volem una sortida o representació diferent.
+El _Principi de Responsabilitat Única_ aborda això. `AreaCalculator` només
+hauria de canviar quan canvia la lògica de càlcul, no quan volem diferents
+formats de sortida.
 
-Podem arreglar això implementant una classe la responsabilitat única de la qual
-és mostrar les dades.
+Ho solucionem creant una classe la única responsabilitat de la qual és el format
+de sortida.
 
 ```typescript
 const shapes: any[] = [new Circle(2), new Circle(3), new Square(5)];
@@ -118,22 +115,19 @@ console.log(output.text());
 console.log(output.json());
 ```
 
-Ara tenim dues classes amb una responsabilitat cadascuna, si volem canviar com
-es fan els càlculs només `AreaCalculator` canviarà i el mateix per canviar la
-sortida, afectarà només a `Outputter`.
+Ara cada classe té una responsabilitat. Canviar la lògica de càlcul afecta només
+a `AreaCalculator`; canviar el format de sortida afecta només a `Outputter`.
 
 ## OCP - Principi Obert-Tancat
 
 > Les entitats de programari (classes, mòduls, funcions, etc.) han d'estar
 > obertes per a extensió, però tancades per a modificació.
 
-Una propietat desitjable que les nostres entitats de programari és ser fàcil
-d'estendre la seva funcionalitat sense la necessitat de canviar l'entitat en si
-mateixa.
+Les entitats de programari haurien de ser fàcils d'estendre sense modificar
+l'entitat en si.
 
-Utilitzant l'exemple anterior, ara volem introduir una nova forma elegant: el
-_Triangle_. Però primer, fes un cop d'ull més de prop a la part de suma de la
-nostra classe `AreaCalculator`.
+Utilitzant l'exemple anterior, volem afegir una nova forma: el _Triangle_.
+Primer, examinem el mètode sum a `AreaCalculator`.
 
 ```typescript
 class AreaCalculator {
@@ -159,13 +153,11 @@ class AreaCalculator {
 }
 ```
 
-Aquí estem violant el _Principi Obert/Tancat_, perquè per afegir suport per a
-triangles hem de modificar `AreaCalculator` afegint un nou bloc `else if` per
-gestionar el càlcul de la nova àrea.
+Això viola el _Principi Obert/Tancat_: afegir suport per a triangles requereix
+modificar `AreaCalculator` amb un nou bloc `else if`.
 
-Per arreglar això podem moure el codi que calcula l'àrea a les formes
-corresponents, i fer que aquestes formes implementin una interfície que
-descrigui millor què pot fer una forma.
+Per solucionar-ho, movem el càlcul de l'àrea a cada classe de forma i definim
+una interfície que descriu què pot fer una forma.
 
 ```typescript
 interface Shape {
@@ -185,9 +177,8 @@ class Circle implements Shape {
 }
 ```
 
-Ara l'`AreaCalculator` s'assembla al codi de sota, que ens permet crear nou
-tipus de formes i funcionarà sempre que aquesta nova forma implementi la
-interfície `Shape`.
+Ara `AreaCalculator` accepta qualsevol forma que implementi la interfície
+`Shape`:
 
 ```typescript
 class AreaCalculator {
@@ -213,11 +204,9 @@ class AreaCalculator {
 
 > La classe derivada ha de ser substituïble per la seva classe base.
 
-El que aquest principi significa és que els objectes en un programa han de ser
-reemplaçables amb instàncies dels seus subtipus sense alterar la correcció
-d'aquest programa. Així que si passes una subclasse d'una abstracció necessites
-assegurar-te que no alteres cap comportament o semàntica d'estat de l'abstracció
-pare.
+Els objectes d'un programa han de ser reemplaçables per instàncies dels seus
+subtipus sense alterar la correcció del programa. Una subclasse ha de preservar
+el comportament i la semàntica d'estat de la seva abstracció pare.
 
 Continuant amb la classe `AreaCalculator`, ara volem crear una classe
 `VolumeCalculator` que estengui `AreaCalculator`:
@@ -237,8 +226,7 @@ class VolumeCalculator extends AreaCalculator {
 }
 ```
 
-Per entendre millor aquest exemple fem una versió més detallada de la classe
-`Outputter`.
+Una classe `Outputter` detallada clarifica aquest exemple:
 
 ```typescript
 class Outputer {
@@ -271,17 +259,16 @@ console.log("Areas - ", new Ouputter(areas).text());
 console.log("Volums - ", new Ouputter(volumes).text());
 ```
 
-El programa no fallarà però la sortida no serà consistent ja que una sortida
-serà alguna cosa com `Areas - Suma de les formes proporcionades: 42`, i l' altra
-`Volums - Suma de les formes proporcionades: 13, 15, 14`. Això no és el que
-esperem del nostre programa.
+El programa executa però produeix sortida inconsistent:
+`Areas - Suma de les formes proporcionades: 42` versus
+`Volums - Suma de les formes proporcionades: 13, 15, 14`. Això trenca les
+nostres expectatives.
 
-Això succeeix perquè la violació del _Principi de Substitució de Liskov_, el
-mètode `sum` de la classe `VolumeCalculator` és un array de nombres mentre que
-l' `AreaCalculator` és només un nombre.
+Es viola el _Principi de Substitució de Liskov_: `VolumeCalculator.sum()`
+retorna un array de nombres, mentre que `AreaCalculator.sum()` retorna un sol
+nombre.
 
-Per arreglar això hem de reimplementar el mètode sum de `VolumeCalculator` per
-retornar un nombre en lloc d'un array.
+La solució: `VolumeCalculator.sum()` ha de retornar un nombre, no un array.
 
 ```typescript
 class VolumeCalculator extends AreaCalculator {
@@ -300,11 +287,10 @@ class VolumeCalculator extends AreaCalculator {
 
 > Fes interfícies de gra fi que siguin específiques del client.
 
-En aquest cas, volem mantenir les interfícies el més petites possible, perquè
-els clients no siguin forçats a implementar mètodes que realment no necessiten.
+Mantén les interfícies petites perquè els clients implementin només els mètodes
+que necessiten.
 
-Així que, tornant a la nostra interfície de forma, ara que podem calcular volums
-la nostra interfície es veu similar a això:
+La nostra interfície de forma ara inclou càlcul de volum:
 
 ```typescript
 interface Shape {
@@ -313,13 +299,11 @@ interface Shape {
 }
 ```
 
-Però sabem que no totes les nostres formes tenen un volum, `Square` és una forma
-2D però a causa de la interfície, estem forçats a implementar un mètode
-`volume`.
+Però `Square` és una forma 2D sense volum, i tot i així la interfície la força a
+implementar un mètode `volume`.
 
-Aplicant el _Principi de Segregació d'Interfície_ dividim la interfície `Shape`
-en dues interfícies diferents, una per definir formes 2D i una altra per a
-formes 3D.
+El _Principi de Segregació d'Interfície_ ens porta a dividir `Shape` en
+interfícies separades per a formes 2D i 3D:
 
 ```typescript
 interface Shape2D {
@@ -345,12 +329,11 @@ class Cuboid implements Shape2D, Shape3D {
 
 > Depèn d'abstraccions, no de concrecions.
 
-El que aquest principi ve a dir és que els mòduls d'alt nivell no han de
-dependre de mòduls de baix nivell, sinó que han de dependre d'abstraccions.
+Els mòduls d'alt nivell han de dependre d'abstraccions, no de mòduls de baix
+nivell.
 
-Aquest principi permet el desacoblament, un exemple que sembla la millor manera
-d' explicar aquest principi. Vegem una nova classe per guardar les nostres
-formes `ShapeManager`:
+Aquest principi permet el desacoblament. Considerem una classe `ShapeManager`
+que guarda formes:
 
 ```typescript
 class ShapeManager {
@@ -364,14 +347,11 @@ class ShapeManager {
 }
 ```
 
-En aquest cas, `ShapeManager` és un mòdul d'alt nivell mentre que `MySQL` és un
-mòdul de baix nivell, però això és una violació del
-`Principi d'Inversió de Dependència` ja que estem forçats a dependre de `MySQL`.
+`ShapeManager` (alt nivell) depèn directament de `MySQL` (baix nivell), violant
+el _Principi d'Inversió de Dependència_.
 
-Si volem canviar la nostra base de dades en el futur hauríem d'editar la classe
-`ShapeManager` i així viola el _Principi Obert-Tancat_. En aquest cas no hauria
-d'importar-nos quin tipus de base de dades estem utilitzant, així que per
-dependre d'abstraccions en aquest cas farem ús d'una interfície:
+Canviar de base de dades requeriria editar `ShapeManager`, violant també el
+_Principi Obert-Tancat_. La solució: dependre d'una interfície `Database`:
 
 ```typescript
 interface Database {
@@ -399,8 +379,6 @@ I ara els nostres mòduls d'alt i baix nivell depenen d'abstraccions.
 
 ## Conclusió
 
-En començar a escriure programació Orientada a Objectes els principis **SOLID**
-poden ser difícils d'entendre i, si s'entenen, veure on i quan aplicar-los no és
-trivial. Però són un exemple d'una de les coses més importants en el
-desenvolupament de programari, la pràctica i l'experiència et faran aplicar
-aquests principis d'una manera molt natural i intuïtiva.
+Els principis **SOLID** poden semblar difícils al principi, i saber quan
+aplicar-los requereix pràctica. Però amb experiència, aplicar aquests principis
+es torna natural i intuïtiu.

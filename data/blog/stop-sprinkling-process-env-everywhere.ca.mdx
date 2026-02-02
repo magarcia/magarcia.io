@@ -1,14 +1,11 @@
 ---
-title:
-  "Habilita variables d'entorn a les teves configuracions amb env-interpolation"
+title: "Deixa d'Escampar process.env per Tot Arreu: Usa env-interpolation"
 date: "2025-09-29"
 spoiler:
-  Vaig llançar
-  [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), un
-  petit ajudant de TS que interpola `${VAR}` i `${VAR:default}` dins de valors
-  de configuració. Recorre cadenes en objectes/arrays i mai toca les claus, per
-  la qual cosa les formes es mantenen estables i predictibles—molt orientat a
-  configuració.
+  Cansat de process.env escampat pel teu codi? env-interpolation és una
+  llibreria TypeScript que resol marcadors ${VAR} en objectes de configuració
+  amb suport per a valors predeterminats i resolució niada. Configs netes, zero
+  dependències.
 tags:
   - typescript
   - node-js
@@ -16,14 +13,15 @@ tags:
   - open-source
 ---
 
-Vaig llançar **env-interpolation**, un petit ajudant de TS que interpola
-`${VAR}` i `${VAR:default}` dins de **valors de configuració**. Recorre cadenes
-en objectes/arrays i **mai toca les claus**, per la qual cosa les formes es
-mantenen estables i predictibles—molt orientat a configuració.
+Cansat de `process.env` escampat pel teu codi? **env-interpolation** és una
+llibreria TypeScript que resol marcadors `${VAR}` i `${VAR:default}` dins
+d'objectes de configuració. Recorre cadenes en objectes/arrays i **mai toca les
+claus**, per la qual cosa les formes es mantenen estables i
+predictibles—perfecte per a configuració en capes.
 
-Nascut de **mcp-tool-selector**, on necessitava configuració en capes sense
-filtrar secrets o omplir de crides a `process.env`. Es va convertir en una
-petita utilitat afilada, així que la vaig publicar.
+El vaig construir per a **mcp-tool-selector**, on necessitava configuració en
+capes sense filtrar secrets o escampar crides a `process.env`. Es va convertir
+en una utilitat afilada, així que la vaig publicar.
 
 ## D'un cop d'ull
 
@@ -72,9 +70,39 @@ console.log(resolved);
 
 Aquest és el meu segon projecte dissenyat amb IA (el primer va ser
 [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), construït amb
-múltiples agents d'IA (Claude, Copilot, Gemini & Codex). Si les teves
-configuracions abasten fitxers, entorns i eines, això hauria d'eliminar algunes
-molèsties.
+múltiples agents d'IA (Claude, Copilot, Gemini & Codex). Si les teves configs
+abasten fitxers, entorns i eines, això hauria de suavitzar algunes asprors.
+
+## Per Què No Usar process.env Directament?
+
+Llegir variables d'entorn inline escampa la lògica de configuració per tot el
+teu codi:
+
+```ts
+// Enfocament dispers - difícil d'auditar i provar
+const apiUrl = process.env.API_URL || "https://api.example.com";
+const timeout = parseInt(process.env.TIMEOUT || "5000", 10);
+```
+
+Amb **env-interpolation**, la configuració roman centralitzada. Defineix
+l'estructura una vegada, i la llibreria gestiona la resolució:
+
+```ts
+// Enfocament centralitzat - config.json és la font de veritat
+const config = interpolate(loadConfig("config.json"), process.env);
+```
+
+Això fa que les configs siguin més fàcils d'auditar, provar i compartir entre
+entorns.
+
+## Quan Usar env-interpolation
+
+- **Configs multi-entorn**: Desenvolupament, staging, producció amb la mateixa
+  estructura
+- **Configuració en capes**: Config base amb sobreescriptures específiques per
+  entorn
+- **Configuració d'eines**: Eines CLI que necessiten fitxers de config portables
+- **Monorepos**: Plantilles de config compartides entre paquets
 
 **Relacionat:** Per a emmagatzematge segur de secrets sense fitxers de text pla,
 fes un cop d'ull a

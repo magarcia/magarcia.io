@@ -1,12 +1,11 @@
 ---
-title: "Enable environment variables in your configs with env-interpolation"
+title: "Stop Sprinkling process.env Everywhere: Use env-interpolation"
 date: "2025-09-29"
 spoiler:
-  I shipped
-  [`env-interpolation`](https://www.npmjs.com/package/env-interpolation), a tiny
-  TS helper that interpolates `${VAR}` and `${VAR:default}` inside config
-  values. It walks strings in objects/arrays and never touches keys, so shapes
-  stay stable and predictable—very config-oriented.
+  Tired of process.env scattered across your codebase? env-interpolation is a
+  TypeScript library that resolves ${VAR} placeholders in config objects with
+  support for default values and nested resolution. Clean configs, zero
+  dependencies.
 tags:
   - typescript
   - node-js
@@ -14,14 +13,14 @@ tags:
   - open-source
 ---
 
-I shipped **env-interpolation**, a tiny TS helper that interpolates `${VAR}` and
-`${VAR:default}` inside **config values**. It walks strings in objects/arrays
-and **never touches keys**, so shapes stay stable and predictable—very
-config-oriented.
+Tired of `process.env` scattered across your codebase? **env-interpolation** is
+a TypeScript library that resolves `${VAR}` and `${VAR:default}` placeholders
+inside config objects. It walks strings in objects/arrays and **never touches
+keys**, so shapes stay stable and predictable—perfect for layered configuration.
 
-Born out of **mcp-tool-selector**, where I needed layered config without leaking
-secrets or littering `process.env` calls. It turned into a sharp little utility,
-so I published it.
+I built it for **mcp-tool-selector**, where I needed layered config without
+leaking secrets or scattering `process.env` calls. It became a sharp utility, so
+I published it.
 
 ## At a glance
 
@@ -67,10 +66,39 @@ const resolved = interpolate(input, {
 console.log(resolved);
 ```
 
-This is my second AI engineered project (the first one was
+This is my second AI-engineered project (the first was
 [mcp-server-giphy](https://github.com/magarcia/mcp-server-giphy)), built with
 multiple AI agents (Claude, Copilot, Gemini & Codex). If your configs span
-files, environments, and tools, this should remove a few papercuts.
+files, environments, and tools, this should smooth a few rough edges.
+
+## Why Not Just Use process.env Directly?
+
+Reading environment variables inline scatters configuration logic throughout
+your codebase:
+
+```ts
+// Scattered approach - hard to audit and test
+const apiUrl = process.env.API_URL || "https://api.example.com";
+const timeout = parseInt(process.env.TIMEOUT || "5000", 10);
+```
+
+With **env-interpolation**, configuration stays centralized. Define the
+structure once, and the library handles resolution:
+
+```ts
+// Centralized approach - config.json is the source of truth
+const config = interpolate(loadConfig("config.json"), process.env);
+```
+
+This makes configs easier to audit, test, and share across environments.
+
+## When to Use env-interpolation
+
+- **Multi-environment configs**: Development, staging, production with the same
+  structure
+- **Layered configuration**: Base config with environment-specific overrides
+- **Tool configuration**: CLI tools that need portable config files
+- **Monorepos**: Shared config templates across packages
 
 **Related:** For secure secret storage without plaintext files, check out
 [cross-keychain](/cross-platform-secret-storage-with-cross-keychain), which

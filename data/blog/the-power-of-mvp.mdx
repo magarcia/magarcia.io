@@ -12,8 +12,7 @@ tags:
 ---
 
 Much has been written about minimum viable products (MVP). I doubt I can add new
-insights to the field, but I can share my perspective based on an experience
-with one client.
+insights, but I can share my perspective from an experience with one client.
 
 ![MVP - A skate first, then a bike and finally a car](/images/mvp.png)
 
@@ -26,55 +25,51 @@ with one client.
 Let me set the scene. The client was a leading European real estate
 company—though the domain matters little here. The product team envisioned a
 complex product to sell to their customers. To gauge user acceptance, we ran
-multiple A/B tests to find the most successful approach. The product itself was
-not that complex to implement, but deciding which users should see what was
-another story. We had to account for the user's location, their search location,
-their last visit to the page, and more. The number of variables was large, so we
-ran the tests for nearly half a year to gather enough meaningful data.
+multiple A/B tests to find the most successful approach. The product was
+straightforward to implement, but deciding which users should see what was
+another story. We had to account for user location, search location, last visit,
+and more. The number of variables was large, so we ran the tests for nearly half
+a year to gather meaningful data.
 
 This kind of experiment requires proper metrics, so we measured everything. Once
 the test finished, the data analysis team did their job—and the results
-disappointed us. They fell far short of expectations. Yet not everything was
-bad. One small part of the product resonated strongly with users, and a month
-later the product team built a new product around this small part.
+disappointed us. They fell far short of expectations. Yet one small part of the
+product resonated strongly with users, and a month later the product team built
+a new product around it.
 
-After this lengthy introduction, the real story begins. The new product lacked
-the complex rules of the previous one: no location logic, no visit history, no
-search patterns. Customers would get a special section on the page to showcase
-their products and share it however they liked. Since the user-facing part
-already existed from the previous test, it was time to make it real and start
-selling.
+Now the real story begins. The new product lacked the complex rules of the
+previous one: no location logic, no visit history, no search patterns. Customers
+would get a special section on the page to showcase their products and share it
+as they liked. Since the user-facing part already existed from the previous
+test, it was time to make it real and start selling.
 
 We held a meeting to define the architecture and implementation plan. Two
 engineering teams, the head of technology, and the product owner—about 14 people
-in the room (virtual rooms, since teams were distributed across
-countries)—discussed the best approach and tried to estimate when we'd be done.
-Someone pointed out that since customers had to purchase the product, we'd
-eventually need to involve the commerce team. The products team would have to
-create a new microservice to handle the new offering, and the website team would
-have to consume and process that data to enable the product for each customer.
+in virtual rooms across countries—discussed the best approach and estimated
+completion. Someone pointed out that since customers had to purchase the
+product, we'd need to involve the commerce team. The products team would create
+a new microservice, and the website team would consume and process that data to
+enable the product for each customer.
 
-The complexity was piling up again. Initial estimates put delivery at three
-months minimum—probably more, given the coordination required across multiple
-engineering teams, marketing, and design. Listening to these discussions, I
-asked the product owner one question: "_How will you sell this product to
-customers in the short term?_" The answer unlocked an easier path. Initially, a
-small sales team would contact only the most important customers. After that,
-they'd evaluate which other customers might be interested.
+Complexity piled up again. Initial estimates put delivery at three months
+minimum—probably more, given coordination across engineering, marketing, and
+design. Listening to these discussions, I asked the product owner: "_How will
+you sell this product in the short term?_" The answer unlocked an easier path.
+Initially, a small sales team would contact only the most important customers.
+After that, they'd evaluate which other customers might be interested.
 
 With this information, I proposed an unorthodox approach. Instead of building
 the complex system, coordinating multiple teams, and blocking the launch until
-everything was done—why not hardcode customer IDs in the code? A few lines of
-logic, and we're done. Each time the product sold to a customer, someone would
-email the team, and we'd add the ID in minutes. This solution doesn't scale, but
-it wasn't meant to. Since sales would be handled manually at first, we could
-control the pace at which customers acquired the product.
+everything was done—why not hardcode customer IDs? A few lines of logic, and
+we're done. Each time the product sold, someone would email the team, and we'd
+add the ID in minutes. This solution doesn't scale, but it wasn't meant to.
+Since sales would be handled manually at first, we could control the pace of
+customer acquisition.
 
-Everyone received the proposal well. It would let us start selling earlier and
-relieve pressure on the engineering teams. Within one week we had the product in
-place and sold to the first customer. Over the following months, the teams
-worked at a relaxed pace on the final implementation—one that would eliminate
-the manual steps.
+Everyone received the proposal well. We could start selling earlier and relieve
+pressure on the engineering teams. Within one week we had the product in place
+and sold to the first customer. Over the following months, the teams worked at a
+relaxed pace on the final implementation—one that would eliminate manual steps.
 
 That's the story. Here's what I learned:
 

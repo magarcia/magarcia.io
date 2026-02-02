@@ -1,12 +1,11 @@
 ---
-title:
-  "Com vaig fer enginyeria inversa de les meves notes de reunions al terminal"
+title: "Construint granola-cli: Notes de Reunions amb IA al teu Terminal"
 date: "2025-12-22"
 spoiler:
-  He creat granola-cli per accedir a les meves notes de reunions amb IA des de
-  la línia de comandes. Ara puc consultar les meves reunions amb Claude Code,
-  fer grep de les transcripcions i enviar els elements d'acció directament als
-  meus fluxos de treball.
+  granola-cli porta les teves notes de reunions de Granola.ai a la línia de
+  comandes. Consulta reunions amb Claude Code, cerca en transcripcions, exporta
+  a JSON/TOON, i envia tasques als teus fluxos de treball. Construït amb
+  emmagatzematge segur en keychain i filtratge de dates en llenguatge natural.
 tags:
   - typescript
   - node-js
@@ -19,10 +18,10 @@ tags:
 > **Avís legal:** Aquest projecte és una eina de codi obert independent i no
 > està afiliada, avalada ni connectada amb Granola.ai.
 
-He creat **granola-cli** per accedir a les meves notes de reunions amb IA des de
-la línia de comandes. Ara puc consultar les meves reunions amb **Claude Code**,
-fer grep de les transcripcions i enviar els elements d'acció directament als
-meus fluxos de treball.
+I si poguessis consultar el teu historial de reunions com una base de dades?
+**granola-cli** porta les teves notes de reunions de Granola.ai a la línia de
+comandes—cerca en transcripcions, exporta a JSON, i envia tasques directament a
+Claude Code o al teu gestor de tasques.
 
 ## Què és Granola?
 
@@ -43,13 +42,11 @@ d'enginyeria de la setmana passada a **Claude Code** per planificar el meu
 pròxim sprint. Volia fer grep a través de les transcripcions o enviar elements
 d'acció directament al meu gestor de tasques.
 
-Copiar i enganxar des d'una interfície web no era suficient. Vaig buscar
-solucions existents i vaig trobar
+Copiar i enganxar des d'una interfície web no bastava. Vaig trobar
 [la recerca de Joseph Thacker](https://josephthacker.com/hacking/2025/05/08/reverse-engineering-granola-notes.html)
 sobre enginyeria inversa de l'API de Granola, més el repositori
 [getprobo/reverse-engineering-granola-api](https://github.com/getprobo/reverse-engineering-granola-api).
-La base ja existia. El que no existia era una CLI adequada per fer-ho útil en el
-dia a dia.
+La base ja existia. Una CLI adequada per a ús diari, no.
 
 Així que en vaig crear una.
 
@@ -118,13 +115,12 @@ granola meeting enhanced <id> --output toon | llm "What were the action items?"
 ## 40% menys tokens amb TOON
 
 La CLI suporta [TOON](https://toonformat.dev/) (Token-Oriented Object Notation),
-un format dissenyat específicament per al consum d'LLMs. TOON proporciona les
-mateixes dades estructurades que JSON però utilitzant **un 40% menys de
-tokens**.
+un format dissenyat per al consum d'LLMs. TOON proporciona les mateixes dades
+estructurades que JSON utilitzant **un 40% menys de tokens**.
 
 Quan envies dades de reunions a Claude o un altre model, cada token estalviat
-significa més context per a la teva pregunta real. TOON marca la diferència
-entre encabir una reunió o tres a la teva finestra de context.
+significa més context per a la teva pregunta. TOON determina si cap una reunió o
+tres a la teva finestra de context.
 
 ```
 $ granola meeting export abc123 --format json | wc -c
@@ -172,11 +168,11 @@ base de dades consultable per al teu flux de treball d'IA.
 ### Emmagatzematge segur de credencials
 
 Em nego a emmagatzemar tokens d'API en fitxers de configuració en text pla.
-Massa eines CLI llencen secrets a `~/.config/toolname/credentials.json` i ho
-donen per fet. Un `git add .` accidental o una còpia de seguretat mal
-configurada, i els teus tokens estan exposats.
+Massa eines CLI llencen secrets a `~/.config/toolname/credentials.json`. Un
+`git add .` accidental o una còpia de seguretat mal configurada exposa els teus
+tokens.
 
-La CLI utilitza **cross-keychain** per emmagatzemar les credencials al gestor de
+La CLI emmagatzema credencials mitjançant **cross-keychain** al gestor de
 credencials natiu del teu sistema operatiu: macOS Keychain, Windows Credential
 Manager o Linux Secret Service. Aquests sistemes xifren els secrets en repòs,
 s'integren amb la teva sessió d'inici i segueixen les millors pràctiques de
@@ -185,17 +181,17 @@ fitxers en forma llegible.
 
 ### Refresc de tokens amb bloqueig de fitxers
 
-Granola utilitza tokens de refresc d'un sol ús: cada token només es pot
-utilitzar una vegada abans de ser invalidat. Això millora la seguretat però crea
-una condició de carrera: si dos processos CLI refresca simultàniament, un obté
-un token vàlid mentre que l'altre malgasta el token de refresc i falla.
+Granola utilitza tokens de refresc d'un sol ús: cada token funciona una vegada
+abans de ser invalidat. Això millora la seguretat però crea una condició de
+carrera: si dos processos CLI refresquen simultàniament, un obté un token vàlid
+mentre l'altre malgasta el token de refresc i falla.
 
-La CLI resol això amb bloqueig basat en fitxers. Abans de refrescar tokens, el
-procés adquireix un bloqueig exclusiu en un fitxer al teu directori temporal. Si
-un altre procés ja està refrescant, el segon espera (amb un temps d'espera de 30
-segons) en lloc de competir. El bloqueig s'allibera immediatament després que es
-completa el refresc, de manera que les invocacions CLI paral·leles funcionen
-sense problemes: simplement es tornen per refrescar quan cal.
+La CLI resol això amb bloqueig basat en fitxers. Abans de refrescar, el procés
+adquireix un bloqueig exclusiu en un fitxer temporal. Si un altre procés ja està
+refrescant, el segon espera (temps d'espera de 30 segons) en lloc de competir.
+El bloqueig s'allibera immediatament després de completar el refresc, de manera
+que les invocacions CLI paral·leles funcionen sense problemes: es tornen quan
+cal.
 
 ### Conversió de ProseMirror a Markdown
 
@@ -203,24 +199,25 @@ Granola emmagatzema notes en format ProseMirror, el mateix framework de text
 enriquit que utilitzen Notion, The New York Times i Atlassian. Representa el
 contingut com un arbre JSON de nodes amb marques (formatació) adjuntes.
 
-La CLI recorre aquest arbre i el converteix a Markdown. Els encapçalaments es
-converteixen en línies `#`, les llistes en elements `-`, i les marques de text
-en els seus equivalents de Markdown: la negreta s'envolta amb `**`, la cursiva
-amb `*`, el codi amb cometes inverses. La conversió preserva estructures niades,
-de manera que una llista amb pics dins d'una cita de bloc es renderitza
-correctament. Obtens Markdown llegible que pots enviar a altres eines, cercar
-amb grep o alimentar a un LLM.
+La CLI recorre aquest arbre, convertint-lo a Markdown. Els encapçalaments es
+converteixen en línies `#`, les llistes en elements `-`, les marques de text en
+els seus equivalents de Markdown: la negreta s'envolta amb `**`, la cursiva amb
+`*`, el codi amb cometes inverses. La conversió preserva estructures niades, de
+manera que una llista amb pics dins d'una cita de bloc es renderitza
+correctament. El resultat: Markdown llegible que pots enviar a altres eines,
+cercar amb grep o alimentar a un LLM.
 
 ### Anàlisi de dates en llenguatge natural
 
-Ningú vol escriure dates ISO. La CLI accepta "today", "yesterday", "3 days ago",
-"last week" o dates parcials com "Dec 1". Per a rangs, combina `--since` i
-`--until` amb qualsevol format. L'analitzador s'encarrega de la resta.
+Ningú escriu dates ISO voluntàriament. La CLI accepta "today", "yesterday", "3
+days ago", "last week" o dates parcials com "Dec 1". Per a rangs, combina
+`--since` i `--until` amb qualsevol format. L'analitzador s'encarrega de la
+resta.
 
 L'analitzador normalitza l'entrada, gestiona casos límit (què significa "last
-week" un dilluns?) i sempre retorna marques de temps UTC que coincideixen amb
-les expectatives de l'API de Granola. Fa que el cas comú —"mostra'm les reunions
-d'ahir"— sigui una sola flag intuïtiva.
+week" un dilluns?) i retorna marques de temps UTC que coincideixen amb les
+expectatives de l'API de Granola. El cas comú —"mostra'm les reunions d'ahir"—
+es converteix en una sola flag intuïtiva.
 
 ## 4 hores amb Claude Code Opus 4.5
 
@@ -250,3 +247,10 @@ granola meeting list
 El codi font està a
 [github.com/magarcia/granola-cli](https://github.com/magarcia/granola-cli).
 Issues i PRs són benvinguts.
+
+**Articles relacionats:**
+
+- [Emmagatzematge Segur de Secrets en Node.js amb cross-keychain](/cross-platform-secret-storage-with-cross-keychain) -
+  La llibreria que granola-cli usa per a emmagatzematge segur de credencials
+- [Demanar a la IA que construeixi l'eina en lloc de fer la tasca](/asking-ai-to-build-the-tool-instead-of-doing-the-task) -
+  Com abordo el desenvolupament assistit per IA

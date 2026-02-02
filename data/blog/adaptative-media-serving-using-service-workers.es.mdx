@@ -14,35 +14,31 @@ tags:
 
 _Haciendo pair con [@Ester Martí](https://github.com/estermv)_
 
-Todos hemos experimentado cómo visitar un sitio web a través de una conexión de
-red lenta suele tardar una eternidad en cargarse, haciendo que la experiencia
-sea muy dolorosa o completamente imposible.
+Visitar un sitio web con una conexión de red lenta tarda una eternidad en
+cargar, haciendo la experiencia dolorosa o imposible.
 
-Cuando se trata de desarrollo web, solemos olvidar el rendimiento de carga
-centrándonos más en añadir nuevas características llamativas. Pero probablemente
-nuestros usuarios no están usando el último MacBook Pro conectado a una red de
-1Gps. Es más probable que estén usando un dispositivo móvil de gama media o baja
-con una conexión de red que en el mejor de los casos es una conexión 3G.
+Los desarrolladores web a menudo olvidan el rendimiento de carga mientras añaden
+características llamativas. Pero los usuarios probablemente navegan en
+dispositivos móviles de gama media o baja con conexiones 3G como máximo--no el
+último MacBook Pro con fibra gigabit.
 
 > [En 2018, el 52.2% de todas las páginas web globales se sirvieron a teléfonos móviles.](https://www.statista.com/statistics/241462/global-mobile-phone-website-traffic-share/)
 
-Por lo tanto, cuidar el rendimiento es importante y uno de los que más recursos
-consume es la entrega de medios. Vamos a mostrar cómo adaptar la entrega de
-medios basada en la conexión de red utilizando la
-[API de Información de Red](http://wicg.github.io/netinfo/). Esta es una versión
-mejorada de un experimento que hice con mi compañero
-[@Eduardo Aquiles](https://twitter.com/eduaquiles) como un componente de React,
-similar a lo que [Max Böck](https://mxb.dev/) explica en su artículo sobre
-[componentes conscientes de la conexión](https://mxb.dev/blog/connection-aware-components/)
-pero en este caso, utilizando service workers.
+El rendimiento importa, y la entrega de medios consume más recursos. Adaptaremos
+la entrega de medios basada en la conexión de red usando la
+[API de Información de Red](http://wicg.github.io/netinfo/). Esto mejora un
+experimento que construí con [@Eduardo Aquiles](https://twitter.com/eduaquiles)
+como componente de React, similar al artículo de [Max Böck](https://mxb.dev/)
+sobre
+[componentes conscientes de la conexión](https://mxb.dev/blog/connection-aware-components/)--pero
+usando service workers.
 
 ## La API de Información de Red
 
-La API de Información de Red es un borrador de especificación que expone una
-interfaz a JavaScript con información sobre la conexión del dispositivo.
+La API de Información de Red es un borrador de especificación que expone
+información de conexión del dispositivo a JavaScript.
 
-La interfaz consta de un conjunto diferente de atributos que nos da múltiple
-información sobre la red. Los más relevantes para nosotros en este artículo son:
+La interfaz proporciona varios atributos de red. Los más relevantes aquí:
 
 - **type:** El
   [tipo de conexión](http://wicg.github.io/netinfo/#dfn-connection-type) que el
@@ -113,9 +109,9 @@ información sobre la red. Los más relevantes para nosotros en este artículo s
 
 ### Soporte del navegador
 
-La API aún no tiene un soporte completo del navegador pero es
-[soportada por los navegadores móviles más populares](https://caniuse.com/#feat=netinfo)
-que son donde esta técnica tendrá más impacto.
+La API carece de soporte completo del navegador pero funciona en los
+[navegadores móviles más populares](https://caniuse.com/#feat=netinfo)--donde
+esta técnica tiene mayor impacto.
 
 ![Soporte del navegador para la API de Información de Red](/images/caniuse.png)
 
@@ -124,17 +120,14 @@ dispositivo.
 
 ## Servir Medios Adaptativos
 
-Nuestro propósito será servir diferentes recursos multimedia basados en la
-información que obtenemos del atributo `effectiveType`. Cuando hablamos de
-diferentes recursos multimedia podría ser un medio completamente diferente, como
-cambiar entre vídeo HD, imagen HD o imagen de baja calidad, el enfoque sugerido
-por [Addy Osmani](https://addyosmani.com/blog/adaptive-serving/).
+Serviremos diferentes recursos multimedia basados en `effectiveType`.
+"Diferentes medios" podría significar cambiar entre vídeo HD, imagen HD o imagen
+de baja calidad, como sugiere
+[Addy Osmani](https://addyosmani.com/blog/adaptive-serving/).
 
-En este ejemplo, vamos a utilizar diferentes niveles de compresión para la misma
-imagen.
+Este ejemplo usa diferentes niveles de compresión para la misma imagen.
 
-Primero, necesitamos obtener la calidad adecuada basada en las condiciones de la
-red. Esto es fácilmente alcanzable utilizando el siguiente fragmento:
+Primero, obtén la calidad adecuada basada en las condiciones de red:
 
 ```javascript
 function getMediaQuality() {
@@ -161,10 +154,8 @@ function getMediaQuality() {
 }
 ```
 
-Imagina que tenemos un servidor de imágenes donde podemos especificar la calidad
-de la imagen que queremos con un parámetro de consulta **quality** como `low`,
-`medium` o `high`. Por lo tanto podemos establecer la calidad en el atributo
-`src` de las etiquetas de imágenes como sigue:
+Imagina un servidor de imágenes que acepta un parámetro **quality** (`low`,
+`medium` o `high`). Establece la calidad en el atributo `src`:
 
 ```html
 <img src="http://images.magarcia.io/cute_cat?quality=low" alt="Gato lindo" />
@@ -177,31 +168,25 @@ images.forEach((img) => {
 });
 ```
 
-Es importante notar que la calidad por defecto establecida en la imagen es
-`low`, lo que significa que los dispositivos cargarán primero la imagen de baja
-calidad y luego si tiene una conexión de alta velocidad cargará la de mejor
-calidad.
+La calidad por defecto es `low`, así que los dispositivos cargan primero la
+imagen de baja calidad, luego mejoran en conexiones rápidas.
 
-Luego el fragmento de JavaScript anterior obtendrá todas las imágenes en el
-documento y reemplazará el parámetro de calidad al apropiado basado en lo que la
-función `getMediaQuality` devuelve. Si la calidad es `low` no va a hacer más
-peticiones, pero si cambia hará dos peticiones: una con la imagen de calidad
-`low` cuando los navegadores analizan la etiqueta `img` y otra con calidad
-`medium` o `high` cuando se ejecuta el código JavaScript.
+El JavaScript obtiene todas las imágenes y reemplaza el parámetro de calidad
+según `getMediaQuality`. Para calidad `low`, no hay peticiones adicionales. Para
+`medium` o `high`, ocurren dos peticiones: una para `low` al analizar la
+etiqueta `img`, otra para mejor calidad cuando ejecuta JavaScript.
 
-Esto no es ideal pero mejorará los tiempos de carga en redes lentas. Pero para
-redes de conexión media/alta, como mencionamos antes, hará dos peticiones para
-cada imagen consumiendo más datos de los necesarios.
+Esto mejora los tiempos de carga en redes lentas pero duplica las peticiones en
+conexiones rápidas, consumiendo datos extra.
 
 ## Usando Service Workers
 
-El problema mencionado con respecto a las dos peticiones puede ser arreglado
-usando
-[service workers](https://developers.google.com/web/fundamentals/primers/service-workers/),
-interceptando la petición hecha por el navegador y reemplazándola con la calidad
-apropiada para la imagen.
+Los
+[service workers](https://developers.google.com/web/fundamentals/primers/service-workers/)
+resuelven el problema de doble petición interceptando las peticiones del
+navegador y reemplazándolas con la calidad apropiada.
 
-Primero, necesitamos registrar nuestro service worker:
+Primero, registra el service worker:
 
 ```javascript
 if ("serviceWorker" in navigator) {
@@ -221,9 +206,8 @@ if ("serviceWorker" in navigator) {
 }
 ```
 
-A continuación, añadimos un listener para el evento fetch, que para todas las
-imágenes solicitadas desde el sitio añadirá el parámetro de calidad correcto
-usando la función `getMediaQuality` creada en la sección anterior.
+Añade un listener del evento fetch que añade el parámetro de calidad correcto a
+las peticiones de imágenes:
 
 ```javascript
 self.addEventListener("fetch", function (event) {
@@ -234,8 +218,8 @@ self.addEventListener("fetch", function (event) {
 });
 ```
 
-Y ya no necesitamos especificar el parámetro de calidad en la etiqueta `img` ya
-que el service worker se encargará de eso.
+Ahora omite el parámetro de calidad de las etiquetas `img`--el service worker lo
+gestiona:
 
 ```html
 <img src=“http://images.magarcia.io/cute_cat” alt=“Gato lindo”/>
@@ -243,8 +227,7 @@ que el service worker se encargará de eso.
 
 ## El código
 
-Puedes encontrar el código de este post (más completo, limpio y con menos
-errores) en
+Encuentra el código completo y más limpio en
 [este repositorio de GitHub](https://github.com/estermv/adaptative-media-serving).
 
 ## Lectura Adicional

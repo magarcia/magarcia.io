@@ -1,25 +1,32 @@
 ---
-title:
-  "Trencant el límit del QR: El descobriment d'un protocol WebRTC sense servidor"
+title: "WebRTC sense Servidor via Codi QR: Construint el Protocol QWBP"
 date: "2026-01-19"
 spoiler:
-  Una simple petició d'un usuari va portar a una sessió intensiva de disseny de
-  protocols assistida per IA. Vaig reduir la senyalització WebRTC de 2.500 bytes
-  a 55 bytes—una reducció del 97,79%—qüestionant cada bona pràctica. Aquesta és
-  la història de com va néixer QWBP.
+  Com vaig comprimir la senyalitzacio WebRTC de 2.500 bytes a 55 bytes usant un
+  protocol binari personalitzat, permetent connexions peer-to-peer a traves de
+  codis QR sense cap servidor de senyalitzacio. La historia completa de QWBP
+  (QR-WebRTC Bootstrap Protocol).
 tags:
   - javascript
+  - typescript
   - webrtc
-  - qr-code
   - security
+  - open-source
+  - ai
 ---
 
-> L'home raonable s'adapta al món: el desraonat persisteix a intentar adaptar el
-> món a si mateix. Per tant, tot progrés depèn de l'home desraonat.
+**QWBP (QR-WebRTC Bootstrap Protocol)** permet connexions peer-to-peer sense
+servidor comprimint la senyalitzacio WebRTC en codis QR. En dissenyar un
+protocol binari personalitzat que redueix l'SDP de 2.500 bytes a nomes 55 bytes,
+dos dispositius poden establir connexions WebRTC encriptades escanejant els
+codis QR de l'altre—sense necessitat de servidor de senyalitzacio.
+
+> L'home raonable s'adapta al mon: el desraonat persisteix a intentar adaptar el
+> mon a si mateix. Per tant, tot progres depen de l'home desraonat.
 >
 > — George Bernard Shaw
 
-Vaig hardcodejar contrasenyes a producció. Vaig violar les millors pràctiques de
+Vaig hardcodejar contrasenyes a produccio. Vaig violar les millors pràctiques de
 WebRTC. Vaig dissenyar un protocol binari personalitzat. Després ho vaig llençar
 tot a les escombraries quan vaig descobrir que el veritable problema no era la
 compressió—era la física.
@@ -1134,6 +1141,13 @@ a=candidate:1 1 udp 2122260223 192.168.1.5 54321 typ host
 
 <br />
 
-_Un usuari va fer una pregunta simple. Vaig passar una tarda i un matí parlant
-amb una IA sobre disseny de protocols. Ser desraonat va resultar ser l'única
-solució raonable._
+_Un usuari va fer una pregunta simple. Vaig passar una tarda i un mati parlant
+amb una IA sobre disseny de protocols. Ser desraonat va resultar ser l'unica
+solucio raonable._
+
+---
+
+_Vols aprendre mes sobre desenvolupament assistit per IA? Llegeix sobre
+[com la IA esta canviant els fluxos de treball d'equips de software](/ca/when-ai-made-building-cheaper-than-the-meetings-to-plan-it)
+o explora
+[tecniques per construir eines amb IA](/ca/asking-ai-to-build-the-tool-instead-of-doing-the-task)._
