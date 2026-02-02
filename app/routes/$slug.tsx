@@ -10,6 +10,7 @@ import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime } from "~/lib/i18n";
 import { buildCanonicalLink, buildPostHreflangLinks } from "~/lib/hreflang";
+import { truncateDescription } from "~/lib/seo";
 import ReactMarkdownImport from "react-markdown";
 import rehypeRawImport from "rehype-raw";
 import remarkGfmImport from "remark-gfm";
@@ -34,12 +35,13 @@ export function meta({ data, location }: Route.MetaArgs) {
   const { title, date, spoiler, slug, ogImage } = data.frontMatter;
   const siteUrl = "https://magarcia.io";
   const imageUrl = ogImage || `${siteUrl}/og/${slug}.png`;
+  const description = truncateDescription(spoiler);
 
   return [
     { title: `${title} — magarcia` },
-    { name: "description", content: spoiler },
+    { name: "description", content: description },
     { property: "og:title", content: `${title} — magarcia` },
-    { property: "og:description", content: spoiler },
+    { property: "og:description", content: description },
     { property: "og:type", content: "article" },
     { property: "og:site_name", content: "magarcia" },
     { property: "og:url", content: `${siteUrl}${location.pathname}` },

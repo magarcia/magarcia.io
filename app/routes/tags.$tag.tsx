@@ -4,6 +4,7 @@ import type { Route } from "./+types/tags.$tag";
 import {
   getPostsByTagSlug,
   getTagBySlug,
+  getTagDescription,
   isValidSlug,
   isValidLang,
   type FrontMatter,
@@ -11,6 +12,7 @@ import {
 import Header from "~/components/Header";
 import { formatDate, formatReadingTime, formatTagPageTitle } from "~/lib/i18n";
 import { buildCanonicalLink } from "~/lib/hreflang";
+import { truncateDescription } from "~/lib/seo";
 
 export function meta({ data, location }: Route.MetaArgs) {
   if (!data) {
@@ -19,18 +21,25 @@ export function meta({ data, location }: Route.MetaArgs) {
 
   const { tag, totalCount, lang } = data;
   const title = formatTagPageTitle(totalCount, tag, lang);
+  const siteUrl = "https://magarcia.io";
+
+  // Get contextual description from TAG_METADATA or fallback to generic template
+  const rawDescription =
+    getTagDescription(tag, lang) ?? `Posts tagged with "${tag}" on magarcia.io`;
+  const description = truncateDescription(rawDescription);
 
   return [
     { title: `${title} — magarcia` },
-    {
-      name: "description",
-      content: `Posts tagged with "${tag}" on magarcia.io`,
-    },
+    { name: "description", content: description },
     { property: "og:title", content: title },
-    {
-      property: "og:description",
-      content: `Posts tagged with "${tag}" on magarcia.io`,
-    },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}${location.pathname}` },
+    { property: "og:site_name", content: "magarcia" },
+    { property: "og:image", content: `${siteUrl}/og/default.png` },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { name: "twitter:card", content: "summary" },
     buildCanonicalLink(location.pathname),
   ];
 }

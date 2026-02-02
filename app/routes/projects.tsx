@@ -12,21 +12,29 @@ const pageTitles: Record<string, string> = {
 };
 
 const pageDescriptions: Record<string, string> = {
-  en: "Open source projects, tools, and experiments",
-  es: "Proyectos de código abierto, herramientas y experimentos",
-  ca: "Projectes de codi obert, eines i experiments",
+  en: "Explore open source projects, developer tools, and experiments by Martin Garcia",
+  es: "Explora proyectos de código abierto, herramientas para desarrolladores y experimentos de Martin Garcia",
+  ca: "Explora projectes de codi obert, eines per a desenvolupadors i experiments de Martin Garcia",
 };
 
 export function meta({ data, location }: Route.MetaArgs) {
   const lang = data?.lang || "en";
   const title = pageTitles[lang];
   const description = pageDescriptions[lang];
+  const siteUrl = "https://magarcia.io";
 
   return [
     { title: `${title} — magarcia` },
     { name: "description", content: description },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}${location.pathname}` },
+    { property: "og:site_name", content: "magarcia" },
+    { property: "og:image", content: `${siteUrl}/og/default.png` },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { name: "twitter:card", content: "summary" },
     buildCanonicalLink(location.pathname),
     ...buildProjectsHreflangLinks(),
   ];

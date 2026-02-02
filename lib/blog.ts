@@ -3,6 +3,7 @@ import matter from "gray-matter";
 import path from "path";
 import readingTime from "reading-time";
 import { slugifyTag } from "./urls";
+import { TAG_METADATA } from "../data/tags";
 
 const root = process.cwd();
 
@@ -292,4 +293,27 @@ export function getAllSlugs(type: string): string[] {
     );
 
   return Array.from(new Set(files));
+}
+
+/**
+ * Gets the localized description for a tag from TAG_METADATA.
+ * Falls back to English if the requested language is not available.
+ *
+ * @param tagSlug - The URL-friendly slug of the tag (e.g., "node-js")
+ * @param lang - Language code ("en", "es", "ca"). Defaults to "en"
+ * @returns The localized description for the tag, or null if not found
+ *
+ * @example
+ * getTagDescription("react", "en") // "Posts about React framework..."
+ * getTagDescription("react", "es") // "Publicaciones sobre el framework React..."
+ */
+export function getTagDescription(
+  tagSlug: string,
+  lang: string = "en",
+): string | null {
+  const metadata = TAG_METADATA[tagSlug];
+  if (!metadata) {
+    return null;
+  }
+  return metadata.description[lang] || metadata.description.en || null;
 }
