@@ -59,9 +59,8 @@ The new footer remains simple: a
 [Angular 2 template](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 The key difference: nothing modifies the template to inject the version.
 _Instead_, Webpack's
-[DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
-adds the version as a global constant at build time, reading from
-`package.json`.
+[DefinePlugin](https://webpack.js.org/plugins/define-plugin/) adds the version
+as a global constant at build time, reading from `package.json`.
 
 Two benefits: the footer is now a pure Angular component, and it's easier to
 test.

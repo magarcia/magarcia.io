@@ -5,8 +5,11 @@ import Footer from "~/components/Footer";
 import AboutSection from "~/components/AboutSection";
 import ProjectsSection from "~/components/ProjectsSection";
 import WritingSection from "~/components/WritingSection";
+import { buildCanonicalLink, buildHomepageHreflangLinks } from "~/lib/hreflang";
 
-export function meta(_args: Route.MetaArgs) {
+export function meta({ location }: Route.MetaArgs) {
+  const pathname = location.pathname || "/";
+
   return [
     { title: "magarcia — A personal blog" },
     {
@@ -26,6 +29,8 @@ export function meta(_args: Route.MetaArgs) {
     { name: "twitter:card", content: "summary" },
     { name: "twitter:site", content: "@martinprins" },
     { name: "twitter:creator", content: "@martinprins" },
+    buildCanonicalLink(pathname),
+    ...buildHomepageHreflangLinks(),
   ];
 }
 

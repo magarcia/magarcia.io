@@ -3,6 +3,7 @@ import type { Route } from "./+types/projects";
 import { projects, type Project } from "~/data/projects";
 import Header from "~/components/Header";
 import Footer from "~/components/Footer";
+import { buildCanonicalLink, buildProjectsHreflangLinks } from "~/lib/hreflang";
 
 const pageTitles: Record<string, string> = {
   en: "All Projects",
@@ -16,7 +17,7 @@ const pageDescriptions: Record<string, string> = {
   ca: "Projectes de codi obert, eines i experiments",
 };
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ data, location }: Route.MetaArgs) {
   const lang = data?.lang || "en";
   const title = pageTitles[lang];
   const description = pageDescriptions[lang];
@@ -26,6 +27,8 @@ export function meta({ data }: Route.MetaArgs) {
     { name: "description", content: description },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
+    buildCanonicalLink(location.pathname),
+    ...buildProjectsHreflangLinks(),
   ];
 }
 

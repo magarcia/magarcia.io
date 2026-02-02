@@ -10,8 +10,9 @@ import {
 } from "~/lib/blog";
 import Header from "~/components/Header";
 import { formatDate, formatReadingTime, formatTagPageTitle } from "~/lib/i18n";
+import { buildCanonicalLink } from "~/lib/hreflang";
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ data, location }: Route.MetaArgs) {
   if (!data) {
     return [{ title: "Tag Not Found" }];
   }
@@ -30,6 +31,7 @@ export function meta({ data }: Route.MetaArgs) {
       property: "og:description",
       content: `Posts tagged with "${tag}" on magarcia.io`,
     },
+    buildCanonicalLink(location.pathname),
   ];
 }
 

@@ -60,10 +60,9 @@ El nou peu de pàgina segueix sent simple: un
 (definició de component amb una classe buida) i una
 [plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 La diferència clau: res modifica la plantilla per injectar la versió. _En el seu
-lloc_, el
-[DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
-de Webpack afegeix la versió com a constant global en temps de construcció,
-llegint de `package.json`.
+lloc_, el [DefinePlugin](https://webpack.js.org/plugins/define-plugin/) de
+Webpack afegeix la versió com a constant global en temps de construcció, llegint
+de `package.json`.
 
 Dos beneficis: el peu de pàgina és ara un component Angular pur, i és més fàcil
 de provar.

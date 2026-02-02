@@ -9,6 +9,7 @@ import {
 import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime } from "~/lib/i18n";
+import { buildCanonicalLink, buildPostHreflangLinks } from "~/lib/hreflang";
 import ReactMarkdownImport from "react-markdown";
 import rehypeRawImport from "rehype-raw";
 import remarkGfmImport from "remark-gfm";
@@ -25,7 +26,7 @@ const remarkGfm =
   (remarkGfmImport as unknown as { default?: typeof remarkGfmImport })
     .default ?? remarkGfmImport;
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ data, location }: Route.MetaArgs) {
   if (!data || !data.frontMatter) {
     return [{ title: "Post Not Found" }];
   }
@@ -41,7 +42,7 @@ export function meta({ data }: Route.MetaArgs) {
     { property: "og:description", content: spoiler },
     { property: "og:type", content: "article" },
     { property: "og:site_name", content: "magarcia" },
-    { property: "og:url", content: `${siteUrl}/${slug}` },
+    { property: "og:url", content: `${siteUrl}${location.pathname}` },
     { property: "og:image", content: imageUrl },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
@@ -50,6 +51,8 @@ export function meta({ data }: Route.MetaArgs) {
     { name: "twitter:creator", content: "@martinprins" },
     { name: "twitter:image", content: imageUrl },
     { property: "article:published_time", content: date },
+    buildCanonicalLink(location.pathname),
+    ...buildPostHreflangLinks(slug),
   ];
 }
 

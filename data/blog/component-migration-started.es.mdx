@@ -60,9 +60,8 @@ El nuevo pie de página sigue siendo simple: un
 (definición de componente con una clase vacía) y una
 [plantilla Angular 2](https://github.com/magarcia/jangouts/blob/5db2d9de547d6d56aaed90c633b5d98ce64f6219/src/app/components/footer/jh-footer.html).
 La diferencia clave: nada modifica la plantilla para inyectar la versión. _En su
-lugar_, el
-[DefinePlugin](https://webpack.github.io/docs/list-of-plugins.html#defineplugin)
-de Webpack añade la versión como constante global en tiempo de construcción,
+lugar_, el [DefinePlugin](https://webpack.js.org/plugins/define-plugin/) de
+Webpack añade la versión como constante global en tiempo de construcción,
 leyendo de `package.json`.
 
 Dos beneficios: el pie de página es ahora un componente Angular puro, y es más
