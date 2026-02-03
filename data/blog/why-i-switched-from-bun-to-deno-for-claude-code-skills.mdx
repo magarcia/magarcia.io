@@ -19,7 +19,7 @@ tags:
 **Bun's auto-install feature breaks when any `node_modules` directory exists in
 parent paths.** This makes Bun unreliable for portable Claude Code skills that
 run from project directories or monorepos. After testing
-[my previous npx bun approach](/writing-powerful-claude-code-skills-with-npx-bun)
+[my previous npx bun approach](/writing-powerful-claude-code-skills-with-npx-bun/)
 in real environments, I switched to Deno. Here is why Deno's `npm:` specifier is
 the better choice for self-contained TypeScript skills.
 
@@ -136,7 +136,7 @@ than a skill that's 30% faster but breaks in monorepos.
 ## Practical Example for Skills
 
 The structure follows the same pattern from the
-[original article](/writing-powerful-claude-code-skills-with-npx-bun)—a
+[original article](/writing-powerful-claude-code-skills-with-npx-bun/)—a
 `SKILL.md` pointing to executable scripts. The only changes are the shebang and
 Deno-specific APIs:
 
@@ -171,7 +171,7 @@ I'd reconsider. Until then, Deno's consistency wins.
 
 ## References
 
-- [Writing Powerful Claude Code Skills with npx bun](/writing-powerful-claude-code-skills-with-npx-bun)
+- [Writing Powerful Claude Code Skills with npx bun](/writing-powerful-claude-code-skills-with-npx-bun/)
   — The original exploration of this approach
 - [Deno — A modern runtime for JavaScript and TypeScript](https://deno.land)
 - [Deno npm compatibility](https://docs.deno.com/runtime/fundamentals/node/#using-npm-packages)

@@ -11,7 +11,7 @@ import {
 } from "~/lib/blog";
 import Header from "~/components/Header";
 import { formatDate, formatReadingTime, formatTagPageTitle } from "~/lib/i18n";
-import { buildCanonicalLink } from "~/lib/hreflang";
+import { buildCanonicalLink, buildTagHreflangLinks } from "~/lib/hreflang";
 import { truncateDescription } from "~/lib/seo";
 
 export function meta({ data, location }: Route.MetaArgs) {
@@ -41,6 +41,7 @@ export function meta({ data, location }: Route.MetaArgs) {
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary" },
     buildCanonicalLink(location.pathname),
+    ...buildTagHreflangLinks(tag),
   ];
 }
 

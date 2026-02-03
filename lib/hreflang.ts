@@ -1,4 +1,5 @@
 import { getFileBySlug } from "./blog";
+import { slugifyTag } from "./urls";
 
 type HreflangLink = {
   tagName: "link";
@@ -126,4 +127,38 @@ export function buildCanonicalLink(pathname: string): CanonicalLink {
     rel: "canonical",
     href: canonicalUrl,
   };
+}
+
+/**
+ * Build hreflang links for tag page locale variants
+ */
+export function buildTagHreflangLinks(tag: string): HreflangLink[] {
+  const slug = slugifyTag(tag);
+
+  return [
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "en",
+      href: `${BASE_URL}/tags/${slug}/`,
+    },
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "es",
+      href: `${BASE_URL}/es/tags/${slug}/`,
+    },
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "ca",
+      href: `${BASE_URL}/ca/tags/${slug}/`,
+    },
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "x-default",
+      href: `${BASE_URL}/tags/${slug}/`,
+    },
+  ];
 }

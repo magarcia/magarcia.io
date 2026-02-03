@@ -56,9 +56,27 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: highlightStyles },
 ];
 
+function HtmlWithLang({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const lang =
+    pathname.startsWith("/es/") || pathname === "/es"
+      ? "es"
+      : pathname.startsWith("/ca/") || pathname === "/ca"
+        ? "ca"
+        : "en";
+
+  return (
+    <html lang={lang} suppressHydrationWarning>
+      {children}
+    </html>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <HtmlWithLang>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -89,7 +107,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <Scripts />
       </body>
-    </html>
+    </HtmlWithLang>
   );
 }
 
