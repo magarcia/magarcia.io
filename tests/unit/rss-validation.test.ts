@@ -343,7 +343,7 @@ describe("RSS Feed Validation", () => {
       const items = getItems();
 
       posts.forEach((post) => {
-        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}/`;
         const found = items.some((item) => getItemGuid(item) === expectedUrl);
 
         expect(
@@ -360,7 +360,7 @@ describe("RSS Feed Validation", () => {
       const items = getItems();
 
       futurePosts.forEach((post) => {
-        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}/`;
         const found = items.some((item) => getItemGuid(item) === expectedUrl);
 
         expect(

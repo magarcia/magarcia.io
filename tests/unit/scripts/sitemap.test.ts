@@ -178,7 +178,7 @@ describe("Sitemap Generation", () => {
 
       posts.forEach((post) => {
         const postUrl = urls.find(
-          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}`,
+          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}/`,
         );
 
         if (postUrl) {
@@ -195,9 +195,9 @@ describe("Sitemap Generation", () => {
       const urls = getUrls();
 
       tags.forEach((tag) => {
-        const tagSlug = tag.toLowerCase().replace(/\s+/g, "-");
+        const tagSlug = slugifyTag(tag);
         const tagUrl = urls.find(
-          (url) => url.loc === `${siteMetadata.siteUrl}/tags/${tagSlug}`,
+          (url) => url.loc === `${siteMetadata.siteUrl}/tags/${tagSlug}/`,
         );
 
         if (tagUrl) {
@@ -244,7 +244,7 @@ describe("Sitemap Generation", () => {
 
       posts.forEach((post) => {
         const postUrl = urls.find(
-          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}`,
+          (url) => url.loc === `${siteMetadata.siteUrl}/${post.slug}/`,
         );
 
         if (postUrl) {
@@ -289,7 +289,7 @@ describe("Sitemap Generation", () => {
       const urls = getUrls();
 
       posts.forEach((post) => {
-        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}/`;
         const found = urls.some((url) => url.loc === expectedUrl);
 
         expect(
@@ -306,7 +306,7 @@ describe("Sitemap Generation", () => {
       const urls = getUrls();
 
       futurePosts.forEach((post) => {
-        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}`;
+        const expectedUrl = `${siteMetadata.siteUrl}/${post.slug}/`;
         const found = urls.some((url) => url.loc === expectedUrl);
 
         expect(
@@ -321,7 +321,7 @@ describe("Sitemap Generation", () => {
       const urls = getUrls();
 
       tags.forEach((tag) => {
-        const expectedUrl = `${siteMetadata.siteUrl}/tags/${slugifyTag(tag)}`;
+        const expectedUrl = `${siteMetadata.siteUrl}/tags/${slugifyTag(tag)}/`;
         const found = urls.some((url) => url.loc === expectedUrl);
 
         expect(
