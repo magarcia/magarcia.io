@@ -10,6 +10,43 @@ const root = process.cwd();
 const VALID_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
 const VALID_LANG_CODES = ["en", "es", "ca"] as const;
 
+/** Regex to extract slug from filename by removing language suffix and extension */
+const FILENAME_TO_SLUG_REGEX = /\.(es|ca)?\.(md|mdx)$/;
+
+/**
+ * Extracts slug from a markdown filename by removing language suffix and extension.
+ * @example
+ * extractSlugFromFilename("my-post.es.mdx") // "my-post"
+ * extractSlugFromFilename("my-post.mdx")    // "my-post"
+ */
+function extractSlugFromFilename(filename: string): string {
+  return filename
+    .replace(FILENAME_TO_SLUG_REGEX, "")
+    .replace(/\.(md|mdx)$/, "");
+}
+
+/**
+ * Gets unique slugs from a blog directory.
+ */
+function getUniqueSlugsFromDir(dirPath: string): string[] {
+  const files = fs
+    .readdirSync(dirPath)
+    .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
+    .map(extractSlugFromFilename);
+
+  return Array.from(new Set(files));
+}
+
+/**
+ * Checks if a post should be excluded in production (draft or future date).
+ */
+function shouldExcludePost(frontMatter: FrontMatter): boolean {
+  if (process.env.NODE_ENV !== "production") {
+    return false;
+  }
+  return frontMatter.draft === true || isFutureDate(frontMatter.date);
+}
+
 export function isValidSlug(slug: string): boolean {
   return VALID_SLUG_PATTERN.test(slug) && slug.length <= 200;
 }
@@ -158,15 +195,7 @@ export function getAllFilesFrontMatter(
   lang: string = "en",
 ): FrontMatter[] {
   const dirPath = path.join(root, "data", type);
-  const files = fs
-    .readdirSync(dirPath)
-    .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) => {
-      // Remove extension and language suffix if present
-      return f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, "");
-    });
-
-  const uniqueSlugs = Array.from(new Set(files));
+  const uniqueSlugs = getUniqueSlugsFromDir(dirPath);
 
   return uniqueSlugs
     .reduce((allFiles: FrontMatter[], slug: string) => {
@@ -179,14 +208,7 @@ export function getAllFilesFrontMatter(
       const source = fs.readFileSync(filePath, "utf8");
       const { frontMatter } = getFrontMatter(source, slug);
 
-      if (frontMatter.draft && process.env.NODE_ENV === "production") {
-        return allFiles;
-      }
-
-      if (
-        isFutureDate(frontMatter.date) &&
-        process.env.NODE_ENV === "production"
-      ) {
+      if (shouldExcludePost(frontMatter)) {
         return allFiles;
       }
 
@@ -203,27 +225,13 @@ export function getAllFilesFrontMatter(
 
 export function getAllFiles(type: string, lang: string = "en"): BlogPost[] {
   const dirPath = path.join(root, "data", type);
-  const files = fs
-    .readdirSync(dirPath)
-    .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) =>
-      f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""),
-    );
-
-  const uniqueSlugs = Array.from(new Set(files));
+  const uniqueSlugs = getUniqueSlugsFromDir(dirPath);
 
   return uniqueSlugs
     .reduce((allFiles: BlogPost[], slug: string) => {
       const { frontMatter, content } = getFileBySlug(type, slug, lang);
 
-      if (frontMatter.draft && process.env.NODE_ENV === "production") {
-        return allFiles;
-      }
-
-      if (
-        isFutureDate(frontMatter.date) &&
-        process.env.NODE_ENV === "production"
-      ) {
+      if (shouldExcludePost(frontMatter)) {
         return allFiles;
       }
 
@@ -285,14 +293,7 @@ export function getPostsByTag(
 
 export function getAllSlugs(type: string): string[] {
   const dirPath = path.join(root, "data", type);
-  const files = fs
-    .readdirSync(dirPath)
-    .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-    .map((f) =>
-      f.replace(/\.(es|ca)?\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, ""),
-    );
-
-  return Array.from(new Set(files));
+  return getUniqueSlugsFromDir(dirPath);
 }
 
 /**

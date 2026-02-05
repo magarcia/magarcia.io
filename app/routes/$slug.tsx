@@ -8,7 +8,7 @@ import {
 } from "~/lib/blog";
 import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
-import { formatDate, formatReadingTime } from "~/lib/i18n";
+import { formatDate, formatReadingTime, getLangFromPathname } from "~/lib/i18n";
 import { buildCanonicalLink, buildPostHreflangLinks } from "~/lib/hreflang";
 import { truncateDescription } from "~/lib/seo";
 import ReactMarkdownImport from "react-markdown";
@@ -65,11 +65,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const pathname = new URL(request.url).pathname;
-  const lang = pathname.startsWith("/es/")
-    ? "es"
-    : pathname.startsWith("/ca/")
-      ? "ca"
-      : "en";
+  const lang = getLangFromPathname(pathname);
 
   if (!isValidLang(lang)) {
     throw new Response("Not Found", { status: 404 });

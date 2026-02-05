@@ -6,6 +6,7 @@ import AboutSection from "~/components/AboutSection";
 import ProjectsSection from "~/components/ProjectsSection";
 import WritingSection from "~/components/WritingSection";
 import { buildCanonicalLink, buildHomepageHreflangLinks } from "~/lib/hreflang";
+import { getLangFromPathname } from "~/lib/i18n";
 
 export function meta({ location }: Route.MetaArgs) {
   const pathname = location.pathname || "/";
@@ -36,10 +37,7 @@ export function meta({ location }: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const pathname = new URL(request.url).pathname;
-  let lang: string;
-  if (pathname === "/es" || pathname === "/es/") lang = "es";
-  else if (pathname === "/ca" || pathname === "/ca/") lang = "ca";
-  else lang = "en";
+  const lang = getLangFromPathname(pathname);
   const posts = getAllFilesFrontMatter("blog", lang).filter(
     ({ indexed }) => indexed !== false,
   );

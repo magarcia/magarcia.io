@@ -1,6 +1,31 @@
 import { format, parseISO } from "date-fns";
 import { es, ca, enUS, type Locale } from "date-fns/locale";
 
+export type Lang = "en" | "es" | "ca";
+
+/**
+ * Detects the language from a URL pathname.
+ * Handles both exact paths (/es, /ca) and prefixed paths (/es/*, /ca/*).
+ *
+ * @param pathname - URL pathname (e.g., "/es/blog-post" or "/es" or "/es/")
+ * @returns Language code ("en", "es", "ca")
+ *
+ * @example
+ * getLangFromPathname("/es/my-post")  // "es"
+ * getLangFromPathname("/es")          // "es"
+ * getLangFromPathname("/es/")         // "es"
+ * getLangFromPathname("/my-post")     // "en"
+ */
+export function getLangFromPathname(pathname: string): Lang {
+  if (pathname.startsWith("/es/") || pathname === "/es") {
+    return "es";
+  }
+  if (pathname.startsWith("/ca/") || pathname === "/ca") {
+    return "ca";
+  }
+  return "en";
+}
+
 const locales: Record<string, Locale> = {
   en: enUS,
   es: es,
