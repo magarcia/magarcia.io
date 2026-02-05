@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
+import React from "react";
 import { mdxComponents } from "~/components/mdxComponents";
+
+// Helper to create a mock code element like react-markdown produces
+function createCodeElement(className: string | null | undefined, code: string) {
+  return React.createElement("code", { className, children: code });
+}
 
 describe("mdxComponents", () => {
   describe("component mappings", () => {
@@ -40,23 +46,16 @@ describe("mdxComponents", () => {
     const Pre = mdxComponents.pre;
 
     it("renders code block without crashing", () => {
-      const children = {
-        props: {
-          className: "language-typescript",
-          children: "const x: string = 'test';",
-        },
-      };
+      const children = createCodeElement(
+        "language-typescript",
+        "const x: string = 'test';",
+      );
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
     it("identifies language from className", () => {
-      const children = {
-        props: {
-          className: "language-typescript",
-          children: "const x = 1;",
-        },
-      };
+      const children = createCodeElement("language-typescript", "const x = 1;");
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(
@@ -65,11 +64,7 @@ describe("mdxComponents", () => {
     });
 
     it("defaults to text language when no className", () => {
-      const children = {
-        props: {
-          children: "plain text",
-        },
-      };
+      const children = createCodeElement(undefined, "plain text");
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(
@@ -86,12 +81,10 @@ describe("mdxComponents", () => {
     });
 
     it("renders pre element for code structure", () => {
-      const children = {
-        props: {
-          className: "language-javascript",
-          children: "line1\nline2\nline3",
-        },
-      };
+      const children = createCodeElement(
+        "language-javascript",
+        "line1\nline2\nline3",
+      );
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(container.querySelector("pre")).toBeInTheDocument();
@@ -102,12 +95,7 @@ describe("mdxComponents", () => {
     const Pre = mdxComponents.pre;
 
     it("parses language with highlight syntax", () => {
-      const children = {
-        props: {
-          className: "language-typescript:1,3,5",
-          children: "code",
-        },
-      };
+      const children = createCodeElement("language-typescript:1,3,5", "code");
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(
@@ -116,12 +104,10 @@ describe("mdxComponents", () => {
     });
 
     it("handles range syntax in highlight specification", () => {
-      const children = {
-        props: {
-          className: "language-javascript:3-5",
-          children: "line1\nline2\nline3\nline4\nline5",
-        },
-      };
+      const children = createCodeElement(
+        "language-javascript:3-5",
+        "line1\nline2\nline3\nline4\nline5",
+      );
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(
@@ -130,12 +116,10 @@ describe("mdxComponents", () => {
     });
 
     it("handles mixed single lines and ranges", () => {
-      const children = {
-        props: {
-          className: "language-python:1,3-5,7",
-          children: "line1\nline2\nline3\nline4\nline5\nline6\nline7",
-        },
-      };
+      const children = createCodeElement(
+        "language-python:1,3-5,7",
+        "line1\nline2\nline3\nline4\nline5\nline6\nline7",
+      );
 
       const { container } = render(<Pre>{children}</Pre>);
       expect(
@@ -148,67 +132,49 @@ describe("mdxComponents", () => {
     const Pre = mdxComponents.pre;
 
     it("handles non-numeric highlight values gracefully", () => {
-      const children = {
-        props: {
-          className: "language-javascript:abc",
-          children: "console.log('test');",
-        },
-      };
+      const children = createCodeElement(
+        "language-javascript:abc",
+        "console.log('test');",
+      );
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
     it("handles reversed range gracefully", () => {
-      const children = {
-        props: {
-          className: "language-javascript:5-3",
-          children: "line1\nline2\nline3\nline4\nline5",
-        },
-      };
+      const children = createCodeElement(
+        "language-javascript:5-3",
+        "line1\nline2\nline3\nline4\nline5",
+      );
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
     it("handles empty highlight after colon", () => {
-      const children = {
-        props: {
-          className: "language-javascript:",
-          children: "console.log('test');",
-        },
-      };
+      const children = createCodeElement(
+        "language-javascript:",
+        "console.log('test');",
+      );
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
     it("handles out-of-bounds line numbers", () => {
-      const children = {
-        props: {
-          className: "language-javascript:999",
-          children: "console.log('test');",
-        },
-      };
+      const children = createCodeElement(
+        "language-javascript:999",
+        "console.log('test');",
+      );
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
     it("handles null className", () => {
-      const children = {
-        props: {
-          className: null,
-          children: "console.log('test');",
-        },
-      };
+      const children = createCodeElement(null, "console.log('test');");
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });
 
     it("handles undefined className", () => {
-      const children = {
-        props: {
-          className: undefined,
-          children: "console.log('test');",
-        },
-      };
+      const children = createCodeElement(undefined, "console.log('test');");
 
       expect(() => render(<Pre>{children}</Pre>)).not.toThrow();
     });

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import ArticleListItem from "~/components/ArticleListItem";
 
@@ -36,27 +36,24 @@ describe("ArticleListItem", () => {
     expect(time).toHaveAttribute("datetime", "2023-12-15");
   });
 
-  it("renders spoiler text before markdown loads", () => {
+  it("renders spoiler text with markdown formatting", () => {
     render(<ArticleListItem {...mockArticle} />);
 
-    // Initially, should render plain spoiler text
-    expect(
-      screen.getByText(/This is a \*\*test\*\* spoiler/),
-    ).toBeInTheDocument();
+    // Markdown should be rendered - **test** becomes <strong>test</strong>
+    const article = screen.getByTestId("article-item");
+    const strongElements = article.querySelectorAll("strong");
+    expect(strongElements.length).toBeGreaterThan(0);
+    expect(strongElements[0]).toHaveTextContent("test");
   });
 
-  it("renders spoiler text with markdown after dynamic import", async () => {
+  it("renders emphasis in spoiler text", () => {
     render(<ArticleListItem {...mockArticle} />);
 
-    // Wait for the dynamic import to complete and markdown to render
-    await waitFor(
-      () => {
-        const article = screen.getByTestId("article-item");
-        const strongElements = article.querySelectorAll("strong");
-        expect(strongElements.length).toBeGreaterThan(0);
-      },
-      { timeout: 3000 },
-    );
+    // *emphasis* becomes <em>emphasis</em>
+    const article = screen.getByTestId("article-item");
+    const emElements = article.querySelectorAll("em");
+    expect(emElements.length).toBeGreaterThan(0);
+    expect(emElements[0]).toHaveTextContent("emphasis");
   });
 
   it("links to correct path for English articles (default)", () => {

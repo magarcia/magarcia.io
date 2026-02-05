@@ -1,4 +1,4 @@
-import { Hash } from "react-feather";
+import { Hash } from "lucide-react";
 import slugify from "slugify";
 
 type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";

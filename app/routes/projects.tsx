@@ -1,4 +1,4 @@
-import { Archive, ExternalLink } from "react-feather";
+import { Archive, ExternalLink } from "lucide-react";
 import type { Route } from "./+types/projects";
 import { projects, type Project } from "~/data/projects";
 import Header from "~/components/Header";
