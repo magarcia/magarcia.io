@@ -40,14 +40,6 @@ vi.mock("react-router", () => {
   return { Link: MockLink };
 });
 
-// Mock react-feather icons
-vi.mock("react-feather", () => ({
-  Moon: () => React.createElement("svg", { "data-testid": "moon-icon" }),
-  Sun: () => React.createElement("svg", { "data-testid": "sun-icon" }),
-  Globe: () => React.createElement("svg", { "data-testid": "globe-icon" }),
-  Hash: () => React.createElement("svg", { "data-testid": "hash-icon" }),
-}));
-
 // Mock useTheme hook - can be overridden in individual tests
 vi.mock("~/hooks/useTheme", () => ({
   useTheme: () => ({
@@ -59,9 +51,14 @@ vi.mock("~/hooks/useTheme", () => ({
 
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
+  Archive: () => React.createElement("svg", { "data-testid": "archive-icon" }),
   Check: () => React.createElement("svg", { "data-testid": "check-icon" }),
   ChevronRight: () =>
     React.createElement("svg", { "data-testid": "chevron-right-icon" }),
   Circle: () => React.createElement("svg", { "data-testid": "circle-icon" }),
   Copy: () => React.createElement("svg", { "data-testid": "copy-icon" }),
+  ExternalLink: () =>
+    React.createElement("svg", { "data-testid": "external-link-icon" }),
+  Hash: () => React.createElement("svg", { "data-testid": "hash-icon" }),
+  Link2: () => React.createElement("svg", { "data-testid": "link2-icon" }),
 }));

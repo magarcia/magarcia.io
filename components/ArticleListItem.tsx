@@ -1,7 +1,8 @@
 import { Link } from "react-router";
 import { parseISO, format } from "date-fns";
-import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import type { FrontMatter } from "~/lib/blog";
+import { mdxComponents } from "./mdxComponents";
 
 interface ArticleListItemProps extends FrontMatter {
   lang?: string;
@@ -15,23 +16,6 @@ export default function ArticleListItem({
   spoiler,
   lang = "en",
 }: ArticleListItemProps) {
-  const [components, setComponents] = useState<{
-    ReactMarkdown: any;
-    mdxComponents: any;
-  } | null>(null);
-
-  useEffect(() => {
-    // Dynamically import react-markdown and mdxComponents only on client-side
-    Promise.all([import("react-markdown"), import("./mdxComponents")]).then(
-      ([rm, mc]) => {
-        setComponents({
-          ReactMarkdown: rm.default,
-          mdxComponents: mc.mdxComponents,
-        });
-      },
-    );
-  }, []);
-
   const postPath = lang === "en" ? `/${slug}/` : `/${lang}/${slug}/`;
   const year = format(parseISO(date), "yyyy");
 
@@ -50,13 +34,7 @@ export default function ArticleListItem({
           </time>
         </div>
         <div className="text-muted-foreground text-base leading-relaxed [&_p]:my-0">
-          {components ? (
-            <components.ReactMarkdown components={components.mdxComponents}>
-              {spoiler}
-            </components.ReactMarkdown>
-          ) : (
-            <p className="my-0">{spoiler}</p>
-          )}
+          <ReactMarkdown components={mdxComponents}>{spoiler}</ReactMarkdown>
         </div>
       </Link>
     </article>

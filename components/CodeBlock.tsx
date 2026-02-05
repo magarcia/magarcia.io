@@ -1,11 +1,70 @@
 import { Copy } from "lucide-react";
-import HighlightImport, { defaultProps } from "prism-react-renderer";
+import HighlightImport, {
+  defaultProps,
+  type Language,
+} from "prism-react-renderer";
 import { toast } from "@/hooks/use-toast";
 
 // Handle ESM/CJS interop - prism-react-renderer may export { default } in Node.js SSR
 const Highlight =
   (HighlightImport as unknown as { default?: typeof HighlightImport })
     .default ?? HighlightImport;
+
+// Supported languages from prism-react-renderer
+const SUPPORTED_LANGUAGES = new Set<string>([
+  "markup",
+  "bash",
+  "clike",
+  "c",
+  "cpp",
+  "css",
+  "javascript",
+  "jsx",
+  "coffeescript",
+  "actionscript",
+  "css-extr",
+  "diff",
+  "git",
+  "go",
+  "graphql",
+  "handlebars",
+  "json",
+  "less",
+  "makefile",
+  "markdown",
+  "objectivec",
+  "ocaml",
+  "python",
+  "reason",
+  "sass",
+  "scss",
+  "sql",
+  "stylus",
+  "typescript",
+  "tsx",
+  "wasm",
+  "yaml",
+]);
+
+function getSupportedLanguage(lang: string): Language {
+  if (SUPPORTED_LANGUAGES.has(lang)) {
+    return lang as Language;
+  }
+  // Map common aliases to supported languages
+  const aliases: Record<string, Language> = {
+    js: "javascript",
+    ts: "typescript",
+    py: "python",
+    rb: "ruby" as Language,
+    sh: "bash",
+    shell: "bash",
+    yml: "yaml",
+    html: "markup",
+    xml: "markup",
+    text: "markup",
+  };
+  return aliases[lang] || "markup";
+}
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +74,7 @@ import {
 
 interface CodeBlockProps {
   language?: string;
-  children: string[];
+  children: string | string[];
   highlight?: number[];
   className?: string;
   "data-language"?: string;
@@ -78,7 +137,11 @@ export default function CodeBlock({
         tabIndex={0}
         aria-label="Scrollable code block, use arrow keys to scroll"
       >
-        <Highlight {...defaultProps} code={code} language={lang as any}>
+        <Highlight
+          {...defaultProps}
+          code={code}
+          language={getSupportedLanguage(lang)}
+        >
           {({ tokens, getLineProps, getTokenProps }) => (
             <pre className={`language-${lang} font-mono`}>
               {tokens.slice(0, -1).map((line, i) => {

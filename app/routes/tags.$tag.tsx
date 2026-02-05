@@ -1,4 +1,4 @@
-import { Link as LinkIcon } from "react-feather";
+import { Link2 as LinkIcon } from "lucide-react";
 import { Link } from "react-router";
 import type { Route } from "./+types/tags.$tag";
 import {

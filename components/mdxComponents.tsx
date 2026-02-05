@@ -1,3 +1,4 @@
+import React from "react";
 import Heading from "./Heading";
 import Strong from "./Strong";
 import Paragraph from "./Paragraph";
@@ -49,13 +50,31 @@ const OrderedList = ({ children, ...props }: MarkdownListProps) => (
   </List>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Pre = ({ children, ...props }: any) => {
+interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
+  children?: React.ReactNode;
+}
+
+interface CodeChildProps {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+function isCodeElement(
+  child: React.ReactNode,
+): child is React.ReactElement<CodeChildProps> {
+  return React.isValidElement(child) && typeof child.props === "object";
+}
+
+const Pre = ({ children, ...props }: PreProps) => {
   // Extract language and code from the pre > code structure
-  const childProps = children?.props || {};
+  const childProps: CodeChildProps = isCodeElement(children)
+    ? children.props
+    : {};
   const className = childProps.className || "";
   const language = className.replace("language-", "") || "text";
-  const code = childProps.children || children;
+  const rawCode = childProps.children || children;
+  // Ensure code is a string for CodeBlock
+  const code = typeof rawCode === "string" ? rawCode : String(rawCode ?? "");
 
   // Parse highlight syntax (e.g., "typescript:1,3-5")
   const parts = language.split(":");
