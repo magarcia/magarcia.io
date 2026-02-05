@@ -2,6 +2,8 @@ import { Link } from "react-router";
 import { parseISO, format } from "date-fns";
 import { useState, useEffect } from "react";
 import type { FrontMatter } from "~/lib/blog";
+import type { ComponentType } from "react";
+import type { Components } from "react-markdown";
 
 interface ArticleListItemProps extends FrontMatter {
   lang?: string;
@@ -16,8 +18,8 @@ export default function ArticleListItem({
   lang = "en",
 }: ArticleListItemProps) {
   const [components, setComponents] = useState<{
-    ReactMarkdown: any;
-    mdxComponents: any;
+    ReactMarkdown: ComponentType<{ children: string; components: Components }>;
+    mdxComponents: Components;
   } | null>(null);
 
   useEffect(() => {
