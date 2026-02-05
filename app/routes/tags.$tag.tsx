@@ -10,7 +10,12 @@ import {
   type FrontMatter,
 } from "~/lib/blog";
 import Header from "~/components/Header";
-import { formatDate, formatReadingTime, formatTagPageTitle } from "~/lib/i18n";
+import {
+  formatDate,
+  formatReadingTime,
+  formatTagPageTitle,
+  getLangFromPathname,
+} from "~/lib/i18n";
 import { buildCanonicalLink, buildTagHreflangLinks } from "~/lib/hreflang";
 import { truncateDescription } from "~/lib/seo";
 
@@ -52,11 +57,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const pathname = new URL(request.url).pathname;
-  const lang = pathname.startsWith("/es/")
-    ? "es"
-    : pathname.startsWith("/ca/")
-      ? "ca"
-      : "en";
+  const lang = getLangFromPathname(pathname);
 
   if (!isValidLang(lang)) {
     throw new Response("Tag Not Found", { status: 404 });
@@ -97,7 +98,7 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
             <div key={slug} className="my-6 md:my-8" data-testid="article-item">
               <h3 className="font-medium text-lg text-foreground">
                 <Link
-                  to={`/${slug}/`}
+                  to={lang === "en" ? `/${slug}/` : `/${lang}/${slug}/`}
                   title={title}
                   className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors"
                 >

@@ -20,6 +20,7 @@ import globalStyles from "~/styles/global.css?url";
 import highlightStyles from "~/styles/highlight.css?url";
 import { Toaster } from "~/components/ui/toaster";
 import Header from "~/components/Header";
+import { getLangFromPathname } from "~/lib/i18n";
 
 export const links: LinksFunction = () => [
   {
@@ -58,14 +59,7 @@ export const links: LinksFunction = () => [
 
 function HtmlWithLang({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const pathname = location.pathname;
-
-  const lang =
-    pathname.startsWith("/es/") || pathname === "/es"
-      ? "es"
-      : pathname.startsWith("/ca/") || pathname === "/ca"
-        ? "ca"
-        : "en";
+  const lang = getLangFromPathname(location.pathname);
 
   return (
     <html lang={lang} suppressHydrationWarning>
@@ -127,15 +121,7 @@ export function HydrateFallback() {
 export function ErrorBoundary() {
   const error = useRouteError();
   const location = useLocation();
-
-  // Detect language from URL
-  const pathname = location.pathname;
-  const lang =
-    pathname.startsWith("/es/") || pathname === "/es"
-      ? "es"
-      : pathname.startsWith("/ca/") || pathname === "/ca"
-        ? "ca"
-        : "en";
+  const lang = getLangFromPathname(location.pathname);
 
   let title = "Oops!";
   let message = "Something went wrong.";

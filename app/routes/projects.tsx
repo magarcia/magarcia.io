@@ -4,6 +4,7 @@ import { projects, type Project } from "~/data/projects";
 import Header from "~/components/Header";
 import Footer from "~/components/Footer";
 import { buildCanonicalLink, buildProjectsHreflangLinks } from "~/lib/hreflang";
+import { getLangFromPathname } from "~/lib/i18n";
 
 const pageTitles: Record<string, string> = {
   en: "All Projects",
@@ -42,11 +43,7 @@ export function meta({ data, location }: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const pathname = new URL(request.url).pathname;
-  const lang = pathname.startsWith("/es/")
-    ? "es"
-    : pathname.startsWith("/ca/")
-      ? "ca"
-      : "en";
+  const lang = getLangFromPathname(pathname);
 
   return { lang };
 }
