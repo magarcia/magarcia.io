@@ -78,28 +78,17 @@ export default function Table(
     };
 
     // Use requestAnimationFrame for initial render
+    // Note: We only set data-labels once at mount since markdown tables are static
     const rafId = requestAnimationFrame(setDataLabels);
-
-    // Use MutationObserver to handle dynamic content changes
-    // Only watch for structural changes (elements added/removed), not text or attribute changes
-    const observer = new MutationObserver(setDataLabels);
-    observer.observe(table, {
-      childList: true,
-      subtree: true,
-      characterData: false,
-      attributes: false,
-    });
 
     return () => {
       cancelAnimationFrame(rafId);
-      observer.disconnect();
     };
   }, []);
 
   return (
     <table
       ref={tableRef}
-      role="table"
       className="block md:table table-fixed my-6 w-full"
       {...props}
     />
