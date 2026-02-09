@@ -311,7 +311,7 @@ describe("Table Components", () => {
       expect(screen.getByText("Row 2 Cell 2")).toBeInTheDocument();
     });
 
-    it("applies role='table' attribute for accessibility", () => {
+    it("has implicit table role for accessibility", () => {
       render(
         <Table>
           <TableBody>
@@ -322,9 +322,10 @@ describe("Table Components", () => {
         </Table>,
       );
 
+      // Native <table> elements have implicit role="table" - no explicit attribute needed
       const table = screen.getByRole("table");
       expect(table).toBeInTheDocument();
-      expect(table).toHaveAttribute("role", "table");
+      expect(table).not.toHaveAttribute("role");
     });
   });
 
