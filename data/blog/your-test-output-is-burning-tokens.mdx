@@ -62,21 +62,33 @@ and Jenkins — all set
 Your config reads these variables and picks the right reporter — deterministic
 regardless of how the agent invokes the test command.
 
+Here's what we shipped at Buffer. CI and Claude Code each get their own reporter
+configuration; local development keeps the default.
+
 For **Jest**, add the logic to `jest.config.ts`. The
 [`summary` reporter](https://jestjs.io/docs/configuration#reporters-arraymodulename--modulename-options)
 prints a final count plus full details for any failures, with no per-file
-output:
+output. Jest's default `summaryThreshold` is 20, meaning it only prints failure
+details when more than 20 tests fail. Set it to `0` so every failure prints in
+full. In CI, you can pair it with a custom reporter that collects failures for
+GitHub PR comments:
 
 ```typescript
-function getReporter() {
-  if (process.env.CLAUDECODE || process.env.CI) {
-    return "summary";
+const isCI = process.env.CI === "true";
+const isClaude = process.env.CLAUDECODE === "1";
+
+function getReporters() {
+  if (isCI) {
+    return [["summary", { summaryThreshold: 0 }], "jest-ci-reporter"];
   }
-  return "default";
+  if (isClaude) {
+    return [["summary", { summaryThreshold: 0 }]];
+  }
+  return ["default"];
 }
 
 export default {
-  reporters: [getReporter()],
+  reporters: getReporters(),
   // ... rest of your config
 };
 ```
@@ -88,16 +100,22 @@ each file to a single character — a dot for pass, an `x` for fail:
 ```typescript
 import { defineConfig } from "vitest/config";
 
-function getReporter() {
-  if (process.env.CLAUDECODE || process.env.CI) {
-    return "dot";
+const isCI = process.env.CI === "true";
+const isClaude = process.env.CLAUDECODE === "1";
+
+function getReporters() {
+  if (isCI) {
+    return ["dot", "ci-reporter"];
   }
-  return "default";
+  if (isClaude) {
+    return ["dot"];
+  }
+  return ["default"];
 }
 
 export default defineConfig({
   test: {
-    reporters: [getReporter()],
+    reporters: getReporters(),
     // ... rest of your config
   },
 });
@@ -109,6 +127,14 @@ Both frameworks also accept reporter flags on the command line
 on an AI agent to pass the right flag is probabilistic — the agent may forget or
 run a different test script that omits it. Environment variables make it
 deterministic.
+
+The resulting matrix:
+
+| Environment | Jest Reporter           | Vitest Reporter     |
+| ----------- | ----------------------- | ------------------- |
+| Local dev   | `default`               | `default`           |
+| CI          | `summary` + CI reporter | `dot` + CI reporter |
+| Claude Code | `summary`               | `dot`               |
 
 ## What the Agent Sees
 

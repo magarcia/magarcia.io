@@ -68,21 +68,34 @@ Travis CI i Jenkins — tots estableixen
 La teva configuració llegeix aquestes variables i tria el reporter correcte —
 determinista independentment de com l'agent invoqui la comanda de test.
 
+Això és el que vam posar en producció a Buffer. CI i Claude Code tenen cadascun
+la seva pròpia configuració de reporter; el desenvolupament local manté el
+default.
+
 Per a **Jest**, afegeix la lògica a `jest.config.ts`. El
 [`summary` reporter](https://jestjs.io/docs/configuration#reporters-arraymodulename--modulename-options)
 imprimeix un recompte final més detalls complets per a qualsevol fallada, sense
-sortida per fitxer:
+sortida per fitxer. El `summaryThreshold` per defecte de Jest és 20, és a dir,
+només imprimeix detalls de fallades quan més de 20 tests fallen. Configura'l a
+`0` perquè cada fallada s'imprimeixi completa. A CI, pots combinar-lo amb un
+reporter personalitzat que recopili fallades per a comentaris de PR a GitHub:
 
 ```typescript
-function getReporter() {
-  if (process.env.CLAUDECODE || process.env.CI) {
-    return "summary";
+const isCI = process.env.CI === "true";
+const isClaude = process.env.CLAUDECODE === "1";
+
+function getReporters() {
+  if (isCI) {
+    return [["summary", { summaryThreshold: 0 }], "jest-ci-reporter"];
   }
-  return "default";
+  if (isClaude) {
+    return [["summary", { summaryThreshold: 0 }]];
+  }
+  return ["default"];
 }
 
 export default {
-  reporters: [getReporter()],
+  reporters: getReporters(),
   // ... rest of your config
 };
 ```
@@ -94,16 +107,22 @@ cada fitxer a un sol caràcter — un punt si passa, una `x` si falla:
 ```typescript
 import { defineConfig } from "vitest/config";
 
-function getReporter() {
-  if (process.env.CLAUDECODE || process.env.CI) {
-    return "dot";
+const isCI = process.env.CI === "true";
+const isClaude = process.env.CLAUDECODE === "1";
+
+function getReporters() {
+  if (isCI) {
+    return ["dot", "ci-reporter"];
   }
-  return "default";
+  if (isClaude) {
+    return ["dot"];
+  }
+  return ["default"];
 }
 
 export default defineConfig({
   test: {
-    reporters: [getReporter()],
+    reporters: getReporters(),
     // ... rest of your config
   },
 });
@@ -115,6 +134,14 @@ Ambdós frameworks també accepten flags de reporter a la línia de comandes
 confiar que un agent d'AI passi el flag correcte és probabilístic — l'agent pot
 oblidar-se'n o executar un script de test diferent que l'ometi. Les variables
 d'environment ho fan determinista.
+
+La matriu resultant:
+
+| Environment           | Jest Reporter           | Vitest Reporter     |
+| --------------------- | ----------------------- | ------------------- |
+| Desenvolupament local | `default`               | `default`           |
+| CI                    | `summary` + CI reporter | `dot` + CI reporter |
+| Claude Code           | `summary`               | `dot`               |
 
 ## Què veu l'Agent
 
