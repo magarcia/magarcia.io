@@ -1,0 +1,177 @@
+---
+title:
+  "La salida de tus tests está quemando tokens: domando reporters detallados
+  para agentes de IA"
+date: "2026-02-09"
+draft: false
+spoiler:
+  Los test reporters por defecto imprimen más de 200 líneas "PASS" que nadie
+  lee. En CI y agentes de IA, esa salida es puro desperdicio. Detecta el
+  environment, elige un reporter mínimo y recupera tu ventana de contexto.
+tags:
+  - ai
+  - testing
+  - developer-tools
+  - software-engineering
+  - performance
+---
+
+Los ejecutores de test como [**Jest**](https://jestjs.io/) y
+[**Vitest**](https://vitest.dev/) vienen con reporters diseñados para humanos
+que miran terminals. Cada archivo obtiene una línea:
+
+```
+PASS src/components/Button.test.tsx
+PASS src/components/Card.test.tsx
+PASS src/components/Dialog.test.tsx
+PASS src/components/Dropdown.test.tsx
+PASS src/utils/format.test.ts
+PASS src/utils/date.test.ts
+... (200 more lines)
+FAIL src/components/Nav.test.tsx
+  ● Nav > renders active state
+
+    Expected: "active"
+    Received: "inactive"
+```
+
+Para un desarrollador en su terminal, ver pasar el texto verde tranquiliza. Pero
+los tests ahora se ejecutan en otros dos contextos donde esa salida cuesta más
+de lo que ayuda:
+
+- **CI** — nadie lee el log a menos que algo falle. Una build roja te obliga a
+  desplazarte por cientos de líneas "PASS" para encontrar el fallo.
+- **Agentes de IA** leen cada línea de esa salida. Cada línea "PASS" consume
+  tokens, llenando la ventana de contexto con resultados de test exitosos en
+  lugar del problema real.
+
+Nos topamos con esto en [**Buffer**](https://buffer.com). Una ejecución de test
+de 215 suites produjo ~3.500 tokens de salida, casi todas líneas "PASS". Nuestro
+agente de IA gastó más tokens leyendo resultados de test que escribiendo código.
+Intentamos añadir `--reporter=dot` a nuestras instrucciones de `CLAUDE.md`, pero
+el agente no siempre lo usaba. El flag era una sugerencia; necesitábamos una
+garantía.
+
+## Detecta el Environment, Elige el Reporter
+
+La solución: detecta el environment en tu configuración de test y cambia de
+reporters automáticamente. No se requieren instrucciones para el agente, ni
+flags que recordar.
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) establece
+[`CLAUDECODE=1`](https://github.com/anthropics/claude-code/issues/531) en cada
+shell que genera. Los proveedores de CI — GitHub Actions, GitLab CI, CircleCI,
+Travis CI y Jenkins — todos establecen
+[`CI=true`](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables).
+Tu configuración lee estas variables y elige el reporter correcto — determinista
+independientemente de cómo el agente invoque el comando de test.
+
+Para **Jest**, añade la lógica a `jest.config.ts`. El
+[`summary` reporter](https://jestjs.io/docs/configuration#reporters-arraymodulename--modulename-options)
+imprime un recuento final más detalles completos de cualquier fallo, sin salida
+por archivo:
+
+```typescript
+function getReporter() {
+  if (process.env.CLAUDECODE || process.env.CI) {
+    return "summary";
+  }
+  return "default";
+}
+
+export default {
+  reporters: [getReporter()],
+  // ... rest of your config
+};
+```
+
+Para **Vitest**, añádelo a `vitest.config.ts`. El
+[`dot` reporter](https://vitest.dev/guide/reporters#dot-reporter) comprime cada
+archivo en un solo carácter — un punto para aprobado, una `x` para fallo:
+
+```typescript
+import { defineConfig } from "vitest/config";
+
+function getReporter() {
+  if (process.env.CLAUDECODE || process.env.CI) {
+    return "dot";
+  }
+  return "default";
+}
+
+export default defineConfig({
+  test: {
+    reporters: [getReporter()],
+    // ... rest of your config
+  },
+});
+```
+
+Ambos frameworks también aceptan flags de reporter en la línea de comandos
+([`--reporters`](https://jestjs.io/docs/cli#--reporters) para Jest,
+[`--reporter`](https://vitest.dev/guide/cli#reporter) para Vitest). Pero confiar
+en que un agente de IA pase el flag correcto es probabilístico — el agente puede
+olvidar o ejecutar un script de test diferente que lo omita. Las variables de
+environment lo hacen determinista.
+
+## Lo que ve el Agente
+
+**Antes** (reporter por defecto, ~250 líneas):
+
+```
+PASS src/components/Button.test.tsx (3 suites, 12 tests)
+PASS src/components/Card.test.tsx (2 suites, 8 tests)
+... (200+ more PASS lines)
+FAIL src/components/Nav.test.tsx
+  ● Nav > renders active state
+    expect(received).toBe(expected)
+    Expected: "active"
+    Received: "inactive"
+
+Test Suites: 1 failed, 214 passed, 215 total
+Tests:       1 failed, 847 passed, 848 total
+```
+
+**Después** (summary reporter, ~10 líneas):
+
+```
+FAIL src/components/Nav.test.tsx
+  ● Nav > renders active state
+    expect(received).toBe(expected)
+    Expected: "active"
+    Received: "inactive"
+
+Test Suites: 1 failed, 214 passed, 215 total
+Tests:       1 failed, 847 passed, 848 total
+```
+
+Mismos detalles de fallo, 96% menos de salida.
+
+Cuando todos los tests pasan, la brecha se ensancha aún más. El reporter por
+defecto imprime cada nombre de archivo — 215 líneas. El summary reporter imprime
+dos:
+
+```
+Test Suites: 215 passed, 215 total
+Tests:       848 passed, 848 total
+```
+
+## Compromisos
+
+**Pierdes feedback de progreso.** El summary reporter permanece en silencio
+hasta que la suite termina. Para suites de larga duración, el agente no ve nada
+hasta la finalización. En la práctica esto no ha importado — los agentes de IA
+no necesitan tranquilidad de que el proceso se está ejecutando.
+
+**Hacer debug de fallos intermitentes se vuelve más difícil.** El tiempo por
+archivo del reporter por defecto ayuda a identificar tests lentos o inestables.
+Usa el `verbose` reporter cuando investigues inestabilidad.
+
+## La misma solución aplica a Linters y Build Logs
+
+Los test reporters son una interfaz entre tus herramientas y lo que sea que lea
+la salida. Los linters y verificadores de tipos tienen el mismo problema. Donde
+sea que una herramienta produzca salida detallada que un agente de IA consuma,
+puedes detectar el environment y cambiar a un formato compacto. Comprueba tu
+configuración de test — si `process.env.CI` está establecido y sigues usando el
+reporter por defecto, estás pagando por salida que nadie lee.

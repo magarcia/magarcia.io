@@ -1,0 +1,172 @@
+---
+title:
+  "Your Test Output Is Burning Tokens: Taming Verbose Reporters for AI Agents"
+date: "2026-02-09"
+draft: false
+spoiler:
+  Default test reporters print 200+ "PASS" lines nobody reads. In CI and AI
+  agents, that output is pure waste. Detect the environment, pick a minimal
+  reporter, and reclaim your context window.
+tags:
+  - ai
+  - testing
+  - developer-tools
+  - software-engineering
+  - performance
+---
+
+Test runners like [**Jest**](https://jestjs.io/) and
+[**Vitest**](https://vitest.dev/) ship with reporters designed for humans
+watching terminals. Every file gets a line:
+
+```
+PASS src/components/Button.test.tsx
+PASS src/components/Card.test.tsx
+PASS src/components/Dialog.test.tsx
+PASS src/components/Dropdown.test.tsx
+PASS src/utils/format.test.ts
+PASS src/utils/date.test.ts
+... (200 more lines)
+FAIL src/components/Nav.test.tsx
+  ● Nav > renders active state
+
+    Expected: "active"
+    Received: "inactive"
+```
+
+For a developer at their terminal, scrolling green text reassures. But tests now
+run in two other contexts where that output costs more than it helps:
+
+- **CI** — nobody reads the log unless something fails. A red build forces you
+  to scroll past hundreds of "PASS" lines to find the failure.
+- **AI agents** read every line of that output. Each "PASS" line consumes
+  tokens, filling the context window with successful test output instead of the
+  actual problem.
+
+We hit this at [**Buffer**](https://buffer.com). A 215-suite test run produced
+~3,500 tokens of output, almost all "PASS" lines. Our AI agent spent more tokens
+reading test results than writing code. We tried adding `--reporter=dot` to our
+`CLAUDE.md` instructions, but the agent didn't always use it. The flag was a
+suggestion; we needed a guarantee.
+
+## Detect the Environment, Choose the Reporter
+
+The fix: detect the environment in your test config and switch reporters
+automatically. No agent instructions required, no flags to remember.
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) sets
+[`CLAUDECODE=1`](https://github.com/anthropics/claude-code/issues/531) in every
+shell it spawns. CI providers — GitHub Actions, GitLab CI, CircleCI, Travis CI,
+and Jenkins — all set
+[`CI=true`](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables).
+Your config reads these variables and picks the right reporter — deterministic
+regardless of how the agent invokes the test command.
+
+For **Jest**, add the logic to `jest.config.ts`. The
+[`summary` reporter](https://jestjs.io/docs/configuration#reporters-arraymodulename--modulename-options)
+prints a final count plus full details for any failures, with no per-file
+output:
+
+```typescript
+function getReporter() {
+  if (process.env.CLAUDECODE || process.env.CI) {
+    return "summary";
+  }
+  return "default";
+}
+
+export default {
+  reporters: [getReporter()],
+  // ... rest of your config
+};
+```
+
+For **Vitest**, add it to `vitest.config.ts`. The
+[`dot` reporter](https://vitest.dev/guide/reporters#dot-reporter) compresses
+each file to a single character — a dot for pass, an `x` for fail:
+
+```typescript
+import { defineConfig } from "vitest/config";
+
+function getReporter() {
+  if (process.env.CLAUDECODE || process.env.CI) {
+    return "dot";
+  }
+  return "default";
+}
+
+export default defineConfig({
+  test: {
+    reporters: [getReporter()],
+    // ... rest of your config
+  },
+});
+```
+
+Both frameworks also accept reporter flags on the command line
+([`--reporters`](https://jestjs.io/docs/cli#--reporters) for Jest,
+[`--reporter`](https://vitest.dev/guide/cli#reporter) for Vitest). But relying
+on an AI agent to pass the right flag is probabilistic — the agent may forget or
+run a different test script that omits it. Environment variables make it
+deterministic.
+
+## What the Agent Sees
+
+**Before** (default reporter, ~250 lines):
+
+```
+PASS src/components/Button.test.tsx (3 suites, 12 tests)
+PASS src/components/Card.test.tsx (2 suites, 8 tests)
+... (200+ more PASS lines)
+FAIL src/components/Nav.test.tsx
+  ● Nav > renders active state
+    expect(received).toBe(expected)
+    Expected: "active"
+    Received: "inactive"
+
+Test Suites: 1 failed, 214 passed, 215 total
+Tests:       1 failed, 847 passed, 848 total
+```
+
+**After** (summary reporter, ~10 lines):
+
+```
+FAIL src/components/Nav.test.tsx
+  ● Nav > renders active state
+    expect(received).toBe(expected)
+    Expected: "active"
+    Received: "inactive"
+
+Test Suites: 1 failed, 214 passed, 215 total
+Tests:       1 failed, 847 passed, 848 total
+```
+
+Same failure details, 96% less output.
+
+When all tests pass, the gap widens further. The default reporter prints every
+file name — 215 lines. The summary reporter prints two:
+
+```
+Test Suites: 215 passed, 215 total
+Tests:       848 passed, 848 total
+```
+
+## Trade-offs
+
+**You lose progress feedback.** The summary reporter stays silent until the
+suite finishes. For long-running suites, the agent sees nothing until
+completion. In practice this has not mattered — AI agents do not need
+reassurance that the process is running.
+
+**Debugging intermittent failures gets harder.** The default reporter's per-file
+timing helps identify slow or flaky tests. Use the `verbose` reporter when
+investigating flakiness.
+
+## The Same Fix Applies to Linters and Build Logs
+
+Test reporters are one interface between your tools and whatever reads the
+output. Linters and type checkers have the same problem. Anywhere a tool
+produces verbose output that an AI agent consumes, you can detect the
+environment and switch to a compact format. Check your test config — if
+`process.env.CI` is set and you're still using the default reporter, you're
+paying for output nobody reads.
