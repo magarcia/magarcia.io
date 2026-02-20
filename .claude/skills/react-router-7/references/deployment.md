@@ -1,14 +1,29 @@
-# React Router 7 Deployment Adapters
+# React Router 7 Deployment
+
+## Table of Contents
+
+- [Official Adapters](#official-adapters)
+- [Express Adapter](#express-adapter)
+- [Cloudflare Workers](#cloudflare-workers)
+- [Cloudflare Pages (Static)](#cloudflare-pages-static)
+- [Netlify](#netlify)
+- [Docker (Node.js)](#docker-nodejs)
+- [API Import Convention](#api-import-convention)
+- [Full Config Reference](#full-config-reference)
+
+---
 
 ## Official Adapters
 
-| Adapter                    | Package                      | Use case            |
-| -------------------------- | ---------------------------- | ------------------- |
-| Express                    | `@react-router/express`      | Node.js servers     |
-| Cloudflare Workers/Pages   | `@react-router/cloudflare`   | Edge serverless     |
-| Architect (AWS)            | `@react-router/architect`    | AWS Lambda          |
-| Node.js (generic)          | `@react-router/node`         | Node.js runtime     |
-| Serve (built-in)           | `@react-router/serve`        | Quick start         |
+| Adapter                  | Package                    | Use case        |
+| ------------------------ | -------------------------- | --------------- |
+| Express                  | `@react-router/express`    | Node.js servers |
+| Cloudflare Workers/Pages | `@react-router/cloudflare` | Edge serverless |
+| Architect (AWS)          | `@react-router/architect`  | AWS Lambda      |
+| Node.js (generic)        | `@react-router/node`       | Node.js runtime |
+| Serve (built-in)         | `@react-router/serve`      | Quick start     |
+
+---
 
 ## Express Adapter
 
@@ -50,6 +65,8 @@ export default defineConfig(({ isSsrBuild }) => ({
 }));
 ```
 
+---
+
 ## Cloudflare Workers
 
 ```ts
@@ -85,6 +102,8 @@ Create from template:
 npm create cloudflare@latest my-app -- --framework=react-router
 ```
 
+---
+
 ## Cloudflare Pages (Static)
 
 For `ssr: false` with pre-rendering, deploy `build/client/` directly:
@@ -115,6 +134,8 @@ npx wrangler pages deploy build/client
 
 Copy these to `build/client/` as a post-build step.
 
+---
+
 ## Netlify
 
 ```bash
@@ -127,6 +148,8 @@ netlify deploy --dir=build/client --prod
 ```
 /*  /__spa-fallback.html  200
 ```
+
+---
 
 ## Docker (Node.js)
 
@@ -147,6 +170,8 @@ EXPOSE 3000
 CMD ["npx", "react-router-serve", "build/server/index.js"]
 ```
 
+---
+
 ## API Import Convention
 
 Most shared APIs come from `react-router` directly. Only import from runtime
@@ -163,9 +188,12 @@ import { createFileSessionStorage } from "@react-router/node";
 import { createWorkersKVSessionStorage } from "@react-router/cloudflare";
 ```
 
-## `react-router.config.ts` Full Options
+---
+
+## Full Config Reference
 
 ```ts
+// react-router.config.ts
 import type { Config } from "@react-router/dev/config";
 
 export default {

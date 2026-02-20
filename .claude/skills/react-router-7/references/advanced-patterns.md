@@ -1,5 +1,14 @@
 # React Router 7 Advanced Data Patterns
 
+## Table of Contents
+
+- [Streaming with Suspense](#streaming-with-suspense)
+- [Cookies and Sessions](#cookies-and-sessions)
+- [Single Fetch & Revalidation](#single-fetch--revalidation)
+- [Progressive Enhancement](#progressive-enhancement)
+
+---
+
 ## Streaming with Suspense
 
 `defer()` is removed in v7. Return un-awaited promises directly from loaders.
@@ -180,13 +189,13 @@ export async function action({ request }: Route.ActionArgs) {
 
 ### Session Storage Backends
 
-| Storage                          | Use case               |
-| -------------------------------- | ---------------------- |
-| `createCookieSessionStorage`     | No DB needed           |
-| `createMemorySessionStorage`     | Testing only           |
-| `createFileSessionStorage`       | Node.js single-server  |
-| `createWorkersKVSessionStorage`  | Cloudflare Workers     |
-| `createSessionStorage`           | Custom DB backend      |
+| Storage                         | Use case              |
+| ------------------------------- | --------------------- |
+| `createCookieSessionStorage`    | No DB needed          |
+| `createMemorySessionStorage`    | Testing only          |
+| `createFileSessionStorage`      | Node.js single-server |
+| `createWorkersKVSessionStorage` | Cloudflare Workers    |
+| `createSessionStorage`          | Custom DB backend     |
 
 ---
 
@@ -197,11 +206,11 @@ Single Fetch is the default in v7. On client navigations, React Router makes
 
 ### Default Revalidation Rules
 
-| Scenario                 | Behavior                              |
-| ------------------------ | ------------------------------------- |
-| GET navigation           | All matched loaders re-run            |
-| After successful action  | All loaders revalidate                |
-| After 4xx/5xx action     | Loaders do NOT revalidate by default  |
+| Scenario                | Behavior                             |
+| ----------------------- | ------------------------------------ |
+| GET navigation          | All matched loaders re-run           |
+| After successful action | All loaders revalidate               |
+| After 4xx/5xx action    | Loaders do NOT revalidate by default |
 
 ### `shouldRevalidate` Patterns
 

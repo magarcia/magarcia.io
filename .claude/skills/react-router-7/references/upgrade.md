@@ -1,23 +1,15 @@
----
-name: rr7-upgrade
-description: |
-  Upgrade and migrate projects to React Router 7. Use when migrating from
-  Remix, React Router v6, or between React Router 7 minor versions. Triggers
-  on: "upgrade to react router 7", "migrate from remix", "migrate from
-  react router 6", "convert to framework mode", "upgrade react router".
-allowed-tools:
-  - Read
-  - Edit
-  - Write
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
----
-
 # React Router 7 Upgrade & Migration
 
-Step-by-step guide for migrating to React Router 7 framework mode.
+## Table of Contents
+
+- [Migration Paths](#migration-paths)
+- [From Remix v2](#from-remix-v2)
+- [From React Router v6 (Data Mode)](#from-react-router-v6-data-mode)
+- [From React Router v6 (Classic)](#from-react-router-v6-classic)
+- [Upgrade Process](#upgrade-process)
+- [Breaking Changes Checklist](#breaking-changes-checklist)
+
+---
 
 ## Migration Paths
 
@@ -41,19 +33,19 @@ npm install react-router @react-router/node @react-router/dev
 
 ### Step 2: Rename imports
 
-| Old (Remix)                                  | New (React Router 7)          |
-| -------------------------------------------- | ----------------------------- |
-| `@remix-run/react`                           | `react-router`                |
-| `@remix-run/node`                            | `@react-router/node`         |
-| `@remix-run/cloudflare`                      | `@react-router/cloudflare`   |
-| `@remix-run/dev`                             | `@react-router/dev`          |
-| `@remix-run/express`                         | `@react-router/express`      |
-| `json()`                                     | Return plain objects          |
-| `defer()`                                    | Return promises directly      |
-| `MetaFunction`                               | `Route.MetaArgs` (typegen)    |
-| `LoaderFunctionArgs`                         | `Route.LoaderArgs` (typegen)  |
-| `ActionFunctionArgs`                         | `Route.ActionArgs` (typegen)  |
-| `useLoaderData<typeof loader>()`             | `loaderData` prop             |
+| Old (Remix)                              | New (React Router 7)         |
+| ---------------------------------------- | ---------------------------- |
+| `@remix-run/react`                       | `react-router`               |
+| `@remix-run/node`                        | `@react-router/node`         |
+| `@remix-run/cloudflare`                  | `@react-router/cloudflare`   |
+| `@remix-run/dev`                         | `@react-router/dev`          |
+| `@remix-run/express`                     | `@react-router/express`      |
+| `json()`                                 | Return plain objects          |
+| `defer()`                                | Return promises directly      |
+| `MetaFunction`                           | `Route.MetaArgs` (typegen)    |
+| `LoaderFunctionArgs`                     | `Route.LoaderArgs` (typegen)  |
+| `ActionFunctionArgs`                     | `Route.ActionArgs` (typegen)  |
+| `useLoaderData<typeof loader>()`         | `loaderData` prop             |
 
 ### Step 3: Rename config file
 
@@ -235,7 +227,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
 ---
 
-## From React Router v6 (Classic/Declarative)
+## From React Router v6 (Classic)
 
 This is the biggest migration. Classic mode uses `<Routes>` and `<Route>`
 without data APIs.
@@ -310,13 +302,15 @@ export default function CreatePost() {
 7. **Test** — run existing tests, fix any type errors
 8. **Build** — verify production build succeeds
 
+---
+
 ## Breaking Changes Checklist
 
 - [ ] `json()` removed — return plain objects
 - [ ] `defer()` removed — return promises directly
-- [ ] `useLoaderData()` → prefer `loaderData` prop from `Route.ComponentProps`
-- [ ] `MetaFunction` → `Route.MetaArgs` via typegen
-- [ ] `LoaderFunctionArgs` → `Route.LoaderArgs` via typegen
+- [ ] `useLoaderData()` — prefer `loaderData` prop from `Route.ComponentProps`
+- [ ] `MetaFunction` — use `Route.MetaArgs` via typegen
+- [ ] `LoaderFunctionArgs` — use `Route.LoaderArgs` via typegen
 - [ ] `headers()` receives `Route.HeadersArgs` instead of positional args
 - [ ] `meta()` receives `Route.MetaArgs` instead of separate args
 - [ ] Route config moved from `remix.config.js` to `react-router.config.ts`

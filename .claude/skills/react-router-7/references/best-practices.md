@@ -1,11 +1,37 @@
 # React Router 7 Best Practices — Expanded Rules
 
+## Table of Contents
+
+- [P0: Route Module Structure](#p0-route-module-structure)
+- [P1: Data Loading](#p1-data-loading)
+- [P2: Actions & Mutations](#p2-actions--mutations)
+- [P3: Type Safety](#p3-type-safety)
+- [P4: Error Handling](#p4-error-handling)
+- [P5: Navigation](#p5-navigation)
+- [P6: Rendering Strategies](#p6-rendering-strategies)
+- [P7: Performance](#p7-performance)
+- [Common Mistakes](#common-mistakes)
+
+## Priority
+
+| Priority | Category               | Rules | Impact                             |
+| -------- | ---------------------- | ----- | ---------------------------------- |
+| P0       | Route Module Structure | 8     | Correct routing and code splitting |
+| P1       | Data Loading           | 7     | Performance and data correctness   |
+| P2       | Actions & Mutations    | 6     | Data integrity and UX              |
+| P3       | Type Safety            | 5     | Developer experience and safety    |
+| P4       | Error Handling         | 5     | Resilience and user experience     |
+| P5       | Navigation & Links     | 5     | Accessibility and UX               |
+| P6       | Rendering Strategies   | 5     | Performance and SEO                |
+| P7       | Performance & Patterns | 6     | Bundle size and runtime perf       |
+
+---
+
 ## P0: Route Module Structure
 
 ### P0.1: Define routes in `app/routes.ts`
 
 ```ts
-// app/routes.ts
 import type { RouteConfig } from "@react-router/dev/routes";
 import { route, index, layout, prefix } from "@react-router/dev/routes";
 
@@ -30,7 +56,6 @@ export default [
 ### P0.2: One concern per route module
 
 ```ts
-// Good: single route module with focused exports
 // app/routes/team.tsx
 import type { Route } from "./+types/team";
 
@@ -52,9 +77,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 ```ts
 // routes.ts — layout wraps children without adding URL segment
 layout("./dashboard/layout.tsx", [
-  index("./dashboard/home.tsx"),         // /dashboard
-  route("settings", "./dashboard/settings.tsx"), // /dashboard/settings
-  route("team", "./dashboard/team.tsx"),  // /dashboard/team
+  index("./dashboard/home.tsx"),
+  route("settings", "./dashboard/settings.tsx"),
+  route("team", "./dashboard/team.tsx"),
 ])
 
 // dashboard/layout.tsx
@@ -161,19 +186,19 @@ export default function Product() {
 ### P1.4: Avoid waterfalls
 
 ```ts
-// Bad: sequential fetches in a single loader
+// Bad: sequential fetches
 export async function loader() {
-  const user = await getUser();       // 200ms
-  const posts = await getPosts();     // 300ms
-  const comments = await getComments(); // 200ms
-  return { user, posts, comments };   // Total: 700ms
+  const user = await getUser();           // 200ms
+  const posts = await getPosts();         // 300ms
+  const comments = await getComments();   // 200ms
+  return { user, posts, comments };       // Total: 700ms
 }
 
 // Good: parallel fetches
 export async function loader() {
   const [user, posts, comments] = await Promise.all([
     getUser(),       // 200ms
-    getPosts(),      // 300ms ← all run at once
+    getPosts(),      // 300ms
     getComments(),   // 200ms
   ]);
   return { user, posts, comments }; // Total: 300ms
@@ -201,9 +226,8 @@ export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
 ### P2.2: Form with progressive enhancement
 
 ```tsx
-import { Form } from "react-router";
+import { Form, redirect } from "react-router";
 import type { Route } from "./+types/new-project";
-import { redirect } from "react-router";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -240,7 +264,6 @@ function TaskItem({ task }) {
   const fetcher = useFetcher();
   const isCompleting = fetcher.state !== "idle";
 
-  // Optimistic UI: show completed state immediately
   const optimisticDone =
     fetcher.formData?.get("done") === "true" || task.done;
 
@@ -249,7 +272,7 @@ function TaskItem({ task }) {
       <fetcher.Form method="post" action={`/tasks/${task.id}`}>
         <input type="hidden" name="done" value={String(!task.done)} />
         <button type="submit">
-          {optimisticDone ? "✓" : "○"} {task.title}
+          {optimisticDone ? "done" : "pending"} {task.title}
         </button>
       </fetcher.Form>
     </li>
@@ -284,7 +307,7 @@ export async function action({ request }: Route.ActionArgs) {
 //   Route.ComponentProps   — { loaderData, actionData, params, matches }
 //   Route.ErrorBoundaryProps — { error }
 //   Route.MetaArgs         — { data, params, location, error, matches }
-//   Route.HeadersArgs      — { loaderHeaders, parentHeaders, actionHeaders, errorHeaders }
+//   Route.HeadersArgs      — { loaderHeaders, parentHeaders, actionHeaders }
 
 import type { Route } from "./+types/team.$teamId";
 

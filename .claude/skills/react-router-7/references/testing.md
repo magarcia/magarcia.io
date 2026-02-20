@@ -1,23 +1,15 @@
----
-name: rr7-testing
-description: |
-  Testing React Router 7 applications with Vitest and Playwright. Use when
-  writing unit tests for loaders/actions, testing route components, setting up
-  test utilities, or writing E2E tests. Triggers on: "test route", "test loader",
-  "test action", "test component", "vitest react router", "playwright react router",
-  "createRoutesStub", "testing react router".
-allowed-tools:
-  - Read
-  - Edit
-  - Write
-  - Grep
-  - Glob
-  - Bash
----
+# React Router 7 Testing
 
-# Testing React Router 7
+## Table of Contents
 
-Guide for testing React Router 7 framework mode applications.
+- [Vitest Setup](#vitest-setup)
+- [Unit Testing](#unit-testing)
+- [End-to-End Testing (Playwright)](#end-to-end-testing-playwright)
+- [Test Organization](#test-organization)
+- [Known Issues & Workarounds](#known-issues--workarounds)
+- [Key Patterns](#key-patterns)
+
+---
 
 ## Vitest Setup
 
@@ -65,7 +57,7 @@ export default defineConfig({
 
 ---
 
-## Unit Testing (Vitest)
+## Unit Testing
 
 ### Testing Loaders
 
@@ -126,14 +118,12 @@ describe("new-post action", () => {
       context: {},
     } as any);
 
-    // Check redirect
     expect(result.status).toBe(302);
     expect(result.headers.get("Location")).toMatch(/\/posts\/\w+/);
   });
 
   it("returns validation errors", async () => {
     const formData = new FormData();
-    // Missing required fields
 
     const request = new Request("http://localhost/posts", {
       method: "POST",
@@ -324,7 +314,6 @@ test("navigates between pages", async ({ page }) => {
 test("displays blog posts from loader", async ({ page }) => {
   await page.goto("/blog");
 
-  // Loader data renders on the page
   const posts = page.locator("article");
   await expect(posts).toHaveCount(10);
   await expect(posts.first()).toBeVisible();
@@ -342,7 +331,6 @@ test("submits contact form", async ({ page }) => {
   await page.fill('textarea[name="message"]', "Hello!");
   await page.click('button[type="submit"]');
 
-  // After action redirect
   await expect(page).toHaveURL("/contact/thanks");
   await expect(page.locator("h1")).toHaveText("Thank you");
 });
@@ -390,6 +378,8 @@ tests/
     ├── db.ts           # Database mocks
     └── handlers.ts     # MSW request handlers (optional)
 ```
+
+---
 
 ## Known Issues & Workarounds
 

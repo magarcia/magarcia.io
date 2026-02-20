@@ -1,28 +1,22 @@
+# React Router 7 Data Loading & Mutations
+
+## Table of Contents
+
+- [Server Loader](#server-loader)
+- [Client Loader](#client-loader)
+- [Combined Loaders](#combined-loaders)
+- [Parallel Data Loading](#parallel-data-loading)
+- [Actions & Mutations](#actions--mutations)
+- [Calling Actions](#calling-actions)
+- [Fetchers](#fetchers)
+- [Pending UI](#pending-ui)
+- [Resource Routes](#resource-routes)
+- [Revalidation](#revalidation)
+- [Key Rules](#key-rules)
+
 ---
-name: rr7-data-patterns
-description: |
-  React Router 7 data loading, mutations, and fetcher patterns. Use when
-  implementing loaders, actions, forms, fetchers, optimistic UI, or data
-  revalidation. Triggers on: "loader", "action", "form submission", "useFetcher",
-  "data loading", "mutation", "optimistic UI", "revalidation", "clientLoader",
-  "serverLoader", "resource route".
-allowed-tools:
-  - Read
-  - Edit
-  - Write
-  - Grep
-  - Glob
----
 
-# React Router 7 Data Patterns
-
-Complete guide for data loading, mutations, and fetcher patterns. For streaming,
-cookies/sessions, single-fetch revalidation, and progressive enhancement, see
-[references/advanced.md](references/advanced.md).
-
-## Data Loading
-
-### Server Loader
+## Server Loader
 
 Runs on server. Stripped from client bundle. Safe for DB, secrets, internal APIs.
 
@@ -45,7 +39,9 @@ export default function Product({ loaderData }: Route.ComponentProps) {
 }
 ```
 
-### Client Loader
+---
+
+## Client Loader
 
 Runs in browser only. Use for localStorage, IndexedDB, browser APIs.
 
@@ -65,7 +61,9 @@ export default function Product({ loaderData }: Route.ComponentProps) {
 }
 ```
 
-### Combined Loaders
+---
+
+## Combined Loaders
 
 `clientLoader` can augment server data:
 
@@ -83,7 +81,9 @@ export async function clientLoader({
 }
 ```
 
-### Parallel Data Loading
+---
+
+## Parallel Data Loading
 
 Nested route loaders run in parallel automatically. Within a single loader,
 use `Promise.all`:
@@ -151,7 +151,9 @@ export default function NewPost({ actionData }: Route.ComponentProps) {
 }
 ```
 
-### Calling Actions
+---
+
+## Calling Actions
 
 Three ways to call actions:
 
@@ -195,7 +197,7 @@ function TodoItem({ todo }) {
     <fetcher.Form method="post" action={`/todos/${todo.id}`}>
       <input type="hidden" name="done" value={String(!todo.done)} />
       <button type="submit" disabled={fetcher.state !== "idle"}>
-        {isDone ? "✓" : "○"} {todo.title}
+        {isDone ? "done" : "pending"} {todo.title}
       </button>
     </fetcher.Form>
   );
