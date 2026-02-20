@@ -6,6 +6,9 @@ description: |
   data loading, actions, type safety, error handling, rendering strategies,
   navigation, and performance patterns. Use when writing, reviewing, or
   debugging React Router 7 framework mode code.
+user-invocable: false
+metadata:
+  version: "1.0.0"
 allowed-tools:
   - Read
   - Edit
