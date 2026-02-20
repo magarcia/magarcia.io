@@ -16,7 +16,9 @@ allowed-tools:
 
 # React Router 7 Data Patterns
 
-Complete guide for data loading, mutations, and fetcher patterns.
+Complete guide for data loading, mutations, and fetcher patterns. For streaming,
+cookies/sessions, single-fetch revalidation, and progressive enhancement, see
+[references/advanced.md](references/advanced.md).
 
 ## Data Loading
 
