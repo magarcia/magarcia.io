@@ -16,7 +16,9 @@ allowed-tools:
 
 # React Router 7 Routing
 
-Guide for configuring routes in React Router 7 framework mode.
+Guide for configuring routes in React Router 7 framework mode. For middleware
+patterns (auth, logging, security headers), see
+[references/middleware.md](references/middleware.md).
 
 ## Route Configuration
 
