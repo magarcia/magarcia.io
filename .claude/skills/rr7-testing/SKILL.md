@@ -19,6 +19,52 @@ allowed-tools:
 
 Guide for testing React Router 7 framework mode applications.
 
+## Vitest Setup
+
+The React Router Vite plugin is **incompatible with Vitest**. You must exclude
+it during test runs. Two approaches:
+
+### Separate vitest.config.ts (recommended)
+
+```ts
+// vitest.config.ts — no React Router plugin
+import { defineConfig } from "vitest/config";
+import path from "path";
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: "jsdom",
+    include: ["tests/unit/**/*.test.{ts,tsx}"],
+    setupFiles: ["./tests/unit/setup.ts"],
+  },
+  resolve: {
+    alias: {
+      "~": path.resolve(__dirname, "./"),
+    },
+  },
+});
+```
+
+### Conditional in vite.config.ts
+
+```ts
+import { reactRouter } from "@react-router/dev/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [
+    !process.env.VITEST && reactRouter(), // disabled during tests
+  ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+  },
+});
+```
+
+---
+
 ## Unit Testing (Vitest)
 
 ### Testing Loaders
@@ -345,6 +391,47 @@ tests/
     └── handlers.ts     # MSW request handlers (optional)
 ```
 
+## Known Issues & Workarounds
+
+### `createRoutesStub` type mismatch with Framework Mode
+
+Components using `Route.ComponentProps` (from typegen) will cause TypeScript
+errors with `createRoutesStub` because the `matches` type differs:
+
+```tsx
+const Stub = createRoutesStub([
+  {
+    path: "/products/:id",
+    // @ts-expect-error: matches type won't align between test and app
+    Component: ProductPage,
+    loader() {
+      return { name: "Widget" };
+    },
+  },
+]);
+```
+
+### Mocking specific hooks per test
+
+When you need `useNavigate` or `useParams` in a unit test:
+
+```ts
+const mockNavigate = vi.fn();
+
+vi.mock("react-router", async () => {
+  const actual = await vi.importActual("react-router");
+  return {
+    ...actual, // keep real exports (Link, Form, etc.)
+    useNavigate: () => mockNavigate,
+    useLoaderData: () => ({ title: "Test" }),
+  };
+});
+```
+
+Always spread `vi.importActual()` to avoid breaking other React Router exports.
+
+---
+
 ## Key Patterns
 
 1. **Test loaders/actions as plain functions** — they accept Request and return
@@ -354,3 +441,5 @@ tests/
 3. **Mock `.server` imports** — alias them in vitest config to test mocks.
 4. **Use Playwright for full user flows** — navigation, forms, error states.
 5. **Test pre-rendered content without JS** — verify SSR output is complete.
+6. **Extract business logic from loaders** — pure functions are simpler to test
+   than route modules.
