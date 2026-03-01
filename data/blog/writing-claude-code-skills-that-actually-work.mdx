@@ -1,0 +1,173 @@
+---
+title: "Writing Claude Code Skills That Actually Work"
+date: "2026-02-20"
+spoiler:
+  "Most skill examples online are just descriptions. Here's a mental model for
+  building skills that are reliable, fast, and cheap — by separating what the
+  LLM should compute from what you can precompute deterministically."
+tags:
+  - ai
+  - developer-tools
+  - claude-code
+draft: true
+---
+
+There's a lot of hype around Claude Code skills right now, and most of the
+examples floating around online are doing it wrong — not because the skills are
+poorly written, but because they're treating the LLM as a black box that handles
+everything.
+
+Before I get into how to write good skills, I want to start with a more
+important question.
+
+## Do you actually need a skill?
+
+LLMs are probabilistic. Skills are picked up when the model decides they're
+relevant — which is not always when you want them to be. That means if your
+entire use case can be solved with a deterministic script, you should write the
+script. A shell script runs the same way every time. A skill doesn't.
+
+The question I ask before creating any skill is: **can I solve this with code
+that always produces the same output given the same input?** If yes, write the
+code. Skills make sense when the job involves judgment, synthesis, or open-ended
+output — things where the model's probabilistic nature is a feature, not a
+liability.
+
+With that established, let's talk about the skills that actually warrant being
+skills.
+
+## Three types of skills
+
+In my experience, Claude Code skills fall into three categories:
+
+**Knowledge-encoding skills** capture conventions and patterns: how you write
+React components, how you structure database queries, what your commit message
+format looks like. These are essentially a structured way to inject
+project-specific knowledge into the model.
+
+**Workflow skills** encode multi-step processes. Creating a pull request is a
+good example: commit changes, write a description that reflects the diff, run
+tests and linting, pick reviewers, open the PR, verify CI passes. The sequence
+matters, and the steps are well-defined.
+
+**Ability-enhancing skills** give Claude a capability it doesn't have natively.
+One I built at Buffer is a video understanding skill: when it finds a link to a
+demo video in a ticket or PR, it grabs the file, uploads it to Gemini, and
+brings the explanation back into Claude's context. Anthropic models can't watch
+videos; Gemini can. The skill bridges that gap.
+
+## How invocation mode shapes skill design
+
+Skills can be invoked two ways: explicitly by the user (via slash command) or
+autonomously by the model when it decides the skill is relevant.
+
+For knowledge and ability skills, I almost always design them for LLM
+invocation. I don't want to manually trigger my React conventions skill every
+time I'm working on a component — I want the model to reach for it when it's
+about to create something. Same for the video skill: the model should notice
+"this is a video link" and know what to do with it.
+
+Workflow skills are more nuanced. My commit message skill encodes our
+conventions and formats, and I sometimes invoke it manually — but I also want
+the model to use it automatically when I say "commit and push." Designing for
+both invocation modes means writing a clear enough description that the model
+can match it to the right moment.
+
+One thing worth noting about knowledge skills: they can often be replaced by a
+`/docs` folder combined with a table of contents reference in `CLAUDE.md`.
+Skills add value here specifically when you want the model to decide whether to
+consult them, rather than always having the knowledge in context.
+
+## The deterministic-first principle
+
+This is the insight I don't see in most public skill examples, and it's the one
+that makes the biggest difference.
+
+Every skill has two layers: things that can be computed deterministically, and
+things that genuinely require the model. **Your job as the skill author is to
+push as much as possible into the deterministic layer.**
+
+Claude Code skills support bash inline execution: any `!\`command\`` expression
+in a skill's markdown gets replaced by that command's output before the model
+reads the skill. This means you can pre-run scripts, make API calls, format
+structured data — all before the LLM is even involved.
+
+I structure skills with a **Pre-gathered context** section at the top that uses
+this feature to fill in everything the model will need. By the time Claude reads
+the skill, the context is already there.
+
+## Case study: the PR creation skill
+
+A pull request skill is a natural fit for an LLM — writing a good description
+requires understanding the diff, the intent, and the conventions. But most of
+the work around _gathering context_ is completely deterministic.
+
+Here's what my PR skill pre-computes before the model reads it:
+
+**Branch context.** A script generates a markdown summary of the branch: all
+commits, the full diff against `main`, and a list of modified files. The model
+doesn't need to run `git log` or `git diff` — the output is already there.
+
+**Linear ticket context.** At Buffer, we name branches with the pattern
+`username/TICKET-ID`. A script reads the branch name, infers the ticket, queries
+Linear's API, and formats the result as markdown: title, description, comments,
+status. The model gets the full ticket context without making any tool calls.
+
+**Branch push.** The skill automatically pushes the branch to origin before the
+model reads it, and includes a note confirming this. One less thing for the
+model to decide about.
+
+The probabilistic layer — what remains for the LLM — is genuinely LLM territory:
+writing the PR description, deciding whether to add a Popcorn label (our design
+system tag that triggers additional GitHub Actions), choosing reviewers based on
+the changed files and team context.
+
+The result: the model reads rich, pre-formatted context and writes the PR
+description in one pass. No back-and-forth gathering information, no deciding
+which commands to run.
+
+## Why this matters more than you might think
+
+Pushing work into the deterministic layer has three compounding benefits.
+
+**It's cheaper.** The model doesn't need to call tools, process raw JSON API
+responses, or navigate git output. You run the scripts; you format the output as
+clean markdown. Claude reads markdown well and processes it efficiently.
+
+**It's faster.** Fewer model turns means faster execution. A skill that
+pre-gathers context in two scripts and then does one model pass is significantly
+faster than a skill that has the model run five sequential tool calls.
+
+**It's more consistent.** This is the most important one. The more deterministic
+work you front-load, the more predictable the model's output becomes. You're not
+eliminating the probabilistic nature of the LLM — you're shrinking the surface
+area it operates over, so the variance in outcomes is lower.
+
+Debugging also becomes easier: if the pre-computed context is wrong, that's a
+script bug. If the model output is wrong, that's a prompt problem. The two
+layers fail differently and are easier to fix independently.
+
+## The mental model
+
+When you sit down to write a skill, ask three questions:
+
+1. **Do I need a skill at all, or would a deterministic script serve me
+   better?**
+2. **Which of the three types is this — knowledge, workflow, or ability?** The
+   type determines the right invocation strategy.
+3. **What can I precompute?** Everything that can be determined ahead of time
+   without model judgment should be. Put it in a Pre-gathered context section
+   using bash inline execution.
+
+The goal isn't to eliminate the LLM from the skill. It's to make sure the LLM is
+only doing the work that actually requires it — and that everything else is
+already done when it arrives.
+
+---
+
+**Related posts:**
+
+- [Writing Powerful Claude Code Skills with npx bun](/writing-powerful-claude-code-skills-with-npx-bun/) -
+  How to use TypeScript scripts in your skills
+- [Asking AI to Build the Tool Instead of Doing the Task](/asking-ai-to-build-the-tool-instead-of-doing-the-task/) -
+  A complementary mental model for AI-assisted development

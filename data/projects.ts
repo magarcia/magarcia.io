@@ -41,6 +41,36 @@ export const projects: Project[] = [
     language: "TypeScript",
   },
   {
+    name: "cc2md",
+    url: "https://github.com/magarcia/cc2md",
+    description: {
+      en: "Convert Claude Code session logs into clean, readable markdown",
+      es: "Convierte los registros de sesión de Claude Code en markdown limpio y legible",
+      ca: "Converteix els registres de sessió de Claude Code en markdown net i llegible",
+    },
+    language: "Go",
+  },
+  {
+    name: "snapwin",
+    url: "https://github.com/magarcia/snapwin",
+    description: {
+      en: "Secure macOS CLI that screenshots a specific background window by name",
+      es: "CLI segura para macOS que captura una ventana de fondo específica por nombre",
+      ca: "CLI segura per a macOS que captura una finestra de fons específica per nom",
+    },
+    language: "Swift",
+  },
+  {
+    name: "cali",
+    url: "https://github.com/magarcia/cali",
+    description: {
+      en: "Minimalist, offline-first CLI calendar with natural language interaction",
+      es: "Calendario CLI minimalista, offline-first con interacción en lenguaje natural",
+      ca: "Calendari CLI minimalista, offline-first amb interacció en llenguatge natural",
+    },
+    language: "Rust",
+  },
+  {
     name: "cross-keychain",
     url: "https://github.com/magarcia/cross-keychain",
     description: {
