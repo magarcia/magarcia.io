@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { useState, useEffect } from "react";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSelector from "./LanguageSelector";
 
@@ -20,12 +19,6 @@ export default function Header({
   lang = "en",
   slug,
 }: HeaderProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const homeUrl = lang === "en" ? "/" : `/${lang}/`;
   const backText = backTranslations[lang] || backTranslations.en;
 
@@ -52,7 +45,7 @@ export default function Header({
         )}
         <div className="flex items-center">
           <LanguageSelector lang={lang} slug={slug} />
-          {mounted && <ThemeToggle />}
+          <ThemeToggle />
         </div>
       </div>
     </header>

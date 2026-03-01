@@ -89,7 +89,7 @@ describe("Header", () => {
   });
 
   describe("ThemeToggle", () => {
-    it("renders ThemeToggle after component mount", () => {
+    it("renders ThemeToggle", () => {
       render(<Header />);
       expect(screen.getByTestId("theme-toggle")).toBeInTheDocument();
     });
