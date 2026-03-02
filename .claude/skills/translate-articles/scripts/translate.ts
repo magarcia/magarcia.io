@@ -118,27 +118,76 @@ const TECHNICAL_TERMS = [
 const TRANSLATION_PROMPTS = {
   es: `Translate this blog article from English to Spanish (Castellano from Spain).
 
-RULES:
+STRUCTURE RULES:
 - Translate the "title" and "spoiler" fields in the YAML frontmatter
 - Keep "tags" in English exactly as they are (site requirement)
 - Keep all other frontmatter fields unchanged (date, draft, etc.)
 - Preserve all markdown formatting, code blocks, and links exactly
 - Keep these technical terms in English (engineers are used to them): ${TECHNICAL_TERMS.join(", ")}
+
+STYLE AND TONE:
 - Use informal "tú" form
 - Use Castellano conventions from Spain (not Latin American Spanish)
+
+GRAMMAR AND LANGUAGE QUALITY:
+- Prefer active voice and reflexive constructions over passive: "se configuran los servidores" not "los servidores son configurados"
+- English "-ing" words used as nouns become Spanish nouns, not gerunds: "Installing from NFS" → "Instalación desde NFS", not "Instalando desde NFS"
+- Only capitalize the first letter of titles and headings
+- Accented capital letters are mandatory (Á, É, Í, Ó, Ú)
+- Months, weekdays, and language names use lowercase
+- Use «» for quotation marks (nested: "" then '')
+- Use periods for thousands separators and commas for decimals (1.000, 3,14)
+
+FALSE FRIENDS — use the correct Spanish term:
+- "command" → "orden" (not "comando")
+- "actual" → "real" or "verdadero" (not "actual")
+- "library" (software) → keep in English per technical terms list
+- "encrypt" → "cifrar" (not "encriptar")
+- "parse" → "analizar" (not "parsear")
+- "prevent" → "impedir" (not "prevenir")
+- "by default" → "por omisión" or "predeterminado"
+- "interface" → "la interfaz" (feminine)
 
 Return ONLY the translated markdown file, nothing else. Start with the --- frontmatter delimiter.`,
 
   ca: `Translate this blog article from English to Catalan.
 
-RULES:
+STRUCTURE RULES:
 - Translate the "title" and "spoiler" fields in the YAML frontmatter
 - Keep "tags" in English exactly as they are (site requirement)
 - Keep all other frontmatter fields unchanged (date, draft, etc.)
 - Preserve all markdown formatting, code blocks, and links exactly
 - Keep these technical terms in English (engineers are used to them): ${TECHNICAL_TERMS.join(", ")}
+
+STYLE AND TONE:
 - Use informal "tu" form
 - Use standard Catalan conventions
+
+GRAMMAR AND LANGUAGE QUALITY:
+- Prefer active voice and reflexive constructions over passive
+- English "-ing" words used as nouns become Catalan nouns, not gerunds
+- Only capitalize the first letter of titles and headings
+- Accented capital letters are mandatory (À, É, È, Í, Ó, Ò, Ú)
+- Months, weekdays, and language names use lowercase
+- Use «» for quotation marks (nested: "" then '')
+- Use periods for thousands separators and commas for decimals (1.000, 3,14)
+
+AVOID CASTELLANISMS — use correct Catalan forms:
+- "arrenca" not "arranca" (to start/boot)
+- "cercar" not "buscar" (to search)
+- "aturar" not "parar" (to stop)
+- "emprar" or "fer servir" not "usar" (to use)
+- "ordre" not "comando" (command)
+- "fitxer" not "archivo" (file)
+- "programari" not "software" when translating the general concept
+- "maquinari" not "hardware" when translating the general concept
+- "predeterminat" not "por defecto" (by default)
+- "xifrar" not "encriptar" (to encrypt)
+
+CATALAN-SPECIFIC GRAMMAR:
+- Maintain "en" and "hi" pronouns — they are required in Catalan even where Spanish omits them
+- Use "a" not "en" for locations
+- Infinitives require preposition "en" where appropriate
 
 Return ONLY the translated markdown file, nothing else. Start with the --- frontmatter delimiter.`,
 };
