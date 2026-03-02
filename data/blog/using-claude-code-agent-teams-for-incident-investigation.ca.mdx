@@ -1,0 +1,244 @@
+---
+title: "Fent servir equips d'agents de Claude Code per investigar incidents"
+date: "2026-03-02"
+spoiler:
+  "Com vaig fer servir els equips d'agents de Claude Code per dur a terme una
+  investigació paral·lela d'un incident en producció amb múltiples agents, amb
+  una sola instrucció i resultats sorprenentment bons."
+tags:
+  - ai
+  - developer-tools
+  - claude-code
+---
+
+La setmana passada vam tenir un incident en producció a la feina. Els serveis
+fallaven, els pods es reiniciaven i el canal de guàrdia s'omplia ràpidament.
+Vaig decidir provar alguna cosa que no havia fet servir en un escenari real: la
+funció d'**equips d'agents** de Claude Code.
+
+El resultat em va sorprendre. Amb una sola instrucció sense estructura i algunes
+integracions MCP, Claude es va auto-organitzar en una investigació paral·lela
+que va identificar la causa arrel en minuts.
+
+## Equips d'agents: sessions paral·leles de Claude que es comuniquen entre si
+
+Claude Code té una funció experimental anomenada
+[equips d'agents](https://code.claude.com/docs/en/agent-teams) que coordina
+múltiples instàncies de Claude Code. Una sessió actua com a orquestrador i
+llança companys d'equip, cadascun executant-se en el seu propi context en una
+part diferent del problema.
+
+A diferència dels subagents normals, que s'executen dins d'una sola sessió i
+informen únicament a l'agent principal, els companys d'equip es comuniquen
+directament entre si. Comparteixen una llista de tasques, assumeixen feina i
+intercanvien descobertes.
+
+Això importa per a la investigació d'incidents perquè normalment s'exploren
+diverses hipòtesis alhora: és un problema de desplegament? Un problema de base
+de dades? Un canvi en la infraestructura? Tenir agents investigant en paral·lel
+i compartint les seves descobertes reflecteix com opera un bon equip de resposta
+a incidents.
+
+## Activar els equips d'agents
+
+Els equips d'agents estan desactivats de manera predeterminada. Per activar-los,
+afegeix això al teu `settings.json` (ja sigui el global a
+`~/.claude/settings.json` o el de projecte):
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}
+```
+
+Amb això n'hi ha prou. Un cop activada la funció, pots demanar-li a Claude que
+creï un equip des de qualsevol sessió.
+
+## La configuració MCP que ho fa útil
+
+Els equips d'agents funcionen bé amb les integracions de
+[MCP (Model Context Protocol)](https://modelcontextprotocol.io/). En tenia tres
+configurades:
+
+- **Datadog** — per cercar logs i mètriques
+- **Slack** — per llegir canals d'incidents i fils de coordinació
+- **Sentry** — per al seguiment d'errors i detalls d'excepcions
+
+Amb aquestes al seu lloc, els agents de Claude consulten les mateixes eines
+d'observabilitat que fa servir el teu equip durant els incidents —dashboards,
+logs, traces d'errors— sense que hagis de copiar i enganxar res.
+
+MCP és un protocol que permet a les eines d'IA connectar-se a serveis externs.
+Claude Code el suporta de manera nativa, i els servidors es configuren en un
+fitxer `.mcp.json` a l'arrel del projecte o de manera global.
+
+**Una nota sobre la privadesa de les dades:** aquesta configuració envia logs de
+producció, traces d'errors i missatges de Slack a l'API d'Anthropic. Abans de
+fer això a la teva empresa, assegura't que el teu ús compleix amb les polítiques
+de gestió de dades de la teva organització. Comprova si el teu pla d'API inclou
+la [retenció zero de dades](https://www.anthropic.com/policies/privacy), i
+considera si la telemetria que estàs enviant conté PII o altres dades sensibles
+que no haurien de sortir de la teva infraestructura.
+
+## Com ho vaig posar en marxa
+
+Vaig obrir una sessió de Claude Code al nostre monorepo i li vaig donar una
+instrucció deliberadament mínima. Primer:
+
+> Revisa l'incident en curs i fes-me un resum:
+> https://myworkspace.slack.com/archives/C0123ABC456
+
+Després, un cop obtingut el resum inicial:
+
+> Fes servir un equip d'agents per ajudar-me a trobar la causa arrel; quan facis
+> qualsevol exploració, fes servir SEMPRE companys d'equip per evitar omplir el
+> context del fil principal
+
+Això va ser tot. Dos missatges, sense instruccions detallades. Volia veure
+quanta estructura imposaria Claude pel seu compte.
+
+El que va passar a continuació:
+
+1. **Claude va crear un orquestrador** que va dividir la investigació en àrees:
+   mètriques d'infraestructura, seguiment d'errors, canvis de codi recents i
+   comunicacions de l'equip.
+2. **Va llançar quatre agents especialitzats**, un per a cada àrea. Cada agent
+   tenia un mandat clar i accés a les eines MCP rellevants.
+3. **Els agents van començar a investigar en paral·lel.** Un va cercar a Datadog
+   mètriques de pods i patrons de reinicis. Un altre va obtenir les excepcions
+   recents de Sentry. Un tercer va revisar els desplegaments recents i els
+   canvis de codi. El quart va monitoritzar el canal de Slack de l'incident per
+   recollir context del que l'equip humà anava reportant.
+
+La llista de tasques de l'orquestrador va acabar semblant-se a això:
+
+```
+Task List (incident-investigation)
+─────────────────────────────────────────────
+#1  ✅  Read Slack incident channel for context       @slack-monitor
+#2  ✅  Query Datadog for pod restart patterns         @infra-agent
+#3  ✅  Pull recent Sentry exceptions                  @error-tracker
+#4  ✅  Review recent deployments and code changes     @code-reviewer
+#5  ✅  Cross-reference login failures with pod metrics @infra-agent
+#6  ✅  Investigate missing config parameter           @infra-agent
+#7  ✅  Synthesize findings into root cause summary    @orchestrator
+```
+
+## Quatre agents, una causa arrel
+
+Els agents van explorar diverses hipòtesis simultàniament. Algunes van resultar
+ser carrerons sense sortida —una actualització de dependències recent, un canvi
+en una clau de configuració— però com que els agents treballaven en paral·lel,
+van descartar les pistes falses ràpidament sense bloquejar el fil principal.
+
+La comunicació entre agents va ser el que més va destacar. Quan l'agent de
+monitorització de Slack va detectar que els companys d'equip reportaven fallades
+d'inici de sessió, ho va compartir amb l'agent d'infraestructura, que va reduir
+la seva cerca als serveis relacionats amb l'autenticació. Quan l'agent de
+revisió de codi va descobrir que un canvi recent no estava relacionat amb el
+servei que fallava (afectava un backend de Node.js, però el servei que fallava
+era PHP/Apache), ho va reportar i l'equip va canviar d'enfocament.
+
+Els agents van convergir en la causa arrel, i l'orquestrador va emetre un
+veredicte explícit:
+
+> **Causa arrel: paràmetre de configuració absent → cicle de fallades de pods →
+> fuga de connexions a la base de dades**
+
+Un servei necessitava un paràmetre de configuració durant la inicialització.
+Sense ell, els pods fallaven en arrencar. Un reinici del desplegament ho va
+convertir en un cicle de fallades autoperpetuador que va esgotar les connexions
+a la base de dades i va desencadenar l'esgotament de workers, la superació de
+límits de memòria i la degradació de serveis aigües avall.
+
+Els agents van reconstruir la línia temporal a partir de mètriques de Datadog,
+excepcions de Sentry i missatges de Slack, i l'orquestrador ho va sintetitzar en
+la cadena de cascada anterior.
+
+L'orquestrador va anar més lluny. Va proporcionar les ordres exactes de CLI per
+verificar el paràmetre absent i confirmar el diagnòstic. Va creuar logs de pods,
+dashboards de mètriques i seguiment d'errors per determinar _quan_ va
+desaparèixer el paràmetre i _per què_ va seguir la cascada. Un cop confirmada la
+causa arrel, va proposar estratègies de mitigació: quins serveis reiniciar, en
+quin ordre, i què comprovar després de cada pas per confirmar la recuperació.
+
+Tot el procés —des de «aquí teniu el canal de Slack» fins a «aquí teniu la causa
+arrel i la cadena de cascada completa»— va durar uns 10 minuts de temps real.
+Una anàlisi en solitari de la mateixa investigació, consultant manualment
+Datadog, Sentry i creuant missatges de Slack, hauria durat normalment entre 30 i
+45 minuts.
+
+## Cinc conclusions d'un incident real
+
+**No necessites una instrucció perfecta.** Vaig donar a Claude gairebé cap
+indicació, i va estructurar una investigació raonable pel seu compte: dividint
+la feina en àrees lògiques, assignant agents i coordinant les descobertes.
+
+**Les integracions MCP són el requisit real.** Els agents només són tan útils
+com les dades a les quals poden accedir. Sense Datadog, Slack i Sentry
+connectats, estarien simplement endevinant. Els equips d'agents paral·lelitzen
+la investigació; MCP fa possible la investigació.
+
+**Complementa bé la investigació humana.** Mentre els agents revisaven logs i
+mètriques, la resta de l'equip treballava al canal de l'incident. Els agents van
+recollir context de Slack sobre el que altres estaven trobant, i l'equip humà es
+va beneficiar de l'eliminació sistemàtica d'hipòtesis per part dels agents.
+
+**Consumeix molts tokens.** Cada agent és una sessió de Claude Code separada amb
+el seu propi context, de manera que quatre agents en paral·lel suposa
+aproximadament 4 vegades el cost en tokens d'una sessió única. Faig servir una
+subscripció de Claude Code amb un límit d'ús mensual, de manera que no pago per
+token, però estimo que aquesta investigació va consumir l'equivalent a 8-10 $ en
+crèdits d'API enfront dels ~2-3 $ d'una anàlisi en sessió única. Val la pena
+quan el temps importa durant un incident actiu, però no és alguna cosa que
+faries per a cada investigació menor.
+
+**El context de l'orquestrador es manté net.** Com que cada agent treballa en el
+seu propi context —processant logs sense processar, mètriques i respostes
+d'API—, l'orquestrador només rep les descobertes resumides. Raona sobre el
+panorama general sense que el seu context s'ompli de soroll. En una investigació
+en sessió única, arribaríes als límits del context ràpidament en consultar
+múltiples eines d'observabilitat.
+
+## Ideal per a problemes amb múltiples hipòtesis
+
+Els equips d'agents brillen quan un problema té múltiples causes possibles que
+es poden investigar de manera independent. Els incidents en producció són un cas
+d'ús natural, però el patró s'aplica a:
+
+- **Investigacions de rendiment** — un agent perfilant la base de dades, un
+  altre revisant mètriques de l'aplicació, un altre revisant canvis recents
+- **Resposta a incidents de seguretat** — anàlisi paral·lela de logs d'accés,
+  canvis de codi i trànsit de xarxa
+- **Depuració complexa** — quan no estàs segur de quina capa del stack és
+  responsable
+
+Divideix el problema en àrees d'investigació independents, deixa que els agents
+les explorin en paral·lel i deixa que l'orquestrador sintetitzi les descobertes.
+
+Per a problemes més senzills on la causa probablement es troba en un sol lloc,
+una sessió normal de Claude Code (o fins i tot un subagent) és més rendible. Els
+equips d'agents aporten valor quan l'exploració en paral·lel estalvia temps.
+
+## Com començar
+
+Si vols provar-ho tu mateix:
+
+1. Activa els equips d'agents al teu `settings.json` (el fragment de
+   configuració anterior)
+2. Configura les integracions MCP per a les eines d'observabilitat que fa servir
+   el teu equip —aquesta és la part important
+3. Obre una sessió de Claude Code al teu projecte i descriu el problema,
+   demanant-li a Claude que faci servir un equip d'agents
+
+La [documentació oficial](https://code.claude.com/docs/en/agent-teams) cobreix
+les funcionalitats completes, inclosos els modes de visualització (en procés vs.
+panells dividits amb tmux), com interactuar amb companys d'equip individuals i
+com controlar la mida de l'equip.
+
+Comença amb una investigació de baix risc per fer-te una idea de com funciona la
+coordinació abans de dependre-hi durant un incident real. I si ja tens servidors
+MCP configurats per al teu stack d'observabilitat, ja tens gairebé tot el que
+necessites.

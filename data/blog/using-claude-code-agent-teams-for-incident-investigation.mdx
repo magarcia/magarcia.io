@@ -1,0 +1,234 @@
+---
+title: "Using Claude Code Agent Teams for Incident Investigation"
+date: "2026-03-02"
+spoiler:
+  "How I used Claude Code's agent teams to run a parallel, multi-agent
+  production incident investigation — with one prompt and surprisingly good
+  results."
+tags:
+  - ai
+  - developer-tools
+  - claude-code
+---
+
+Last week we had a production incident at work. Services were failing, pods were
+restarting, and the on-call channel was filling up fast. I decided to try
+something I hadn't used in a real scenario before: Claude Code's **agent teams**
+feature.
+
+The result surprised me. With a single, unstructured prompt and a few MCP
+integrations, Claude self-organized a parallel investigation that identified the
+root cause in minutes.
+
+## Agent teams: parallel Claude sessions that talk to each other
+
+Claude Code has an experimental feature called
+[agent teams](https://code.claude.com/docs/en/agent-teams) that coordinates
+multiple Claude Code instances. One session acts as the orchestrator and spawns
+teammates, each running in its own context window on a different part of the
+problem.
+
+Unlike regular subagents, which run inside a single session and report back only
+to the main agent, teammates communicate with each other directly. They share a
+task list, claim work, and exchange findings.
+
+This matters for incident investigation because you're typically exploring
+multiple hypotheses at once: is it a deployment issue? A database problem? An
+infrastructure change? Having agents investigate these in parallel, sharing what
+they find, mirrors how a good incident response team operates.
+
+## Enabling agent teams
+
+Agent teams are disabled by default. To enable them, add this to your
+`settings.json` (either global at `~/.claude/settings.json` or project-level):
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}
+```
+
+That's all the setup needed. Once enabled, you can ask Claude to create a team
+from any session.
+
+## The MCP setup that makes it useful
+
+Agent teams pair well with
+[MCP (Model Context Protocol)](https://modelcontextprotocol.io/) integrations. I
+had three configured:
+
+- **Datadog** — for querying logs and metrics
+- **Slack** — for reading incident channels and coordination threads
+- **Sentry** — for error tracking and exception details
+
+With these in place, Claude's agents query the same observability tools your
+team uses during incidents — dashboards, logs, error traces — without you
+copy-pasting anything.
+
+MCP is a protocol that lets AI tools connect to external services. Claude Code
+supports it natively, and you configure servers in a `.mcp.json` file at the
+root of your project or globally.
+
+**A note on data privacy:** this setup sends production logs, error traces, and
+Slack messages to Anthropic's API. Before doing this at your company, make sure
+your usage complies with your organization's data handling policies. Check
+whether your API plan includes
+[zero data retention](https://www.anthropic.com/policies/privacy), and consider
+whether the telemetry you're sending contains PII or other sensitive data that
+shouldn't leave your infrastructure.
+
+## How I kicked it off
+
+I opened a Claude Code session in our monorepo and gave it a deliberately
+minimal prompt. First:
+
+> Check the incident going on and make me a summary:
+> https://myworkspace.slack.com/archives/C0123ABC456
+
+Then, after getting the initial summary:
+
+> Use a team of agents to help me find the root cause, when doing any
+> exploration ALWAYS use teammates to avoid filling the context of the main
+> thread
+
+That was it. Two messages, no detailed instructions. I wanted to see how much
+structure Claude would impose on its own.
+
+What happened next:
+
+1. **Claude created an orchestrator** that broke the investigation into areas:
+   infrastructure metrics, error tracking, recent code changes, and team
+   communications.
+2. **It spawned four specialized agents**, one for each area. Each agent had a
+   clear mandate and access to the relevant MCP tools.
+3. **The agents started investigating in parallel.** One queried Datadog for pod
+   metrics and restart patterns. Another pulled recent exceptions from Sentry. A
+   third reviewed recent deployments and code changes. The fourth monitored the
+   Slack incident channel to pick up context from what the human team was
+   reporting.
+
+The orchestrator's task list ended up looking something like this:
+
+```
+Task List (incident-investigation)
+─────────────────────────────────────────────
+#1  ✅  Read Slack incident channel for context       @slack-monitor
+#2  ✅  Query Datadog for pod restart patterns         @infra-agent
+#3  ✅  Pull recent Sentry exceptions                  @error-tracker
+#4  ✅  Review recent deployments and code changes     @code-reviewer
+#5  ✅  Cross-reference login failures with pod metrics @infra-agent
+#6  ✅  Investigate missing config parameter           @infra-agent
+#7  ✅  Synthesize findings into root cause summary    @orchestrator
+```
+
+## Four agents, one root cause
+
+The agents explored several hypotheses simultaneously. Some turned out to be
+dead ends — a recent dependency upgrade, a configuration key change — but
+because agents worked in parallel, they ruled out bad leads fast without
+blocking the main thread.
+
+Cross-agent communication stood out. When the Slack-monitoring agent picked up
+that teammates were reporting login failures, it shared that with the
+infrastructure agent, which narrowed its search to authentication-related
+services. When the code review agent found that a recent change was unrelated to
+the failing service (it affected a Node.js backend, but the failing service was
+PHP/Apache), it reported back and the team pivoted.
+
+The agents converged on the root cause, and the orchestrator delivered an
+explicit verdict:
+
+> **Root Cause: Missing Config Parameter → Pod Crash Loop → Database Connection
+> Leak**
+
+A service needed a configuration parameter during initialization. Without it,
+pods crashed on start. A deployment restart turned that into a self-perpetuating
+crash loop that exhausted database connections and cascaded into worker
+exhaustion, memory limits exceeded, and downstream service degradation.
+
+The agents pieced the timeline together from Datadog metrics, Sentry exceptions,
+and Slack messages, and the orchestrator synthesized it into the cascade chain
+above.
+
+The orchestrator went further. It provided the exact CLI commands to verify the
+missing parameter and confirm the diagnosis. It cross-referenced pod logs,
+metrics dashboards, and error tracking to establish _when_ the parameter
+disappeared and _why_ the cascade followed. Once it confirmed the root cause, it
+proposed mitigation strategies: which services to restart, in what order, and
+what to check after each step to confirm recovery.
+
+The whole process — from "here's the Slack channel" to "here's the root cause
+and full cascade chain" — took about 10 minutes of wall clock time. A solo
+walkthrough of the same investigation, manually querying Datadog, Sentry, and
+cross-referencing Slack messages, would typically take 30–45 minutes.
+
+## Five takeaways from a real incident
+
+**You don't need a perfect prompt.** I gave Claude almost no instructions, and
+it figured out a reasonable investigation structure on its own: splitting work
+into logical areas, assigning agents, and coordinating findings.
+
+**MCP integrations are the real prerequisite.** The agents are only as useful as
+the data they can access. Without Datadog, Slack, and Sentry connected, they'd
+just be guessing. Agent teams parallelize the investigation; MCP makes the
+investigation possible.
+
+**It complements human investigation well.** While the agents dug through logs
+and metrics, the rest of the team worked in the incident channel. The agents
+picked up context from Slack about what others were finding, and the human team
+benefited from the agents' systematic hypothesis elimination.
+
+**It's token hungry.** Each agent is a separate Claude Code session with its own
+context window, so four parallel agents means roughly 4x the token cost of a
+single session. I use a Claude Code subscription with a monthly usage cap, so I
+don't pay per-token, but I'd estimate this investigation consumed the equivalent
+of $8–10 in API credits compared to ~$2–3 for a single-session walkthrough.
+Worth it when time matters during an active incident, but not something you'd
+run for every minor investigation.
+
+**The orchestrator's context stays clean.** Because each agent works in its own
+context — processing raw logs, metrics, and API responses — the orchestrator
+only receives summarized findings. It reasons about the big picture without its
+context window filling up with noise. In a single-session investigation, you'd
+hit context limits fast when querying multiple observability tools.
+
+## Best for multi-hypothesis problems
+
+Agent teams shine when a problem has multiple possible causes you can
+investigate independently. Production incidents are a natural fit, but the
+pattern applies to:
+
+- **Performance investigations** — one agent profiling the database, another
+  checking application metrics, another reviewing recent changes
+- **Security incident response** — parallel analysis of access logs, code
+  changes, and network traffic
+- **Complex debugging** — when you're not sure which layer of the stack is
+  responsible
+
+Break the problem into independent investigation areas, let agents explore them
+in parallel, and have the orchestrator synthesize the findings.
+
+For simpler issues where the cause is likely in one place, a regular Claude Code
+session (or even a subagent) is more cost-effective. Agent teams add value when
+parallel exploration saves time.
+
+## Getting started
+
+If you want to try this yourself:
+
+1. Enable agent teams in your `settings.json` (the config snippet above)
+2. Set up MCP integrations for the observability tools your team uses — this is
+   the important part
+3. Open a Claude Code session in your project and describe the problem, asking
+   Claude to use a team of agents
+
+The [official documentation](https://code.claude.com/docs/en/agent-teams) covers
+the full feature set, including display modes (in-process vs. split panes with
+tmux), how to interact with individual teammates, and how to control the team
+size.
+
+Start with a low-stakes investigation to get a feel for how the coordination
+works before relying on it during a real incident. And if you already have MCP
+servers configured for your observability stack, you're most of the way there.
