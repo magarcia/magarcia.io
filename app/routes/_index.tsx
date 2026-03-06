@@ -1,5 +1,4 @@
 import type { Route } from "./+types/_index";
-import { getAllFilesFrontMatter } from "~/lib/blog";
 import Header from "~/components/Header";
 import Footer from "~/components/Footer";
 import AboutSection from "~/components/AboutSection";
@@ -36,6 +35,7 @@ export function meta({ location }: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { getAllFilesFrontMatter } = await import("~/lib/blog");
   const pathname = new URL(request.url).pathname;
   const lang = getLangFromPathname(pathname);
   const posts = getAllFilesFrontMatter("blog", lang).filter(

@@ -18,19 +18,19 @@ test.describe("Internationalization (i18n)", () => {
     await homePage.goto("en");
     await homePage.header.selectLanguage("es");
 
-    await expect(page).toHaveURL("/es");
+    await expect(page).toHaveURL("/es/");
   });
 
   test("should navigate to Catalan homepage", async ({ page }) => {
     await homePage.goto("en");
     await homePage.header.selectLanguage("ca");
 
-    await expect(page).toHaveURL("/ca");
+    await expect(page).toHaveURL("/ca/");
   });
 
   test("should switch from Spanish to English", async ({ page }) => {
     await homePage.goto("es");
-    await expect(page).toHaveURL("/es");
+    await expect(page).toHaveURL("/es/");
 
     await homePage.header.selectLanguage("en");
 
@@ -39,11 +39,11 @@ test.describe("Internationalization (i18n)", () => {
 
   test("should switch from Spanish to Catalan", async ({ page }) => {
     await homePage.goto("es");
-    await expect(page).toHaveURL("/es");
+    await expect(page).toHaveURL("/es/");
 
     await homePage.header.selectLanguage("ca");
 
-    await expect(page).toHaveURL("/ca");
+    await expect(page).toHaveURL("/ca/");
   });
 
   test("should display posts in selected language", async ({ page }) => {
@@ -53,6 +53,7 @@ test.describe("Internationalization (i18n)", () => {
 
     // Switch to Spanish
     await homePage.header.selectLanguage("es");
+    await page.waitForURL("/es/");
     const spanishArticleCount = await homePage.getArticleCount();
 
     // Both should have articles (may differ if translations vary)

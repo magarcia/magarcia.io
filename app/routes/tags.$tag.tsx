@@ -1,14 +1,7 @@
 import { Link as LinkIcon } from "react-feather";
 import { Link } from "react-router";
 import type { Route } from "./+types/tags.$tag";
-import {
-  getPostsByTagSlug,
-  getTagBySlug,
-  getTagDescription,
-  isValidSlug,
-  isValidLang,
-  type FrontMatter,
-} from "~/lib/blog";
+import type { FrontMatter } from "~/lib/blog";
 import Header from "~/components/Header";
 import {
   formatDate,
@@ -24,13 +17,12 @@ export function meta({ data, location }: Route.MetaArgs) {
     return [{ title: "Tag Not Found" }];
   }
 
-  const { tag, totalCount, lang } = data;
+  const { tag, totalCount, lang, tagDescription } = data;
   const title = formatTagPageTitle(totalCount, tag, lang);
   const siteUrl = "https://magarcia.io";
 
-  // Get contextual description from TAG_METADATA or fallback to generic template
   const rawDescription =
-    getTagDescription(tag, lang) ?? `Posts tagged with "${tag}" on magarcia.io`;
+    tagDescription ?? `Posts tagged with "${tag}" on magarcia.io`;
   const description = truncateDescription(rawDescription);
 
   return [
@@ -51,6 +43,13 @@ export function meta({ data, location }: Route.MetaArgs) {
 }
 
 export async function loader({ params, request }: Route.LoaderArgs) {
+  const {
+    getPostsByTagSlug,
+    getTagBySlug,
+    getTagDescription,
+    isValidSlug,
+    isValidLang,
+  } = await import("~/lib/blog");
   const tagSlug = params.tag;
   if (!tagSlug || !isValidSlug(tagSlug)) {
     throw new Response("Tag Not Found", { status: 404 });
@@ -69,12 +68,14 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const posts = getPostsByTagSlug("blog", tagSlug, lang);
+  const tagDescription = getTagDescription(tag, lang);
 
   return {
     posts,
     tag,
     totalCount: posts.length,
     lang,
+    tagDescription,
   };
 }
 

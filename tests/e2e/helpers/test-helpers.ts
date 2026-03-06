@@ -27,7 +27,7 @@ export async function waitForPageLoad(page: Page): Promise<void> {
 export type Language = "en" | "es" | "ca";
 
 export function getLanguagePath(lang: Language): string {
-  return lang === "en" ? "/" : `/${lang}`;
+  return lang === "en" ? "/" : `/${lang}/`;
 }
 
 export function getTagPath(tag: string, lang: Language = "en"): string {

@@ -1,15 +1,14 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/$slug";
-import {
-  getFileBySlug,
-  isValidSlug,
-  isValidLang,
-  type BlogPostWithNavigation,
-} from "~/lib/blog";
+import type { BlogPostWithNavigation } from "~/lib/blog";
 import Header from "~/components/Header";
 import { buildTagUrl } from "~/lib/urls";
 import { formatDate, formatReadingTime, getLangFromPathname } from "~/lib/i18n";
-import { buildCanonicalLink, buildPostHreflangLinks } from "~/lib/hreflang";
+import {
+  buildCanonicalLink,
+  buildPostHreflangLinks,
+  type HreflangLink,
+} from "~/lib/hreflang";
 import { truncateDescription } from "~/lib/seo";
 import ReactMarkdownImport from "react-markdown";
 import rehypeRawImport from "rehype-raw";
@@ -33,6 +32,8 @@ export function meta({ data, location }: Route.MetaArgs) {
   }
 
   const { title, date, spoiler, slug, ogImage } = data.frontMatter;
+  const hreflangLinks = (data as { hreflangLinks: HreflangLink[] })
+    .hreflangLinks;
   const siteUrl = "https://magarcia.io";
   const imageUrl = ogImage || `${siteUrl}/og/${slug}.png`;
   const description = truncateDescription(spoiler);
@@ -54,11 +55,13 @@ export function meta({ data, location }: Route.MetaArgs) {
     { name: "twitter:image", content: imageUrl },
     { property: "article:published_time", content: date },
     buildCanonicalLink(location.pathname),
-    ...buildPostHreflangLinks(slug),
+    ...hreflangLinks,
   ];
 }
 
 export async function loader({ params, request }: Route.LoaderArgs) {
+  const { getFileBySlug, isValidSlug, isValidLang } =
+    await import("~/lib/blog");
   const slug = params.slug;
   if (!slug || !isValidSlug(slug)) {
     throw new Response("Not Found", { status: 404 });
@@ -73,7 +76,16 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   try {
     const post = getFileBySlug("blog", slug, lang);
-    return { ...post, lang };
+    const availableLocales = ["en", "es", "ca"].filter((locale) => {
+      try {
+        getFileBySlug("blog", slug, locale);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+    const hreflangLinks = buildPostHreflangLinks(slug, availableLocales);
+    return { ...post, lang, hreflangLinks };
   } catch {
     throw new Response("Not Found", { status: 404 });
   }

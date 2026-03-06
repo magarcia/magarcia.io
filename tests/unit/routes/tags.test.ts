@@ -5,6 +5,7 @@ import type { FrontMatter } from "~/lib/blog";
 vi.mock("~/lib/blog", () => ({
   getPostsByTagSlug: vi.fn(),
   getTagBySlug: vi.fn(),
+  getTagDescription: vi.fn(() => null),
   isValidSlug: vi.fn((slug: string) =>
     /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug),
   ),

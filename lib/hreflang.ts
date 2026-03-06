@@ -1,4 +1,3 @@
-import { getFileBySlug } from "./blog";
 import { slugifyTag } from "./urls";
 
 type HreflangLink = {
@@ -14,29 +13,23 @@ type CanonicalLink = {
   href: string;
 };
 
+export type { HreflangLink, CanonicalLink };
+
 const SUPPORTED_LOCALES = ["en", "es", "ca"] as const;
 const BASE_URL = "https://magarcia.io";
 
 /**
- * Check if a blog post exists in a specific language
+ * Build hreflang links for a post given the set of available locales.
+ * The availableLocales should be pre-computed in the loader using filesystem checks.
  */
-function postExists(slug: string, lang: string): boolean {
-  try {
-    getFileBySlug("blog", slug, lang);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Build hreflang links for all available translations of a post
- */
-export function buildPostHreflangLinks(slug: string): HreflangLink[] {
+export function buildPostHreflangLinks(
+  slug: string,
+  availableLocales: readonly string[],
+): HreflangLink[] {
   const links: HreflangLink[] = [];
 
   for (const locale of SUPPORTED_LOCALES) {
-    if (postExists(slug, locale)) {
+    if (availableLocales.includes(locale)) {
       links.push({
         tagName: "link",
         rel: "alternate",
@@ -46,8 +39,7 @@ export function buildPostHreflangLinks(slug: string): HreflangLink[] {
     }
   }
 
-  // x-default fallback to English (if available)
-  if (postExists(slug, "en")) {
+  if (availableLocales.includes("en")) {
     links.push({
       tagName: "link",
       rel: "alternate",
