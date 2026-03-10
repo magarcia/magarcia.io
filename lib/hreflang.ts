@@ -106,6 +106,12 @@ export function buildProjectsHreflangLinks(): HreflangLink[] {
       hrefLang: "ca",
       href: `${BASE_URL}/ca/projects/`,
     },
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "x-default",
+      href: `${BASE_URL}/projects/`,
+    },
   ];
 }
 
