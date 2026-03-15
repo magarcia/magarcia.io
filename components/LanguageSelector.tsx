@@ -50,14 +50,16 @@ export default function LanguageSelector({
     <div
       className="group"
       data-testid="language-selector"
-      aria-label="Select language"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onFocus={handleMouseEnter}
       onBlur={handleMouseLeave}
     >
       <div className="flex items-center">
-        <nav className="flex items-center gap-1 font-mono text-xs max-w-0 group-hover:max-w-24 group-focus-within:max-w-24 overflow-hidden opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 ease-out">
+        <nav
+          aria-label="Select language"
+          className="flex items-center gap-1 font-mono text-xs max-w-0 group-hover:max-w-24 group-focus-within:max-w-24 overflow-hidden opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 ease-out"
+        >
           {languages.map((l) => (
             <Link
               key={l.code}
