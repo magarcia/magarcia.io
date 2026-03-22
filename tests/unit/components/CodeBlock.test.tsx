@@ -98,11 +98,7 @@ describe("CodeBlock", () => {
 
   it("passes additional props to wrapper div", () => {
     const { container } = render(
-      <CodeBlock
-        language="javascript"
-        data-language="javascript"
-        className="custom-class"
-      >
+      <CodeBlock language="javascript" data-language="javascript">
         {["console.log('test');"]}
       </CodeBlock>,
     );
