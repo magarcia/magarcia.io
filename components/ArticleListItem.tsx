@@ -13,7 +13,6 @@ export default function ArticleListItem({
   slug,
   title,
   date,
-  readingTime,
   spoiler,
   lang = "en",
 }: ArticleListItemProps) {

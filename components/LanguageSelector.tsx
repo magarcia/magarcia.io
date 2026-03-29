@@ -64,6 +64,7 @@ export default function LanguageSelector({
             <Link
               key={l.code}
               to={getLanguageLink(l.code)}
+              aria-current={lang === l.code ? "page" : undefined}
               className={`px-1 whitespace-nowrap text-muted-foreground hover:text-foreground transition-colors ${
                 lang === l.code ? "font-bold" : ""
               }`}
