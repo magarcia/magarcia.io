@@ -1,5 +1,8 @@
 import { Copy } from "lucide-react";
-import HighlightImport, { defaultProps } from "prism-react-renderer";
+import HighlightImport, {
+  defaultProps,
+  type Language,
+} from "prism-react-renderer";
 import { toast } from "@/hooks/use-toast";
 
 // Handle ESM/CJS interop - prism-react-renderer may export { default } in Node.js SSR
@@ -17,7 +20,6 @@ interface CodeBlockProps {
   language?: string;
   children: string[];
   highlight?: number[];
-  className?: string;
   "data-language"?: string;
 }
 
@@ -78,7 +80,7 @@ export default function CodeBlock({
         tabIndex={0}
         aria-label="Scrollable code block, use arrow keys to scroll"
       >
-        <Highlight {...defaultProps} code={code} language={lang as any}>
+        <Highlight {...defaultProps} code={code} language={lang as Language}>
           {({ tokens, getLineProps, getTokenProps }) => (
             <pre className={`language-${lang} font-mono`}>
               {tokens.slice(0, -1).map((line, i) => {
