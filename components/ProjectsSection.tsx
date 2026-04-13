@@ -30,7 +30,7 @@ export default function ProjectsSection({ lang }: ProjectsSectionProps) {
           to={projectsPath}
           className="text-muted-foreground hover:text-yellow-600 dark:hover:text-purple-400 transition-colors text-sm"
         >
-          {getMoreProjectsLabel(lang)} →
+          {getMoreProjectsLabel(lang)} <span aria-hidden="true">→</span>
         </Link>
       </div>
     </section>
