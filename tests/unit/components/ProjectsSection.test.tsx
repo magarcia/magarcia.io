@@ -73,7 +73,7 @@ describe("ProjectsSection", () => {
     });
 
     it("falls back to English description when translation is missing", () => {
-      render(<ProjectsSection lang="fr" />);
+      render(<ProjectsSection lang="es" />);
       expect(
         screen.getByText("Another description in English"),
       ).toBeInTheDocument();
@@ -101,8 +101,9 @@ describe("ProjectsSection", () => {
     });
 
     it("arrow in more projects link is hidden from screen readers", () => {
-      const { container } = render(<ProjectsSection lang="en" />);
-      const arrow = container.querySelector('[aria-hidden="true"]');
+      render(<ProjectsSection lang="en" />);
+      const link = screen.getByRole("link", { name: "More projects" });
+      const arrow = link.querySelector('span[aria-hidden="true"]');
       expect(arrow).toBeInTheDocument();
       expect(arrow?.textContent).toBe("→");
     });
