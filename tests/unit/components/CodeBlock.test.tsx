@@ -77,7 +77,7 @@ describe("CodeBlock", () => {
   it("handles string children directly when not in array", () => {
     const code = "const test = true;";
     const { container } = render(
-      <CodeBlock language="javascript">{code as any}</CodeBlock>,
+      <CodeBlock language="javascript">{code}</CodeBlock>,
     );
 
     // The code should be rendered - check the wrapper div exists
