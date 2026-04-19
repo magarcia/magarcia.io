@@ -15,7 +15,7 @@ import {
 
 interface CodeBlockProps {
   language?: string;
-  children: string[];
+  children: string | string[];
   highlight?: number[];
   className?: string;
   "data-language"?: string;

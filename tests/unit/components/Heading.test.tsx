@@ -78,12 +78,12 @@ describe("Heading", () => {
   });
 
   describe("accessibility", () => {
-    it("anchor link has accessible label for screen readers", () => {
+    it("anchor link has accessible label identifying the section", () => {
       render(<Heading>Test Heading</Heading>);
       const heading = screen.getByRole("heading", { level: 2 });
       const anchor = heading.querySelector("a");
 
-      expect(anchor).toHaveAttribute("aria-label", "Link to this section");
+      expect(anchor).toHaveAttribute("aria-label", "Link to Test Heading");
     });
   });
 
