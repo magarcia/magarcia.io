@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import CodeBlock from "~/components/CodeBlock";
 
@@ -157,5 +157,32 @@ describe("CodeBlock", () => {
     lines.forEach((line) => {
       expect(line).not.toHaveClass("opacity-30");
     });
+  });
+
+  it("renders copy button with accessible label", () => {
+    render(<CodeBlock language="javascript">{["const x = 1;"]}</CodeBlock>);
+
+    const button = screen.getByRole("button", {
+      name: "Copy code to clipboard",
+    });
+    expect(button).toBeInTheDocument();
+  });
+
+  it("copy button has type=button to prevent form submission", () => {
+    render(<CodeBlock language="javascript">{["const x = 1;"]}</CodeBlock>);
+
+    const button = screen.getByRole("button", {
+      name: "Copy code to clipboard",
+    });
+    expect(button).toHaveAttribute("type", "button");
+  });
+
+  it("accepts string children directly without array wrapping", () => {
+    const { container } = render(
+      <CodeBlock language="javascript">const x = 1;</CodeBlock>,
+    );
+
+    const pre = container.querySelector("pre");
+    expect(pre).toBeInTheDocument();
   });
 });
