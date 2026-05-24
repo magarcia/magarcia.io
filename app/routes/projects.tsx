@@ -66,7 +66,7 @@ function ProjectCard({ project, lang }: { project: Project; lang: string }) {
             </span>
             {project.archived && (
               <span className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                <Archive size={12} />
+                <Archive size={12} aria-hidden="true" />
                 archived
               </span>
             )}
@@ -81,6 +81,7 @@ function ProjectCard({ project, lang }: { project: Project; lang: string }) {
         <ExternalLink
           size={16}
           className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+          aria-hidden="true"
         />
       </div>
     </a>
