@@ -15,13 +15,8 @@ import Table, {
   TableHeaderCell,
 } from "./Table";
 
-// Component wrappers for react-markdown
-type MarkdownHeadingProps = React.HTMLAttributes<HTMLHeadingElement> & {
-  children?: React.ReactNode;
-};
-type MarkdownListProps = React.HTMLAttributes<HTMLUListElement> & {
-  children?: React.ReactNode;
-};
+type MarkdownHeadingProps = React.HTMLAttributes<HTMLHeadingElement>;
+type MarkdownListProps = React.HTMLAttributes<HTMLOListElement>;
 
 const H1 = ({ children, ...props }: MarkdownHeadingProps) => (
   <Heading level={1} {...props}>
@@ -44,7 +39,7 @@ const H4 = ({ children, ...props }: MarkdownHeadingProps) => (
   </Heading>
 );
 const OrderedList = ({ children, ...props }: MarkdownListProps) => (
-  <List ordered={true} {...props}>
+  <List ordered {...props}>
     {children}
   </List>
 );
