@@ -31,6 +31,19 @@ describe("LanguageSelector", () => {
       const englishLink = screen.getByText("EN");
       expect(englishLink.className).not.toContain("font-bold");
     });
+
+    it("marks current language with aria-current", () => {
+      render(<LanguageSelector lang="es" />);
+
+      const spanishLink = screen.getByText("ES");
+      expect(spanishLink).toHaveAttribute("aria-current", "page");
+
+      const englishLink = screen.getByText("EN");
+      expect(englishLink).not.toHaveAttribute("aria-current");
+
+      const catalanLink = screen.getByText("CA");
+      expect(catalanLink).not.toHaveAttribute("aria-current");
+    });
   });
 
   describe("language links without slug", () => {
