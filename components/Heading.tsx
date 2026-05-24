@@ -28,7 +28,7 @@ export default function Heading({
     >
       <a
         href={`#${id}`}
-        aria-label="Link to this section"
+        aria-label={`Link to ${children?.toString()}`}
         className="anchor opacity-0 inline-block cursor-pointer transition-opacity duration-500 ease-in-out motion-reduce:transition-none hover:opacity-100 -ml-7 mr-2"
       >
         <Hash
