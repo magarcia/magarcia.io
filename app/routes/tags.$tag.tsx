@@ -97,10 +97,9 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
         <div className="pl-7" data-testid="article-list">
           {posts.map(({ title, slug, readingTime, date }: FrontMatter) => (
             <div key={slug} className="my-6 md:my-8" data-testid="article-item">
-              <h3 className="font-medium text-lg text-foreground">
+              <h2 className="font-medium text-lg text-foreground">
                 <Link
                   to={lang === "en" ? `/${slug}/` : `/${lang}/${slug}/`}
-                  title={title}
                   className="hover:text-yellow-600 dark:hover:text-purple-400 transition-colors"
                 >
                   <LinkIcon
@@ -109,7 +108,7 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
                   />
                   {title}
                 </Link>
-              </h3>
+              </h2>
               <small className="text-sm text-muted-foreground">
                 <time dateTime={date}>{formatDate(date, lang)}</time> —{" "}
                 {formatReadingTime(readingTime.minutes, lang)}
