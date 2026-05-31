@@ -155,8 +155,7 @@ function getFrontMatter(source: string, slug: string): BlogPost {
       wordCount: content.split(/\s+/gu).length,
       readingTime: readingTime(content),
       ...data,
-      slug: slug ?? data.slug,
-      spoiler: data.spoiler,
+      slug,
     } as FrontMatter,
   };
 }
@@ -254,7 +253,7 @@ export function getAllTags(type: string, lang: string = "en"): string[] {
   const tagsSet = new Set<string>();
 
   posts.forEach((post) => {
-    if (post.tags && Array.isArray(post.tags)) {
+    if (post.tags) {
       post.tags.forEach((tag) => tagsSet.add(tag));
     }
   });
