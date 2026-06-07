@@ -82,7 +82,10 @@ export default function CodeBlock({
           {({ tokens, getLineProps, getTokenProps }) => (
             <pre className={`language-${lang} font-mono`}>
               {tokens.slice(0, -1).map((line, i) => {
-                const { style, ...lineProps } = getLineProps({ line, key: i });
+                const { style: _style, ...lineProps } = getLineProps({
+                  line,
+                  key: i,
+                });
                 let className = "";
                 if (highlight && !highlight.includes(i + 1)) {
                   className = "opacity-50";
@@ -92,7 +95,7 @@ export default function CodeBlock({
                     {line.map((token, key) => {
                       const type = token.types[0];
                       if (type === "plain") return token.content;
-                      const { style, ...tokenProps } = getTokenProps({
+                      const { style: _style, ...tokenProps } = getTokenProps({
                         token,
                         key,
                       });

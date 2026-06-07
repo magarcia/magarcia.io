@@ -1,6 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import CodeBlock from "~/components/CodeBlock";
+import { toast } from "@/hooks/use-toast";
+
+vi.mock("@/hooks/use-toast", () => ({ toast: vi.fn() }));
 
 describe("CodeBlock", () => {
   it("renders pre and code elements with correct structure", () => {
@@ -184,5 +187,72 @@ describe("CodeBlock", () => {
 
     const pre = container.querySelector("pre");
     expect(pre).toBeInTheDocument();
+  });
+
+  describe("copy button behavior", () => {
+    let writeText: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, "clipboard", {
+        value: { writeText },
+        configurable: true,
+      });
+      vi.mocked(toast).mockClear();
+    });
+
+    it("calls clipboard.writeText with string code on click", async () => {
+      const code = "const x = 1;";
+      render(<CodeBlock language="javascript">{code}</CodeBlock>);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Copy code to clipboard" }),
+      );
+
+      await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith(code));
+    });
+
+    it("calls clipboard.writeText with first array element on click", async () => {
+      const code = "const x = 1;";
+      render(<CodeBlock language="javascript">{[code]}</CodeBlock>);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Copy code to clipboard" }),
+      );
+
+      await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith(code));
+    });
+
+    it("shows success toast after copy", async () => {
+      render(<CodeBlock language="javascript">const x = 1;</CodeBlock>);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Copy code to clipboard" }),
+      );
+
+      await vi.waitFor(() =>
+        expect(vi.mocked(toast)).toHaveBeenCalledWith(
+          expect.objectContaining({ title: "Copied to clipboard" }),
+        ),
+      );
+    });
+
+    it("shows error toast when clipboard write fails", async () => {
+      writeText.mockRejectedValue(new Error("Clipboard unavailable"));
+      render(<CodeBlock language="javascript">const x = 1;</CodeBlock>);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Copy code to clipboard" }),
+      );
+
+      await vi.waitFor(() =>
+        expect(vi.mocked(toast)).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: "Failed to copy",
+            variant: "destructive",
+          }),
+        ),
+      );
+    });
   });
 });
