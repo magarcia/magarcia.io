@@ -72,7 +72,6 @@ const Pre = ({ children, ...props }: any) => {
       language={lang}
       highlight={highlight}
       data-language={lang}
-      className={className}
       {...props}
     >
       {code}
