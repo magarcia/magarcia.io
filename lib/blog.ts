@@ -10,8 +10,8 @@ const root = process.cwd();
 const VALID_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
 const VALID_LANG_CODES = ["en", "es", "ca"] as const;
 
-/** Regex to extract slug from filename by removing language suffix and extension */
-const FILENAME_TO_SLUG_REGEX = /\.(es|ca)?\.(md|mdx)$/;
+/** Regex to extract slug from filename by removing optional language suffix and extension */
+const FILENAME_TO_SLUG_REGEX = /(?:\.(es|ca))?\.(?:md|mdx)$/;
 
 /**
  * Extracts slug from a markdown filename by removing language suffix and extension.
@@ -20,9 +20,7 @@ const FILENAME_TO_SLUG_REGEX = /\.(es|ca)?\.(md|mdx)$/;
  * extractSlugFromFilename("my-post.mdx")    // "my-post"
  */
 function extractSlugFromFilename(filename: string): string {
-  return filename
-    .replace(FILENAME_TO_SLUG_REGEX, "")
-    .replace(/\.(md|mdx)$/, "");
+  return filename.replace(FILENAME_TO_SLUG_REGEX, "");
 }
 
 /**
@@ -223,27 +221,21 @@ export function getAllFilesFrontMatter(
 }
 
 export function getAllFiles(type: string, lang: string = "en"): BlogPost[] {
+  validateLang(lang);
   const dirPath = path.join(root, "data", type);
   const uniqueSlugs = getUniqueSlugsFromDir(dirPath);
 
   return uniqueSlugs
     .reduce((allFiles: BlogPost[], slug: string) => {
-      const { frontMatter, content } = getFileBySlug(type, slug, lang);
+      const filePath = resolveFilePath(dirPath, slug, lang);
+      if (!filePath) return allFiles;
 
-      if (shouldExcludePost(frontMatter)) {
-        return allFiles;
-      }
+      const source = fs.readFileSync(filePath, "utf8");
+      const { frontMatter, content } = getFrontMatter(source, slug);
 
-      return [
-        {
-          content,
-          frontMatter: {
-            ...frontMatter,
-            slug: slug,
-          },
-        },
-        ...allFiles,
-      ];
+      if (shouldExcludePost(frontMatter)) return allFiles;
+
+      return [{ content, frontMatter: { ...frontMatter, slug } }, ...allFiles];
     }, [])
     .sort((a, b) => -a.frontMatter.date.localeCompare(b.frontMatter.date));
 }

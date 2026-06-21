@@ -124,7 +124,7 @@ export function TableBody(
 export function TableCell(props: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return (
     <td
-      className="block md:table-cell relative py-3 px-4 md:px-4 text-foreground"
+      className="block md:table-cell relative py-3 px-4 text-foreground"
       {...props}
     />
   );
@@ -136,7 +136,7 @@ export function TableHeaderCell(
   return (
     <th
       scope="col"
-      className="block md:table-cell relative py-3 px-4 md:px-4 font-medium text-foreground"
+      className="block md:table-cell relative py-3 px-4 font-medium text-foreground"
       {...props}
     />
   );
