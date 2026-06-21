@@ -177,7 +177,6 @@ describe("Table Components", () => {
         "relative",
         "py-3",
         "px-4",
-        "md:px-4",
       );
     });
 
@@ -235,7 +234,6 @@ describe("Table Components", () => {
         "relative",
         "py-3",
         "px-4",
-        "md:px-4",
         "font-medium",
         "text-foreground",
       );
