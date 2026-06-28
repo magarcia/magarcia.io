@@ -4,6 +4,8 @@ import {
   formatReadingTime,
   formatTagPageTitle,
   getSectionTitle,
+  getLangFromPathname,
+  getMoreProjectsLabel,
 } from "../../../lib/i18n";
 
 describe("i18n utilities", () => {
@@ -172,6 +174,70 @@ describe("i18n utilities", () => {
     it("falls back to English for invalid lang", () => {
       const result = getSectionTitle("about", "invalid");
       expect(result).toBe("About");
+    });
+  });
+
+  describe("getLangFromPathname", () => {
+    it("returns en for root path", () => {
+      expect(getLangFromPathname("/")).toBe("en");
+    });
+
+    it("returns en for English post path", () => {
+      expect(getLangFromPathname("/my-post")).toBe("en");
+    });
+
+    it("returns es for exact /es path", () => {
+      expect(getLangFromPathname("/es")).toBe("es");
+    });
+
+    it("returns es for /es/ path", () => {
+      expect(getLangFromPathname("/es/")).toBe("es");
+    });
+
+    it("returns es for /es/post path", () => {
+      expect(getLangFromPathname("/es/my-post")).toBe("es");
+    });
+
+    it("returns ca for exact /ca path", () => {
+      expect(getLangFromPathname("/ca")).toBe("ca");
+    });
+
+    it("returns ca for /ca/ path", () => {
+      expect(getLangFromPathname("/ca/")).toBe("ca");
+    });
+
+    it("returns ca for /ca/post path", () => {
+      expect(getLangFromPathname("/ca/my-post")).toBe("ca");
+    });
+
+    it("returns en for path that starts with /es but is not /es prefix", () => {
+      expect(getLangFromPathname("/essay")).toBe("en");
+    });
+
+    it("returns en for path that starts with /ca but is not /ca prefix", () => {
+      expect(getLangFromPathname("/categories")).toBe("en");
+    });
+  });
+
+  describe("getMoreProjectsLabel", () => {
+    it("returns English label by default", () => {
+      expect(getMoreProjectsLabel()).toBe("More projects");
+    });
+
+    it("returns English label for lang=en", () => {
+      expect(getMoreProjectsLabel("en")).toBe("More projects");
+    });
+
+    it("returns Spanish label for lang=es", () => {
+      expect(getMoreProjectsLabel("es")).toBe("Más proyectos");
+    });
+
+    it("returns Catalan label for lang=ca", () => {
+      expect(getMoreProjectsLabel("ca")).toBe("Més projectes");
+    });
+
+    it("falls back to English for invalid lang", () => {
+      expect(getMoreProjectsLabel("invalid")).toBe("More projects");
     });
   });
 });
