@@ -4,6 +4,7 @@ import {
   formatReadingTime,
   formatTagPageTitle,
   getSectionTitle,
+  getMoreProjectsLabel,
 } from "../../../lib/i18n";
 
 describe("i18n utilities", () => {
@@ -172,6 +173,33 @@ describe("i18n utilities", () => {
     it("falls back to English for invalid lang", () => {
       const result = getSectionTitle("about", "invalid");
       expect(result).toBe("About");
+    });
+  });
+
+  describe("getMoreProjectsLabel", () => {
+    it("returns label in English by default", () => {
+      const result = getMoreProjectsLabel();
+      expect(result).toBe("More projects");
+    });
+
+    it("returns label in English when lang=en", () => {
+      const result = getMoreProjectsLabel("en");
+      expect(result).toBe("More projects");
+    });
+
+    it("returns label in Spanish when lang=es", () => {
+      const result = getMoreProjectsLabel("es");
+      expect(result).toBe("Más proyectos");
+    });
+
+    it("returns label in Catalan when lang=ca", () => {
+      const result = getMoreProjectsLabel("ca");
+      expect(result).toBe("Més projectes");
+    });
+
+    it("falls back to English for invalid lang", () => {
+      const result = getMoreProjectsLabel("invalid");
+      expect(result).toBe("More projects");
     });
   });
 });
