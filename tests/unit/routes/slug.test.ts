@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { loader } from "~/app/routes/$slug";
+import { loader, meta } from "~/app/routes/$slug";
 import type { BlogPostWithNavigation } from "~/lib/blog";
 
 vi.mock("~/lib/blog", () => ({
@@ -137,5 +137,105 @@ describe("$slug route loader", () => {
         status: 404,
       });
     });
+  });
+});
+
+describe("$slug route meta", () => {
+  const location = { pathname: "/test-post/" } as Location;
+
+  it("returns a not-found title when data is missing", () => {
+    const result = meta({ data: undefined, location } as any);
+
+    expect(result).toEqual([{ title: "Post Not Found" }]);
+  });
+
+  it("returns a not-found title when frontMatter is missing", () => {
+    const result = meta({ data: {}, location } as any);
+
+    expect(result).toEqual([{ title: "Post Not Found" }]);
+  });
+
+  it("builds title, description and og/twitter tags from frontMatter", () => {
+    const data = { frontMatter: mockPost.frontMatter, hreflangLinks: [] };
+
+    const result = meta({ data, location } as any) as Array<
+      Record<string, string>
+    >;
+
+    expect(result).toContainEqual({ title: "Test Post — magarcia" });
+    expect(result).toContainEqual({
+      name: "description",
+      content: "Test spoiler",
+    });
+    expect(result).toContainEqual({
+      property: "og:title",
+      content: "Test Post — magarcia",
+    });
+    expect(result).toContainEqual({
+      property: "og:image",
+      content: "https://magarcia.io/og/test-post.png",
+    });
+  });
+
+  it("uses a custom ogImage when provided instead of the default", () => {
+    const data = {
+      frontMatter: {
+        ...mockPost.frontMatter,
+        ogImage: "https://example.com/custom.png",
+      },
+      hreflangLinks: [],
+    };
+
+    const result = meta({ data, location } as any) as Array<
+      Record<string, string>
+    >;
+
+    expect(result).toContainEqual({
+      property: "og:image",
+      content: "https://example.com/custom.png",
+    });
+  });
+
+  it("includes hreflang links provided by the loader", () => {
+    const hreflangLinks = [
+      {
+        tagName: "link",
+        rel: "alternate",
+        hrefLang: "es",
+        href: "https://magarcia.io/es/test-post/",
+      },
+    ];
+    const data = { frontMatter: mockPost.frontMatter, hreflangLinks };
+
+    const result = meta({ data, location } as any);
+
+    expect(result).toEqual(expect.arrayContaining(hreflangLinks));
+  });
+
+  it("includes a canonical link built from the current pathname", () => {
+    const data = { frontMatter: mockPost.frontMatter, hreflangLinks: [] };
+
+    const result = meta({ data, location } as any);
+
+    expect(result).toContainEqual({
+      tagName: "link",
+      rel: "canonical",
+      href: "https://magarcia.io/test-post/",
+    });
+  });
+
+  it("truncates long descriptions to stay within SEO limits", () => {
+    const data = {
+      frontMatter: { ...mockPost.frontMatter, spoiler: "a".repeat(200) },
+      hreflangLinks: [],
+    };
+
+    const result = meta({ data, location } as any) as Array<
+      Record<string, string>
+    >;
+
+    const description = result.find((entry) => entry.name === "description");
+    expect(description?.content.length).toBeLessThanOrEqual(155);
+    expect(description?.content.endsWith("...")).toBe(true);
   });
 });
