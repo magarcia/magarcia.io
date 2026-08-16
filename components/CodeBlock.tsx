@@ -99,7 +99,7 @@ export default function CodeBlock({
                         token,
                         key,
                       });
-                      let tokenClassName = token.types.join(" ");
+                      const tokenClassName = token.types.join(" ");
                       return (
                         <span
                           {...tokenProps}
