@@ -52,67 +52,39 @@ export function buildPostHreflangLinks(
 }
 
 /**
+ * Build hreflang links for all supported locales plus x-default,
+ * pointing at the same relative path across locales.
+ */
+function buildLocaleVariantLinks(path: string): HreflangLink[] {
+  const links: HreflangLink[] = SUPPORTED_LOCALES.map((locale) => ({
+    tagName: "link",
+    rel: "alternate",
+    hrefLang: locale,
+    href: `${BASE_URL}${locale === "en" ? "" : `/${locale}`}/${path}`,
+  }));
+
+  links.push({
+    tagName: "link",
+    rel: "alternate",
+    hrefLang: "x-default",
+    href: `${BASE_URL}/${path}`,
+  });
+
+  return links;
+}
+
+/**
  * Build hreflang links for homepage locale variants
  */
 export function buildHomepageHreflangLinks(): HreflangLink[] {
-  return [
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "en",
-      href: `${BASE_URL}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "es",
-      href: `${BASE_URL}/es/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "ca",
-      href: `${BASE_URL}/ca/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "x-default",
-      href: `${BASE_URL}/`,
-    },
-  ];
+  return buildLocaleVariantLinks("");
 }
 
 /**
  * Build hreflang links for projects page locale variants
  */
 export function buildProjectsHreflangLinks(): HreflangLink[] {
-  return [
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "en",
-      href: `${BASE_URL}/projects/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "es",
-      href: `${BASE_URL}/es/projects/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "ca",
-      href: `${BASE_URL}/ca/projects/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "x-default",
-      href: `${BASE_URL}/projects/`,
-    },
-  ];
+  return buildLocaleVariantLinks("projects/");
 }
 
 /**
@@ -133,30 +105,5 @@ export function buildCanonicalLink(pathname: string): CanonicalLink {
 export function buildTagHreflangLinks(tag: string): HreflangLink[] {
   const slug = slugifyTag(tag);
 
-  return [
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "en",
-      href: `${BASE_URL}/tags/${slug}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "es",
-      href: `${BASE_URL}/es/tags/${slug}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "ca",
-      href: `${BASE_URL}/ca/tags/${slug}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "x-default",
-      href: `${BASE_URL}/tags/${slug}/`,
-    },
-  ];
+  return buildLocaleVariantLinks(`tags/${slug}/`);
 }
