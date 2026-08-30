@@ -16,7 +16,31 @@ type CanonicalLink = {
 export type { HreflangLink, CanonicalLink };
 
 const SUPPORTED_LOCALES = ["en", "es", "ca"] as const;
+type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 const BASE_URL = "https://magarcia.io";
+
+/**
+ * Build hreflang links for all supported locales plus x-default, given a
+ * function that maps a locale to its URL path.
+ */
+function buildLocaleHreflangLinks(
+  pathForLocale: (locale: SupportedLocale) => string,
+): HreflangLink[] {
+  return [
+    ...SUPPORTED_LOCALES.map((locale) => ({
+      tagName: "link" as const,
+      rel: "alternate" as const,
+      hrefLang: locale,
+      href: `${BASE_URL}${pathForLocale(locale)}`,
+    })),
+    {
+      tagName: "link" as const,
+      rel: "alternate" as const,
+      hrefLang: "x-default",
+      href: `${BASE_URL}${pathForLocale("en")}`,
+    },
+  ];
+}
 
 /**
  * Build hreflang links for a post given the set of available locales.
@@ -55,64 +79,18 @@ export function buildPostHreflangLinks(
  * Build hreflang links for homepage locale variants
  */
 export function buildHomepageHreflangLinks(): HreflangLink[] {
-  return [
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "en",
-      href: `${BASE_URL}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "es",
-      href: `${BASE_URL}/es/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "ca",
-      href: `${BASE_URL}/ca/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "x-default",
-      href: `${BASE_URL}/`,
-    },
-  ];
+  return buildLocaleHreflangLinks((locale) =>
+    locale === "en" ? "/" : `/${locale}/`,
+  );
 }
 
 /**
  * Build hreflang links for projects page locale variants
  */
 export function buildProjectsHreflangLinks(): HreflangLink[] {
-  return [
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "en",
-      href: `${BASE_URL}/projects/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "es",
-      href: `${BASE_URL}/es/projects/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "ca",
-      href: `${BASE_URL}/ca/projects/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "x-default",
-      href: `${BASE_URL}/projects/`,
-    },
-  ];
+  return buildLocaleHreflangLinks((locale) =>
+    locale === "en" ? "/projects/" : `/${locale}/projects/`,
+  );
 }
 
 /**
@@ -133,30 +111,7 @@ export function buildCanonicalLink(pathname: string): CanonicalLink {
 export function buildTagHreflangLinks(tag: string): HreflangLink[] {
   const slug = slugifyTag(tag);
 
-  return [
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "en",
-      href: `${BASE_URL}/tags/${slug}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "es",
-      href: `${BASE_URL}/es/tags/${slug}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "ca",
-      href: `${BASE_URL}/ca/tags/${slug}/`,
-    },
-    {
-      tagName: "link",
-      rel: "alternate",
-      hrefLang: "x-default",
-      href: `${BASE_URL}/tags/${slug}/`,
-    },
-  ];
+  return buildLocaleHreflangLinks((locale) =>
+    locale === "en" ? `/tags/${slug}/` : `/${locale}/tags/${slug}/`,
+  );
 }
