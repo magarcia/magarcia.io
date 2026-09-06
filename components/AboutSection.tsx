@@ -18,6 +18,7 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
+          aria-label="Visit Buffer (opens in new tab)"
         >
           Buffer
         </a>
@@ -27,6 +28,7 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
+          aria-label="Visit Palabreja (opens in new tab)"
         >
           Palabreja
         </a>
@@ -42,6 +44,7 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
+          aria-label="Visit Buffer (opens in new tab)"
         >
           Buffer
         </a>
@@ -51,6 +54,7 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
+          aria-label="Visit Palabreja (opens in new tab)"
         >
           Palabreja
         </a>
@@ -66,6 +70,7 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
+          aria-label="Visit Buffer (opens in new tab)"
         >
           Buffer
         </a>
@@ -75,6 +80,7 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
+          aria-label="Visit Palabreja (opens in new tab)"
         >
           Palabreja
         </a>
